@@ -1099,7 +1099,7 @@ namespace TEAM_Library
             List<string> resultList = new List<string>();
 
             // Informing the user.
-            resultList.Add("\r\n--> Commencing the validation to determine if the defined Data Objects exists in the model.\r\n");
+            resultList.Add("\r\n--> Commencing the validation to determine if the defined Data Objects exists in the physical model snapshot.\r\n");
 
             var resultDictionary = new Dictionary<string, string>();
 
@@ -1127,9 +1127,7 @@ namespace TEAM_Library
                     // No need to evaluate the operational system (real sources))
                     if (MetadataHandling.GetDataObjectType(validationObjectSource, "", teamConfiguration).ToString() != MetadataHandling.DataObjectTypes.Source.ToString())
                     {
-                        string objectValidated;
-
-                        objectValidated = ValidateObjectExistence(validationObjectSource, sourceConnection, physicalModelDataTable);
+                        var objectValidated = ValidateObjectExistence(validationObjectSource, sourceConnection, physicalModelDataTable);
 
                         if (objectValidated == "False" && !resultDictionary.ContainsKey(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value))
                         {

@@ -245,6 +245,7 @@ namespace TEAM
             this.checkedListBoxReverseEngineeringAreas.Name = "checkedListBoxReverseEngineeringAreas";
             this.checkedListBoxReverseEngineeringAreas.Size = new System.Drawing.Size(120, 420);
             this.checkedListBoxReverseEngineeringAreas.TabIndex = 0;
+            this.checkedListBoxReverseEngineeringAreas.SelectedIndexChanged += new System.EventHandler(this.checkedListBoxReverseEngineeringAreas_SelectedIndexChanged);
             // 
             // buttonReverseEngineer
             // 

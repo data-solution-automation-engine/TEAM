@@ -39,10 +39,15 @@ namespace TEAM_Library
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TeamDatabaseConnection DatabaseServer { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string ConnectionCustomQuery { get; set; }
+        
         /// <summary>
         /// Return the full TeamConnection object for a given (TeamConnection) connection Id string.
         /// </summary>
         /// <param name="connectionId"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <param name="eventLog"></param>
         /// <returns></returns>
         public static TeamConnection GetTeamConnectionByConnectionId(string connectionId, TeamConfiguration teamConfiguration, EventLog eventLog)
         {

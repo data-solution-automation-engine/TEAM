@@ -2143,6 +2143,8 @@ namespace TEAM
             richTextBoxInformation.Clear();
             richTextBoxInformation.Text = @"Commencing reverse-engineering the model metadata from the database. This may take a few minutes depending on the complexity of the database.";
 
+            checkedListBoxReverseEngineeringAreas.Enabled = false;
+
             if (backgroundWorkerValidationOnly.IsBusy) 
                 return;
 
@@ -2152,11 +2154,12 @@ namespace TEAM
         /// <summary>
         ///   Connect to a given database and return the data dictionary (catalog) information in the data grid.
         /// </summary>
-        /// <param name="conn"></param>
-        /// <param name="databaseName"></param>
+        /// <param name="teamConnection"></param>
         /// <param name="filteredDataObjectMappingDataRows"></param>
-        private DataTable ReverseEngineerModelMetadata(SqlConnection conn, string databaseName, List<DataRow> filteredDataObjectMappingDataRows)
+        private DataTable ReverseEngineerModelMetadata(TeamConnection teamConnection, List<DataRow> filteredDataObjectMappingDataRows)
         {
+            var conn = new SqlConnection { ConnectionString = teamConnection.CreateSqlServerConnectionString(false) };
+
             try
             {
                 conn.Open();
@@ -2166,7 +2169,7 @@ namespace TEAM
                 ThreadHelper.SetText(this, richTextBoxInformation, $@"An error has occurred uploading the model for the new version because the database could not be connected to. The error message is: {exception.Message}.");
             }
 
-            var sqlStatementForDataItems = SqlStatementForDataItems(databaseName, GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows));
+            var sqlStatementForDataItems = SqlStatementForDataItems( GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), teamConnection);
 
             var reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems);
             conn.Close();
@@ -2197,18 +2200,15 @@ namespace TEAM
             return filterDataObjects;
         }
 
-        private string SqlStatementForDataItems(string databaseName, List<DataRow> filterDataObjects, bool isJson = false)
+        private string SqlStatementForDataItems(List<DataRow> filterDataObjects, TeamConnection teamConnection, bool isJson = false)
         {
-            // Get everything as local variables to reduce multi-threading issues
+            // Get everything as local variables to reduce multi-threading issues.
             var effectiveDateTimeAttribute =
                 TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute == "True"
                     ? TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute
                     : TeamConfiguration.LoadDateTimeAttribute;
 
             var dwhKeyIdentifier = TeamConfiguration.KeyIdentifier; //Indicates _HSH, _SK etc.
-
-            // Create the attribute selection statement for the array
-            var sqlStatementForDataItems = new StringBuilder();
 
             string databaseColumnName = PhysicalModelMappingMetadataColumns.Database_Name.ToString();
             string schemaColumnName = PhysicalModelMappingMetadataColumns.Schema_Name.ToString();
@@ -2237,123 +2237,157 @@ namespace TEAM
                 multiActiveKeyColumnName = "multiActiveIndicator";
             }
 
-            sqlStatementForDataItems.AppendLine("SELECT ");
+            // Prepare the query, depending on the type.
+            // Create the attribute selection statement for the array.
+            var sqlStatementForDataItems = new StringBuilder();
 
-            sqlStatementForDataItems.AppendLine($"  DB_NAME(DB_ID('{databaseName}')) AS [{databaseColumnName}],");
-            sqlStatementForDataItems.AppendLine($"  OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [{schemaColumnName}],");
-            sqlStatementForDataItems.AppendLine($"  OBJECT_NAME(main.OBJECT_ID) AS [{tableColumnName}], ");
-            sqlStatementForDataItems.AppendLine($"  main.[name] AS [{columnColumnName}], ");
-            sqlStatementForDataItems.AppendLine($"  t.[name] AS [{dataTypeColumnName}], ");
-            sqlStatementForDataItems.AppendLine("  CAST(COALESCE(");
-            sqlStatementForDataItems.AppendLine("    CASE WHEN UPPER(t.[name]) = 'NVARCHAR' THEN main.[max_length]/2"); //Exception for unicode
-            sqlStatementForDataItems.AppendLine("    ELSE main.[max_length]");
-            sqlStatementForDataItems.AppendLine("    END");
-            sqlStatementForDataItems.AppendLine($"     ,0) AS VARCHAR(100)) AS [{characterLengthColumnName}],");
-            sqlStatementForDataItems.AppendLine($"  CAST(COALESCE(main.[precision],0) AS VARCHAR(100)) AS [{numericPrecisionColumnName}], ");
-            sqlStatementForDataItems.AppendLine($"  CAST(COALESCE(main.[scale], 0) AS VARCHAR(100)) AS [{numericScaleColumnName}], ");
-            sqlStatementForDataItems.AppendLine($"  CAST(main.[column_id] AS VARCHAR(100)) AS [{ordinalPositionColumnName}], ");
-            sqlStatementForDataItems.AppendLine("  CASE ");
-            sqlStatementForDataItems.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL ");
-            sqlStatementForDataItems.AppendLine("    THEN 'N' ");
-            sqlStatementForDataItems.AppendLine("    ELSE 'Y' ");
-            sqlStatementForDataItems.AppendLine($"  END AS {primaryKeyColumnName}, ");
-            sqlStatementForDataItems.AppendLine("  CASE ");
-            sqlStatementForDataItems.AppendLine("    WHEN ma.COLUMN_NAME IS NULL ");
-            sqlStatementForDataItems.AppendLine("    THEN 'N' ");
-            sqlStatementForDataItems.AppendLine("    ELSE 'Y' ");
-            sqlStatementForDataItems.AppendLine($"  END AS {multiActiveKeyColumnName} ");
-
-            sqlStatementForDataItems.AppendLine("FROM [" + databaseName + "].sys.columns main");
-            sqlStatementForDataItems.AppendLine("JOIN sys.types t ON main.user_type_id=t.user_type_id");
-            sqlStatementForDataItems.AppendLine("-- Primary Key");
-            sqlStatementForDataItems.AppendLine("LEFT OUTER JOIN (");
-            sqlStatementForDataItems.AppendLine("	SELECT ");
-            sqlStatementForDataItems.AppendLine("	  sc.name AS TABLE_NAME,");
-            sqlStatementForDataItems.AppendLine("	  C.name AS COLUMN_NAME");
-            sqlStatementForDataItems.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
-            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
-            sqlStatementForDataItems.AppendLine("	ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
-            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
-            sqlStatementForDataItems.AppendLine("	ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
-            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
-            sqlStatementForDataItems.AppendLine("	WHERE is_primary_key=1 ");
-            sqlStatementForDataItems.AppendLine(") keysub");
-            sqlStatementForDataItems.AppendLine("   ON OBJECT_NAME(main.OBJECT_ID) = keysub.TABLE_NAME");
-            sqlStatementForDataItems.AppendLine("  AND main.[name] = keysub.COLUMN_NAME");
-
-            //Multi-active
-            sqlStatementForDataItems.AppendLine("-- Multi-Active");
-            sqlStatementForDataItems.AppendLine("LEFT OUTER JOIN (");
-            sqlStatementForDataItems.AppendLine("	SELECT ");
-            sqlStatementForDataItems.AppendLine("		sc.name AS TABLE_NAME,");
-            sqlStatementForDataItems.AppendLine("		C.name AS COLUMN_NAME");
-            sqlStatementForDataItems.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
-            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
-            sqlStatementForDataItems.AppendLine("	ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
-            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
-            sqlStatementForDataItems.AppendLine("	ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
-            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
-            sqlStatementForDataItems.AppendLine("	WHERE is_primary_key=1");
-            sqlStatementForDataItems.AppendLine("	AND C.name NOT IN ('" + effectiveDateTimeAttribute + "')");
-
-            sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '" + dwhKeyIdentifier + "%'");
-            sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '%" + dwhKeyIdentifier + "'");
-
-            sqlStatementForDataItems.AppendLine("	) ma");
-            sqlStatementForDataItems.AppendLine("	ON OBJECT_NAME(main.OBJECT_ID) = ma.TABLE_NAME");
-            sqlStatementForDataItems.AppendLine("	AND main.[name] = ma.COLUMN_NAME");
-            sqlStatementForDataItems.AppendLine("WHERE 1=1");
-            
-            sqlStatementForDataItems.AppendLine("  AND (");
-
-            // Add the filtered objects.
-
-            var filterList = new List<Tuple<string, TeamConnection>>();
-
-            foreach (DataRow row in filterDataObjects)
+            if (teamConnection.ConnectionType == ConnectionTypes.Catalog || teamConnection.ConnectionType == ConnectionTypes.Custom)
             {
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                string localInternalConnectionIdSource = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                TeamConnection localConnectionSource = TeamConnection.GetTeamConnectionByConnectionId(localInternalConnectionIdSource, TeamConfiguration, TeamEventLog);
-
-                string localInternalConnectionIdTarget = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                TeamConnection localConnectionTarget = TeamConnection.GetTeamConnectionByConnectionId(localInternalConnectionIdTarget, TeamConfiguration, TeamEventLog);
-
-                var localTupleSource = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], localConnectionSource);
-
-                var localTupleTarget = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], localConnectionTarget);
-
-                if (!filterList.Contains(localTupleSource))
+                // Catalog query.
+                if (teamConnection.ConnectionType == ConnectionTypes.Catalog)
                 {
-                    filterList.Add(localTupleSource);
+                    var databaseName = teamConnection.DatabaseServer.DatabaseName;
+                    
+                    sqlStatementForDataItems.AppendLine($"-- Physical Model Snapshot query for {teamConnection.ConnectionKey}.");
+                    sqlStatementForDataItems.AppendLine("SELECT * FROM");
+                    sqlStatementForDataItems.AppendLine("(");
+                    sqlStatementForDataItems.AppendLine("  SELECT ");
+
+                    sqlStatementForDataItems.AppendLine($"    DB_NAME(DB_ID('{databaseName}')) AS [{databaseColumnName}],");
+                    sqlStatementForDataItems.AppendLine($"    OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [{schemaColumnName}],");
+                    sqlStatementForDataItems.AppendLine($"    OBJECT_NAME(main.OBJECT_ID) AS [{tableColumnName}], ");
+                    sqlStatementForDataItems.AppendLine($"    main.[name] AS [{columnColumnName}], ");
+                    sqlStatementForDataItems.AppendLine($"    t.[name] AS [{dataTypeColumnName}], ");
+                    sqlStatementForDataItems.AppendLine("     CAST(COALESCE(");
+                    sqlStatementForDataItems.AppendLine("        CASE WHEN UPPER(t.[name]) = 'NVARCHAR' THEN main.[max_length]/2"); //Exception for unicode
+                    sqlStatementForDataItems.AppendLine("        ELSE main.[max_length]");
+                    sqlStatementForDataItems.AppendLine("        END");
+                    sqlStatementForDataItems.AppendLine($"    ,0) AS VARCHAR(100)) AS [{characterLengthColumnName}],");
+                    sqlStatementForDataItems.AppendLine($"    CAST(COALESCE(main.[precision],0) AS VARCHAR(100)) AS [{numericPrecisionColumnName}], ");
+                    sqlStatementForDataItems.AppendLine($"    CAST(COALESCE(main.[scale], 0) AS VARCHAR(100)) AS [{numericScaleColumnName}], ");
+                    sqlStatementForDataItems.AppendLine($"    CAST(main.[column_id] AS VARCHAR(100)) AS [{ordinalPositionColumnName}], ");
+                    sqlStatementForDataItems.AppendLine("     CASE ");
+                    sqlStatementForDataItems.AppendLine("       WHEN keysub.COLUMN_NAME IS NULL ");
+                    sqlStatementForDataItems.AppendLine("       THEN 'N' ");
+                    sqlStatementForDataItems.AppendLine("       ELSE 'Y' ");
+                    sqlStatementForDataItems.AppendLine($"    END AS {primaryKeyColumnName}, ");
+                    sqlStatementForDataItems.AppendLine("     CASE ");
+                    sqlStatementForDataItems.AppendLine("       WHEN ma.COLUMN_NAME IS NULL ");
+                    sqlStatementForDataItems.AppendLine("       THEN 'N' ");
+                    sqlStatementForDataItems.AppendLine("       ELSE 'Y' ");
+                    sqlStatementForDataItems.AppendLine($"    END AS {multiActiveKeyColumnName} ");
+
+                    sqlStatementForDataItems.AppendLine("  FROM [" + databaseName + "].sys.columns main");
+                    sqlStatementForDataItems.AppendLine("  JOIN sys.types t ON main.user_type_id=t.user_type_id");
+                    sqlStatementForDataItems.AppendLine("  -- Primary Key");
+                    sqlStatementForDataItems.AppendLine("  LEFT OUTER JOIN (");
+                    sqlStatementForDataItems.AppendLine("	  SELECT ");
+                    sqlStatementForDataItems.AppendLine("	    sc.name AS TABLE_NAME,");
+                    sqlStatementForDataItems.AppendLine("	    C.name AS COLUMN_NAME");
+                    sqlStatementForDataItems.AppendLine("	  FROM [" + databaseName + "].sys.index_columns A");
+                    sqlStatementForDataItems.AppendLine("	  JOIN [" + databaseName + "].sys.indexes B");
+                    sqlStatementForDataItems.AppendLine("	    ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
+                    sqlStatementForDataItems.AppendLine("	  JOIN [" + databaseName + "].sys.columns C");
+                    sqlStatementForDataItems.AppendLine("	   ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
+                    sqlStatementForDataItems.AppendLine("	  JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+                    sqlStatementForDataItems.AppendLine("	  WHERE is_primary_key=1 ");
+                    sqlStatementForDataItems.AppendLine("  ) keysub");
+                    sqlStatementForDataItems.AppendLine("  ON OBJECT_NAME(main.OBJECT_ID) = keysub.TABLE_NAME");
+                    sqlStatementForDataItems.AppendLine("  AND main.[name] = keysub.COLUMN_NAME");
+
+                    //Multi-active
+                    sqlStatementForDataItems.AppendLine("  -- Multi-Active");
+                    sqlStatementForDataItems.AppendLine("  LEFT OUTER JOIN (");
+                    sqlStatementForDataItems.AppendLine("	 SELECT ");
+                    sqlStatementForDataItems.AppendLine("	   sc.name AS TABLE_NAME,");
+                    sqlStatementForDataItems.AppendLine("	   C.name AS COLUMN_NAME");
+                    sqlStatementForDataItems.AppendLine("	 FROM [" + databaseName + "].sys.index_columns A");
+                    sqlStatementForDataItems.AppendLine("	 JOIN [" + databaseName + "].sys.indexes B");
+                    sqlStatementForDataItems.AppendLine("	   ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
+                    sqlStatementForDataItems.AppendLine("	 JOIN [" + databaseName + "].sys.columns C");
+                    sqlStatementForDataItems.AppendLine("	   ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
+                    sqlStatementForDataItems.AppendLine("	 JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+                    sqlStatementForDataItems.AppendLine("	 WHERE is_primary_key=1");
+                    sqlStatementForDataItems.AppendLine("	 AND C.name NOT IN ('" + effectiveDateTimeAttribute + "')");
+
+                    sqlStatementForDataItems.AppendLine("	 AND C.name NOT LIKE '" + dwhKeyIdentifier + "%'");
+                    sqlStatementForDataItems.AppendLine("	 AND C.name NOT LIKE '%" + dwhKeyIdentifier + "'");
+
+                    sqlStatementForDataItems.AppendLine("	 ) ma");
+                    sqlStatementForDataItems.AppendLine("	 ON OBJECT_NAME(main.OBJECT_ID) = ma.TABLE_NAME");
+                    sqlStatementForDataItems.AppendLine("	 AND main.[name] = ma.COLUMN_NAME");
+                    sqlStatementForDataItems.AppendLine(") customSubQuery");
+                }
+                else if (teamConnection.ConnectionType == ConnectionTypes.Custom)
+                {
+                    // Use the custom query that was provided with the connection.
+                    sqlStatementForDataItems.AppendLine($"-- User-provided (custom) Physical Model Snapshot query for {teamConnection.ConnectionKey}.");
+                    sqlStatementForDataItems.AppendLine("SELECT * FROM");
+                    sqlStatementForDataItems.AppendLine("(");
+                    sqlStatementForDataItems.AppendLine(teamConnection.ConnectionCustomQuery);
+                    sqlStatementForDataItems.AppendLine(") customSubQuery");
                 }
 
-                if (!filterList.Contains(localTupleTarget))
+                // Shared / generic.
+
+                // Add the filtered objects.
+                sqlStatementForDataItems.AppendLine("WHERE 1=1");
+                sqlStatementForDataItems.AppendLine("  AND");
+                sqlStatementForDataItems.AppendLine("   (");
+
+                var filterList = new List<Tuple<string, TeamConnection>>();
+
+                foreach (DataRow row in filterDataObjects)
                 {
-                    filterList.Add(localTupleTarget);
+                    // Skip deleted rows.
+                    if (row.RowState == DataRowState.Deleted)
+                        continue;
+
+                    string localInternalConnectionIdSource = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
+                    TeamConnection localConnectionSource = TeamConnection.GetTeamConnectionByConnectionId(localInternalConnectionIdSource, TeamConfiguration, TeamEventLog);
+
+                    string localInternalConnectionIdTarget = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
+                    TeamConnection localConnectionTarget = TeamConnection.GetTeamConnectionByConnectionId(localInternalConnectionIdTarget, TeamConfiguration, TeamEventLog);
+
+                    var localTupleSource = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], localConnectionSource);
+
+                    var localTupleTarget = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], localConnectionTarget);
+
+                    if (!filterList.Contains(localTupleSource))
+                    {
+                        filterList.Add(localTupleSource);
+                    }
+
+                    if (!filterList.Contains(localTupleTarget))
+                    {
+                        filterList.Add(localTupleTarget);
+                    }
+                }
+
+                foreach (var filter in filterList)
+                {
+                    var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2).FirstOrDefault();
+
+                    // Always add the 'regular' mapping.
+                    sqlStatementForDataItems.AppendLine($"     ({tableColumnName} = '{fullyQualifiedName.Value}' AND {schemaColumnName} = '{fullyQualifiedName.Key}')");
+                    sqlStatementForDataItems.AppendLine("     OR");
+                }
+
+                // Remove the last OR
+                sqlStatementForDataItems.Remove(sqlStatementForDataItems.Length - 6, 6);
+
+                sqlStatementForDataItems.AppendLine(")");
+                sqlStatementForDataItems.AppendLine($"ORDER BY {tableColumnName}, {columnColumnName}, {ordinalPositionColumnName}");
+
+                if (isJson)
+                {
+                    sqlStatementForDataItems.AppendLine("FOR JSON PATH");
+                    sqlStatementForDataItems.AppendLine();
                 }
             }
-
-            foreach (var filter in filterList)
+            else
             {
-                var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2).FirstOrDefault();
-
-                // Always add the 'regular' mapping.
-                sqlStatementForDataItems.AppendLine("  (OBJECT_NAME(main.OBJECT_ID) = '" + fullyQualifiedName.Value + "' AND OBJECT_SCHEMA_NAME(main.OBJECT_ID) = '" + fullyQualifiedName.Key + "')");
-                sqlStatementForDataItems.AppendLine("  OR");
-            }
-
-            sqlStatementForDataItems.Remove(sqlStatementForDataItems.Length - 6, 6);
-            sqlStatementForDataItems.AppendLine();
-            sqlStatementForDataItems.AppendLine("  )");
-            sqlStatementForDataItems.AppendLine("ORDER BY main.column_id");
-
-            if (isJson)
-            {
-                sqlStatementForDataItems.AppendLine("FOR JSON PATH");
+                richTextBoxInformation.Text += @"An exception has occurred while determining the connection type. The connection does not have a valid connection type (0, catalog or 1, custom).";
             }
 
             return sqlStatementForDataItems.ToString();
@@ -3187,7 +3221,7 @@ namespace TEAM
             foreach (var item in checkedListBoxReverseEngineeringAreas.CheckedItems)
             {
                 var localConnectionObject = (KeyValuePair<TeamConnection, string>)item;
-                resultQueryList.Add(SqlStatementForDataItems(localConnectionObject.Key.DatabaseServer.DatabaseName, GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), true));
+                resultQueryList.Add(SqlStatementForDataItems(GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), localConnectionObject.Key, true));
             }
 
             foreach (var query in resultQueryList)
@@ -3208,8 +3242,7 @@ namespace TEAM
             {
                 var localConnectionObject = (KeyValuePair<TeamConnection, string>)checkedItem;
 
-                var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.Key.CreateSqlServerConnectionString(false) };
-                var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.DatabaseServer.DatabaseName, GetFilteredDataObjectMappingDataTableRows());
+                var reverseEngineerResults = ReverseEngineerModelMetadata(localConnectionObject.Key, GetFilteredDataObjectMappingDataTableRows());
 
                 if (reverseEngineerResults != null)
                 {
@@ -3232,22 +3265,35 @@ namespace TEAM
             //DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
 
             // Deduplication.
-            var distinctTable = completeDataTable.AsEnumerable()
-                .GroupBy(row => new
-                {
-                    databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.Database_Name.ToString()),
-                    schemaName = row.Field<string>(PhysicalModelMappingMetadataColumns.Schema_Name.ToString()),
-                    tableName = row.Field<string>(PhysicalModelMappingMetadataColumns.Table_Name.ToString()),
-                    columnName = row.Field<string>(PhysicalModelMappingMetadataColumns.Column_Name.ToString()),
-                })
-                .Select(y => y.First())
-                .CopyToDataTable();
+            
+            DataTable distinctTable = null;
+
+            if (completeDataTable != null && completeDataTable.Rows.Count > 0)
+            {
+                distinctTable = completeDataTable.AsEnumerable()
+                    .GroupBy(row => new
+                    {
+                        databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.Database_Name.ToString()),
+                        schemaName = row.Field<string>(PhysicalModelMappingMetadataColumns.Schema_Name.ToString()),
+                        tableName = row.Field<string>(PhysicalModelMappingMetadataColumns.Table_Name.ToString()),
+                        columnName = row.Field<string>(PhysicalModelMappingMetadataColumns.Column_Name.ToString()),
+                    })
+                    .Select(y => y.First())
+                    .CopyToDataTable();
+            }
 
             ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Deduplication completed completed at {DateTime.Now:HH:mm:ss tt}.");
 
             // Sort and display the results on the data grid.
-            distinctTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
-            _dataGridViewPhysicalModel.Invoke((Action)(() => _dataGridViewPhysicalModel.DataSource = distinctTable));
+            if (distinctTable != null)
+            {
+                distinctTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+                _dataGridViewPhysicalModel.Invoke((Action)(() => _dataGridViewPhysicalModel.DataSource = distinctTable));
+            }
+            else
+            {
+                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n There was nothing to process, and nothing to show.");
+            }
         }
 
         private void backgroundWorkerReverseEngineering_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -3264,6 +3310,9 @@ namespace TEAM
             {
                 labelResult.Text = @"Done!";
                 richTextBoxInformation.Text += "\r\nThe physical model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
+
+                // Re-enable the checked list box.
+                checkedListBoxReverseEngineeringAreas.Enabled = true;
 
                 // Resize the grid
                 ApplyDataGridViewFiltering();
@@ -3317,6 +3366,14 @@ namespace TEAM
                 inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
 
                 ApplyDataGridViewFiltering();
+            }
+        }
+
+        private void checkedListBoxReverseEngineeringAreas_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (backgroundWorkerReverseEngineering.IsBusy)
+            {
+                MessageBox.Show(@"The reverse engineer process is running, please wait for this to be completed before changing any settings.", @"Process is running", MessageBoxButtons.OK);
             }
         }
     }
