@@ -10,6 +10,8 @@ namespace TEAM_Library
         public string MetadataPath { get; set; } = Application.StartupPath + @"\" + @"Metadata\";
         public string CorePath { get; } = Application.StartupPath + @"\" + @"Core\";
 
+        public string SchemaPath { get; } = Application.StartupPath + @"\" + @"Schema\";
+
         public string BackupPath { get; } = Application.StartupPath + @"\" + @"Backup\";
         public string ScriptPath { get; set; } = Application.StartupPath + @"\" + @"Scripts\";
         public string FilesPath { get; set; } = Application.StartupPath + @"\" + @"Files\";

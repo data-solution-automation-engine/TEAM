@@ -28,6 +28,9 @@ namespace TEAM_Library
         /// <returns></returns>
         public static TeamConnection GetTeamConnectionByInternalId(string connectionInternalId, Dictionary<string, TeamConnection> connectionDictionary)
         {
+            if (connectionInternalId == null)
+                return null;
+
             connectionDictionary.TryGetValue(connectionInternalId, out var returnConnectionProfile);
 
             return returnConnectionProfile;

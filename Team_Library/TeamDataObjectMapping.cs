@@ -356,21 +356,27 @@ namespace TEAM_Library
 
             foreach (string connection in sourceConnectionList)
             {
-                var connectionProfile = TeamConfiguration.GetTeamConnectionByInternalId(connection, connectionDictionary);
-
-                if (!connectionList.Contains(connectionProfile))
+                if (connection != null)
                 {
-                    connectionList.Add(connectionProfile);
+                    var connectionProfile = TeamConfiguration.GetTeamConnectionByInternalId(connection, connectionDictionary);
+
+                    if (!connectionList.Contains(connectionProfile))
+                    {
+                        connectionList.Add(connectionProfile);
+                    }
                 }
             }
 
             foreach (string connection in targetConnectionList)
             {
-                var connectionProfile = TeamConfiguration.GetTeamConnectionByInternalId(connection, connectionDictionary);
-
-                if (!connectionList.Contains(connectionProfile))
+                if (connection != null)
                 {
-                    connectionList.Add(connectionProfile);
+                    var connectionProfile = TeamConfiguration.GetTeamConnectionByInternalId(connection, connectionDictionary);
+
+                    if (!connectionList.Contains(connectionProfile))
+                    {
+                        connectionList.Add(connectionProfile);
+                    }
                 }
             }
 
