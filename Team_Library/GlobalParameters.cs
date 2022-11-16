@@ -1,7 +1,8 @@
 ﻿using System.Windows.Forms;
 
 namespace TEAM_Library
-{ public class GlobalParameters
+{ 
+    public class GlobalParameters
     {
         // TEAM core path parameters
         public string RootPath { get; } = Application.StartupPath + @"\";
