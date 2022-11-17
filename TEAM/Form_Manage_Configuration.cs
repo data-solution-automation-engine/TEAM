@@ -492,43 +492,6 @@ namespace TEAM
             }
         }
 
-        private void checkBoxAlternativeRecordSource_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBoxAlternativeRecordSource.Checked)
-            {
-                textBoxAlternativeRecordSource.Enabled = true;
-            }
-            if (!checkBoxAlternativeRecordSource.Checked)
-            {
-                textBoxAlternativeRecordSource.Enabled = false;
-            }
-        }
-
-        private void checkBoxAlternativeHubLDTS_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBoxAlternativeHubLDTS.Checked)
-            {
-                textBoxHubAlternativeLDTSAttribute.Enabled = true;
-            }
-            if (!checkBoxAlternativeHubLDTS.Checked)
-            {
-                textBoxHubAlternativeLDTSAttribute.Enabled = false;
-            }
-        }
-
-        private void checkBoxAlternativeSatLDTS_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBoxAlternativeSatLDTS.Checked)
-            {
-                textBoxSatelliteAlternativeLDTSAttribute.Enabled = true;
-            }
-
-            if (!checkBoxAlternativeSatLDTS.Checked)
-            {
-                textBoxSatelliteAlternativeLDTSAttribute.Enabled = false;
-            }
-        }
-
         private void FormManageConfiguration_FormClosed(object sender, FormClosedEventArgs e)
         {
             parentFormMain.RevalidateFlag=true;
@@ -915,6 +878,43 @@ namespace TEAM
             catch (Exception ex)
             {
                 richTextBoxInformation.Text = $@"An error has occurred while attempting to open the metadata directory. The error message is: {ex.Message}";
+            }
+        }
+
+        private void checkBoxAlternativeRecordSource_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxAlternativeRecordSource.Checked)
+            {
+                textBoxAlternativeRecordSource.Enabled = true;
+            }
+            if (!checkBoxAlternativeRecordSource.Checked)
+            {
+                textBoxAlternativeRecordSource.Enabled = false;
+            }
+        }
+
+        private void checkBoxAlternativeHubLDTS_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxAlternativeHubLDTS.Checked)
+            {
+                textBoxHubAlternativeLDTSAttribute.Enabled = true;
+            }
+            if (!checkBoxAlternativeHubLDTS.Checked)
+            {
+                textBoxHubAlternativeLDTSAttribute.Enabled = false;
+            }
+        }
+
+        private void checkBoxAlternativeSatLDTS_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxAlternativeSatLDTS.Checked)
+            {
+                textBoxSatelliteAlternativeLDTSAttribute.Enabled = true;
+            }
+
+            if (!checkBoxAlternativeSatLDTS.Checked)
+            {
+                textBoxSatelliteAlternativeLDTSAttribute.Enabled = false;
             }
         }
     }

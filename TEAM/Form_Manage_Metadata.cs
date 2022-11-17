@@ -100,6 +100,8 @@ namespace TEAM
             _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetConnection].Width = 90;
             _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].Width = 250;
             _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Width = 125;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Width = 50;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].Width = 50;
 
             //_dataGridViewDataObjects.AutoResizeColumns();
             //GridAutoLayout();
@@ -2201,12 +2203,6 @@ namespace TEAM
 
         private string SqlStatementForDataItems(List<DataRow> filterDataObjects, TeamConnection teamConnection, bool isJson = false)
         {
-            // Get everything as local variables to reduce multi-threading issues.
-            var effectiveDateTimeAttribute =
-                TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute == "True"
-                    ? TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute
-                    : TeamConfiguration.LoadDateTimeAttribute;
-
             var dwhKeyIdentifier = TeamConfiguration.KeyIdentifier; //Indicates _HSH, _SK etc.
 
             string databaseColumnName = PhysicalModelMappingMetadataColumns.Database_Name.ToString();
@@ -2295,6 +2291,12 @@ namespace TEAM
                     sqlStatementForDataItems.AppendLine("  AND main.[name] = keysub.COLUMN_NAME");
 
                     //Multi-active
+
+                    var effectiveDateTimeAttribute =
+                        TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute == "True"
+                            ? TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute
+                            : TeamConfiguration.LoadDateTimeAttribute;
+
                     sqlStatementForDataItems.AppendLine("  -- Multi-Active");
                     sqlStatementForDataItems.AppendLine("  LEFT OUTER JOIN (");
                     sqlStatementForDataItems.AppendLine("	 SELECT ");
@@ -2308,7 +2310,6 @@ namespace TEAM
                     sqlStatementForDataItems.AppendLine("	 JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
                     sqlStatementForDataItems.AppendLine("	 WHERE is_primary_key=1");
                     sqlStatementForDataItems.AppendLine("	 AND C.name NOT IN ('" + effectiveDateTimeAttribute + "')");
-
                     sqlStatementForDataItems.AppendLine("	 AND C.name NOT LIKE '" + dwhKeyIdentifier + "%'");
                     sqlStatementForDataItems.AppendLine("	 AND C.name NOT LIKE '%" + dwhKeyIdentifier + "'");
 

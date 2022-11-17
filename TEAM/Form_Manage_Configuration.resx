@@ -187,16 +187,6 @@ E.g. dbo.PSA_EXAMPLE or simply PSA_EXAMPLE will be evaluated as 'Persistent Stag
 
 The idea is that the key (plus an effective date/time stamp) will show the TEAM application what the natural key is, but for this it needs to know which convention is used.</value>
   </data>
-  <data name="textBoxRecordSource.ToolTip" xml:space="preserve">
-    <value>This label captures the attribute name of the Record Source / name.
-
-This is a pointer that can also be set in the data logistics control framework (e.g. DIRECT) but if used as independent attribute the name can be provided here.</value>
-  </data>
-  <data name="textBoxLDST.ToolTip" xml:space="preserve">
-    <value>This label captures the attribute name that represents the Load Date/Time Stamp (LDTS). 
-
-The LDTS captured the moment the data environment receives data, ideally as early as possible in the solution.</value>
-  </data>
   <data name="textBoxSatelliteAlternativeLDTSAttribute.ToolTip" xml:space="preserve">
     <value>In some scenarios, it may be required to provide an name of the load date/time stamp (LDTS) for a Context ('Satellite') type Data Object.
 
@@ -219,6 +209,16 @@ In most use-cases, the same attribute is used in all Data Objects. But this opti
 For example, if string values (full names) are used in the Staging Layer but identifiers are used upstream.
 
 In most use-cases, the same record source is used everywhere but this option is provided just in case.</value>
+  </data>
+  <data name="textBoxRecordSource.ToolTip" xml:space="preserve">
+    <value>This label captures the attribute name of the Record Source / name.
+
+This is a pointer that can also be set in the data logistics control framework (e.g. DIRECT) but if used as independent attribute the name can be provided here.</value>
+  </data>
+  <data name="textBoxLDST.ToolTip" xml:space="preserve">
+    <value>This label captures the attribute name that represents the Load Date/Time Stamp (LDTS). 
+
+The LDTS captured the moment the data environment receives data, ideally as early as possible in the solution.</value>
   </data>
   <data name="textBoxKeyIdentifier.ToolTip" xml:space="preserve">
     <value>This label captures the naming convention for the Data Platform / Data Warehouse key. 

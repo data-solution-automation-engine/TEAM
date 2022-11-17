@@ -79,6 +79,23 @@
             this.radioButtonPSABusinessKeyPK = new System.Windows.Forms.RadioButton();
             this.radioButtonPSABusinessKeyIndex = new System.Windows.Forms.RadioButton();
             this.tabPageDataWarehouse = new System.Windows.Forms.TabPage();
+            this.groupBoxDataVaultSpecific = new System.Windows.Forms.GroupBox();
+            this.textBoxExpiryDateTimeName = new System.Windows.Forms.TextBox();
+            this.textBoxRecordSource = new System.Windows.Forms.TextBox();
+            this.textBoxLDST = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
+            this.groupBoxAlternativeColumns = new System.Windows.Forms.GroupBox();
+            this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
+            this.label36 = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
+            this.checkBoxAlternativeRecordSource = new System.Windows.Forms.CheckBox();
+            this.textBoxSatelliteAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
+            this.label37 = new System.Windows.Forms.Label();
+            this.textBoxHubAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
+            this.checkBoxAlternativeHubLDTS = new System.Windows.Forms.CheckBox();
+            this.textBoxAlternativeRecordSource = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label13 = new System.Windows.Forms.Label();
             this.textBoxKeyIdentifier = new System.Windows.Forms.TextBox();
@@ -117,23 +134,6 @@
             this.tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
             this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
             this.toolTipConfigurationSettings = new System.Windows.Forms.ToolTip(this.components);
-            this.groupBoxDataVaultSpecific = new System.Windows.Forms.GroupBox();
-            this.textBoxExpiryDateTimeName = new System.Windows.Forms.TextBox();
-            this.textBoxRecordSource = new System.Windows.Forms.TextBox();
-            this.textBoxLDST = new System.Windows.Forms.TextBox();
-            this.label18 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label35 = new System.Windows.Forms.Label();
-            this.groupBoxAlternativeColumns = new System.Windows.Forms.GroupBox();
-            this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
-            this.label36 = new System.Windows.Forms.Label();
-            this.label41 = new System.Windows.Forms.Label();
-            this.checkBoxAlternativeRecordSource = new System.Windows.Forms.CheckBox();
-            this.textBoxSatelliteAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
-            this.label37 = new System.Windows.Forms.Label();
-            this.textBoxHubAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
-            this.checkBoxAlternativeHubLDTS = new System.Windows.Forms.CheckBox();
-            this.textBoxAlternativeRecordSource = new System.Windows.Forms.TextBox();
             this.menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPagePaths.SuspendLayout();
@@ -145,6 +145,8 @@
             this.groupBoxPrefixSuffix.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.tabPageDataWarehouse.SuspendLayout();
+            this.groupBoxDataVaultSpecific.SuspendLayout();
+            this.groupBoxAlternativeColumns.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabPageConnections.SuspendLayout();
@@ -154,8 +156,6 @@
             this.tabControlEnvironments.SuspendLayout();
             this.tabPageEnvironmentMain.SuspendLayout();
             this.tabControlDefaultDetails.SuspendLayout();
-            this.groupBoxDataVaultSpecific.SuspendLayout();
-            this.groupBoxAlternativeColumns.SuspendLayout();
             this.SuspendLayout();
             // 
             // richTextBoxInformation
@@ -642,6 +642,191 @@
             this.tabPageDataWarehouse.Text = "Data Warehouse";
             this.tabPageDataWarehouse.UseVisualStyleBackColor = true;
             // 
+            // groupBoxDataVaultSpecific
+            // 
+            this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxExpiryDateTimeName);
+            this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxRecordSource);
+            this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxLDST);
+            this.groupBoxDataVaultSpecific.Controls.Add(this.label18);
+            this.groupBoxDataVaultSpecific.Controls.Add(this.label11);
+            this.groupBoxDataVaultSpecific.Controls.Add(this.label35);
+            this.groupBoxDataVaultSpecific.Location = new System.Drawing.Point(6, 355);
+            this.groupBoxDataVaultSpecific.Name = "groupBoxDataVaultSpecific";
+            this.groupBoxDataVaultSpecific.Size = new System.Drawing.Size(1108, 112);
+            this.groupBoxDataVaultSpecific.TabIndex = 73;
+            this.groupBoxDataVaultSpecific.TabStop = false;
+            this.groupBoxDataVaultSpecific.Text = "Data Vault special columns";
+            // 
+            // textBoxExpiryDateTimeName
+            // 
+            this.textBoxExpiryDateTimeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxExpiryDateTimeName.Location = new System.Drawing.Point(234, 49);
+            this.textBoxExpiryDateTimeName.Name = "textBoxExpiryDateTimeName";
+            this.textBoxExpiryDateTimeName.Size = new System.Drawing.Size(421, 20);
+            this.textBoxExpiryDateTimeName.TabIndex = 5;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxExpiryDateTimeName, "This attribute label captures the name of the expiry date/time attribute, if used" +
+        ". \r\n\r\nIn most deployments a technical expiry/end date is superfluous but if used" +
+        " it can be set here.");
+            // 
+            // textBoxRecordSource
+            // 
+            this.textBoxRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxRecordSource.Location = new System.Drawing.Point(234, 75);
+            this.textBoxRecordSource.Name = "textBoxRecordSource";
+            this.textBoxRecordSource.Size = new System.Drawing.Size(421, 20);
+            this.textBoxRecordSource.TabIndex = 6;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxRecordSource, resources.GetString("textBoxRecordSource.ToolTip"));
+            // 
+            // textBoxLDST
+            // 
+            this.textBoxLDST.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxLDST.Location = new System.Drawing.Point(234, 23);
+            this.textBoxLDST.Name = "textBoxLDST";
+            this.textBoxLDST.Size = new System.Drawing.Size(421, 20);
+            this.textBoxLDST.TabIndex = 4;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLDST, resources.GetString("textBoxLDST.ToolTip"));
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(6, 26);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(225, 13);
+            this.label18.TabIndex = 53;
+            this.label18.Text = "Load Date/Time Stamp (LDTS) attribute name";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 78);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(149, 13);
+            this.label11.TabIndex = 55;
+            this.label11.Text = "Record Source attribute name";
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(6, 52);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(159, 13);
+            this.label35.TabIndex = 57;
+            this.label35.Text = "Expiry Date/Time attribute name";
+            // 
+            // groupBoxAlternativeColumns
+            // 
+            this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeSatLDTS);
+            this.groupBoxAlternativeColumns.Controls.Add(this.label36);
+            this.groupBoxAlternativeColumns.Controls.Add(this.label41);
+            this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeRecordSource);
+            this.groupBoxAlternativeColumns.Controls.Add(this.textBoxSatelliteAlternativeLDTSAttribute);
+            this.groupBoxAlternativeColumns.Controls.Add(this.label37);
+            this.groupBoxAlternativeColumns.Controls.Add(this.textBoxHubAlternativeLDTSAttribute);
+            this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeHubLDTS);
+            this.groupBoxAlternativeColumns.Controls.Add(this.textBoxAlternativeRecordSource);
+            this.groupBoxAlternativeColumns.Location = new System.Drawing.Point(6, 473);
+            this.groupBoxAlternativeColumns.Name = "groupBoxAlternativeColumns";
+            this.groupBoxAlternativeColumns.Size = new System.Drawing.Size(1108, 113);
+            this.groupBoxAlternativeColumns.TabIndex = 72;
+            this.groupBoxAlternativeColumns.TabStop = false;
+            this.groupBoxAlternativeColumns.Text = "Data Vault alternative columns";
+            this.toolTipConfigurationSettings.SetToolTip(this.groupBoxAlternativeColumns, "In some models you may want to use specific alternative names depending on the en" +
+        "tity type. \r\nIf diabled the default conventions as entered in the above fields w" +
+        "ill be used.");
+            // 
+            // checkBoxAlternativeSatLDTS
+            // 
+            this.checkBoxAlternativeSatLDTS.AutoSize = true;
+            this.checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(664, 77);
+            this.checkBoxAlternativeSatLDTS.Name = "checkBoxAlternativeSatLDTS";
+            this.checkBoxAlternativeSatLDTS.Size = new System.Drawing.Size(59, 17);
+            this.checkBoxAlternativeSatLDTS.TabIndex = 12;
+            this.checkBoxAlternativeSatLDTS.Text = "Enable";
+            this.checkBoxAlternativeSatLDTS.UseVisualStyleBackColor = true;
+            this.checkBoxAlternativeSatLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeSatLDTS_CheckedChanged);
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(6, 26);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(187, 13);
+            this.label36.TabIndex = 59;
+            this.label36.Text = "Alternative Record Source ID or name";
+            this.toolTipConfigurationSettings.SetToolTip(this.label36, "In some scenarios, it may be required to provide an alternative record source fie" +
+        "ld or identifier.");
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(6, 78);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(197, 13);
+            this.label41.TabIndex = 69;
+            this.label41.Text = "Alternative Context LDTS attribute name";
+            this.toolTipConfigurationSettings.SetToolTip(this.label41, "In some scenarios, it may be required to provide an name of the load date/time st" +
+        "amp (LDTS) for a Context (\'Satellite\') type Data Object.");
+            // 
+            // checkBoxAlternativeRecordSource
+            // 
+            this.checkBoxAlternativeRecordSource.AutoSize = true;
+            this.checkBoxAlternativeRecordSource.Location = new System.Drawing.Point(664, 25);
+            this.checkBoxAlternativeRecordSource.Name = "checkBoxAlternativeRecordSource";
+            this.checkBoxAlternativeRecordSource.Size = new System.Drawing.Size(59, 17);
+            this.checkBoxAlternativeRecordSource.TabIndex = 8;
+            this.checkBoxAlternativeRecordSource.Text = "Enable";
+            this.checkBoxAlternativeRecordSource.UseVisualStyleBackColor = true;
+            this.checkBoxAlternativeRecordSource.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeRecordSource_CheckedChanged);
+            // 
+            // textBoxSatelliteAlternativeLDTSAttribute
+            // 
+            this.textBoxSatelliteAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxSatelliteAlternativeLDTSAttribute.Location = new System.Drawing.Point(235, 75);
+            this.textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
+            this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(420, 20);
+            this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 11;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSatelliteAlternativeLDTSAttribute, resources.GetString("textBoxSatelliteAlternativeLDTSAttribute.ToolTip"));
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(6, 52);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(182, 13);
+            this.label37.TabIndex = 62;
+            this.label37.Text = "Alternative CBC LDTS attribute name";
+            this.toolTipConfigurationSettings.SetToolTip(this.label37, "In some scenarios, it may be required to provide an name of the load date/time st" +
+        "amp (LDTS) for a Core Business Concept (CBC) type Data Object.");
+            // 
+            // textBoxHubAlternativeLDTSAttribute
+            // 
+            this.textBoxHubAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxHubAlternativeLDTSAttribute.Location = new System.Drawing.Point(235, 49);
+            this.textBoxHubAlternativeLDTSAttribute.Name = "textBoxHubAlternativeLDTSAttribute";
+            this.textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(420, 20);
+            this.textBoxHubAlternativeLDTSAttribute.TabIndex = 9;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxHubAlternativeLDTSAttribute, resources.GetString("textBoxHubAlternativeLDTSAttribute.ToolTip"));
+            // 
+            // checkBoxAlternativeHubLDTS
+            // 
+            this.checkBoxAlternativeHubLDTS.AutoSize = true;
+            this.checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(664, 51);
+            this.checkBoxAlternativeHubLDTS.Name = "checkBoxAlternativeHubLDTS";
+            this.checkBoxAlternativeHubLDTS.Size = new System.Drawing.Size(59, 17);
+            this.checkBoxAlternativeHubLDTS.TabIndex = 10;
+            this.checkBoxAlternativeHubLDTS.Text = "Enable";
+            this.checkBoxAlternativeHubLDTS.UseVisualStyleBackColor = true;
+            this.checkBoxAlternativeHubLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeHubLDTS_CheckedChanged);
+            // 
+            // textBoxAlternativeRecordSource
+            // 
+            this.textBoxAlternativeRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxAlternativeRecordSource.Location = new System.Drawing.Point(235, 23);
+            this.textBoxAlternativeRecordSource.Name = "textBoxAlternativeRecordSource";
+            this.textBoxAlternativeRecordSource.Size = new System.Drawing.Size(420, 20);
+            this.textBoxAlternativeRecordSource.TabIndex = 7;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxAlternativeRecordSource, resources.GetString("textBoxAlternativeRecordSource.ToolTip"));
+            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.label13);
@@ -1042,188 +1227,6 @@
             this.toolTipConfigurationSettings.InitialDelay = 300;
             this.toolTipConfigurationSettings.ReshowDelay = 100;
             // 
-            // groupBoxDataVaultSpecific
-            // 
-            this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxExpiryDateTimeName);
-            this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxRecordSource);
-            this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxLDST);
-            this.groupBoxDataVaultSpecific.Controls.Add(this.label18);
-            this.groupBoxDataVaultSpecific.Controls.Add(this.label11);
-            this.groupBoxDataVaultSpecific.Controls.Add(this.label35);
-            this.groupBoxDataVaultSpecific.Location = new System.Drawing.Point(6, 355);
-            this.groupBoxDataVaultSpecific.Name = "groupBoxDataVaultSpecific";
-            this.groupBoxDataVaultSpecific.Size = new System.Drawing.Size(1108, 112);
-            this.groupBoxDataVaultSpecific.TabIndex = 73;
-            this.groupBoxDataVaultSpecific.TabStop = false;
-            this.groupBoxDataVaultSpecific.Text = "Data Vault special columns";
-            // 
-            // textBoxExpiryDateTimeName
-            // 
-            this.textBoxExpiryDateTimeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxExpiryDateTimeName.Location = new System.Drawing.Point(234, 49);
-            this.textBoxExpiryDateTimeName.Name = "textBoxExpiryDateTimeName";
-            this.textBoxExpiryDateTimeName.Size = new System.Drawing.Size(421, 20);
-            this.textBoxExpiryDateTimeName.TabIndex = 5;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxExpiryDateTimeName, "This attribute label captures the name of the expiry date/time attribute, if used" +
-        ". \r\n\r\nIn most deployments a technical expiry/end date is superfluous but if used" +
-        " it can be set here.");
-            // 
-            // textBoxRecordSource
-            // 
-            this.textBoxRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxRecordSource.Location = new System.Drawing.Point(234, 75);
-            this.textBoxRecordSource.Name = "textBoxRecordSource";
-            this.textBoxRecordSource.Size = new System.Drawing.Size(421, 20);
-            this.textBoxRecordSource.TabIndex = 6;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxRecordSource, resources.GetString("textBoxRecordSource.ToolTip"));
-            // 
-            // textBoxLDST
-            // 
-            this.textBoxLDST.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxLDST.Location = new System.Drawing.Point(234, 23);
-            this.textBoxLDST.Name = "textBoxLDST";
-            this.textBoxLDST.Size = new System.Drawing.Size(421, 20);
-            this.textBoxLDST.TabIndex = 4;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLDST, resources.GetString("textBoxLDST.ToolTip"));
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(6, 26);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(225, 13);
-            this.label18.TabIndex = 53;
-            this.label18.Text = "Load Date/Time Stamp (LDTS) attribute name";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 78);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(149, 13);
-            this.label11.TabIndex = 55;
-            this.label11.Text = "Record Source attribute name";
-            // 
-            // label35
-            // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(6, 52);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(159, 13);
-            this.label35.TabIndex = 57;
-            this.label35.Text = "Expiry Date/Time attribute name";
-            // 
-            // groupBoxAlternativeColumns
-            // 
-            this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeSatLDTS);
-            this.groupBoxAlternativeColumns.Controls.Add(this.label36);
-            this.groupBoxAlternativeColumns.Controls.Add(this.label41);
-            this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeRecordSource);
-            this.groupBoxAlternativeColumns.Controls.Add(this.textBoxSatelliteAlternativeLDTSAttribute);
-            this.groupBoxAlternativeColumns.Controls.Add(this.label37);
-            this.groupBoxAlternativeColumns.Controls.Add(this.textBoxHubAlternativeLDTSAttribute);
-            this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeHubLDTS);
-            this.groupBoxAlternativeColumns.Controls.Add(this.textBoxAlternativeRecordSource);
-            this.groupBoxAlternativeColumns.Location = new System.Drawing.Point(6, 473);
-            this.groupBoxAlternativeColumns.Name = "groupBoxAlternativeColumns";
-            this.groupBoxAlternativeColumns.Size = new System.Drawing.Size(1108, 113);
-            this.groupBoxAlternativeColumns.TabIndex = 72;
-            this.groupBoxAlternativeColumns.TabStop = false;
-            this.groupBoxAlternativeColumns.Text = "Data Vault alternative columns";
-            this.toolTipConfigurationSettings.SetToolTip(this.groupBoxAlternativeColumns, "In some models you may want to use specific alternative names depending on the en" +
-        "tity type. \r\nIf diabled the default conventions as entered in the above fields w" +
-        "ill be used.");
-            // 
-            // checkBoxAlternativeSatLDTS
-            // 
-            this.checkBoxAlternativeSatLDTS.AutoSize = true;
-            this.checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(664, 77);
-            this.checkBoxAlternativeSatLDTS.Name = "checkBoxAlternativeSatLDTS";
-            this.checkBoxAlternativeSatLDTS.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeSatLDTS.TabIndex = 12;
-            this.checkBoxAlternativeSatLDTS.Text = "Enable";
-            this.checkBoxAlternativeSatLDTS.UseVisualStyleBackColor = true;
-            // 
-            // label36
-            // 
-            this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(6, 26);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(187, 13);
-            this.label36.TabIndex = 59;
-            this.label36.Text = "Alternative Record Source ID or name";
-            this.toolTipConfigurationSettings.SetToolTip(this.label36, "In some scenarios, it may be required to provide an alternative record source fie" +
-        "ld or identifier.");
-            // 
-            // label41
-            // 
-            this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(6, 78);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(197, 13);
-            this.label41.TabIndex = 69;
-            this.label41.Text = "Alternative Context LDTS attribute name";
-            this.toolTipConfigurationSettings.SetToolTip(this.label41, "In some scenarios, it may be required to provide an name of the load date/time st" +
-        "amp (LDTS) for a Context (\'Satellite\') type Data Object.");
-            // 
-            // checkBoxAlternativeRecordSource
-            // 
-            this.checkBoxAlternativeRecordSource.AutoSize = true;
-            this.checkBoxAlternativeRecordSource.Location = new System.Drawing.Point(664, 25);
-            this.checkBoxAlternativeRecordSource.Name = "checkBoxAlternativeRecordSource";
-            this.checkBoxAlternativeRecordSource.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeRecordSource.TabIndex = 8;
-            this.checkBoxAlternativeRecordSource.Text = "Enable";
-            this.checkBoxAlternativeRecordSource.UseVisualStyleBackColor = true;
-            // 
-            // textBoxSatelliteAlternativeLDTSAttribute
-            // 
-            this.textBoxSatelliteAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxSatelliteAlternativeLDTSAttribute.Location = new System.Drawing.Point(235, 75);
-            this.textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
-            this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(420, 20);
-            this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 11;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSatelliteAlternativeLDTSAttribute, resources.GetString("textBoxSatelliteAlternativeLDTSAttribute.ToolTip"));
-            // 
-            // label37
-            // 
-            this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(6, 52);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(182, 13);
-            this.label37.TabIndex = 62;
-            this.label37.Text = "Alternative CBC LDTS attribute name";
-            this.toolTipConfigurationSettings.SetToolTip(this.label37, "In some scenarios, it may be required to provide an name of the load date/time st" +
-        "amp (LDTS) for a Core Business Concept (CBC) type Data Object.");
-            // 
-            // textBoxHubAlternativeLDTSAttribute
-            // 
-            this.textBoxHubAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxHubAlternativeLDTSAttribute.Location = new System.Drawing.Point(235, 49);
-            this.textBoxHubAlternativeLDTSAttribute.Name = "textBoxHubAlternativeLDTSAttribute";
-            this.textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(420, 20);
-            this.textBoxHubAlternativeLDTSAttribute.TabIndex = 9;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxHubAlternativeLDTSAttribute, resources.GetString("textBoxHubAlternativeLDTSAttribute.ToolTip"));
-            // 
-            // checkBoxAlternativeHubLDTS
-            // 
-            this.checkBoxAlternativeHubLDTS.AutoSize = true;
-            this.checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(664, 51);
-            this.checkBoxAlternativeHubLDTS.Name = "checkBoxAlternativeHubLDTS";
-            this.checkBoxAlternativeHubLDTS.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeHubLDTS.TabIndex = 10;
-            this.checkBoxAlternativeHubLDTS.Text = "Enable";
-            this.checkBoxAlternativeHubLDTS.UseVisualStyleBackColor = true;
-            // 
-            // textBoxAlternativeRecordSource
-            // 
-            this.textBoxAlternativeRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxAlternativeRecordSource.Location = new System.Drawing.Point(235, 23);
-            this.textBoxAlternativeRecordSource.Name = "textBoxAlternativeRecordSource";
-            this.textBoxAlternativeRecordSource.Size = new System.Drawing.Size(420, 20);
-            this.textBoxAlternativeRecordSource.TabIndex = 7;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxAlternativeRecordSource, resources.GetString("textBoxAlternativeRecordSource.ToolTip"));
-            // 
             // FormManageConfiguration
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1259,6 +1262,10 @@
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
             this.tabPageDataWarehouse.ResumeLayout(false);
+            this.groupBoxDataVaultSpecific.ResumeLayout(false);
+            this.groupBoxDataVaultSpecific.PerformLayout();
+            this.groupBoxAlternativeColumns.ResumeLayout(false);
+            this.groupBoxAlternativeColumns.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -1272,10 +1279,6 @@
             this.tabPageEnvironmentMain.ResumeLayout(false);
             this.tabPageEnvironmentMain.PerformLayout();
             this.tabControlDefaultDetails.ResumeLayout(false);
-            this.groupBoxDataVaultSpecific.ResumeLayout(false);
-            this.groupBoxDataVaultSpecific.PerformLayout();
-            this.groupBoxAlternativeColumns.ResumeLayout(false);
-            this.groupBoxAlternativeColumns.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
