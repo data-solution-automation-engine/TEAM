@@ -53,7 +53,16 @@
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxConfigurationPath = new System.Windows.Forms.TextBox();
             this.label45 = new System.Windows.Forms.Label();
-            this.tabPagePrefixesSuffixex = new System.Windows.Forms.TabPage();
+            this.tabPageDataObjectTypes = new System.Windows.Forms.TabPage();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.textBoxHubTablePrefix = new System.Windows.Forms.TextBox();
+            this.textBoxSatPrefix = new System.Windows.Forms.TextBox();
+            this.textBoxLinkTablePrefix = new System.Windows.Forms.TextBox();
+            this.textBoxLinkSatPrefix = new System.Windows.Forms.TextBox();
             this.groupBoxDataObjectIdentification = new System.Windows.Forms.GroupBox();
             this.labelPresentationLayerLabels = new System.Windows.Forms.Label();
             this.labelStagingAreaLabel = new System.Windows.Forms.Label();
@@ -64,60 +73,51 @@
             this.labelPSAlabel = new System.Windows.Forms.Label();
             this.textBoxPresentationLayerLabels = new System.Windows.Forms.TextBox();
             this.groupBoxPrefixSuffix = new System.Windows.Forms.GroupBox();
-            this.grpTableName = new System.Windows.Forms.GroupBox();
             this.tableSuffixRadiobutton = new System.Windows.Forms.RadioButton();
             this.tablePrefixRadiobutton = new System.Windows.Forms.RadioButton();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.keySuffixRadiobutton = new System.Windows.Forms.RadioButton();
-            this.keyPrefixRadiobutton = new System.Windows.Forms.RadioButton();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.radioButtonPSABusinessKeyPK = new System.Windows.Forms.RadioButton();
             this.radioButtonPSABusinessKeyIndex = new System.Windows.Forms.RadioButton();
-            this.tabPageETLFrameworkSpecific = new System.Windows.Forms.TabPage();
-            this.label46 = new System.Windows.Forms.Label();
-            this.textBoxLogicalDeleteAttributeName = new System.Windows.Forms.TextBox();
-            this.textBoxETLUpdateProcessID = new System.Windows.Forms.TextBox();
-            this.textBoxCurrentRecordAttributeName = new System.Windows.Forms.TextBox();
-            this.textBoxRecordChecksum = new System.Windows.Forms.TextBox();
-            this.textBoxSourceRowId = new System.Windows.Forms.TextBox();
-            this.textBoxEventDateTime = new System.Windows.Forms.TextBox();
-            this.textBoxETLProcessID = new System.Windows.Forms.TextBox();
-            this.textBoxChangeDataCaptureIndicator = new System.Windows.Forms.TextBox();
-            this.textBoxDWHKeyIdentifier = new System.Windows.Forms.TextBox();
-            this.label43 = new System.Windows.Forms.Label();
-            this.label42 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.tabPageIntegrationLayerSpecific = new System.Windows.Forms.TabPage();
-            this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
-            this.label41 = new System.Windows.Forms.Label();
-            this.textBoxSatelliteAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
-            this.textBoxHubAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
-            this.textBoxAlternativeRecordSource = new System.Windows.Forms.TextBox();
+            this.tabPageDataWarehouse = new System.Windows.Forms.TabPage();
+            this.groupBoxDataVaultSpecific = new System.Windows.Forms.GroupBox();
             this.textBoxExpiryDateTimeName = new System.Windows.Forms.TextBox();
             this.textBoxRecordSource = new System.Windows.Forms.TextBox();
             this.textBoxLDST = new System.Windows.Forms.TextBox();
-            this.textBoxHubTablePrefix = new System.Windows.Forms.TextBox();
-            this.textBoxSatPrefix = new System.Windows.Forms.TextBox();
-            this.textBoxLinkTablePrefix = new System.Windows.Forms.TextBox();
-            this.textBoxLinkSatPrefix = new System.Windows.Forms.TextBox();
-            this.label39 = new System.Windows.Forms.Label();
-            this.label38 = new System.Windows.Forms.Label();
-            this.checkBoxAlternativeHubLDTS = new System.Windows.Forms.CheckBox();
-            this.label37 = new System.Windows.Forms.Label();
-            this.checkBoxAlternativeRecordSource = new System.Windows.Forms.CheckBox();
-            this.label36 = new System.Windows.Forms.Label();
-            this.label35 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
+            this.groupBoxAlternativeColumns = new System.Windows.Forms.GroupBox();
+            this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
+            this.label36 = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
+            this.checkBoxAlternativeRecordSource = new System.Windows.Forms.CheckBox();
+            this.textBoxSatelliteAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
+            this.label37 = new System.Windows.Forms.Label();
+            this.textBoxHubAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
+            this.checkBoxAlternativeHubLDTS = new System.Windows.Forms.CheckBox();
+            this.textBoxAlternativeRecordSource = new System.Windows.Forms.TextBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.textBoxKeyIdentifier = new System.Windows.Forms.TextBox();
+            this.textBoxKeyPattern = new System.Windows.Forms.TextBox();
+            this.labelSurrogateKeyPattern = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.label46 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.textBoxLogicalDeleteAttributeName = new System.Windows.Forms.TextBox();
+            this.label32 = new System.Windows.Forms.Label();
+            this.textBoxETLUpdateProcessID = new System.Windows.Forms.TextBox();
+            this.label42 = new System.Windows.Forms.Label();
+            this.textBoxCurrentRecordAttributeName = new System.Windows.Forms.TextBox();
+            this.label43 = new System.Windows.Forms.Label();
+            this.textBoxRecordChecksum = new System.Windows.Forms.TextBox();
+            this.textBoxChangeDataCaptureIndicator = new System.Windows.Forms.TextBox();
+            this.textBoxSourceRowId = new System.Windows.Forms.TextBox();
+            this.textBoxETLProcessID = new System.Windows.Forms.TextBox();
+            this.textBoxEventDateTime = new System.Windows.Forms.TextBox();
             this.tabPageConnections = new System.Windows.Forms.TabPage();
             this.tabControlConnections = new System.Windows.Forms.TabControl();
             this.tabPageConnectionMain = new System.Windows.Forms.TabPage();
@@ -139,14 +139,16 @@
             this.tabPagePaths.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
-            this.tabPagePrefixesSuffixex.SuspendLayout();
+            this.tabPageDataObjectTypes.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.groupBoxDataObjectIdentification.SuspendLayout();
             this.groupBoxPrefixSuffix.SuspendLayout();
-            this.grpTableName.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.groupBox8.SuspendLayout();
-            this.tabPageETLFrameworkSpecific.SuspendLayout();
-            this.tabPageIntegrationLayerSpecific.SuspendLayout();
+            this.tabPageDataWarehouse.SuspendLayout();
+            this.groupBoxDataVaultSpecific.SuspendLayout();
+            this.groupBoxAlternativeColumns.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.tabPageConnections.SuspendLayout();
             this.tabControlConnections.SuspendLayout();
             this.tabPageConnectionMain.SuspendLayout();
@@ -369,18 +371,108 @@
             this.label45.TabIndex = 72;
             this.label45.Text = "Paths and connections used for debugging and automation.\r\n";
             // 
-            // tabPagePrefixesSuffixex
+            // tabPageDataObjectTypes
             // 
-            this.tabPagePrefixesSuffixex.Controls.Add(this.groupBoxDataObjectIdentification);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.groupBoxPrefixSuffix);
-            this.tabPagePrefixesSuffixex.Controls.Add(this.groupBox8);
-            this.tabPagePrefixesSuffixex.Location = new System.Drawing.Point(4, 22);
-            this.tabPagePrefixesSuffixex.Name = "tabPagePrefixesSuffixex";
-            this.tabPagePrefixesSuffixex.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPagePrefixesSuffixex.Size = new System.Drawing.Size(1120, 621);
-            this.tabPagePrefixesSuffixex.TabIndex = 2;
-            this.tabPagePrefixesSuffixex.Text = "Prefixes & Suffixes";
-            this.tabPagePrefixesSuffixex.UseVisualStyleBackColor = true;
+            this.tabPageDataObjectTypes.Controls.Add(this.groupBox4);
+            this.tabPageDataObjectTypes.Controls.Add(this.groupBoxDataObjectIdentification);
+            this.tabPageDataObjectTypes.Controls.Add(this.groupBoxPrefixSuffix);
+            this.tabPageDataObjectTypes.Controls.Add(this.groupBox8);
+            this.tabPageDataObjectTypes.Location = new System.Drawing.Point(4, 22);
+            this.tabPageDataObjectTypes.Name = "tabPageDataObjectTypes";
+            this.tabPageDataObjectTypes.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageDataObjectTypes.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageDataObjectTypes.TabIndex = 2;
+            this.tabPageDataObjectTypes.Text = "Data Object Types";
+            this.tabPageDataObjectTypes.UseVisualStyleBackColor = true;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label17);
+            this.groupBox4.Controls.Add(this.label15);
+            this.groupBox4.Controls.Add(this.label16);
+            this.groupBox4.Controls.Add(this.label14);
+            this.groupBox4.Controls.Add(this.textBoxHubTablePrefix);
+            this.groupBox4.Controls.Add(this.textBoxSatPrefix);
+            this.groupBox4.Controls.Add(this.textBoxLinkTablePrefix);
+            this.groupBox4.Controls.Add(this.textBoxLinkSatPrefix);
+            this.groupBox4.Location = new System.Drawing.Point(3, 143);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(560, 133);
+            this.groupBox4.TabIndex = 82;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Identification of data objects - Data Vault specific";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 26);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(147, 13);
+            this.label17.TabIndex = 31;
+            this.label17.Text = "Core Business Concept (CBC)";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(6, 78);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(147, 13);
+            this.label15.TabIndex = 33;
+            this.label15.Text = "Natural Business Relationship";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(6, 52);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(69, 13);
+            this.label16.TabIndex = 32;
+            this.label16.Text = "Context table";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(6, 104);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(130, 13);
+            this.label14.TabIndex = 34;
+            this.label14.Text = "Relationship Context table";
+            // 
+            // textBoxHubTablePrefix
+            // 
+            this.textBoxHubTablePrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxHubTablePrefix.Location = new System.Drawing.Point(234, 23);
+            this.textBoxHubTablePrefix.Name = "textBoxHubTablePrefix";
+            this.textBoxHubTablePrefix.Size = new System.Drawing.Size(314, 20);
+            this.textBoxHubTablePrefix.TabIndex = 27;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxHubTablePrefix, resources.GetString("textBoxHubTablePrefix.ToolTip"));
+            // 
+            // textBoxSatPrefix
+            // 
+            this.textBoxSatPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxSatPrefix.Location = new System.Drawing.Point(234, 49);
+            this.textBoxSatPrefix.Name = "textBoxSatPrefix";
+            this.textBoxSatPrefix.Size = new System.Drawing.Size(314, 20);
+            this.textBoxSatPrefix.TabIndex = 28;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSatPrefix, resources.GetString("textBoxSatPrefix.ToolTip"));
+            // 
+            // textBoxLinkTablePrefix
+            // 
+            this.textBoxLinkTablePrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxLinkTablePrefix.Location = new System.Drawing.Point(234, 75);
+            this.textBoxLinkTablePrefix.Name = "textBoxLinkTablePrefix";
+            this.textBoxLinkTablePrefix.Size = new System.Drawing.Size(314, 20);
+            this.textBoxLinkTablePrefix.TabIndex = 29;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLinkTablePrefix, resources.GetString("textBoxLinkTablePrefix.ToolTip"));
+            // 
+            // textBoxLinkSatPrefix
+            // 
+            this.textBoxLinkSatPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxLinkSatPrefix.Location = new System.Drawing.Point(234, 101);
+            this.textBoxLinkSatPrefix.Name = "textBoxLinkSatPrefix";
+            this.textBoxLinkSatPrefix.Size = new System.Drawing.Size(314, 20);
+            this.textBoxLinkSatPrefix.TabIndex = 30;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLinkSatPrefix, resources.GetString("textBoxLinkSatPrefix.ToolTip"));
             // 
             // groupBoxDataObjectIdentification
             // 
@@ -397,34 +489,34 @@
             this.groupBoxDataObjectIdentification.Size = new System.Drawing.Size(557, 131);
             this.groupBoxDataObjectIdentification.TabIndex = 81;
             this.groupBoxDataObjectIdentification.TabStop = false;
-            this.groupBoxDataObjectIdentification.Text = "Identification of the data objects";
+            this.groupBoxDataObjectIdentification.Text = "Identification of data objects";
             // 
             // labelPresentationLayerLabels
             // 
             this.labelPresentationLayerLabels.AutoSize = true;
             this.labelPresentationLayerLabels.Location = new System.Drawing.Point(6, 100);
             this.labelPresentationLayerLabels.Name = "labelPresentationLayerLabels";
-            this.labelPresentationLayerLabels.Size = new System.Drawing.Size(125, 13);
+            this.labelPresentationLayerLabels.Size = new System.Drawing.Size(95, 13);
             this.labelPresentationLayerLabels.TabIndex = 77;
-            this.labelPresentationLayerLabels.Text = "Presentation Layer labels";
+            this.labelPresentationLayerLabels.Text = "Presentation Layer";
             // 
             // labelStagingAreaLabel
             // 
             this.labelStagingAreaLabel.AutoSize = true;
             this.labelStagingAreaLabel.Location = new System.Drawing.Point(5, 22);
             this.labelStagingAreaLabel.Name = "labelStagingAreaLabel";
-            this.labelStagingAreaLabel.Size = new System.Drawing.Size(142, 13);
+            this.labelStagingAreaLabel.Size = new System.Drawing.Size(117, 13);
             this.labelStagingAreaLabel.TabIndex = 69;
-            this.labelStagingAreaLabel.Text = "Staging / Landing Area label";
+            this.labelStagingAreaLabel.Text = "Staging / Landing Area";
             // 
             // labelTranformationObjectLabel
             // 
             this.labelTranformationObjectLabel.AutoSize = true;
             this.labelTranformationObjectLabel.Location = new System.Drawing.Point(6, 74);
             this.labelTranformationObjectLabel.Name = "labelTranformationObjectLabel";
-            this.labelTranformationObjectLabel.Size = new System.Drawing.Size(191, 13);
+            this.labelTranformationObjectLabel.Size = new System.Drawing.Size(161, 13);
             this.labelTranformationObjectLabel.TabIndex = 79;
-            this.labelTranformationObjectLabel.Text = "Transformation object labels (e.g. BDV)";
+            this.labelTranformationObjectLabel.Text = "Transformation object (e.g. BDV)";
             // 
             // textBoxStagingAreaPrefix
             // 
@@ -459,9 +551,9 @@
             this.labelPSAlabel.AutoSize = true;
             this.labelPSAlabel.Location = new System.Drawing.Point(5, 48);
             this.labelPSAlabel.Name = "labelPSAlabel";
-            this.labelPSAlabel.Size = new System.Drawing.Size(172, 13);
+            this.labelPSAlabel.Size = new System.Drawing.Size(150, 13);
             this.labelPSAlabel.TabIndex = 71;
-            this.labelPSAlabel.Text = "Persistent Staging Area (PSA) label";
+            this.labelPSAlabel.Text = "Persistent Staging Area (PSA) ";
             // 
             // textBoxPresentationLayerLabels
             // 
@@ -475,31 +567,19 @@
             // 
             // groupBoxPrefixSuffix
             // 
-            this.groupBoxPrefixSuffix.Controls.Add(this.grpTableName);
-            this.groupBoxPrefixSuffix.Controls.Add(this.groupBox1);
-            this.groupBoxPrefixSuffix.Location = new System.Drawing.Point(6, 143);
+            this.groupBoxPrefixSuffix.Controls.Add(this.tableSuffixRadiobutton);
+            this.groupBoxPrefixSuffix.Controls.Add(this.tablePrefixRadiobutton);
+            this.groupBoxPrefixSuffix.Location = new System.Drawing.Point(6, 282);
             this.groupBoxPrefixSuffix.Name = "groupBoxPrefixSuffix";
-            this.groupBoxPrefixSuffix.Size = new System.Drawing.Size(299, 97);
+            this.groupBoxPrefixSuffix.Size = new System.Drawing.Size(178, 69);
             this.groupBoxPrefixSuffix.TabIndex = 80;
             this.groupBoxPrefixSuffix.TabStop = false;
-            this.groupBoxPrefixSuffix.Text = "Define the location of the suffixes/prefixes";
-            // 
-            // grpTableName
-            // 
-            this.grpTableName.Controls.Add(this.tableSuffixRadiobutton);
-            this.grpTableName.Controls.Add(this.tablePrefixRadiobutton);
-            this.grpTableName.Location = new System.Drawing.Point(6, 19);
-            this.grpTableName.Name = "grpTableName";
-            this.grpTableName.Size = new System.Drawing.Size(140, 70);
-            this.grpTableName.TabIndex = 65;
-            this.grpTableName.TabStop = false;
-            this.grpTableName.Text = "Table naming location";
-            this.toolTipConfigurationSettings.SetToolTip(this.grpTableName, resources.GetString("grpTableName.ToolTip"));
+            this.groupBoxPrefixSuffix.Text = "Data object type evaluation";
             // 
             // tableSuffixRadiobutton
             // 
             this.tableSuffixRadiobutton.AutoSize = true;
-            this.tableSuffixRadiobutton.Location = new System.Drawing.Point(6, 42);
+            this.tableSuffixRadiobutton.Location = new System.Drawing.Point(9, 42);
             this.tableSuffixRadiobutton.Name = "tableSuffixRadiobutton";
             this.tableSuffixRadiobutton.Size = new System.Drawing.Size(51, 17);
             this.tableSuffixRadiobutton.TabIndex = 26;
@@ -509,52 +589,20 @@
             // tablePrefixRadiobutton
             // 
             this.tablePrefixRadiobutton.AutoSize = true;
-            this.tablePrefixRadiobutton.Location = new System.Drawing.Point(6, 19);
+            this.tablePrefixRadiobutton.Location = new System.Drawing.Point(9, 19);
             this.tablePrefixRadiobutton.Name = "tablePrefixRadiobutton";
             this.tablePrefixRadiobutton.Size = new System.Drawing.Size(51, 17);
             this.tablePrefixRadiobutton.TabIndex = 25;
             this.tablePrefixRadiobutton.Text = "Prefix";
             this.tablePrefixRadiobutton.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.keySuffixRadiobutton);
-            this.groupBox1.Controls.Add(this.keyPrefixRadiobutton);
-            this.groupBox1.Location = new System.Drawing.Point(152, 19);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(140, 70);
-            this.groupBox1.TabIndex = 66;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Key naming location";
-            this.toolTipConfigurationSettings.SetToolTip(this.groupBox1, resources.GetString("groupBox1.ToolTip"));
-            // 
-            // keySuffixRadiobutton
-            // 
-            this.keySuffixRadiobutton.AutoSize = true;
-            this.keySuffixRadiobutton.Location = new System.Drawing.Point(6, 42);
-            this.keySuffixRadiobutton.Name = "keySuffixRadiobutton";
-            this.keySuffixRadiobutton.Size = new System.Drawing.Size(51, 17);
-            this.keySuffixRadiobutton.TabIndex = 30;
-            this.keySuffixRadiobutton.Text = "Suffix";
-            this.keySuffixRadiobutton.UseVisualStyleBackColor = true;
-            // 
-            // keyPrefixRadiobutton
-            // 
-            this.keyPrefixRadiobutton.AutoSize = true;
-            this.keyPrefixRadiobutton.Location = new System.Drawing.Point(6, 19);
-            this.keyPrefixRadiobutton.Name = "keyPrefixRadiobutton";
-            this.keyPrefixRadiobutton.Size = new System.Drawing.Size(51, 17);
-            this.keyPrefixRadiobutton.TabIndex = 29;
-            this.keyPrefixRadiobutton.Text = "Prefix";
-            this.keyPrefixRadiobutton.UseVisualStyleBackColor = true;
-            // 
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyPK);
             this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyIndex);
-            this.groupBox8.Location = new System.Drawing.Point(6, 246);
+            this.groupBox8.Location = new System.Drawing.Point(3, 357);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(299, 70);
+            this.groupBox8.Size = new System.Drawing.Size(181, 70);
             this.groupBox8.TabIndex = 74;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "PSA natural key location";
@@ -563,7 +611,7 @@
             // radioButtonPSABusinessKeyPK
             // 
             this.radioButtonPSABusinessKeyPK.AutoSize = true;
-            this.radioButtonPSABusinessKeyPK.Location = new System.Drawing.Point(6, 42);
+            this.radioButtonPSABusinessKeyPK.Location = new System.Drawing.Point(12, 42);
             this.radioButtonPSABusinessKeyPK.Name = "radioButtonPSABusinessKeyPK";
             this.radioButtonPSABusinessKeyPK.Size = new System.Drawing.Size(167, 17);
             this.radioButtonPSABusinessKeyPK.TabIndex = 28;
@@ -573,297 +621,48 @@
             // radioButtonPSABusinessKeyIndex
             // 
             this.radioButtonPSABusinessKeyIndex.AutoSize = true;
-            this.radioButtonPSABusinessKeyIndex.Location = new System.Drawing.Point(6, 19);
+            this.radioButtonPSABusinessKeyIndex.Location = new System.Drawing.Point(12, 19);
             this.radioButtonPSABusinessKeyIndex.Name = "radioButtonPSABusinessKeyIndex";
             this.radioButtonPSABusinessKeyIndex.Size = new System.Drawing.Size(88, 17);
             this.radioButtonPSABusinessKeyIndex.TabIndex = 27;
             this.radioButtonPSABusinessKeyIndex.Text = "Unique Index";
             this.radioButtonPSABusinessKeyIndex.UseVisualStyleBackColor = true;
             // 
-            // tabPageETLFrameworkSpecific
+            // tabPageDataWarehouse
             // 
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.label46);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.textBoxLogicalDeleteAttributeName);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.textBoxETLUpdateProcessID);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.textBoxCurrentRecordAttributeName);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.textBoxRecordChecksum);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.textBoxSourceRowId);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.textBoxEventDateTime);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.textBoxETLProcessID);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.textBoxChangeDataCaptureIndicator);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.textBoxDWHKeyIdentifier);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.label43);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.label42);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.label32);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.label30);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.label29);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.label21);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.label10);
-            this.tabPageETLFrameworkSpecific.Controls.Add(this.label13);
-            this.tabPageETLFrameworkSpecific.Location = new System.Drawing.Point(4, 22);
-            this.tabPageETLFrameworkSpecific.Name = "tabPageETLFrameworkSpecific";
-            this.tabPageETLFrameworkSpecific.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageETLFrameworkSpecific.Size = new System.Drawing.Size(1120, 621);
-            this.tabPageETLFrameworkSpecific.TabIndex = 1;
-            this.tabPageETLFrameworkSpecific.Text = "Data Warehouse generic";
-            this.tabPageETLFrameworkSpecific.UseVisualStyleBackColor = true;
+            this.tabPageDataWarehouse.Controls.Add(this.groupBoxDataVaultSpecific);
+            this.tabPageDataWarehouse.Controls.Add(this.groupBoxAlternativeColumns);
+            this.tabPageDataWarehouse.Controls.Add(this.groupBox3);
+            this.tabPageDataWarehouse.Controls.Add(this.groupBox2);
+            this.tabPageDataWarehouse.Location = new System.Drawing.Point(4, 22);
+            this.tabPageDataWarehouse.Name = "tabPageDataWarehouse";
+            this.tabPageDataWarehouse.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageDataWarehouse.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageDataWarehouse.TabIndex = 1;
+            this.tabPageDataWarehouse.Text = "Data Warehouse";
+            this.tabPageDataWarehouse.UseVisualStyleBackColor = true;
             // 
-            // label46
+            // groupBoxDataVaultSpecific
             // 
-            this.label46.AutoSize = true;
-            this.label46.Location = new System.Drawing.Point(6, 218);
-            this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(145, 13);
-            this.label46.TabIndex = 66;
-            this.label46.Text = "Logical Delete attribute name";
-            // 
-            // textBoxLogicalDeleteAttributeName
-            // 
-            this.textBoxLogicalDeleteAttributeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxLogicalDeleteAttributeName.Location = new System.Drawing.Point(233, 215);
-            this.textBoxLogicalDeleteAttributeName.Name = "textBoxLogicalDeleteAttributeName";
-            this.textBoxLogicalDeleteAttributeName.Size = new System.Drawing.Size(276, 20);
-            this.textBoxLogicalDeleteAttributeName.TabIndex = 21;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLogicalDeleteAttributeName, "The (optional) name of a logical delete attribute can be provided here. \r\n\r\nThis " +
-        "is a flag to label a record as deleted in the originating / feeding sytem.");
-            // 
-            // textBoxETLUpdateProcessID
-            // 
-            this.textBoxETLUpdateProcessID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxETLUpdateProcessID.Location = new System.Drawing.Point(233, 85);
-            this.textBoxETLUpdateProcessID.Name = "textBoxETLUpdateProcessID";
-            this.textBoxETLUpdateProcessID.Size = new System.Drawing.Size(276, 20);
-            this.textBoxETLUpdateProcessID.TabIndex = 16;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxETLUpdateProcessID, "A pointer to the data logistics framework, in case in-place updates are made on r" +
-        "ows.");
-            // 
-            // textBoxCurrentRecordAttributeName
-            // 
-            this.textBoxCurrentRecordAttributeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxCurrentRecordAttributeName.Location = new System.Drawing.Point(233, 189);
-            this.textBoxCurrentRecordAttributeName.Name = "textBoxCurrentRecordAttributeName";
-            this.textBoxCurrentRecordAttributeName.Size = new System.Drawing.Size(276, 20);
-            this.textBoxCurrentRecordAttributeName.TabIndex = 20;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxCurrentRecordAttributeName, "An optional attribute name for the \'current row\', if used.");
-            // 
-            // textBoxRecordChecksum
-            // 
-            this.textBoxRecordChecksum.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxRecordChecksum.Location = new System.Drawing.Point(233, 163);
-            this.textBoxRecordChecksum.Name = "textBoxRecordChecksum";
-            this.textBoxRecordChecksum.Size = new System.Drawing.Size(276, 20);
-            this.textBoxRecordChecksum.TabIndex = 19;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxRecordChecksum, "This is the name of the attribute that holds the full row checksum across all att" +
-        "ribute values.");
-            // 
-            // textBoxSourceRowId
-            // 
-            this.textBoxSourceRowId.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxSourceRowId.Location = new System.Drawing.Point(233, 137);
-            this.textBoxSourceRowId.Name = "textBoxSourceRowId";
-            this.textBoxSourceRowId.Size = new System.Drawing.Size(276, 20);
-            this.textBoxSourceRowId.TabIndex = 18;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSourceRowId, resources.GetString("textBoxSourceRowId.ToolTip"));
-            // 
-            // textBoxEventDateTime
-            // 
-            this.textBoxEventDateTime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxEventDateTime.Location = new System.Drawing.Point(233, 111);
-            this.textBoxEventDateTime.Name = "textBoxEventDateTime";
-            this.textBoxEventDateTime.Size = new System.Drawing.Size(276, 20);
-            this.textBoxEventDateTime.TabIndex = 17;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxEventDateTime, resources.GetString("textBoxEventDateTime.ToolTip"));
-            // 
-            // textBoxETLProcessID
-            // 
-            this.textBoxETLProcessID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxETLProcessID.Location = new System.Drawing.Point(233, 59);
-            this.textBoxETLProcessID.Name = "textBoxETLProcessID";
-            this.textBoxETLProcessID.Size = new System.Drawing.Size(276, 20);
-            this.textBoxETLProcessID.TabIndex = 15;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxETLProcessID, "This is the audit trail Id / pointer to the data logistics framework (e.g. DIRECT" +
-        " or other), so that each row can be uniquely related to the processes that inser" +
-        "ted or otherwise modified it.");
-            // 
-            // textBoxChangeDataCaptureIndicator
-            // 
-            this.textBoxChangeDataCaptureIndicator.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxChangeDataCaptureIndicator.Location = new System.Drawing.Point(233, 33);
-            this.textBoxChangeDataCaptureIndicator.Name = "textBoxChangeDataCaptureIndicator";
-            this.textBoxChangeDataCaptureIndicator.Size = new System.Drawing.Size(276, 20);
-            this.textBoxChangeDataCaptureIndicator.TabIndex = 14;
-            // 
-            // textBoxDWHKeyIdentifier
-            // 
-            this.textBoxDWHKeyIdentifier.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxDWHKeyIdentifier.Location = new System.Drawing.Point(233, 8);
-            this.textBoxDWHKeyIdentifier.Name = "textBoxDWHKeyIdentifier";
-            this.textBoxDWHKeyIdentifier.Size = new System.Drawing.Size(276, 20);
-            this.textBoxDWHKeyIdentifier.TabIndex = 13;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxDWHKeyIdentifier, resources.GetString("textBoxDWHKeyIdentifier.ToolTip"));
-            // 
-            // label43
-            // 
-            this.label43.AutoSize = true;
-            this.label43.Location = new System.Drawing.Point(6, 88);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(190, 13);
-            this.label43.TabIndex = 64;
-            this.label43.Text = "ETL Update Process ID attribute name";
-            // 
-            // label42
-            // 
-            this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(6, 192);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(149, 13);
-            this.label42.TabIndex = 62;
-            this.label42.Text = "Current Record attribute name";
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(6, 166);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(165, 13);
-            this.label32.TabIndex = 60;
-            this.label32.Text = "Record Checksum attribute name";
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(6, 140);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(113, 13);
-            this.label30.TabIndex = 58;
-            this.label30.Text = "Row ID attribute name";
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(6, 114);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(159, 13);
-            this.label29.TabIndex = 56;
-            this.label29.Text = "Event Date/Time attribute name";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(6, 62);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(181, 13);
-            this.label21.TabIndex = 54;
-            this.label21.Text = "ETL Insert Process ID attribute name";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 36);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(224, 13);
-            this.label10.TabIndex = 49;
-            this.label10.Text = "Change Data Capture Indicator attribute name";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(5, 11);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(137, 13);
-            this.label13.TabIndex = 44;
-            this.label13.Text = "Data Platform Key identifyer";
-            // 
-            // tabPageIntegrationLayerSpecific
-            // 
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.checkBoxAlternativeSatLDTS);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label41);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxSatelliteAlternativeLDTSAttribute);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxHubAlternativeLDTSAttribute);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxAlternativeRecordSource);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxExpiryDateTimeName);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxRecordSource);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxLDST);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxHubTablePrefix);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxSatPrefix);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxLinkTablePrefix);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.textBoxLinkSatPrefix);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label39);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label38);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.checkBoxAlternativeHubLDTS);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label37);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.checkBoxAlternativeRecordSource);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label36);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label35);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label11);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label18);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label14);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label17);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label16);
-            this.tabPageIntegrationLayerSpecific.Controls.Add(this.label15);
-            this.tabPageIntegrationLayerSpecific.Location = new System.Drawing.Point(4, 22);
-            this.tabPageIntegrationLayerSpecific.Name = "tabPageIntegrationLayerSpecific";
-            this.tabPageIntegrationLayerSpecific.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageIntegrationLayerSpecific.Size = new System.Drawing.Size(1120, 621);
-            this.tabPageIntegrationLayerSpecific.TabIndex = 0;
-            this.tabPageIntegrationLayerSpecific.Text = "Integration Layer specific";
-            this.tabPageIntegrationLayerSpecific.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxAlternativeSatLDTS
-            // 
-            this.checkBoxAlternativeSatLDTS.AutoSize = true;
-            this.checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(406, 298);
-            this.checkBoxAlternativeSatLDTS.Name = "checkBoxAlternativeSatLDTS";
-            this.checkBoxAlternativeSatLDTS.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeSatLDTS.TabIndex = 12;
-            this.checkBoxAlternativeSatLDTS.Text = "Enable";
-            this.checkBoxAlternativeSatLDTS.UseVisualStyleBackColor = true;
-            this.checkBoxAlternativeSatLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeSatLDTS_CheckedChanged);
-            // 
-            // label41
-            // 
-            this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(5, 299);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(197, 13);
-            this.label41.TabIndex = 69;
-            this.label41.Text = "Alternative Context LDTS attribute name";
-            this.toolTipConfigurationSettings.SetToolTip(this.label41, "In some scenarios, it may be required to provide an name of the load date/time st" +
-        "amp (LDTS) for a Context (\'Satellite\') type Data Object.");
-            // 
-            // textBoxSatelliteAlternativeLDTSAttribute
-            // 
-            this.textBoxSatelliteAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxSatelliteAlternativeLDTSAttribute.Location = new System.Drawing.Point(234, 296);
-            this.textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
-            this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
-            this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 11;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSatelliteAlternativeLDTSAttribute, resources.GetString("textBoxSatelliteAlternativeLDTSAttribute.ToolTip"));
-            // 
-            // textBoxHubAlternativeLDTSAttribute
-            // 
-            this.textBoxHubAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxHubAlternativeLDTSAttribute.Location = new System.Drawing.Point(234, 270);
-            this.textBoxHubAlternativeLDTSAttribute.Name = "textBoxHubAlternativeLDTSAttribute";
-            this.textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(166, 20);
-            this.textBoxHubAlternativeLDTSAttribute.TabIndex = 9;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxHubAlternativeLDTSAttribute, resources.GetString("textBoxHubAlternativeLDTSAttribute.ToolTip"));
-            // 
-            // textBoxAlternativeRecordSource
-            // 
-            this.textBoxAlternativeRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxAlternativeRecordSource.Location = new System.Drawing.Point(234, 244);
-            this.textBoxAlternativeRecordSource.Name = "textBoxAlternativeRecordSource";
-            this.textBoxAlternativeRecordSource.Size = new System.Drawing.Size(166, 20);
-            this.textBoxAlternativeRecordSource.TabIndex = 7;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxAlternativeRecordSource, resources.GetString("textBoxAlternativeRecordSource.ToolTip"));
+            this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxExpiryDateTimeName);
+            this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxRecordSource);
+            this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxLDST);
+            this.groupBoxDataVaultSpecific.Controls.Add(this.label18);
+            this.groupBoxDataVaultSpecific.Controls.Add(this.label11);
+            this.groupBoxDataVaultSpecific.Controls.Add(this.label35);
+            this.groupBoxDataVaultSpecific.Location = new System.Drawing.Point(6, 355);
+            this.groupBoxDataVaultSpecific.Name = "groupBoxDataVaultSpecific";
+            this.groupBoxDataVaultSpecific.Size = new System.Drawing.Size(1108, 112);
+            this.groupBoxDataVaultSpecific.TabIndex = 73;
+            this.groupBoxDataVaultSpecific.TabStop = false;
+            this.groupBoxDataVaultSpecific.Text = "Data Vault special columns";
             // 
             // textBoxExpiryDateTimeName
             // 
             this.textBoxExpiryDateTimeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxExpiryDateTimeName.Location = new System.Drawing.Point(233, 139);
+            this.textBoxExpiryDateTimeName.Location = new System.Drawing.Point(234, 49);
             this.textBoxExpiryDateTimeName.Name = "textBoxExpiryDateTimeName";
-            this.textBoxExpiryDateTimeName.Size = new System.Drawing.Size(276, 20);
+            this.textBoxExpiryDateTimeName.Size = new System.Drawing.Size(421, 20);
             this.textBoxExpiryDateTimeName.TabIndex = 5;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxExpiryDateTimeName, "This attribute label captures the name of the expiry date/time attribute, if used" +
         ". \r\n\r\nIn most deployments a technical expiry/end date is superfluous but if used" +
@@ -872,113 +671,84 @@
             // textBoxRecordSource
             // 
             this.textBoxRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxRecordSource.Location = new System.Drawing.Point(233, 165);
+            this.textBoxRecordSource.Location = new System.Drawing.Point(234, 75);
             this.textBoxRecordSource.Name = "textBoxRecordSource";
-            this.textBoxRecordSource.Size = new System.Drawing.Size(276, 20);
+            this.textBoxRecordSource.Size = new System.Drawing.Size(421, 20);
             this.textBoxRecordSource.TabIndex = 6;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxRecordSource, resources.GetString("textBoxRecordSource.ToolTip"));
             // 
             // textBoxLDST
             // 
             this.textBoxLDST.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxLDST.Location = new System.Drawing.Point(233, 113);
+            this.textBoxLDST.Location = new System.Drawing.Point(234, 23);
             this.textBoxLDST.Name = "textBoxLDST";
-            this.textBoxLDST.Size = new System.Drawing.Size(276, 20);
+            this.textBoxLDST.Size = new System.Drawing.Size(421, 20);
             this.textBoxLDST.TabIndex = 4;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxLDST, resources.GetString("textBoxLDST.ToolTip"));
             // 
-            // textBoxHubTablePrefix
+            // label18
             // 
-            this.textBoxHubTablePrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxHubTablePrefix.Location = new System.Drawing.Point(233, 8);
-            this.textBoxHubTablePrefix.Name = "textBoxHubTablePrefix";
-            this.textBoxHubTablePrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxHubTablePrefix.TabIndex = 0;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxHubTablePrefix, resources.GetString("textBoxHubTablePrefix.ToolTip"));
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(6, 26);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(225, 13);
+            this.label18.TabIndex = 53;
+            this.label18.Text = "Load Date/Time Stamp (LDTS) attribute name";
             // 
-            // textBoxSatPrefix
+            // label11
             // 
-            this.textBoxSatPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxSatPrefix.Location = new System.Drawing.Point(233, 34);
-            this.textBoxSatPrefix.Name = "textBoxSatPrefix";
-            this.textBoxSatPrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxSatPrefix.TabIndex = 1;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSatPrefix, resources.GetString("textBoxSatPrefix.ToolTip"));
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 78);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(149, 13);
+            this.label11.TabIndex = 55;
+            this.label11.Text = "Record Source attribute name";
             // 
-            // textBoxLinkTablePrefix
+            // label35
             // 
-            this.textBoxLinkTablePrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxLinkTablePrefix.Location = new System.Drawing.Point(233, 60);
-            this.textBoxLinkTablePrefix.Name = "textBoxLinkTablePrefix";
-            this.textBoxLinkTablePrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxLinkTablePrefix.TabIndex = 2;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLinkTablePrefix, resources.GetString("textBoxLinkTablePrefix.ToolTip"));
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(6, 52);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(159, 13);
+            this.label35.TabIndex = 57;
+            this.label35.Text = "Expiry Date/Time attribute name";
             // 
-            // textBoxLinkSatPrefix
+            // groupBoxAlternativeColumns
             // 
-            this.textBoxLinkSatPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxLinkSatPrefix.Location = new System.Drawing.Point(233, 86);
-            this.textBoxLinkSatPrefix.Name = "textBoxLinkSatPrefix";
-            this.textBoxLinkSatPrefix.Size = new System.Drawing.Size(276, 20);
-            this.textBoxLinkSatPrefix.TabIndex = 3;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLinkSatPrefix, resources.GetString("textBoxLinkSatPrefix.ToolTip"));
+            this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeSatLDTS);
+            this.groupBoxAlternativeColumns.Controls.Add(this.label36);
+            this.groupBoxAlternativeColumns.Controls.Add(this.label41);
+            this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeRecordSource);
+            this.groupBoxAlternativeColumns.Controls.Add(this.textBoxSatelliteAlternativeLDTSAttribute);
+            this.groupBoxAlternativeColumns.Controls.Add(this.label37);
+            this.groupBoxAlternativeColumns.Controls.Add(this.textBoxHubAlternativeLDTSAttribute);
+            this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeHubLDTS);
+            this.groupBoxAlternativeColumns.Controls.Add(this.textBoxAlternativeRecordSource);
+            this.groupBoxAlternativeColumns.Location = new System.Drawing.Point(6, 473);
+            this.groupBoxAlternativeColumns.Name = "groupBoxAlternativeColumns";
+            this.groupBoxAlternativeColumns.Size = new System.Drawing.Size(1108, 113);
+            this.groupBoxAlternativeColumns.TabIndex = 72;
+            this.groupBoxAlternativeColumns.TabStop = false;
+            this.groupBoxAlternativeColumns.Text = "Data Vault alternative columns";
+            this.toolTipConfigurationSettings.SetToolTip(this.groupBoxAlternativeColumns, "In some models you may want to use specific alternative names depending on the en" +
+        "tity type. \r\nIf diabled the default conventions as entered in the above fields w" +
+        "ill be used.");
             // 
-            // label39
+            // checkBoxAlternativeSatLDTS
             // 
-            this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(6, 228);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(367, 13);
-            this.label39.TabIndex = 66;
-            this.label39.Text = "If diabled the default conventions as entered in the above fields will be used.";
-            // 
-            // label38
-            // 
-            this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(5, 215);
-            this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(448, 13);
-            this.label38.TabIndex = 65;
-            this.label38.Text = "In some models you may want to use specific alternative names depending on the en" +
-    "tity type. ";
-            // 
-            // checkBoxAlternativeHubLDTS
-            // 
-            this.checkBoxAlternativeHubLDTS.AutoSize = true;
-            this.checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(406, 272);
-            this.checkBoxAlternativeHubLDTS.Name = "checkBoxAlternativeHubLDTS";
-            this.checkBoxAlternativeHubLDTS.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeHubLDTS.TabIndex = 10;
-            this.checkBoxAlternativeHubLDTS.Text = "Enable";
-            this.checkBoxAlternativeHubLDTS.UseVisualStyleBackColor = true;
-            this.checkBoxAlternativeHubLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeHubLDTS_CheckedChanged);
-            // 
-            // label37
-            // 
-            this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(5, 273);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(182, 13);
-            this.label37.TabIndex = 62;
-            this.label37.Text = "Alternative CBC LDTS attribute name";
-            this.toolTipConfigurationSettings.SetToolTip(this.label37, "In some scenarios, it may be required to provide an name of the load date/time st" +
-        "amp (LDTS) for a Core Business Concept (CBC) type Data Object.");
-            // 
-            // checkBoxAlternativeRecordSource
-            // 
-            this.checkBoxAlternativeRecordSource.AutoSize = true;
-            this.checkBoxAlternativeRecordSource.Location = new System.Drawing.Point(406, 246);
-            this.checkBoxAlternativeRecordSource.Name = "checkBoxAlternativeRecordSource";
-            this.checkBoxAlternativeRecordSource.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeRecordSource.TabIndex = 8;
-            this.checkBoxAlternativeRecordSource.Text = "Enable";
-            this.checkBoxAlternativeRecordSource.UseVisualStyleBackColor = true;
-            this.checkBoxAlternativeRecordSource.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeRecordSource_CheckedChanged);
+            this.checkBoxAlternativeSatLDTS.AutoSize = true;
+            this.checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(664, 77);
+            this.checkBoxAlternativeSatLDTS.Name = "checkBoxAlternativeSatLDTS";
+            this.checkBoxAlternativeSatLDTS.Size = new System.Drawing.Size(59, 17);
+            this.checkBoxAlternativeSatLDTS.TabIndex = 12;
+            this.checkBoxAlternativeSatLDTS.Text = "Enable";
+            this.checkBoxAlternativeSatLDTS.UseVisualStyleBackColor = true;
+            this.checkBoxAlternativeSatLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeSatLDTS_CheckedChanged);
             // 
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(5, 247);
+            this.label36.Location = new System.Drawing.Point(6, 26);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(187, 13);
             this.label36.TabIndex = 59;
@@ -986,68 +756,298 @@
             this.toolTipConfigurationSettings.SetToolTip(this.label36, "In some scenarios, it may be required to provide an alternative record source fie" +
         "ld or identifier.");
             // 
-            // label35
+            // label41
             // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(5, 142);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(159, 13);
-            this.label35.TabIndex = 57;
-            this.label35.Text = "Expiry Date/Time attribute name";
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(6, 78);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(197, 13);
+            this.label41.TabIndex = 69;
+            this.label41.Text = "Alternative Context LDTS attribute name";
+            this.toolTipConfigurationSettings.SetToolTip(this.label41, "In some scenarios, it may be required to provide an name of the load date/time st" +
+        "amp (LDTS) for a Context (\'Satellite\') type Data Object.");
             // 
-            // label11
+            // checkBoxAlternativeRecordSource
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(5, 168);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(149, 13);
-            this.label11.TabIndex = 55;
-            this.label11.Text = "Record Source attribute name";
+            this.checkBoxAlternativeRecordSource.AutoSize = true;
+            this.checkBoxAlternativeRecordSource.Location = new System.Drawing.Point(664, 25);
+            this.checkBoxAlternativeRecordSource.Name = "checkBoxAlternativeRecordSource";
+            this.checkBoxAlternativeRecordSource.Size = new System.Drawing.Size(59, 17);
+            this.checkBoxAlternativeRecordSource.TabIndex = 8;
+            this.checkBoxAlternativeRecordSource.Text = "Enable";
+            this.checkBoxAlternativeRecordSource.UseVisualStyleBackColor = true;
+            this.checkBoxAlternativeRecordSource.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeRecordSource_CheckedChanged);
             // 
-            // label18
+            // textBoxSatelliteAlternativeLDTSAttribute
             // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(5, 116);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(225, 13);
-            this.label18.TabIndex = 53;
-            this.label18.Text = "Load Date/Time Stamp (LDTS) attribute name";
+            this.textBoxSatelliteAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxSatelliteAlternativeLDTSAttribute.Location = new System.Drawing.Point(235, 75);
+            this.textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
+            this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(420, 20);
+            this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 11;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSatelliteAlternativeLDTSAttribute, resources.GetString("textBoxSatelliteAlternativeLDTSAttribute.ToolTip"));
             // 
-            // label14
+            // label37
             // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(5, 89);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(175, 13);
-            this.label14.TabIndex = 26;
-            this.label14.Text = "Relationship Context table identifyer";
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(6, 52);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(182, 13);
+            this.label37.TabIndex = 62;
+            this.label37.Text = "Alternative CBC LDTS attribute name";
+            this.toolTipConfigurationSettings.SetToolTip(this.label37, "In some scenarios, it may be required to provide an name of the load date/time st" +
+        "amp (LDTS) for a Core Business Concept (CBC) type Data Object.");
             // 
-            // label17
+            // textBoxHubAlternativeLDTSAttribute
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(5, 11);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(192, 13);
-            this.label17.TabIndex = 19;
-            this.label17.Text = "Core Business Concept (CBC) identifyer";
+            this.textBoxHubAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxHubAlternativeLDTSAttribute.Location = new System.Drawing.Point(235, 49);
+            this.textBoxHubAlternativeLDTSAttribute.Name = "textBoxHubAlternativeLDTSAttribute";
+            this.textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(420, 20);
+            this.textBoxHubAlternativeLDTSAttribute.TabIndex = 9;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxHubAlternativeLDTSAttribute, resources.GetString("textBoxHubAlternativeLDTSAttribute.ToolTip"));
             // 
-            // label16
+            // checkBoxAlternativeHubLDTS
             // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(5, 37);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(114, 13);
-            this.label16.TabIndex = 22;
-            this.label16.Text = "Context table identifyer";
+            this.checkBoxAlternativeHubLDTS.AutoSize = true;
+            this.checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(664, 51);
+            this.checkBoxAlternativeHubLDTS.Name = "checkBoxAlternativeHubLDTS";
+            this.checkBoxAlternativeHubLDTS.Size = new System.Drawing.Size(59, 17);
+            this.checkBoxAlternativeHubLDTS.TabIndex = 10;
+            this.checkBoxAlternativeHubLDTS.Text = "Enable";
+            this.checkBoxAlternativeHubLDTS.UseVisualStyleBackColor = true;
+            this.checkBoxAlternativeHubLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeHubLDTS_CheckedChanged);
             // 
-            // label15
+            // textBoxAlternativeRecordSource
             // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(5, 63);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(192, 13);
-            this.label15.TabIndex = 24;
-            this.label15.Text = "Natural Business Relationship identifyer";
+            this.textBoxAlternativeRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxAlternativeRecordSource.Location = new System.Drawing.Point(235, 23);
+            this.textBoxAlternativeRecordSource.Name = "textBoxAlternativeRecordSource";
+            this.textBoxAlternativeRecordSource.Size = new System.Drawing.Size(420, 20);
+            this.textBoxAlternativeRecordSource.TabIndex = 7;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxAlternativeRecordSource, resources.GetString("textBoxAlternativeRecordSource.ToolTip"));
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.label13);
+            this.groupBox3.Controls.Add(this.textBoxKeyIdentifier);
+            this.groupBox3.Controls.Add(this.textBoxKeyPattern);
+            this.groupBox3.Controls.Add(this.labelSurrogateKeyPattern);
+            this.groupBox3.Location = new System.Drawing.Point(6, 6);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(1108, 88);
+            this.groupBox3.TabIndex = 70;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Surrogate Key definition";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 25);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(191, 13);
+            this.label13.TabIndex = 44;
+            this.label13.Text = "Data Platform (Surrogate) key identifyer";
+            // 
+            // textBoxKeyIdentifier
+            // 
+            this.textBoxKeyIdentifier.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxKeyIdentifier.Location = new System.Drawing.Point(234, 22);
+            this.textBoxKeyIdentifier.Name = "textBoxKeyIdentifier";
+            this.textBoxKeyIdentifier.Size = new System.Drawing.Size(421, 20);
+            this.textBoxKeyIdentifier.TabIndex = 13;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxKeyIdentifier, resources.GetString("textBoxKeyIdentifier.ToolTip"));
+            // 
+            // textBoxKeyPattern
+            // 
+            this.textBoxKeyPattern.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxKeyPattern.Location = new System.Drawing.Point(234, 47);
+            this.textBoxKeyPattern.Name = "textBoxKeyPattern";
+            this.textBoxKeyPattern.Size = new System.Drawing.Size(421, 20);
+            this.textBoxKeyPattern.TabIndex = 67;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxKeyPattern, resources.GetString("textBoxKeyPattern.ToolTip"));
+            // 
+            // labelSurrogateKeyPattern
+            // 
+            this.labelSurrogateKeyPattern.AutoSize = true;
+            this.labelSurrogateKeyPattern.Location = new System.Drawing.Point(6, 50);
+            this.labelSurrogateKeyPattern.Name = "labelSurrogateKeyPattern";
+            this.labelSurrogateKeyPattern.Size = new System.Drawing.Size(182, 13);
+            this.labelSurrogateKeyPattern.TabIndex = 68;
+            this.labelSurrogateKeyPattern.Text = "Data Platform (Surrogate) key pattern";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label10);
+            this.groupBox2.Controls.Add(this.label21);
+            this.groupBox2.Controls.Add(this.label29);
+            this.groupBox2.Controls.Add(this.label46);
+            this.groupBox2.Controls.Add(this.label30);
+            this.groupBox2.Controls.Add(this.textBoxLogicalDeleteAttributeName);
+            this.groupBox2.Controls.Add(this.label32);
+            this.groupBox2.Controls.Add(this.textBoxETLUpdateProcessID);
+            this.groupBox2.Controls.Add(this.label42);
+            this.groupBox2.Controls.Add(this.textBoxCurrentRecordAttributeName);
+            this.groupBox2.Controls.Add(this.label43);
+            this.groupBox2.Controls.Add(this.textBoxRecordChecksum);
+            this.groupBox2.Controls.Add(this.textBoxChangeDataCaptureIndicator);
+            this.groupBox2.Controls.Add(this.textBoxSourceRowId);
+            this.groupBox2.Controls.Add(this.textBoxETLProcessID);
+            this.groupBox2.Controls.Add(this.textBoxEventDateTime);
+            this.groupBox2.Location = new System.Drawing.Point(6, 100);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(1108, 245);
+            this.groupBox2.TabIndex = 69;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Data Warehouse special columns";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 25);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(224, 13);
+            this.label10.TabIndex = 49;
+            this.label10.Text = "Change Data Capture Indicator attribute name";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(6, 51);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(181, 13);
+            this.label21.TabIndex = 54;
+            this.label21.Text = "ETL Insert Process ID attribute name";
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(6, 103);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(159, 13);
+            this.label29.TabIndex = 56;
+            this.label29.Text = "Event Date/Time attribute name";
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(6, 207);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(145, 13);
+            this.label46.TabIndex = 66;
+            this.label46.Text = "Logical Delete attribute name";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(6, 129);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(113, 13);
+            this.label30.TabIndex = 58;
+            this.label30.Text = "Row ID attribute name";
+            // 
+            // textBoxLogicalDeleteAttributeName
+            // 
+            this.textBoxLogicalDeleteAttributeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxLogicalDeleteAttributeName.Location = new System.Drawing.Point(233, 204);
+            this.textBoxLogicalDeleteAttributeName.Name = "textBoxLogicalDeleteAttributeName";
+            this.textBoxLogicalDeleteAttributeName.Size = new System.Drawing.Size(422, 20);
+            this.textBoxLogicalDeleteAttributeName.TabIndex = 21;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLogicalDeleteAttributeName, "The (optional) name of a logical delete attribute can be provided here. \r\n\r\nThis " +
+        "is a flag to label a record as deleted in the originating / feeding sytem.");
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(6, 155);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(165, 13);
+            this.label32.TabIndex = 60;
+            this.label32.Text = "Record Checksum attribute name";
+            // 
+            // textBoxETLUpdateProcessID
+            // 
+            this.textBoxETLUpdateProcessID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxETLUpdateProcessID.Location = new System.Drawing.Point(233, 74);
+            this.textBoxETLUpdateProcessID.Name = "textBoxETLUpdateProcessID";
+            this.textBoxETLUpdateProcessID.Size = new System.Drawing.Size(422, 20);
+            this.textBoxETLUpdateProcessID.TabIndex = 16;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxETLUpdateProcessID, "A pointer to the data logistics framework, in case in-place updates are made on r" +
+        "ows.");
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(6, 181);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(149, 13);
+            this.label42.TabIndex = 62;
+            this.label42.Text = "Current Record attribute name";
+            // 
+            // textBoxCurrentRecordAttributeName
+            // 
+            this.textBoxCurrentRecordAttributeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxCurrentRecordAttributeName.Location = new System.Drawing.Point(233, 178);
+            this.textBoxCurrentRecordAttributeName.Name = "textBoxCurrentRecordAttributeName";
+            this.textBoxCurrentRecordAttributeName.Size = new System.Drawing.Size(422, 20);
+            this.textBoxCurrentRecordAttributeName.TabIndex = 20;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxCurrentRecordAttributeName, "An optional attribute name for the \'current row\', if used.");
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(6, 77);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(190, 13);
+            this.label43.TabIndex = 64;
+            this.label43.Text = "ETL Update Process ID attribute name";
+            // 
+            // textBoxRecordChecksum
+            // 
+            this.textBoxRecordChecksum.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxRecordChecksum.Location = new System.Drawing.Point(233, 152);
+            this.textBoxRecordChecksum.Name = "textBoxRecordChecksum";
+            this.textBoxRecordChecksum.Size = new System.Drawing.Size(422, 20);
+            this.textBoxRecordChecksum.TabIndex = 19;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxRecordChecksum, "This is the name of the attribute that holds the full row checksum across all att" +
+        "ribute values.");
+            // 
+            // textBoxChangeDataCaptureIndicator
+            // 
+            this.textBoxChangeDataCaptureIndicator.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxChangeDataCaptureIndicator.Location = new System.Drawing.Point(233, 22);
+            this.textBoxChangeDataCaptureIndicator.Name = "textBoxChangeDataCaptureIndicator";
+            this.textBoxChangeDataCaptureIndicator.Size = new System.Drawing.Size(422, 20);
+            this.textBoxChangeDataCaptureIndicator.TabIndex = 14;
+            // 
+            // textBoxSourceRowId
+            // 
+            this.textBoxSourceRowId.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxSourceRowId.Location = new System.Drawing.Point(233, 126);
+            this.textBoxSourceRowId.Name = "textBoxSourceRowId";
+            this.textBoxSourceRowId.Size = new System.Drawing.Size(422, 20);
+            this.textBoxSourceRowId.TabIndex = 18;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSourceRowId, resources.GetString("textBoxSourceRowId.ToolTip"));
+            // 
+            // textBoxETLProcessID
+            // 
+            this.textBoxETLProcessID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxETLProcessID.Location = new System.Drawing.Point(233, 48);
+            this.textBoxETLProcessID.Name = "textBoxETLProcessID";
+            this.textBoxETLProcessID.Size = new System.Drawing.Size(422, 20);
+            this.textBoxETLProcessID.TabIndex = 15;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxETLProcessID, "This is the audit trail Id / pointer to the data logistics framework (e.g. DIRECT" +
+        " or other), so that each row can be uniquely related to the processes that inser" +
+        "ted or otherwise modified it.");
+            // 
+            // textBoxEventDateTime
+            // 
+            this.textBoxEventDateTime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxEventDateTime.Location = new System.Drawing.Point(233, 100);
+            this.textBoxEventDateTime.Name = "textBoxEventDateTime";
+            this.textBoxEventDateTime.Size = new System.Drawing.Size(422, 20);
+            this.textBoxEventDateTime.TabIndex = 17;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxEventDateTime, resources.GetString("textBoxEventDateTime.ToolTip"));
             // 
             // tabPageConnections
             // 
@@ -1211,9 +1211,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControlDefaultDetails.Controls.Add(this.tabPageEnvironments);
             this.tabControlDefaultDetails.Controls.Add(this.tabPageConnections);
-            this.tabControlDefaultDetails.Controls.Add(this.tabPageIntegrationLayerSpecific);
-            this.tabControlDefaultDetails.Controls.Add(this.tabPageETLFrameworkSpecific);
-            this.tabControlDefaultDetails.Controls.Add(this.tabPagePrefixesSuffixex);
+            this.tabControlDefaultDetails.Controls.Add(this.tabPageDataObjectTypes);
+            this.tabControlDefaultDetails.Controls.Add(this.tabPageDataWarehouse);
             this.tabControlDefaultDetails.Controls.Add(this.tabPagePaths);
             this.tabControlDefaultDetails.Location = new System.Drawing.Point(12, 32);
             this.tabControlDefaultDetails.Multiline = true;
@@ -1253,20 +1252,24 @@
             this.tabPagePaths.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
-            this.tabPagePrefixesSuffixex.ResumeLayout(false);
+            this.tabPageDataObjectTypes.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.groupBoxDataObjectIdentification.ResumeLayout(false);
             this.groupBoxDataObjectIdentification.PerformLayout();
             this.groupBoxPrefixSuffix.ResumeLayout(false);
-            this.grpTableName.ResumeLayout(false);
-            this.grpTableName.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.groupBoxPrefixSuffix.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
-            this.tabPageETLFrameworkSpecific.ResumeLayout(false);
-            this.tabPageETLFrameworkSpecific.PerformLayout();
-            this.tabPageIntegrationLayerSpecific.ResumeLayout(false);
-            this.tabPageIntegrationLayerSpecific.PerformLayout();
+            this.tabPageDataWarehouse.ResumeLayout(false);
+            this.groupBoxDataVaultSpecific.ResumeLayout(false);
+            this.groupBoxDataVaultSpecific.PerformLayout();
+            this.groupBoxAlternativeColumns.ResumeLayout(false);
+            this.groupBoxAlternativeColumns.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.tabPageConnections.ResumeLayout(false);
             this.tabControlConnections.ResumeLayout(false);
             this.tabPageConnectionMain.ResumeLayout(false);
@@ -1298,7 +1301,7 @@
         private System.Windows.Forms.Label label1;
         internal System.Windows.Forms.TextBox textBoxConfigurationPath;
         private System.Windows.Forms.Label label45;
-        private System.Windows.Forms.TabPage tabPagePrefixesSuffixex;
+        private System.Windows.Forms.TabPage tabPageDataObjectTypes;
         internal System.Windows.Forms.GroupBox groupBox8;
         internal System.Windows.Forms.RadioButton radioButtonPSABusinessKeyPK;
         internal System.Windows.Forms.RadioButton radioButtonPSABusinessKeyIndex;
@@ -1306,13 +1309,9 @@
         internal System.Windows.Forms.TextBox textBoxPSAPrefix;
         internal System.Windows.Forms.TextBox textBoxStagingAreaPrefix;
         private System.Windows.Forms.Label labelStagingAreaLabel;
-        private System.Windows.Forms.GroupBox groupBox1;
-        internal System.Windows.Forms.RadioButton keySuffixRadiobutton;
-        internal System.Windows.Forms.RadioButton keyPrefixRadiobutton;
-        internal System.Windows.Forms.GroupBox grpTableName;
         internal System.Windows.Forms.RadioButton tableSuffixRadiobutton;
         internal System.Windows.Forms.RadioButton tablePrefixRadiobutton;
-        private System.Windows.Forms.TabPage tabPageETLFrameworkSpecific;
+        private System.Windows.Forms.TabPage tabPageDataWarehouse;
         private System.Windows.Forms.Label label46;
         internal System.Windows.Forms.TextBox textBoxLogicalDeleteAttributeName;
         internal System.Windows.Forms.TextBox textBoxETLUpdateProcessID;
@@ -1322,7 +1321,7 @@
         internal System.Windows.Forms.TextBox textBoxEventDateTime;
         internal System.Windows.Forms.TextBox textBoxETLProcessID;
         internal System.Windows.Forms.TextBox textBoxChangeDataCaptureIndicator;
-        internal System.Windows.Forms.TextBox textBoxDWHKeyIdentifier;
+        internal System.Windows.Forms.TextBox textBoxKeyIdentifier;
         private System.Windows.Forms.Label label43;
         private System.Windows.Forms.Label label42;
         private System.Windows.Forms.Label label32;
@@ -1331,32 +1330,6 @@
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TabPage tabPageIntegrationLayerSpecific;
-        internal System.Windows.Forms.CheckBox checkBoxAlternativeSatLDTS;
-        private System.Windows.Forms.Label label41;
-        internal System.Windows.Forms.TextBox textBoxSatelliteAlternativeLDTSAttribute;
-        internal System.Windows.Forms.TextBox textBoxHubAlternativeLDTSAttribute;
-        internal System.Windows.Forms.TextBox textBoxAlternativeRecordSource;
-        internal System.Windows.Forms.TextBox textBoxExpiryDateTimeName;
-        internal System.Windows.Forms.TextBox textBoxRecordSource;
-        internal System.Windows.Forms.TextBox textBoxLDST;
-        internal System.Windows.Forms.TextBox textBoxHubTablePrefix;
-        internal System.Windows.Forms.TextBox textBoxSatPrefix;
-        internal System.Windows.Forms.TextBox textBoxLinkTablePrefix;
-        internal System.Windows.Forms.TextBox textBoxLinkSatPrefix;
-        private System.Windows.Forms.Label label39;
-        private System.Windows.Forms.Label label38;
-        internal System.Windows.Forms.CheckBox checkBoxAlternativeHubLDTS;
-        private System.Windows.Forms.Label label37;
-        internal System.Windows.Forms.CheckBox checkBoxAlternativeRecordSource;
-        private System.Windows.Forms.Label label36;
-        private System.Windows.Forms.Label label35;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TabPage tabPageConnections;
         private System.Windows.Forms.TabControl tabControlConnections;
         private System.Windows.Forms.TabPage tabPageConnectionMain;
@@ -1385,6 +1358,36 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.Label labelMetadataConnectionKey;
         private System.Windows.Forms.Label labelEnvironmentKey;
+        private System.Windows.Forms.GroupBox groupBox3;
+        internal System.Windows.Forms.TextBox textBoxKeyPattern;
+        private System.Windows.Forms.Label labelSurrogateKeyPattern;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label14;
+        internal System.Windows.Forms.TextBox textBoxHubTablePrefix;
+        internal System.Windows.Forms.TextBox textBoxSatPrefix;
+        internal System.Windows.Forms.TextBox textBoxLinkTablePrefix;
+        internal System.Windows.Forms.TextBox textBoxLinkSatPrefix;
+        private System.Windows.Forms.GroupBox groupBoxDataVaultSpecific;
+        internal System.Windows.Forms.TextBox textBoxExpiryDateTimeName;
+        internal System.Windows.Forms.TextBox textBoxRecordSource;
+        internal System.Windows.Forms.TextBox textBoxLDST;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.GroupBox groupBoxAlternativeColumns;
+        internal System.Windows.Forms.CheckBox checkBoxAlternativeSatLDTS;
+        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.Label label41;
+        internal System.Windows.Forms.CheckBox checkBoxAlternativeRecordSource;
+        internal System.Windows.Forms.TextBox textBoxSatelliteAlternativeLDTSAttribute;
+        private System.Windows.Forms.Label label37;
+        internal System.Windows.Forms.TextBox textBoxHubAlternativeLDTSAttribute;
+        internal System.Windows.Forms.CheckBox checkBoxAlternativeHubLDTS;
+        internal System.Windows.Forms.TextBox textBoxAlternativeRecordSource;
     }
 }
 

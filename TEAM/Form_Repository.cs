@@ -189,7 +189,7 @@ namespace TEAM
             #region Source
             if (checkBoxCreateSampleSource.Checked)
             {
-                PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + "generateSampleSourceSchema.sql", commandDictionary, localSourceConnectionString);
+                PopulateSqlCommandDictionaryFromFile(globalParameters.ScriptPath + "generateSampleSourceSchema.sql", commandDictionary, localSourceConnectionString);
             }
             #endregion
 
@@ -198,7 +198,7 @@ namespace TEAM
             if (checkBoxCreateSampleStaging.Checked)
             {
 
-                PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleStagingSchema.sql",
+                PopulateSqlCommandDictionaryFromFile(globalParameters.ScriptPath + @"generateSampleStagingSchema.sql",
                     commandDictionary, localStagingConnectionString);
 
             }
@@ -211,7 +211,7 @@ namespace TEAM
             {
 
                 PopulateSqlCommandDictionaryFromFile(
-                    GlobalParameters.ScriptPath + @"generateSamplePersistentStagingSchema.sql", commandDictionary,
+                    globalParameters.ScriptPath + @"generateSamplePersistentStagingSchema.sql", commandDictionary,
                     localPsaConnectionString);
 
             }
@@ -223,7 +223,7 @@ namespace TEAM
             {
 
                 
-                    PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSampleIntegrationSchema.sql", commandDictionary, localIntegrationConnectionString);
+                    PopulateSqlCommandDictionaryFromFile(globalParameters.ScriptPath + @"generateSampleIntegrationSchema.sql", commandDictionary, localIntegrationConnectionString);
                 
             }
             #endregion
@@ -231,7 +231,7 @@ namespace TEAM
             #region Presentation Layer
             if (checkBoxCreateSamplePresentation.Checked)
             {
-                PopulateSqlCommandDictionaryFromFile(GlobalParameters.ScriptPath + @"generateSamplePresentationSchema.sql", commandDictionary, localPresentationConnectionString);
+                PopulateSqlCommandDictionaryFromFile(globalParameters.ScriptPath + @"generateSamplePresentationSchema.sql", commandDictionary, localPresentationConnectionString);
 
             }
             #endregion
@@ -303,11 +303,11 @@ namespace TEAM
         {
             if (checkBoxConfigurationSettings.Checked)
             {
-                FileHandling.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension, GlobalParameters.BackupPath);
+                FileHandling.CreateFileBackup(globalParameters.ConfigurationPath + globalParameters.ConfigFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension, globalParameters.BackupPath);
 
                 // Shared values (same for all samples)
-                var stagingAreaPrefix = "STG";
-                var persistentStagingAreaPrefix = "PSA";
+                var stagingAreaPrefix = "STG_";
+                var persistentStagingAreaPrefix = "PSA_";
                 
                 var hubTablePrefix = "HUB_";
                 var satTablePrefix = "SAT_";
@@ -315,7 +315,8 @@ namespace TEAM
                 var linkSatTablePrefix = "LSAT_";
                 string psaKeyLocation = "PrimaryKey";
 
-                var keyIdentifier = "_SK";
+                var keyIdentifier = "SK";
+                var keyPattern = "{dataObject.baseName}_{keyIdentifier}";
 
                 var sourceRowId = "SOURCE_ROW_ID";
                 var eventDateTime = "EVENT_DATETIME";
@@ -327,7 +328,6 @@ namespace TEAM
                 var etlUpdateProcessId = "MODULE_UPDATE_INSTANCE_ID";
                 var logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
                 var tableNamingLocation = "Prefix";
-                var keyNamingLocation = "Suffix";
                 var recordChecksum = "HASH_FULL_RECORD";
                 var currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
                 var alternativeRecordSource = "N/A";
@@ -344,10 +344,10 @@ namespace TEAM
                 TeamConfiguration.SatTablePrefixValue = satTablePrefix;
                 TeamConfiguration.LinkTablePrefixValue = linkTablePrefix;
                 TeamConfiguration.LsatTablePrefixValue = linkSatTablePrefix;
-                TeamConfiguration.DwhKeyIdentifier = keyIdentifier;
+                TeamConfiguration.KeyIdentifier = keyIdentifier;
+                TeamConfiguration.KeyPattern = keyPattern;
                 TeamConfiguration.PsaKeyLocation = psaKeyLocation;
                 TeamConfiguration.TableNamingLocation = tableNamingLocation;
-                TeamConfiguration.KeyNamingLocation = keyNamingLocation;
 
                 TeamConfiguration.EventDateTimeAttribute = eventDateTime;
                 TeamConfiguration.LoadDateTimeAttribute = loadDateTime;
@@ -410,13 +410,13 @@ namespace TEAM
                     Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
 
                     // First, figure out which files to process
-                    foreach (var filePath in Directory.EnumerateFiles(GlobalParameters.FilesPath, "*.json"))
+                    foreach (var filePath in Directory.EnumerateFiles(globalParameters.FilesPath, "*.json"))
                     {
                         var fileName = Path.GetFileName(filePath);
 
                         if (fileName.StartsWith("sample_") && (!fileName.StartsWith("sample_DIRECT")))
                         {
-                            fileName = fileName.Replace("sample_", GlobalParameters.ActiveEnvironmentKey + "_");
+                            fileName = fileName.Replace("sample_", globalParameters.ActiveEnvironmentKey + "_");
                         }
 
                         fileDictionary.Add(filePath, fileName);
@@ -425,8 +425,8 @@ namespace TEAM
                     // And then process them
                     foreach (KeyValuePair<string, string> file in fileDictionary)
                     {
-                        File.Copy(file.Key, GlobalParameters.MetadataPath + "\\" + file.Value, true);
-                        _alertSampleJsonMetadata.SetTextLogging($"Created sample Json file '{file.Value}' in {GlobalParameters.MetadataPath}.");
+                        File.Copy(file.Key, globalParameters.MetadataPath + "\\" + file.Value, true);
+                        _alertSampleJsonMetadata.SetTextLogging($"Created sample Json file '{file.Value}' in {globalParameters.MetadataPath}.");
                         _alertSampleJsonMetadata.SetTextLogging("\r\n"); // Empty line
                     }
 

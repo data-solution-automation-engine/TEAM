@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
@@ -79,7 +80,9 @@ namespace TEAM
         #endregion
 
         #region Delegate & function for hiding the Cancel button
+
         delegate void ShowCancelButtonCallBack(bool showCancelButton);
+
         public void ShowCancelButton(bool showCancelButton)
         {
             if (buttonCancelFormAlert.InvokeRequired)
@@ -98,7 +101,14 @@ namespace TEAM
             {
                 try
                 {
-                    buttonCancelFormAlert.Visible = false;
+                    if (showCancelButton)
+                    {
+                        buttonCancelFormAlert.Visible = true;
+                    }
+                    else
+                    {
+                        buttonCancelFormAlert.Visible = false;
+                    }
                 }
                 catch
                 {
@@ -106,6 +116,7 @@ namespace TEAM
                 }
             }
         }
+
         #endregion
 
         #region Delegate & function for hiding the Progress Label
@@ -147,7 +158,7 @@ namespace TEAM
 
         public void SetFormName(string text)
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
                 var d = new SetFormNameCallBack(SetFormName);
                 try
@@ -163,7 +174,7 @@ namespace TEAM
             {
                 try
                 {
-                    this.Text = text;
+                    Text = text;
                 }
                 catch
                 {
@@ -175,6 +186,7 @@ namespace TEAM
 
         // Multi threading for updating the user
         delegate void SetTextCallBackLogging(string text);
+
         public void SetTextLogging(string text)
         {
             if (richTextBoxMetadataLogFormAlert.InvokeRequired)
@@ -202,6 +214,37 @@ namespace TEAM
             }           
         }
 
+        delegate void SetTextCallBackLoggingMultiple(List<string> text);
+        public void SetTextLoggingMultiple(List<string> text)
+        {
+            if (richTextBoxMetadataLogFormAlert.InvokeRequired)
+            {
+                var d = new SetTextCallBackLoggingMultiple(SetTextLoggingMultiple);
+                try
+                {
+                    Invoke(d, text);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            else
+            {
+                try
+                {
+                    foreach (var localString in text)
+                    {
+                        richTextBoxMetadataLogFormAlert.AppendText(localString);
+                    }
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+
         public event EventHandler<EventArgs> Canceled;
 
         private void buttonCancelFormAlert_Click(object sender, EventArgs e)
@@ -221,9 +264,9 @@ namespace TEAM
         private void buttonShowLogFormAlert_Click(object sender, EventArgs e)
         {
             //Check if the file exists, otherwise create a dummy / empty file   
-            if (File.Exists(GlobalParameters.ConfigurationPath + @"\Error_Log.txt"))
+            if (File.Exists(globalParameters.ConfigurationPath + @"\Error_Log.txt"))
             {
-                Process.Start(GlobalParameters.ConfigurationPath + @"\Error_Log.txt");
+                Process.Start(globalParameters.ConfigurationPath + @"\Error_Log.txt");
             }
             else
             {

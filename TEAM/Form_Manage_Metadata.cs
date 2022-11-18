@@ -22,7 +22,7 @@ namespace TEAM
     public partial class FormManageMetadata : FormBase
     {
         // Initialise various instances of the status/alert form.
-        private Form_Alert _alert;
+        private Form_Alert _alertParse;
         private Form_Alert _alertValidation;
         private Form_Alert _generatedScripts;
         private static Form_Alert _generatedJsonInterface;
@@ -35,7 +35,7 @@ namespace TEAM
         private TabPage tabPagePhysicalModel;
 
         // Keeping track of which files contain which data object mappings
-        private TeamDataObjectMappingsFileCombinations TeamDataObjectMappingFileCombinations;
+        //private TeamDataObjectMappingsFileCombinations TeamDataObjectMappingFileCombinations;
 
         // Preparing the Data Table to bind to something.
         private readonly BindingSource BindingSourceDataObjectMappings = new BindingSource();
@@ -44,13 +44,10 @@ namespace TEAM
 
         private Size formSize;
 
-        public FormManageMetadata()
-        {
-            InitializeComponent();
-        }
+        private MetadataValidations metadataValidations;
 
         /// <summary>
-        /// Default constructor
+        /// Default constructor.
         /// </summary>
         /// <param name="parent"></param>
         public FormManageMetadata(FormMain parent) : base(parent)
@@ -63,9 +60,8 @@ namespace TEAM
             SetDataItemGridView();
             SetPhysicalModelGridView();
 
-            // Default setting and start setting of counters etc.
-            MetadataValidations.ValidationIssues = 0;
-            MetadataValidations.ValidationRunning = false;
+            // Default setting and start setting of validation counters etc.
+            metadataValidations = new MetadataValidations();
 
             labelHubCount.Text = @"0 Core Business Concepts";
             labelSatCount.Text = @"0 Context entities";
@@ -76,16 +72,12 @@ namespace TEAM
             richTextBoxInformation.Clear();
 
             // Load the data grids
-            // Get the JSON files and load these into memory.
-            TeamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
-            TeamDataObjectMappingFileCombinations.GetMetadata();
-
-            PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
+            PopulateDataObjectMappingGrid();
             PopulateDataItemMappingGrid();
             PopulatePhysicalModelGrid();
 
             // Inform the user
-            string userFeedback = $"The metadata has been loaded.";
+            var userFeedback = $"The metadata has been loaded.";
             richTextBoxInformation.AppendText($"{userFeedback}\r\n");
             TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"{userFeedback}"));
 
@@ -101,6 +93,18 @@ namespace TEAM
             {
                 richTextBoxInformation.AppendText($"{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
             }
+
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.Enabled].Width = 40;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceConnection].Width = 90;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].Width = 250;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetConnection].Width = 90;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].Width = 250;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Width = 125;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Width = 50;
+            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].Width = 50;
+
+            //_dataGridViewDataObjects.AutoResizeColumns();
+            //GridAutoLayout();
         }
 
         /// <summary>
@@ -113,6 +117,7 @@ namespace TEAM
             ((ISupportInitialize)(_dataGridViewDataObjects)).BeginInit();
 
             _dataGridViewDataObjects.OnDataObjectParse += InformOnDataObjectsResult;
+            _dataGridViewDataObjects.DoubleBuffered(true);
 
             // Add tab page.
             tabPageDataObjectMapping = new TabPage();
@@ -145,6 +150,7 @@ namespace TEAM
         {
             _dataGridViewDataItems = new DataGridViewDataItems(TeamConfiguration);
             ((ISupportInitialize)(_dataGridViewDataItems)).BeginInit();
+            _dataGridViewDataItems.DoubleBuffered(true);
 
             // Add tab page.
             tabPageDataItemMapping = new TabPage();
@@ -172,6 +178,7 @@ namespace TEAM
         {
             _dataGridViewPhysicalModel = new DataGridViewPhysicalModel();
             ((ISupportInitialize)(_dataGridViewPhysicalModel)).BeginInit();
+            _dataGridViewPhysicalModel.DoubleBuffered(true);
 
             // Add tab page.
             tabPagePhysicalModel = new TabPage();
@@ -197,7 +204,7 @@ namespace TEAM
             // Make sure the validation information is available for this form.
             try
             {
-                var validationFile = GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
+                var validationFile = globalParameters.ConfigurationPath + globalParameters.ValidationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension;
 
                 // If the config file does not exist yet, create it by calling the EnvironmentConfiguration Class.
                 if (!File.Exists(validationFile))
@@ -218,12 +225,12 @@ namespace TEAM
             // Make sure the json configuration information is available for this form.
             try
             {
-                var jsonConfigurationFile = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
+                var jsonConfigurationFile = globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension;
 
                 // If the config file does not exist yet, create it.
                 if (!File.Exists(jsonConfigurationFile))
                 {
-                    JsonExportSetting.CreateDummyJsonConfigurationFile(jsonConfigurationFile);
+                    JsonExportSetting.CreateDummyJsonConfigurationFile(jsonConfigurationFile, TeamEventLog);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path).
@@ -240,22 +247,20 @@ namespace TEAM
             checkedListBoxReverseEngineeringAreas.ValueMember = "Key";
             checkedListBoxReverseEngineeringAreas.DisplayMember = "Value";
 
-            var sourceConnections = _dataGridViewDataObjects.Rows
-                .Cast<DataGridViewRow>()
-                .Where(r => !r.IsNewRow)
-                .Where(r => MetadataHandling.GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", TeamConfiguration) == MetadataHandling.DataObjectTypes.StagingArea)
-                .Select(row => row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString())
-                .Distinct()
-                .ToList();
+            //var sourceConnections = _dataGridViewDataObjects.Rows
+            //    .Cast<DataGridViewRow>()
+            //    .Where(r => !r.IsNewRow)
+            //    .Where(r => MetadataHandling.GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", TeamConfiguration) == MetadataHandling.DataObjectTypes.StagingArea)
+            //    .Select(row => row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString())
+            //    .Distinct()
+            //    .ToList();
 
             // Load the checkboxes for the reverse-engineering tab.
             foreach (var connection in TeamConfiguration.ConnectionDictionary)
             {
                 // Only if it's not the metadata connection and not on the 'source' list as derived above.
-                if (connection.Value != TeamConfiguration.MetadataConnection && !sourceConnections.Contains(connection.Value.ConnectionInternalId))
+                if (connection.Value != TeamConfiguration.MetadataConnection)
                 {
-
-
                     var item = new KeyValuePair<TeamConnection, string>(connection.Value, connection.Value.ConnectionKey);
                     checkedListBoxReverseEngineeringAreas.Items.Add(item);
                 }
@@ -271,17 +276,22 @@ namespace TEAM
         /// <summary>
         /// Populate the Table Mapping DataGrid from an existing JSON file, through an underlying data table.
         /// </summary>
-        private void PopulateDataObjectMappingGrid(TeamDataObjectMappingsFileCombinations teamDataObjectMappingsFileCombinations)
+        private void PopulateDataObjectMappingGrid()
         {
+            // Get the JSON files and load these into memory.
+            var teamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(globalParameters.MetadataPath);
+            teamDataObjectMappingFileCombinations.GetMetadata(globalParameters);
+
             // Parse the JSON files into a data table that supports the grid view.
-            var teamDataObjectMappings = new TeamDataObjectMappings(teamDataObjectMappingsFileCombinations);
+            var teamDataObjectMappings = new TeamDataObjectMappings(teamDataObjectMappingFileCombinations);
 
             // Merge events
-            TeamEventLog.AddRange(teamDataObjectMappingsFileCombinations.EventLog);
+            TeamEventLog.AddRange(teamDataObjectMappingFileCombinations.EventLog);
 
             teamDataObjectMappings.SetDataTable(TeamConfiguration);
 
             #region Assert combo box values
+
             // Handle unknown combo box values, by setting them to empty in the data table.
             var localConnectionKeyList = LocalTeamConnection.TeamConnectionKeyList(TeamConfiguration.ConnectionDictionary);
             List<string> userFeedbackList = new List<string>();
@@ -311,6 +321,7 @@ namespace TEAM
                     row[(int) DataObjectMappingGridColumns.TargetConnection] = DBNull.Value;
                 }
             }
+
             #endregion
 
             // Provide user feedback is any of the connections have been invalidated.
@@ -356,8 +367,6 @@ namespace TEAM
 
             _dataGridViewDataItems.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             _dataGridViewDataItems.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
-
-            //richTextBoxInformation.AppendText($"The file {TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName()} was loaded.\r\n");
 
             // Resize the grid
             GridAutoLayout(_dataGridViewDataItems);
@@ -521,7 +530,7 @@ namespace TEAM
         {
             if (_myValidationForm == null)
             {
-                _myValidationForm = new FormManageValidation(this);
+                _myValidationForm = new FormManageValidation();
                 _myValidationForm.Show();
 
                 Application.Run();
@@ -535,7 +544,7 @@ namespace TEAM
                     _myValidationForm.Invoke((MethodInvoker) delegate { _myValidationForm.Close(); });
                     _myValidationForm.FormClosed += CloseValidationForm;
 
-                    _myValidationForm = new FormManageValidation(this);
+                    _myValidationForm = new FormManageValidation();
                     _myValidationForm.Show();
                     Application.Run();
                 }
@@ -544,7 +553,7 @@ namespace TEAM
                     // No invoke required - same thread
                     _myValidationForm.FormClosed += CloseValidationForm;
 
-                    _myValidationForm = new FormManageValidation(this);
+                    _myValidationForm = new FormManageValidation();
                     _myValidationForm.Show();
                     Application.Run();
                 }
@@ -558,7 +567,7 @@ namespace TEAM
         {
             if (_myJsonForm == null)
             {
-                _myJsonForm = new FormJsonConfiguration(this);
+                _myJsonForm = new FormJsonConfiguration();
                 _myJsonForm.Show();
 
                 Application.Run();
@@ -572,7 +581,7 @@ namespace TEAM
                     _myJsonForm.Invoke((MethodInvoker) delegate { _myJsonForm.Close(); });
                     _myJsonForm.FormClosed += CloseJsonForm;
 
-                    _myJsonForm = new FormJsonConfiguration(this);
+                    _myJsonForm = new FormJsonConfiguration();
                     _myJsonForm.Show();
                     Application.Run();
                 }
@@ -581,7 +590,7 @@ namespace TEAM
                     // No invoke required - same thread
                     _myJsonForm.FormClosed += CloseJsonForm;
 
-                    _myJsonForm = new FormJsonConfiguration(this);
+                    _myJsonForm = new FormJsonConfiguration();
                     _myJsonForm.Show();
                     Application.Run();
                 }
@@ -593,7 +602,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void buttonSaveMetadata_Click(object sender, EventArgs e)
+        private void ButtonSaveMetadata_Click(object sender, EventArgs e)
         {
             if (backgroundWorkerReverseEngineering.IsBusy)
             {
@@ -613,42 +622,56 @@ namespace TEAM
                     _dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 ||
                     _dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
                 {
+
                     // Perform the saving of the metadata, one for each grid.
-                    try
+
+                    if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0)
                     {
-                        SaveDataObjectMappingJson(dataTableTableMappingChanges);
-                    }
-                    catch (Exception exception)
-                    {
-                        richTextBoxInformation.Text += $@"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                        try
+                        {
+                            SaveDataObjectMappingJson(dataTableTableMappingChanges);
+
+                            // Load the grids from the repository after being updated.This resets everything.
+                            PopulateDataObjectMappingGrid();
+                        }
+                        catch (Exception exception)
+                        {
+                            richTextBoxInformation.Text += $@"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                        }
                     }
 
-                    try
+                    if (_dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
                     {
-                        SaveAttributeMappingMetadata(dataTableAttributeMappingChanges);
-                    }
-                    catch (Exception exception)
-                    {
-                        richTextBoxInformation.Text += $@"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
-                    }
-
-                    try
-                    {
-                        SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
-                    }
-                    catch (Exception exception)
-                    {
-                        richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
+                        try
+                        {
+                            SaveAttributeMappingMetadata(dataTableAttributeMappingChanges);
+                            
+                            // Load the grids from the repository after being updated.This resets everything.
+                            PopulateDataItemMappingGrid();
+                        }
+                        catch (Exception exception)
+                        {
+                            richTextBoxInformation.Text += $@"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                        }
                     }
 
-                    // Get the JSON files and load these into memory.
-                    TeamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
-                    TeamDataObjectMappingFileCombinations.GetMetadata();
+                    if (_dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+                    {
+                        try
+                        {
+                            SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
 
-                    //Load the grids from the repository after being updated.This resets everything.
-                    PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
-                    PopulateDataItemMappingGrid();
-                    PopulatePhysicalModelGrid();
+                            // Load the grids from the repository after being updated.This resets everything.
+                            PopulatePhysicalModelGrid();
+                        }
+                        catch (Exception exception)
+                        {
+                            richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
+                        }
+                    }
+
+                    // Re-apply any filtering, if required.
+                    ApplyDataGridViewFiltering();
                 }
                 else
                 {
@@ -770,7 +793,7 @@ namespace TEAM
                 var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                File.WriteAllText(targetDataObject.name.GetMetadataFilePath(), output);
+                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.name), output);
 
                 ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
@@ -778,7 +801,7 @@ namespace TEAM
             }
             else
             {
-                var fileToDelete = targetDataObject.name.GetMetadataFilePath();
+                var fileToDelete = globalParameters.GetMetadataFilePath(targetDataObject.name);
                 File.Delete(fileToDelete);
             }
         }
@@ -797,7 +820,7 @@ namespace TEAM
                 var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                File.WriteAllText(targetDataObject.name.GetMetadataFilePath(), output);
+                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.name), output);
 
                 ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
@@ -805,7 +828,7 @@ namespace TEAM
             }
             else
             {
-                var fileToDelete = targetDataObjectName.GetMetadataFilePath();
+                var fileToDelete = globalParameters.GetMetadataFilePath(targetDataObjectName);
                 File.Delete(fileToDelete);
             }
         }
@@ -829,8 +852,8 @@ namespace TEAM
         {
             if (TeamJsonHandling.JsonFileConfiguration.newFilePhysicalModel == "true")
             {
-                TeamJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonModelMetadataFileName + ".json");
-                TeamJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonModelMetadataFileName);
+                TeamJsonHandling.RemoveExistingJsonFile(globalParameters.JsonModelMetadataFileName + ".json");
+                TeamJsonHandling.CreatePlaceholderJsonFile(globalParameters.JsonModelMetadataFileName);
                 TeamJsonHandling.JsonFileConfiguration.newFilePhysicalModel = "false";
             }
 
@@ -1136,8 +1159,8 @@ namespace TEAM
         {
             if (TeamJsonHandling.JsonFileConfiguration.newFileAttributeMapping == "true")
             {
-                TeamJsonHandling.RemoveExistingJsonFile(GlobalParameters.JsonAttributeMappingFileName + ".json");
-                TeamJsonHandling.CreatePlaceholderJsonFile(GlobalParameters.JsonAttributeMappingFileName);
+                TeamJsonHandling.RemoveExistingJsonFile(globalParameters.JsonAttributeMappingFileName + ".json");
+                TeamJsonHandling.CreatePlaceholderJsonFile(globalParameters.JsonAttributeMappingFileName);
                 TeamJsonHandling.JsonFileConfiguration.newFileAttributeMapping = "false";
             }
 
@@ -1187,7 +1210,7 @@ namespace TEAM
                         try
                         {
                             var inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                            AttributeMappingJson[] jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(inputFileName));
+                            DataItemMappingJson[] jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(inputFileName));
 
                             //Retrieves the json segment in the file.
                             var jsonHash = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
@@ -1263,7 +1286,7 @@ namespace TEAM
 
                             // Load the file, if existing information needs to be merged
                             string inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                            AttributeMappingJson[] jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(inputFileName));
+                            DataItemMappingJson[] jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(inputFileName));
 
                             // Convert it into a JArray so segments can be added easily
                             if (jsonArray != null)
@@ -1315,7 +1338,7 @@ namespace TEAM
                         try
                         {
                             string inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                            var jsonArray = JsonConvert.DeserializeObject<AttributeMappingJson[]>(File.ReadAllText(inputFileName)).ToList();
+                            var jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(inputFileName)).ToList();
 
                             //Retrieves the json segment in the file for the given hash returns value or NULL
                             var jsonSegment = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
@@ -1360,70 +1383,14 @@ namespace TEAM
                 #endregion
             }
         }
+        
+        # region Parse process
 
-        /// <summary>
-        /// Returns the source, and target connection for a given input source and target mapping.
-        /// Item 1 is the enabled flag, item 2 is the source, item 3 the source connection, item 4 the target and Item 5 is the target connection.
-        /// </summary>
-        /// <param name="tableMappingDataTable"></param>
-        /// <param name="sourceTable"></param>
-        /// <param name="targetTable"></param>
-        /// <returns></returns>
-        private static Tuple<string, string, TeamConnection, string, TeamConnection> GetDataObjectMappingFromDataItemMapping(DataTable tableMappingDataTable, string sourceTable, string targetTable)
-        {
-            // Default return value
-            Tuple<string, string, TeamConnection, string, TeamConnection> returnTuple = new Tuple<string, string, TeamConnection, string, TeamConnection>
-                (
-                    "False",
-                    sourceTable,
-                    null,
-                    targetTable,
-                    null
-                );
-
-            // Find the corresponding row in the Data Object Mapping grid
-            DataRow[] DataObjectMappings = tableMappingDataTable.Select("[" + DataObjectMappingGridColumns.SourceDataObjectName +
-                                                                        "] = '" + sourceTable + "' AND" +
-                                                                        "[" + DataObjectMappingGridColumns.TargetDataObjectName +
-                                                                        "] = '" + targetTable + "'");
-
-            if (DataObjectMappings is null || DataObjectMappings.Length == 0)
-            {
-                // There is no matching row found in the Data Object Mapping grid. Validation should pick this up!
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, no matching Data Object mapping was found."));
-
-            }
-            else if (DataObjectMappings.Length > 1)
-            {
-                // There are too many entries! There should be only a single mapping from source to target
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, to many (more than 1) matching Data Object mapping were found."));
-            }
-            else
-            {
-                var connectionInternalIdSource = DataObjectMappings[0][DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                var connectionInternalIdTarget = DataObjectMappings[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                TeamConnection sourceConnection = GetTeamConnectionByConnectionId(connectionInternalIdSource);
-                TeamConnection targetConnection = GetTeamConnectionByConnectionId(connectionInternalIdTarget);
-
-                // Set the right values
-                returnTuple = new Tuple<string, string, TeamConnection, string, TeamConnection>
-                (
-                    DataObjectMappings[0][DataObjectMappingGridColumns.Enabled.ToString()].ToString(),
-                    sourceTable,
-                    sourceConnection,
-                    targetTable,
-                    targetConnection
-                );
-
-            }
-
-            return returnTuple;
-        }
-
-        # region Background worker
-        private void ButtonActivate_Click(object sender, EventArgs e)
+        private void ButtonParse_Click(object sender, EventArgs e)
         {
             richTextBoxInformation.Clear();
+
+            #region Preparation
 
             // Local boolean to manage whether activation is OK to go ahead.
             bool activationContinue = true;
@@ -1433,7 +1400,6 @@ namespace TEAM
             var dataTableAttributeMappingChanges = ((DataTable) BindingSourceDataItemMappings.DataSource).GetChanges();
             var dataTablePhysicalModelChanges = ((DataTable) BindingSourcePhysicalModel.DataSource).GetChanges();
             
-
             if (
                 (dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0) ||
                 (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0) ||
@@ -1447,14 +1413,16 @@ namespace TEAM
                 activationContinue = false;
             }
 
+            #endregion
+
             #region Validation
 
-            // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes)
+            // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes).
             if (checkBoxValidation.Checked && activationContinue)
             {
                 if (BindingSourcePhysicalModel.Count == 0)
                 {
-                    richTextBoxInformation.Text += "There is no physical model metadata available, please make sure the physical model grid contains data.\r\n ";
+                    richTextBoxInformation.Text = @"There is no physical model metadata available, please make sure the physical model grid contains data.";
                     activationContinue = false;
                 }
                 else
@@ -1464,8 +1432,8 @@ namespace TEAM
                     _alertValidation = new Form_Alert();
                     _alertValidation.SetFormName("Validating the metadata");
                     _alertValidation.ShowLogButton(false);
-                    _alertValidation.ShowCancelButton(false);
-                    _alertValidation.Canceled += buttonCancel_Click;
+                    _alertValidation.ShowCancelButton(true);
+                    _alertValidation.Canceled += buttonCancelParse_Click;
                     _alertValidation.Show();
 
                     // Start the asynchronous operation.
@@ -1480,26 +1448,31 @@ namespace TEAM
 
             #endregion
 
-            // After validation finishes, the activation thread / process should start.
+            // After validation finishes, the parse thread / process should start.
             // Only if the validation is enabled AND there are no issues identified in earlier validation checks.
 
-            #region Activation
+            #region Parse Thread
 
-            if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && MetadataValidations.ValidationIssues == 0) && activationContinue)
+            if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && metadataValidations.ValidationIssues == 0) && activationContinue)
             {
-                if (backgroundWorkerMetadata.IsBusy) return;
+                if (backgroundWorkerParse.IsBusy) return;
                 // create a new instance of the alert form
-                _alert = new Form_Alert();
-                _alert.Canceled += buttonCancel_Click;
-                _alert.ShowLogButton(false);
-                _alert.ShowCancelButton(false);
-                _alert.Show();
+                _alertParse = new Form_Alert();
+                _alertParse.SetFormName("Parsing the data object mappings");
+                _alertParse.Canceled += buttonCancelParse_Click;
+                _alertParse.ShowLogButton(false);
+                _alertParse.ShowCancelButton(true);
+                _alertParse.Show();
+
+                // Temporarily disable event handling on binding source to avoid cross-thread issues.
+                BindingSourceDataObjectMappings.SuspendBinding();
+
                 // Start the asynchronous operation.
-                backgroundWorkerMetadata.RunWorkerAsync();
+                backgroundWorkerParse.RunWorkerAsync();
             }
             else
             {
-                richTextBoxInformation.AppendText("Validation found issues which should be investigated. If you would like to continue, please uncheck the validation and parse the metadata again.\r\n");
+                richTextBoxInformation.AppendText("Validation found issues which should be investigated.");
             }
 
             #endregion
@@ -1510,19 +1483,22 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>        
-        private void buttonCancel_Click(object sender, EventArgs e)
+        private void buttonCancelParse_Click(object sender, EventArgs e)
         {
-            if (backgroundWorkerMetadata.WorkerSupportsCancellation)
+            if (backgroundWorkerParse.WorkerSupportsCancellation)
             {
                 // Cancel the asynchronous operation.
-                backgroundWorkerMetadata.CancelAsync();
+                backgroundWorkerParse.CancelAsync();
+
+                BindingSourceDataObjectMappings.ResumeBinding();
+
                 // Close the AlertForm
-                _alertValidation.Close();
+                //_alertParse.Close();
             }
         }
 
         // This event handler deals with the results of the background operation.
-        private void backgroundWorkerMetadata_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void backgroundWorkerParse_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
             {
@@ -1534,49 +1510,53 @@ namespace TEAM
             }
             else
             {
-                // Reload the data grids.
-                // Get the JSON files and load these into memory.
-                TeamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
-                TeamDataObjectMappingFileCombinations.GetMetadata();
+                BindingSourceDataObjectMappings.ResumeBinding();
 
                 //Load the grids from the repository after being updated.This resets everything.
-                PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
+                PopulateDataObjectMappingGrid();
                 PopulateDataItemMappingGrid();
                 PopulatePhysicalModelGrid();
 
                 labelResult.Text = @"Done!";
-                richTextBoxInformation.Text = "The metadata was processed successfully!\r\n";
+                richTextBoxInformation.Text = @"The metadata was processed successfully!";
             }
         }
 
         // This event handler updates the progress.
-        private void backgroundWorkerMetadata_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void backgroundWorkerParse_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             // Show the progress in main form
             labelResult.Text = (e.ProgressPercentage + "%");
 
             // Pass the progress to AlertForm label and progress bar
-            _alert.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
-            _alert.ProgressValue = e.ProgressPercentage;
+            _alertParse.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
+            _alertParse.ProgressValue = e.ProgressPercentage;
         }
 
-        # endregion
-
         /// <summary>
-        /// The background worker where the heavy lift work is done for the activation process.
+        /// The background worker where the heavy lift work is done for the parse process.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void backgroundWorkerMetadata_DoWorkMetadataActivation(object sender, DoWorkEventArgs e)
+        private void backgroundWorkerParse_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
-            LogMetadataEvent("Starting an end-to-end parse of all metadata.\r\n", EventTypes.Information);
+            LogMetadataEvent("Starting a parse of selected data object mappings.\r\n", EventTypes.Information);
 
             List<string> targetNameList = new List<string>();
 
             int counter = 0;
-            foreach (DataGridViewRow dataObjectMappingGridViewRow in _dataGridViewDataObjects.Rows)
+
+            var filteredRowSet = GetFilteredDataObjectMappingDataGridViewRows();
+
+            foreach (DataGridViewRow dataObjectMappingGridViewRow in filteredRowSet)
             {
+                // Manage cancellation.
+                if (worker.CancellationPending)
+                {
+                    continue;
+                }
+
                 if (!dataObjectMappingGridViewRow.IsNewRow)
                 {
                     var targetDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
@@ -1591,7 +1571,7 @@ namespace TEAM
 
                             WriteDataObjectMappingsToFile(targetDataObject);
 
-                            LogMetadataEvent($"  --> Saved as '{targetDataObject.name.GetMetadataFilePath()}'.", EventTypes.Information);
+                            LogMetadataEvent($"  --> Saved as '{globalParameters.GetMetadataFilePath(targetDataObject.name)}'.", EventTypes.Information);
 
                             targetNameList.Add(targetDataObjectName);
                         }
@@ -1601,63 +1581,112 @@ namespace TEAM
                         }
 
                         // Normalize all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.
-                        var normalizedValue = 1 + (counter - 0) * (100 - 1) / (_dataGridViewDataObjects.Rows.Count - 0);
+                        var normalizedValue = 1 + (counter - 0) * (100 - 1) / (filteredRowSet.Count - 0);
                         worker?.ReportProgress(normalizedValue);
                         counter++;
                     }
                 }
             }
+
+            // Manage cancellation.
+            if (worker.CancellationPending)
+            {
+                LogMetadataEvent($"The parsing was cancelled.", EventTypes.Warning);
+            }
+
             worker?.ReportProgress(100);
         }
-        
+
+        #endregion
+
         private void LogMetadataEvent(string eventMessage, EventTypes eventType)
         {
             TeamEventLog.Add(Event.CreateNewEvent(eventType, eventMessage));
-            _alert.SetTextLogging("\r\n" + eventMessage);
+            _alertParse.SetTextLogging("\r\n" + eventMessage);
         }
 
-        public DateTime ActivationMetadata()
+        internal List<DataGridViewRow> GetFilteredDataObjectMappingDataGridViewRows()
         {
-            DateTime mostRecentActivationDateTime = DateTime.MinValue;
+            var filteredRowSet = new List<DataGridViewRow>();
 
-            var connOmd = new SqlConnection
+            if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
             {
-                ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
-            };
-
-            var sqlStatementForActivationMetadata = new StringBuilder();
-            sqlStatementForActivationMetadata.AppendLine("SELECT [VERSION_NAME], MAX([ACTIVATION_DATETIME]) AS [ACTIVATION_DATETIME]");
-            sqlStatementForActivationMetadata.AppendLine("FROM [dbo].[MD_MODEL_METADATA]");
-            sqlStatementForActivationMetadata.AppendLine("GROUP BY [VERSION_NAME]");
-
-            var activationMetadata = Utility.GetDataTable(ref connOmd, sqlStatementForActivationMetadata.ToString());
-
-            if (activationMetadata != null)
-            {
-                foreach (DataRow row in activationMetadata.Rows)
-                {
-                    mostRecentActivationDateTime = (DateTime) row["ACTIVATION_DATETIME"];
-                }
-            }
-
-            return mostRecentActivationDateTime;
-        }
-
-
-        private void saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            DateTime activationDateTime = ActivationMetadata();
-
-            if (activationDateTime == DateTime.MinValue)
-            {
-                richTextBoxInformation.Text = "The metadata was not activated, so the graph is constructed only from the raw mappings.";
+                filteredRowSet = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>()
+                    .Where(row => !row.IsNewRow &&
+                                  (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(textBoxFilterCriterion.Text) ||
+                                   row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(textBoxFilterCriterion.Text)))
+                    .ToList();
             }
             else
             {
-                richTextBoxInformation.Text =
-                    $"DGML will be generated following the most recent activation metadata, as per ({activationDateTime}).";
+                filteredRowSet = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>().Where(row => !row.IsNewRow).ToList();
             }
 
+            return filteredRowSet;
+        }
+
+        internal List<DataGridViewRow> GetFilteredDataItemMappingDataGridViewRows()
+        {
+            var filteredRowSet = new List<DataGridViewRow>();
+
+            if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
+            {
+                filteredRowSet = _dataGridViewDataItems.Rows.Cast<DataGridViewRow>()
+                    .Where(row => !row.IsNewRow &&
+                                  (row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(textBoxFilterCriterion.Text) ||
+                                   row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(textBoxFilterCriterion.Text)))
+                    .ToList();
+            }
+            else
+            {
+                filteredRowSet = _dataGridViewDataItems.Rows.Cast<DataGridViewRow>().Where(row => !row.IsNewRow).ToList();
+            }
+
+            return filteredRowSet;
+        }
+
+        internal List<DataRow> GetFilteredDataObjectMappingDataTableRows()
+        {
+            var filteredRowSet = new List<DataRow>();
+
+            DataTable dataTable = (DataTable)BindingSourceDataObjectMappings.DataSource;
+
+            if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
+            {
+                filteredRowSet = dataTable.AsEnumerable().Where(row => row[(int)DataObjectMappingGridColumns.TargetDataObjectName].ToString().Contains(textBoxFilterCriterion.Text) ||
+                                                                       row[(int)DataObjectMappingGridColumns.SourceDataObjectName].ToString().Contains(textBoxFilterCriterion.Text))
+                    .ToList();
+            }
+            else
+            {
+                filteredRowSet = dataTable.AsEnumerable().ToList();
+            }
+
+            return filteredRowSet;
+        }
+
+        internal List<DataRow> GetFilteredDataItemMappingDataTableRows()
+        {
+            var filteredRowSet = new List<DataRow>();
+
+            DataTable dataTable = (DataTable)BindingSourceDataItemMappings.DataSource;
+
+            if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
+            {
+                filteredRowSet = dataTable.AsEnumerable().Where(row => row[(int)DataItemMappingGridColumns.TargetDataObject].ToString().Contains(textBoxFilterCriterion.Text) ||
+                                                                       row[(int)DataItemMappingGridColumns.SourceDataObject].ToString().Contains(textBoxFilterCriterion.Text))
+                    .ToList();
+            }
+            else
+            {
+                filteredRowSet = dataTable.AsEnumerable().ToList();
+            }
+
+            return filteredRowSet;
+        }
+
+        private void saveAsDirectionalGraphMarkupLanguageDgmlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             var theDialog = new SaveFileDialog
             {
                 Title = @"Save Metadata As Directional Graph File",
@@ -1666,8 +1695,7 @@ namespace TEAM
             };
 
             var ret = STAShowDialog(theDialog);
-
-
+            
             if (ret == DialogResult.OK)
             {
                 var chosenFile = theDialog.FileName;
@@ -1696,13 +1724,13 @@ namespace TEAM
                         DataGridViewRow row = _dataGridViewDataObjects.Rows[i];
                         string sourceNode = row.Cells[(int) DataObjectMappingGridColumns.SourceDataObject].Value.ToString();
                         var sourceConnectionId = row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
-                        var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
+                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionId, TeamConfiguration, TeamEventLog);
                         KeyValuePair<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceNode, sourceConnection).FirstOrDefault();
 
 
                         string targetNode = row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value.ToString();
                         var targetConnectionId = row.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                        var targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
                         KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetNode, targetConnection).FirstOrDefault();
 
 
@@ -1968,16 +1996,15 @@ namespace TEAM
                         
                         string sourceNode = row.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value.ToString();
                         var sourceConnectionId = row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
-                        var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
+                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionId, TeamConfiguration, TeamEventLog);
                         KeyValuePair<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceNode, sourceConnection).FirstOrDefault();
 
                         string targetNode = row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value.ToString();
                         var targetConnectionId = row.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                        var targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
                         KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetNode, targetConnection).FirstOrDefault();
 
                         var businessKey = row.Cells[(int) DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString();
-
 
                         dgmlExtract.AppendLine("     <Link Source=\"" + fullyQualifiedObjectSource.Key+'.'+ fullyQualifiedObjectSource.Value + "\" Target=\"" + fullyQualifiedObjectTarget.Key+'.'+fullyQualifiedObjectTarget.Value  + "\" BusinessKeyDefinition=\"" + businessKey + "\"/>");
                     }
@@ -2109,7 +2136,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ReverseEngineerMetadataButtonClick(object sender, EventArgs e)
+        private void ButtonReverseEngineerMetadataClick(object sender, EventArgs e)
         {
             // Select the physical model grid view.
             tabControlDataMappings.SelectedTab = tabPagePhysicalModel;
@@ -2117,29 +2144,33 @@ namespace TEAM
             richTextBoxInformation.Clear();
             richTextBoxInformation.Text = @"Commencing reverse-engineering the model metadata from the database. This may take a few minutes depending on the complexity of the database.";
 
+            checkedListBoxReverseEngineeringAreas.Enabled = false;
+
             if (backgroundWorkerValidationOnly.IsBusy) 
                 return;
 
             backgroundWorkerReverseEngineering.RunWorkerAsync();
         }
-        
+
         /// <summary>
         ///   Connect to a given database and return the data dictionary (catalog) information in the data grid.
         /// </summary>
-        /// <param name="conn"></param>
-        /// <param name="databaseName"></param>
-        private DataTable ReverseEngineerModelMetadata(SqlConnection conn, string databaseName)
+        /// <param name="teamConnection"></param>
+        /// <param name="filteredDataObjectMappingDataRows"></param>
+        private DataTable ReverseEngineerModelMetadata(TeamConnection teamConnection, List<DataRow> filteredDataObjectMappingDataRows)
         {
+            var conn = new SqlConnection { ConnectionString = teamConnection.CreateSqlServerConnectionString(false) };
+
             try
             {
                 conn.Open();
             }
             catch (Exception exception)
             {
-                richTextBoxInformation.Text += $@"An error has occurred uploading the model for the new version because the database could not be connected to. The error message is: {exception.Message}.";
+                ThreadHelper.SetText(this, richTextBoxInformation, $@"An error has occurred uploading the model for the new version because the database could not be connected to. The error message is: {exception.Message}.");
             }
 
-            var sqlStatementForDataItems = SqlStatementForDataItems(databaseName);
+            var sqlStatementForDataItems = SqlStatementForDataItems( GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), teamConnection);
 
             var reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems);
             conn.Close();
@@ -2147,19 +2178,32 @@ namespace TEAM
             return reverseEngineerResults;
         }
 
-        private string SqlStatementForDataItems(string databaseName, bool isJson = false)
+        private List<DataRow> GetDistinctFilteredDataObjects(List<DataRow> filteredDataObjectMappingDataRows)
         {
-            // Get everything as local variables to reduce multi-threading issues
-            var effectiveDateTimeAttribute =
-                TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute == "True"
-                    ? TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute
-                    : TeamConfiguration.LoadDateTimeAttribute;
+            var tempFilterDataObjects = new List<DataRow>();
 
-            var dwhKeyIdentifier = TeamConfiguration.DwhKeyIdentifier; //Indicates _HSH, _SK etc.
-            var keyIdentifierLocation = TeamConfiguration.KeyNamingLocation;
+            if (filteredDataObjectMappingDataRows.Any())
+            {
+                tempFilterDataObjects.AddRange(filteredDataObjectMappingDataRows
+                    .Distinct()
+                    .ToList());
+            }
+            else
+            {
+                DataTable localDataTable = (DataTable)BindingSourceDataObjectMappings.DataSource;
 
-            // Create the attribute selection statement for the array
-            var sqlStatementForDataItems = new StringBuilder();
+                tempFilterDataObjects.AddRange(localDataTable.AsEnumerable()
+                    .Distinct()
+                    .ToList());
+            }
+
+            var filterDataObjects = tempFilterDataObjects.Distinct().ToList();
+            return filterDataObjects;
+        }
+
+        private string SqlStatementForDataItems(List<DataRow> filterDataObjects, TeamConnection teamConnection, bool isJson = false)
+        {
+            var dwhKeyIdentifier = TeamConfiguration.KeyIdentifier; //Indicates _HSH, _SK etc.
 
             string databaseColumnName = PhysicalModelMappingMetadataColumns.Database_Name.ToString();
             string schemaColumnName = PhysicalModelMappingMetadataColumns.Schema_Name.ToString();
@@ -2188,128 +2232,162 @@ namespace TEAM
                 multiActiveKeyColumnName = "multiActiveIndicator";
             }
 
+            // Prepare the query, depending on the type.
+            // Create the attribute selection statement for the array.
+            var sqlStatementForDataItems = new StringBuilder();
 
-            sqlStatementForDataItems.AppendLine("SELECT ");
-
-            sqlStatementForDataItems.AppendLine($"  DB_NAME(DB_ID('{databaseName}')) AS [{databaseColumnName}],");
-            sqlStatementForDataItems.AppendLine($"  OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [{schemaColumnName}],");
-            sqlStatementForDataItems.AppendLine($"  OBJECT_NAME(main.OBJECT_ID) AS [{tableColumnName}], ");
-            sqlStatementForDataItems.AppendLine($"  main.[name] AS [{columnColumnName}], ");
-            sqlStatementForDataItems.AppendLine($"  t.[name] AS [{dataTypeColumnName}], ");
-            sqlStatementForDataItems.AppendLine("  CAST(COALESCE(");
-            sqlStatementForDataItems.AppendLine("    CASE WHEN UPPER(t.[name]) = 'NVARCHAR' THEN main.[max_length]/2"); //Exception for unicode
-            sqlStatementForDataItems.AppendLine("    ELSE main.[max_length]");
-            sqlStatementForDataItems.AppendLine("    END");
-            sqlStatementForDataItems.AppendLine($"     ,0) AS VARCHAR(100)) AS [{characterLengthColumnName}],");
-            sqlStatementForDataItems.AppendLine($"  CAST(COALESCE(main.[precision],0) AS VARCHAR(100)) AS [{numericPrecisionColumnName}], ");
-            sqlStatementForDataItems.AppendLine($"  CAST(COALESCE(main.[scale], 0) AS VARCHAR(100)) AS [{numericScaleColumnName}], ");
-            sqlStatementForDataItems.AppendLine($"  CAST(main.[column_id] AS VARCHAR(100)) AS [{ordinalPositionColumnName}], ");
-            sqlStatementForDataItems.AppendLine("  CASE ");
-            sqlStatementForDataItems.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL ");
-            sqlStatementForDataItems.AppendLine("    THEN 'N' ");
-            sqlStatementForDataItems.AppendLine("    ELSE 'Y' ");
-            sqlStatementForDataItems.AppendLine($"  END AS {primaryKeyColumnName}, ");
-            sqlStatementForDataItems.AppendLine("  CASE ");
-            sqlStatementForDataItems.AppendLine("    WHEN ma.COLUMN_NAME IS NULL ");
-            sqlStatementForDataItems.AppendLine("    THEN 'N' ");
-            sqlStatementForDataItems.AppendLine("    ELSE 'Y' ");
-            sqlStatementForDataItems.AppendLine($"  END AS {multiActiveKeyColumnName} ");
-
-            sqlStatementForDataItems.AppendLine("FROM [" + databaseName + "].sys.columns main");
-            sqlStatementForDataItems.AppendLine("JOIN sys.types t ON main.user_type_id=t.user_type_id");
-            sqlStatementForDataItems.AppendLine("-- Primary Key");
-            sqlStatementForDataItems.AppendLine("LEFT OUTER JOIN (");
-            sqlStatementForDataItems.AppendLine("	SELECT ");
-            sqlStatementForDataItems.AppendLine("	  sc.name AS TABLE_NAME,");
-            sqlStatementForDataItems.AppendLine("	  C.name AS COLUMN_NAME");
-            sqlStatementForDataItems.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
-            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
-            sqlStatementForDataItems.AppendLine("	ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
-            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
-            sqlStatementForDataItems.AppendLine("	ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
-            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
-            sqlStatementForDataItems.AppendLine("	WHERE is_primary_key=1 ");
-            sqlStatementForDataItems.AppendLine(") keysub");
-            sqlStatementForDataItems.AppendLine("   ON OBJECT_NAME(main.OBJECT_ID) = keysub.TABLE_NAME");
-            sqlStatementForDataItems.AppendLine("  AND main.[name] = keysub.COLUMN_NAME");
-
-            //Multi-active
-            sqlStatementForDataItems.AppendLine("-- Multi-Active");
-            sqlStatementForDataItems.AppendLine("LEFT OUTER JOIN (");
-            sqlStatementForDataItems.AppendLine("	SELECT ");
-            sqlStatementForDataItems.AppendLine("		sc.name AS TABLE_NAME,");
-            sqlStatementForDataItems.AppendLine("		C.name AS COLUMN_NAME");
-            sqlStatementForDataItems.AppendLine("	FROM [" + databaseName + "].sys.index_columns A");
-            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.indexes B");
-            sqlStatementForDataItems.AppendLine("	ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
-            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.columns C");
-            sqlStatementForDataItems.AppendLine("	ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
-            sqlStatementForDataItems.AppendLine("	JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
-            sqlStatementForDataItems.AppendLine("	WHERE is_primary_key=1");
-            sqlStatementForDataItems.AppendLine("	AND C.name NOT IN ('" + effectiveDateTimeAttribute + "')");
-
-            if (keyIdentifierLocation == "Prefix")
+            if (teamConnection.ConnectionType == ConnectionTypes.Catalog || teamConnection.ConnectionType == ConnectionTypes.Custom)
             {
-                sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '" + dwhKeyIdentifier + "_%'");
+                // Catalog query.
+                if (teamConnection.ConnectionType == ConnectionTypes.Catalog)
+                {
+                    var databaseName = teamConnection.DatabaseServer.DatabaseName;
+                    
+                    sqlStatementForDataItems.AppendLine($"-- Physical Model Snapshot query for {teamConnection.ConnectionKey}.");
+                    sqlStatementForDataItems.AppendLine("SELECT * FROM");
+                    sqlStatementForDataItems.AppendLine("(");
+                    sqlStatementForDataItems.AppendLine("  SELECT ");
+
+                    sqlStatementForDataItems.AppendLine($"    DB_NAME(DB_ID('{databaseName}')) AS [{databaseColumnName}],");
+                    sqlStatementForDataItems.AppendLine($"    OBJECT_SCHEMA_NAME(main.OBJECT_ID) AS [{schemaColumnName}],");
+                    sqlStatementForDataItems.AppendLine($"    OBJECT_NAME(main.OBJECT_ID) AS [{tableColumnName}], ");
+                    sqlStatementForDataItems.AppendLine($"    main.[name] AS [{columnColumnName}], ");
+                    sqlStatementForDataItems.AppendLine($"    t.[name] AS [{dataTypeColumnName}], ");
+                    sqlStatementForDataItems.AppendLine("     CAST(COALESCE(");
+                    sqlStatementForDataItems.AppendLine("        CASE WHEN UPPER(t.[name]) = 'NVARCHAR' THEN main.[max_length]/2"); //Exception for unicode
+                    sqlStatementForDataItems.AppendLine("        ELSE main.[max_length]");
+                    sqlStatementForDataItems.AppendLine("        END");
+                    sqlStatementForDataItems.AppendLine($"    ,0) AS VARCHAR(100)) AS [{characterLengthColumnName}],");
+                    sqlStatementForDataItems.AppendLine($"    CAST(COALESCE(main.[precision],0) AS VARCHAR(100)) AS [{numericPrecisionColumnName}], ");
+                    sqlStatementForDataItems.AppendLine($"    CAST(COALESCE(main.[scale], 0) AS VARCHAR(100)) AS [{numericScaleColumnName}], ");
+                    sqlStatementForDataItems.AppendLine($"    CAST(main.[column_id] AS VARCHAR(100)) AS [{ordinalPositionColumnName}], ");
+                    sqlStatementForDataItems.AppendLine("     CASE ");
+                    sqlStatementForDataItems.AppendLine("       WHEN keysub.COLUMN_NAME IS NULL ");
+                    sqlStatementForDataItems.AppendLine("       THEN 'N' ");
+                    sqlStatementForDataItems.AppendLine("       ELSE 'Y' ");
+                    sqlStatementForDataItems.AppendLine($"    END AS {primaryKeyColumnName}, ");
+                    sqlStatementForDataItems.AppendLine("     CASE ");
+                    sqlStatementForDataItems.AppendLine("       WHEN ma.COLUMN_NAME IS NULL ");
+                    sqlStatementForDataItems.AppendLine("       THEN 'N' ");
+                    sqlStatementForDataItems.AppendLine("       ELSE 'Y' ");
+                    sqlStatementForDataItems.AppendLine($"    END AS {multiActiveKeyColumnName} ");
+
+                    sqlStatementForDataItems.AppendLine("  FROM [" + databaseName + "].sys.columns main");
+                    sqlStatementForDataItems.AppendLine("  JOIN sys.types t ON main.user_type_id=t.user_type_id");
+                    sqlStatementForDataItems.AppendLine("  -- Primary Key");
+                    sqlStatementForDataItems.AppendLine("  LEFT OUTER JOIN (");
+                    sqlStatementForDataItems.AppendLine("	  SELECT ");
+                    sqlStatementForDataItems.AppendLine("	    sc.name AS TABLE_NAME,");
+                    sqlStatementForDataItems.AppendLine("	    C.name AS COLUMN_NAME");
+                    sqlStatementForDataItems.AppendLine("	  FROM [" + databaseName + "].sys.index_columns A");
+                    sqlStatementForDataItems.AppendLine("	  JOIN [" + databaseName + "].sys.indexes B");
+                    sqlStatementForDataItems.AppendLine("	    ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
+                    sqlStatementForDataItems.AppendLine("	  JOIN [" + databaseName + "].sys.columns C");
+                    sqlStatementForDataItems.AppendLine("	   ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
+                    sqlStatementForDataItems.AppendLine("	  JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+                    sqlStatementForDataItems.AppendLine("	  WHERE is_primary_key=1 ");
+                    sqlStatementForDataItems.AppendLine("  ) keysub");
+                    sqlStatementForDataItems.AppendLine("  ON OBJECT_NAME(main.OBJECT_ID) = keysub.TABLE_NAME");
+                    sqlStatementForDataItems.AppendLine("  AND main.[name] = keysub.COLUMN_NAME");
+
+                    //Multi-active
+
+                    var effectiveDateTimeAttribute =
+                        TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute == "True"
+                            ? TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute
+                            : TeamConfiguration.LoadDateTimeAttribute;
+
+                    sqlStatementForDataItems.AppendLine("  -- Multi-Active");
+                    sqlStatementForDataItems.AppendLine("  LEFT OUTER JOIN (");
+                    sqlStatementForDataItems.AppendLine("	 SELECT ");
+                    sqlStatementForDataItems.AppendLine("	   sc.name AS TABLE_NAME,");
+                    sqlStatementForDataItems.AppendLine("	   C.name AS COLUMN_NAME");
+                    sqlStatementForDataItems.AppendLine("	 FROM [" + databaseName + "].sys.index_columns A");
+                    sqlStatementForDataItems.AppendLine("	 JOIN [" + databaseName + "].sys.indexes B");
+                    sqlStatementForDataItems.AppendLine("	   ON A.OBJECT_ID=B.OBJECT_ID AND A.index_id=B.index_id");
+                    sqlStatementForDataItems.AppendLine("	 JOIN [" + databaseName + "].sys.columns C");
+                    sqlStatementForDataItems.AppendLine("	   ON A.column_id=C.column_id AND A.OBJECT_ID=C.OBJECT_ID");
+                    sqlStatementForDataItems.AppendLine("	 JOIN [" + databaseName + "].sys.tables sc on sc.OBJECT_ID = A.OBJECT_ID");
+                    sqlStatementForDataItems.AppendLine("	 WHERE is_primary_key=1");
+                    sqlStatementForDataItems.AppendLine("	 AND C.name NOT IN ('" + effectiveDateTimeAttribute + "')");
+                    sqlStatementForDataItems.AppendLine("	 AND C.name NOT LIKE '" + dwhKeyIdentifier + "%'");
+                    sqlStatementForDataItems.AppendLine("	 AND C.name NOT LIKE '%" + dwhKeyIdentifier + "'");
+
+                    sqlStatementForDataItems.AppendLine("	 ) ma");
+                    sqlStatementForDataItems.AppendLine("	 ON OBJECT_NAME(main.OBJECT_ID) = ma.TABLE_NAME");
+                    sqlStatementForDataItems.AppendLine("	 AND main.[name] = ma.COLUMN_NAME");
+                    sqlStatementForDataItems.AppendLine(") customSubQuery");
+                }
+                else if (teamConnection.ConnectionType == ConnectionTypes.Custom)
+                {
+                    // Use the custom query that was provided with the connection.
+                    sqlStatementForDataItems.AppendLine($"-- User-provided (custom) Physical Model Snapshot query for {teamConnection.ConnectionKey}.");
+                    sqlStatementForDataItems.AppendLine("SELECT * FROM");
+                    sqlStatementForDataItems.AppendLine("(");
+                    sqlStatementForDataItems.AppendLine(teamConnection.ConnectionCustomQuery);
+                    sqlStatementForDataItems.AppendLine(") customSubQuery");
+                }
+
+                // Shared / generic.
+
+                // Add the filtered objects.
+                sqlStatementForDataItems.AppendLine("WHERE 1=1");
+                sqlStatementForDataItems.AppendLine("  AND");
+                sqlStatementForDataItems.AppendLine("   (");
+
+                var filterList = new List<Tuple<string, TeamConnection>>();
+
+                foreach (DataRow row in filterDataObjects)
+                {
+                    // Skip deleted rows.
+                    if (row.RowState == DataRowState.Deleted)
+                        continue;
+
+                    string localInternalConnectionIdSource = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
+                    TeamConnection localConnectionSource = TeamConnection.GetTeamConnectionByConnectionId(localInternalConnectionIdSource, TeamConfiguration, TeamEventLog);
+
+                    string localInternalConnectionIdTarget = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
+                    TeamConnection localConnectionTarget = TeamConnection.GetTeamConnectionByConnectionId(localInternalConnectionIdTarget, TeamConfiguration, TeamEventLog);
+
+                    var localTupleSource = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], localConnectionSource);
+
+                    var localTupleTarget = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], localConnectionTarget);
+
+                    if (!filterList.Contains(localTupleSource))
+                    {
+                        filterList.Add(localTupleSource);
+                    }
+
+                    if (!filterList.Contains(localTupleTarget))
+                    {
+                        filterList.Add(localTupleTarget);
+                    }
+                }
+
+                foreach (var filter in filterList)
+                {
+                    var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2).FirstOrDefault();
+
+                    // Always add the 'regular' mapping.
+                    sqlStatementForDataItems.AppendLine($"     ({tableColumnName} = '{fullyQualifiedName.Value}' AND {schemaColumnName} = '{fullyQualifiedName.Key}')");
+                    sqlStatementForDataItems.AppendLine("     OR");
+                }
+
+                // Remove the last OR
+                sqlStatementForDataItems.Remove(sqlStatementForDataItems.Length - 6, 6);
+
+                sqlStatementForDataItems.AppendLine(")");
+                sqlStatementForDataItems.AppendLine($"ORDER BY {tableColumnName}, {columnColumnName}, {ordinalPositionColumnName}");
+
+                if (isJson)
+                {
+                    sqlStatementForDataItems.AppendLine("FOR JSON PATH");
+                    sqlStatementForDataItems.AppendLine();
+                }
             }
             else
             {
-                sqlStatementForDataItems.AppendLine("	AND C.name NOT LIKE '%_" + dwhKeyIdentifier + "'");
-            }
-
-            sqlStatementForDataItems.AppendLine("	) ma");
-            sqlStatementForDataItems.AppendLine("	ON OBJECT_NAME(main.OBJECT_ID) = ma.TABLE_NAME");
-            sqlStatementForDataItems.AppendLine("	AND main.[name] = ma.COLUMN_NAME");
-            sqlStatementForDataItems.AppendLine("WHERE 1=1");
-
-            sqlStatementForDataItems.AppendLine("  AND (");
-
-            var filterList = new List<Tuple<string, TeamConnection>>();
-
-            foreach (DataRow row in ((DataTable)BindingSourceDataObjectMappings.DataSource).Rows)
-            {
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                string localInternalConnectionIdSource = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                TeamConnection localConnectionSource = GetTeamConnectionByConnectionId(localInternalConnectionIdSource);
-
-                string localInternalConnectionIdTarget = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                TeamConnection localConnectionTarget = GetTeamConnectionByConnectionId(localInternalConnectionIdTarget);
-
-                var localTupleSource = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], localConnectionSource);
-
-                var localTupleTarget = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], localConnectionTarget);
-
-                if (!filterList.Contains(localTupleSource))
-                {
-                    filterList.Add(localTupleSource);
-                }
-
-                if (!filterList.Contains(localTupleTarget))
-                {
-                    filterList.Add(localTupleTarget);
-                }
-            }
-
-            foreach (var filter in filterList)
-            {
-                var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2).FirstOrDefault();
-
-                // Always add the 'regular' mapping.
-                sqlStatementForDataItems.AppendLine("  (OBJECT_NAME(main.OBJECT_ID) = '" + fullyQualifiedName.Value + "' AND OBJECT_SCHEMA_NAME(main.OBJECT_ID) = '" + fullyQualifiedName.Key + "')");
-                sqlStatementForDataItems.AppendLine("  OR");
-            }
-
-            sqlStatementForDataItems.Remove(sqlStatementForDataItems.Length - 6, 6);
-            sqlStatementForDataItems.AppendLine();
-            sqlStatementForDataItems.AppendLine("  )");
-            sqlStatementForDataItems.AppendLine("ORDER BY main.column_id");
-
-            if (isJson)
-            {
-                sqlStatementForDataItems.AppendLine("FOR JSON PATH");
+                richTextBoxInformation.Text += @"An exception has occurred while determining the connection type. The connection does not have a valid connection type (0, catalog or 1, custom).";
             }
 
             return sqlStatementForDataItems.ToString();
@@ -2317,63 +2395,91 @@ namespace TEAM
 
         private void TextBoxFilterCriterion_OnDelayedTextChanged(object sender, EventArgs e)
         {
-            ApplyDataGridViewFiltering(textBoxFilterCriterion.Text);
+            ApplyDataGridViewFiltering();
         }
 
-        private void ApplyDataGridViewFiltering(string filterCriterion)
+        private void ApplyDataGridViewFiltering()
         {
-            foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
-            {
-                row.Visible = true;
+            var filterCriterion = textBoxFilterCriterion.Text;
 
-                if (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
+            // Only update the grid view on the visible tab.
+            if (tabControlDataMappings.SelectedIndex == 0)
+            {
+                foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
                 {
-                    if (!row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(filterCriterion) && !row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(filterCriterion))
+                    row.Visible = true;
+
+                    if (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
                     {
-                        CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataObjects.DataSource];
-                        currencyManager.SuspendBinding();
-                        row.Visible = false;
-                        currencyManager.ResumeBinding();
+                        if (!row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(filterCriterion) &&
+                            !row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(filterCriterion))
+                        {
+                            CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataObjects.DataSource];
+                            currencyManager.SuspendBinding();
+                            row.Visible = false;
+                            currencyManager.ResumeBinding();
+                        }
                     }
                 }
             }
-
-            foreach (DataGridViewRow row in _dataGridViewDataItems.Rows)
+            else if (tabControlDataMappings.SelectedIndex == 1)
             {
-                row.Visible = true;
-
-                if (row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value != null)
+                foreach (DataGridViewRow row in _dataGridViewDataItems.Rows)
                 {
-                    if (!row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)DataItemMappingGridColumns.SourceDataItem].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)DataItemMappingGridColumns.TargetDataItem].Value.ToString().Contains(filterCriterion))
+                    row.Visible = true;
+
+                    if (row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value != null)
                     {
-                        CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataItems.DataSource];
-                        currencyManager.SuspendBinding();
-                        row.Visible = false;
-                        currencyManager.ResumeBinding();
+                        if (!row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(filterCriterion) &&
+                            !row.Cells[(int)DataItemMappingGridColumns.SourceDataItem].Value.ToString().Contains(filterCriterion) &&
+                            !row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(filterCriterion) &&
+                            !row.Cells[(int)DataItemMappingGridColumns.TargetDataItem].Value.ToString().Contains(filterCriterion))
+                        {
+                            CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataItems.DataSource];
+                            currencyManager.SuspendBinding();
+                            row.Visible = false;
+                            currencyManager.ResumeBinding();
+                        }
                     }
                 }
             }
-
-            foreach (DataGridViewRow row in _dataGridViewPhysicalModel.Rows)
+            else if (tabControlDataMappings.SelectedIndex == 2)
             {
-                row.Visible = true;
+                var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
+                var currentFilter = inputTableMappingPhysicalModel.DefaultView.RowFilter;
 
-                if (row.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value != null)
+                // Build the filter.
+                if (string.IsNullOrEmpty(filterCriterion) && checkBoxShowStaging.Checked)
                 {
-                    if (!row.Cells[(int)PhysicalModelMappingMetadataColumns.Database_Name].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)PhysicalModelMappingMetadataColumns.Schema_Name].Value.ToString().Contains(filterCriterion) &&
-                        !row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Contains(filterCriterion))
+                    // Don't worry about it. There's not filters to set, everything needs to be shown.
+                    // Reset the filter.
+                    inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
+                }
+                else
+                {
+                    var filterCriterionPhysicalModel = "";
+
+                    if (!string.IsNullOrEmpty(filterCriterion) && string.IsNullOrEmpty(currentFilter))
                     {
-                        CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewPhysicalModel.DataSource];
-                        currencyManager.SuspendBinding();
-                        row.Visible = false;
-                        currencyManager.ResumeBinding();
+                        // There is no broad filter, but a user filter has been set.
+                        // Apply text box filter to support user filtering.
+                        filterCriterionPhysicalModel = $"[Database_Name] LIKE '{filterCriterion}%' OR [Table_Name] LIKE '{filterCriterion}%' OR [Column_Name] LIKE '{filterCriterion}%' OR [Schema_Name] LIKE '{filterCriterion}%'";
+                        inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
+                    }
+                    else if (!string.IsNullOrEmpty(currentFilter) && !string.IsNullOrEmpty(filterCriterion))
+                    {
+                        // There is already a broad filter, and a user filter has also been set.
+                        // Merge with existing filter.
+                        filterCriterionPhysicalModel = currentFilter +
+                                                       $"AND [Database_Name] LIKE '{filterCriterion}%' OR [Table_Name] LIKE '{filterCriterion}%' OR [Column_Name] LIKE '{filterCriterion}%' OR [Schema_Name] LIKE '{filterCriterion}%'";
+                        inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
                     }
                 }
+            }
+            else
+            {
+                // Exception - cannot happen.
+                richTextBoxInformation.Text = $@"An incorrect data grid view was provided: '{tabControlDataMappings.TabPages[tabControlDataMappings.SelectedIndex]}'. This is a bug, please raise a Github issue.";
             }
         }
 
@@ -2382,11 +2488,26 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void backgroundWorkerValidation_DoWork(object sender, DoWorkEventArgs e)
+        private void BackgroundWorkerValidation_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            DataTable dataTable = (DataTable)BindingSourceDataObjectMappings.DataSource;
+            // Data Object Mapping filtered rows (starting point for validation).
+            var filteredDataObjectMappingDataRows = GetFilteredDataObjectMappingDataTableRows();
+            var filteredDataObjectMappingDataGridViewRows = GetFilteredDataObjectMappingDataGridViewRows();
+
+            var dataObjectMappingDataTable = (DataTable)BindingSourceDataObjectMappings.DataSource;
+            var dataObjectMappingDataRows = dataObjectMappingDataTable.AsEnumerable().ToList();
+
+            // Data Item Mapping filtered rows (starting point for validation).
+            var filteredDataItemDataRows = GetFilteredDataItemMappingDataTableRows();
+
+            // Physical model snapshot.
+            var dataObjectMappingGridViewRows = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>()
+                .Where(row => !row.IsNewRow)
+                .ToList();
+
+            var physicalModelDataTable = (DataTable)BindingSourcePhysicalModel.DataSource;
 
             // Handling multi-threading
             if (worker != null && worker.CancellationPending)
@@ -2395,839 +2516,80 @@ namespace TEAM
             }
             else
             {
-                _alertValidation.SetTextLogging("Commencing validation on available metadata according to settings in in the validation screen.\r\n\r\n");
-                MetadataValidations.ValidationIssues = 0;
+                _alertValidation.SetTextLogging("Commencing validation on available metadata, according to settings in the validation screen.\r\n\r\n");
+
+                // Set the validation issue counter to 0 to start a new validation round.
+                metadataValidations.ValidationIssues = 0;
 
                 if (ValidationSetting.DataObjectExistence == "True")
                 {
-                    ValidateObjectExistence(dataTable);
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateObjectExistence(filteredDataObjectMappingDataRows, physicalModelDataTable, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
-
                 worker?.ReportProgress(10);
-
 
                 if (ValidationSetting.SourceBusinessKeyExistence == "True")
                 {
-                    ValidateBusinessKeyObject();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateBusinessKeyObject(filteredDataObjectMappingDataRows, TeamConfiguration, TeamEventLog, physicalModelDataTable, ref metadataValidations));
                 }
-
                 worker?.ReportProgress(20);
-
 
                 if (ValidationSetting.DataItemExistence == "True")
                 {
-                    ValidateDataItemExistence();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateDataItemExistence(filteredDataItemDataRows, dataObjectMappingDataTable, physicalModelDataTable, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
                 worker?.ReportProgress(30);
-
-
+                
                 if (ValidationSetting.LogicalGroup == "True")
                 {
-                    ValidateLogicalGroup();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateLogicalGroup(filteredDataObjectMappingDataRows, dataObjectMappingDataTable, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
                 worker?.ReportProgress(40);
 
-
                 if (ValidationSetting.LinkKeyOrder == "True")
                 {
-                    ValidateLinkKeyOrder();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateLinkKeyOrder(filteredDataObjectMappingDataRows, dataObjectMappingDataTable, physicalModelDataTable, dataObjectMappingGridViewRows, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
                 worker?.ReportProgress(45);
 
                 if (ValidationSetting.LinkCompletion == "True")
                 {
-                    ValidateLinkCompletion();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateLinkCompletion(filteredDataObjectMappingDataRows, TeamConfiguration, ref metadataValidations));
                 }
                 worker?.ReportProgress(50);
 
-                ValidateHardcodedFields();
+                _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateHardcodedFields(filteredDataObjectMappingDataRows, TeamConfiguration, ref metadataValidations));
+                worker?.ReportProgress(60);
 
-                ValidateAttributeDataObjectsForTableMappings();
 
-                ValidateSchemaConfiguration();
+                _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateAttributeDataObjectsForTableMappings(filteredDataItemDataRows, dataObjectMappingDataRows, ref metadataValidations));
+                worker?.ReportProgress(70);
 
+                _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateSchemaConfiguration(filteredDataObjectMappingDataRows, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 worker?.ReportProgress(80);
 
+                // Validate basic Data Vault settings
                 if (ValidationSetting.BasicDataVaultValidation == "True")
                 {
-                    ValidateBasicDataVaultAttributeExistence();
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateBasicDataVaultAttributeExistence(filteredDataObjectMappingDataRows, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
+                worker?.ReportProgress(90);
 
-                
-
+                // Check for duplicate data object mappings.
+                if (ValidationSetting.DuplicateDataObjectMappings == "True")
+                {
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateDuplicateDataObjectMappings(filteredDataObjectMappingDataGridViewRows, ref metadataValidations));
+                }
                 worker?.ReportProgress(100);
 
                 // Informing the user.
-                _alertValidation.SetTextLogging("\r\n\r\nIn total " + MetadataValidations.ValidationIssues + " validation issues have been found.");
+                _alertValidation.SetTextLogging("\r\n\r\nIn total " + metadataValidations.ValidationIssues + " validation issues have been found.");
             }
         }
-
-
-        /// <summary>
-        /// This method runs a check against the Column Mappings DataGrid to assert if model metadata is available for the attributes. The column needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
-        /// </summary>
-        private void ValidateSchemaConfiguration()
-        {
-            var localDataTable = (DataTable) BindingSourceDataObjectMappings.DataSource;
-
-            // Informing the user.
-            _alertValidation.SetTextLogging($"--> Commencing the validation to check if connection settings align with schemas entered in the Data Object mapping grid.\r\n");
-
-            int resultCounter = 0;
-            
-            foreach (DataRow row in localDataTable.Rows)
-            {
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True") // If row is enabled
-                {
-                    string localSourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    string localTargetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-
-                    TeamConnection sourceConnection = GetTeamConnectionByConnectionId(localSourceConnectionInternalId);
-                    TeamConnection targetConnection = GetTeamConnectionByConnectionId(localTargetConnectionInternalId);
-
-                    // The values in the data grid, fully qualified. This means the default schema is added if necessary.
-                    var sourceDataObject = MetadataHandling
-                        .GetFullyQualifiedDataObjectName(row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString(), sourceConnection)
-                        .FirstOrDefault();
-                    var targetDataObject = MetadataHandling
-                        .GetFullyQualifiedDataObjectName(
-                            row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString(), targetConnection)
-                        .FirstOrDefault();
-
-                    // The values as defined in the associated connections
-                    var sourceSchemaNameForConnection = TeamConfiguration.GetTeamConnectionByInternalId(localSourceConnectionInternalId, TeamConfiguration.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "").Replace("]", "");
-
-                    var targetSchemaNameForConnection = TeamConfiguration.GetTeamConnectionByInternalId(localTargetConnectionInternalId, TeamConfiguration.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "").Replace("]", "");
-
-
-                    if (sourceDataObject.Key.Replace("[", "").Replace("]", "") != sourceSchemaNameForConnection)
-                    {
-                        _alertValidation.SetTextLogging($"--> Inconsistency detected for '{sourceDataObject.Key}.{sourceDataObject.Value}' between the schema definition in the table grid '{sourceDataObject.Key}' and its assigned connection '{sourceConnection.ConnectionName}' which has been configured as '{sourceSchemaNameForConnection}'.\r\n");
-                        resultCounter++;
-                    }
-
-                    if (targetDataObject.Key.Replace("[", "").Replace("]", "") != targetSchemaNameForConnection)
-                    {
-                        _alertValidation.SetTextLogging($"--> Inconsistency for '{sourceDataObject.Key}.{sourceDataObject.Value}' detected between the schema definition in the table grid {targetDataObject.Key} and its assigned connection ''{targetConnection.ConnectionName}'' which has been configured as '{targetSchemaNameForConnection}'.\r\n");
-                        resultCounter++;
-                    }
-                }
-            }
-
-            if (resultCounter == 0)
-            {
-                _alertValidation.SetTextLogging("     There were no validation issues related to schema configuration.\r\n\r\n");
-            }
-
-        }
-
-        private void ValidateLinkCompletion()
-        {
-            // Informing the user.
-            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if Link concept is correctly defined.\r\n");
-
-            var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfiguration.ConnectionDictionary);
-
-            // Creating a list of unique Link business key combinations from the data grid / data table
-            var localDataTableTableMappings = (DataTable)BindingSourceDataObjectMappings.DataSource;
-            var objectList = new List<Tuple<string, string, string, string>>(); // Source, Target, Business Key, Target Connection
-
-            foreach (DataRow row in localDataTableTableMappings.Rows)
-            {
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                // Only process enabled mappings.
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() != "True") continue;
-
-                // Only select the lines that relate to a Link target.
-                if (row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString().StartsWith(TeamConfiguration.LinkTablePrefixValue))
-                {
-                    // Derive the business key.
-                    var businessKey = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
-
-                    // Derive the connection
-                    localConnectionDictionary.TryGetValue(row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString(), out var targetConnectionValue);
-
-                    var newValidationObject = new Tuple<string, string, string, string>
-                    (
-                        row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString(),
-                        row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString(),
-                        businessKey,
-                        targetConnectionValue
-                    );
-
-                    if (!objectList.Contains(newValidationObject))
-                    {
-                        objectList.Add(newValidationObject);
-                    }
-                }
-            }
-            
-            // Execute the validation check using the list of unique objects
-            var resultList = new Dictionary<string, bool>();
-
-            foreach (var linkObject in objectList)
-            {
-                 // The validation check returns a Dictionary
-                var validatedObject = MetadataValidation.ValidateLinkBusinessKeyForCompletion(linkObject);
-
-                // Looping through the dictionary to evaluate results.
-                foreach (var pair in validatedObject)
-                {
-                    if (pair.Value == false)
-                    {
-                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
-                        {
-                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
-                        }
-                    }
-                }
-            }
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var sourceObjectResult in resultList)
-                {
-                    _alertValidation.SetTextLogging("     " + sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + ". This means there is an issue with the Link definition, and in particular the Business Key. Are two Hubs assigned?\r\n");
-                }
-
-                MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + resultList.Count();
-                _alertValidation.SetTextLogging("\r\n");
-            }
-            else
-            {
-                _alertValidation.SetTextLogging("     There were no validation issues related to the definition of Link tables.\r\n\r\n");
-            }
-
-
-        }
-
-        /// <summary>
-        /// This method runs a check against the Attribute Mappings DataGrid to assert if model metadata is available for the attributes. The attribute needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
-        /// </summary>
-        private void ValidateDataItemExistence()
-        {
-            // Informing the user.
-            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the data items (columns) in the metadata exists in the model.\r\n");
-
-            var resultList = new Dictionary<string, string>();
-
-            var localDataItemTable = (DataTable) BindingSourceDataItemMappings.DataSource;
-            var localDataObjectTable = (DataTable) BindingSourceDataObjectMappings.DataSource;
-
-            foreach (DataRow row in localDataItemTable.Rows)
-            {
-                // Look for the corresponding Data Object Mapping row.
-                var dataObjectRow = GetDataObjectMappingFromDataItemMapping(localDataObjectTable, row[DataItemMappingGridColumns.SourceDataObject.ToString()].ToString(), row[DataItemMappingGridColumns.TargetDataObject.ToString()].ToString());
-
-                if (dataObjectRow.Item1 == "True") //If the corresponding Data Object is enabled
-                {
-                    var validationObjectSource = row[DataItemMappingGridColumns.SourceDataObject.ToString()].ToString();
-                    TeamConnection sourceConnection = dataObjectRow.Item3;
-                    var validationAttributeSource = row[DataItemMappingGridColumns.SourceDataItem.ToString()].ToString();
-
-                    var validationObjectTarget = row[DataItemMappingGridColumns.TargetDataObject.ToString()].ToString();
-                    TeamConnection targetConnection = dataObjectRow.Item5;
-                    var validationAttributeTarget = row[DataItemMappingGridColumns.TargetDataItem.ToString()].ToString();
-
-                    var sourceDataObjectType = MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration).ToString();
-
-                    // No need to evaluate the operational system (real sources), or if the source is a data query (logic).
-                    if (sourceDataObjectType != MetadataHandling.DataObjectTypes.Source.ToString() && !validationAttributeSource.IsDataQuery()) 
-                    {
-                        var objectValidated = MetadataValidation.ValidateAttributeExistence(validationObjectSource, validationAttributeSource, sourceConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
-
-                        // Add negative results to dictionary
-                        if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeSource))
-                        {
-                            resultList.Add(validationAttributeSource, validationObjectSource); // Add objects that did not pass the test
-                        }
-
-                        objectValidated = MetadataValidation.ValidateAttributeExistence(validationObjectTarget, validationAttributeTarget, targetConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
-
-                        // Add negative results to dictionary
-                        if (objectValidated == "False" && !resultList.ContainsKey(validationAttributeTarget))
-                        {
-                            resultList.Add(validationAttributeTarget, validationObjectTarget); // Add objects that did not pass the test
-                        }
-                    }
-                }
-            }
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var objectValidationResult in resultList)
-                {
-                    _alertValidation.SetTextLogging($"     {objectValidationResult.Key} belonging to {objectValidationResult.Value} does not exist in the physical model.\r\n");
-                }
-
-                MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + resultList.Count;
-
-                _alertValidation.SetTextLogging("\r\n");
-            }
-            else
-            {
-                _alertValidation.SetTextLogging($"     There were no validation issues related to the existence of the attribute(s).\r\n\r\n");
-            }
-        }
-
-        /// <summary>
-        /// This method runs a check against the DataGrid to assert if model metadata is available for the object. The object needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run succesfully.
-        /// </summary>
-        private void ValidateObjectExistence(DataTable dataTable)
-        {
-            // Informing the user.
-            _alertValidation.SetTextLogging($"--> Commencing the validation to determine if the defined Data Objects exists in the model.\r\n");
-
-            var resultList = new Dictionary<string, string>();
-
-            // Iterating over the grid
-            foreach (DataRow row in dataTable.Rows)
-            {
-                // Skip deleted rows
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if ((string)row[(int)DataObjectMappingGridColumns.Enabled] == "True")
-                {
-                    // Sources
-                    var validationObjectSource = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
-                    var validationObjectSourceConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    var sourceConnection = GetTeamConnectionByConnectionId(validationObjectSourceConnectionId);
-                    KeyValuePair<string, string> fullyQualifiedValidationObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectSource, sourceConnection).FirstOrDefault();
-
-                    // Targets
-                    var validationObjectTarget = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
-                    var validationObjectTargetConnectionId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    var targetConnection = GetTeamConnectionByConnectionId(validationObjectTargetConnectionId);
-                    KeyValuePair<string, string> fullyQualifiedValidationObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectTarget, targetConnection).FirstOrDefault();
-
-                    // No need to evaluate the operational system (real sources))
-                    if (MetadataHandling.GetDataObjectType(validationObjectSource, "", TeamConfiguration).ToString() != MetadataHandling.DataObjectTypes.Source.ToString())
-                    {
-                        string objectValidated;
-                        //if (GlobalParameters.EnvironmentMode == EnvironmentModes.PhysicalMode)
-                        //{
-                        //    try
-                        //    {
-                        //        objectValidated = MetadataValidation.ValidateObjectExistencePhysical(fullyQualifiedValidationObjectSource, sourceConnection);
-
-                        //        // Add negative results to dictionary
-                        //        if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value))
-                        //        {
-                        //            resultList.Add(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value, objectValidated); 
-                        //        }
-                                
-                        //        objectValidated = MetadataValidation.ValidateObjectExistencePhysical(fullyQualifiedValidationObjectTarget, targetConnection);
-
-                        //        // Add negative results to dictionary
-                        //        if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value))
-                        //        {
-                        //            resultList.Add(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value, objectValidated); 
-                        //        }
-                        //    }
-                        //    catch (Exception ex)
-                        //    {
-                        //        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,$"An issue occurred connecting to the database: \r\n\r\n {ex}."));
-                        //    }
-                        //}
-
-                        //if (GlobalParameters.EnvironmentMode == EnvironmentModes.VirtualMode)
-                        //{
-                            objectValidated = MetadataValidation.ValidateObjectExistence(validationObjectSource, sourceConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
-
-                            if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value))
-                            {
-                                resultList.Add(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value, objectValidated); // Add objects that did not pass the test
-                            }
-
-                            objectValidated = MetadataValidation.ValidateObjectExistence(validationObjectTarget, targetConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
-
-                            if (objectValidated == "False" && !resultList.ContainsKey(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value))
-                            {
-                                resultList.Add(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value, objectValidated); // Add objects that did not pass the test
-                            }
-                        //}
-                        //else
-                        //{
-                        //    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning,$"The validation approach (physical/virtual) could not be asserted."));
-                        //}
-                    }
-                }
-            }
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var objectValidationResult in resultList)
-                {
-                    _alertValidation.SetTextLogging($"     {objectValidationResult.Key} is tested with outcome {objectValidationResult.Value}. This may be because the schema is defined differently in the connection, or because it simply does not exist.\r\n");
-                }
-
-                MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + resultList.Count;
-                _alertValidation.SetTextLogging("\r\n");
-            }
-            else
-            {
-                _alertValidation.SetTextLogging($"     There were no validation issues related to the (physical) existence of the defined Data Object in the model.\r\n\r\n");
-            }
-
-        }
-
-        /// <summary>
-        /// Hard-coded fields in Staging Layer data objects are not supported. Instead, an attribute mapping should be created.
-        /// </summary>
-        internal void ValidateHardcodedFields()
-        {
-            _alertValidation.SetTextLogging(
-                $"--> Commencing the validation to see if any hard-coded fields are not correctly set in enabled mappings.\r\n");
-
-            int issueCounter = 0;
-            var localDataTable = (DataTable) BindingSourceDataObjectMappings.DataSource;
-            foreach (DataRow row in localDataTable.Rows)
-            {
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                // If enabled and is a Staging Layer object
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True" && 
-                    MetadataHandling.GetDataObjectType((string) row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], "", TeamConfiguration).In(MetadataHandling.DataObjectTypes.StagingArea, MetadataHandling.DataObjectTypes.PersistentStagingArea))
-                {
-                    if (row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Contains("'"))
-                    {
-                        issueCounter++;
-                        _alertValidation.SetTextLogging(
-                            $"     Data Object {(string) row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()]} should not contain hard-coded values in the Business Key definition. This can not be supported in the Staging Layer (Staging Area and Persistent Staging Area)");
-                    }
-                }
-            }
-
-            if (issueCounter == 0)
-            {
-                _alertValidation.SetTextLogging($"     There were no validation issues related to the definition of hard-coded Business Key components.\r\n\r\n");
-            }
-
-            MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + issueCounter;
-        }
-
-        internal void ValidateAttributeDataObjectsForTableMappings()
-        {
-            _alertValidation.SetTextLogging($"--> Commencing the validation to see if all data item (attribute) mappings exist as data object (table) mapping also (if enabled in the grid).\r\n");
-            int issueCounter = 0;
-
-            var localDataTableTableMappings = (DataTable) BindingSourceDataObjectMappings.DataSource;
-            var localDataTableAttributeMappings = (DataTable) BindingSourceDataItemMappings.DataSource;
-
-            // Create a list of all sources and targets for the Data Object mappings
-            List<Tuple<string,string>> sourceDataObjectListTableMapping = new List<Tuple<string, string>>();
-            List<Tuple<string, string>> targetDataObjectListTableMapping = new List<Tuple<string, string>>();
-
-            foreach (DataRow row in localDataTableTableMappings.Rows)
-            {
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                var sourceDataObjectTuple = new Tuple<string, string>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], row[DataObjectMappingGridColumns.Enabled.ToString()].ToString());
-                var targetDataObjectTuple = new Tuple<string, string>((string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], row[DataObjectMappingGridColumns.Enabled.ToString()].ToString());
-
-                if (!sourceDataObjectListTableMapping.Contains(sourceDataObjectTuple))
-                {
-                    sourceDataObjectListTableMapping.Add(sourceDataObjectTuple);
-                }
-
-                if (!targetDataObjectListTableMapping.Contains(targetDataObjectTuple))
-                {
-                    targetDataObjectListTableMapping.Add(targetDataObjectTuple);
-                }
-            }
-
-            foreach (DataRow row in localDataTableAttributeMappings.Rows)
-            {
-                var localSource = (string) row[DataItemMappingGridColumns.SourceDataObject.ToString()];
-                var localTarget = (string) row[DataItemMappingGridColumns.TargetDataObject.ToString()];
-
-                // If the value exists, but is disabled just a warning is sufficient.
-                // If the value does not exist for an enabled mapping or at all, then it's an error.
-                
-                if (sourceDataObjectListTableMapping.Contains(new Tuple<string, string>(localSource, "False")))
-                {
-                    //_alertValidation.SetTextLogging($"     Data Object {localSource} in the attribute mappings exists in the table mappings for an disabled mapping. This can be disregarded.\r\n");
-                }
-                else if (sourceDataObjectListTableMapping.Contains(new Tuple<string, string>(localSource, "True")))
-                {
-                    // No problem, it's found
-                }
-                else 
-                {
-                    _alertValidation.SetTextLogging($"     Data Object {localSource} in the attribute mappings (source) does not seem to exist in the table mappings for an enabled mapping. Please check if this name is mapped at table level in the grid also.\r\n");
-                    issueCounter++;
-                }
-
-                if (targetDataObjectListTableMapping.Contains(new Tuple<string, string>(localTarget, "False")))
-                {
-                    //_alertValidation.SetTextLogging($"     Data Object {localTarget} in the attribute mappings exists in the table mappings for an disabled mapping. This can be disregarded.\r\n");
-                }
-                else if (targetDataObjectListTableMapping.Contains(new Tuple<string, string>(localTarget, "True")))
-                {
-                    // No problem, it's found
-                }
-                else
-                {
-                    _alertValidation.SetTextLogging($"     Data Object {localTarget} in the attribute mappings (target) does not seem to exist in the table mappings for an enabled mapping. Please check if this name is mapped at table level in the grid also.\r\n");
-                    issueCounter++;
-                }
-            }
-
-            if (issueCounter == 0)
-            {
-                _alertValidation.SetTextLogging($"     There were no validation issues related to the existence of Data Objects related to defined Data Item Mappings.\r\n\r\n");
-            }
-
-            MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + issueCounter;
-        }
-
-        /// <summary>
-        /// This method will check if the order of the keys in the Link is consistent with the physical table structures.
-        /// </summary>
-        internal void ValidateLinkKeyOrder()
-        {
-            #region Retrieving the Links
-
-            // Informing the user.
-            _alertValidation.SetTextLogging("--> Commencing the validation to ensure the order of Business Keys in the Link metadata corresponds with the physical model.\r\n");
-
-            var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(TeamConfiguration.ConnectionDictionary);
-
-            // Creating a list of unique Link business key combinations from the data grid / data table
-            var localDataTableTableMappings = (DataTable)BindingSourceDataObjectMappings.DataSource;
-            var objectList = new List<Tuple<string, string, string, string>>();
-            
-            foreach (DataRow row in localDataTableTableMappings.Rows)
-            {
-                // Skip deleted rows
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True")
-                {
-                    // Only select the lines that relate to a Link target.
-                    if (row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString().StartsWith(TeamConfiguration.LinkTablePrefixValue))
-                    {
-                        // Derive the business key.
-                        var businessKey = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
-
-                        // Derive the connection
-                        localConnectionDictionary.TryGetValue(row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString(), out var connectionValue);
-                        
-                        var newValidationObject = new Tuple<string, string, string, string>
-                        (
-                            row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString(),
-                            row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString(),
-                            businessKey,
-                            connectionValue
-                        );
-
-                        if (!objectList.Contains(newValidationObject))
-                        {
-                            objectList.Add(newValidationObject);
-                        }
-                    }
-                }
-            }
-
-            // Execute the validation check using the list of unique objects
-            var resultList = new Dictionary<string, bool>();
-
-            foreach (var sourceObject in objectList)
-            {
-                // The validation check returns a Dictionary
-                var sourceObjectValidated = MetadataValidation.ValidateLinkKeyOrder(sourceObject, (DataTable) BindingSourceDataObjectMappings.DataSource, (DataTable) BindingSourcePhysicalModel.DataSource);
-
-                // Looping through the dictionary
-                foreach (var pair in sourceObjectValidated)
-                {
-                    if (pair.Value == false)
-                    {
-                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
-                        {
-                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
-                        }
-                    }
-                }
-            }
-
-            #endregion
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var sourceObjectResult in resultList)
-                {
-                    _alertValidation.SetTextLogging("     " + sourceObjectResult.Key +
-                                                    " is tested with this outcome: " + sourceObjectResult.Value +
-                                                    "\r\n");
-                }
-
-                MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + resultList.Count();
-                _alertValidation.SetTextLogging("\r\n");
-            }
-            else
-            {
-                _alertValidation.SetTextLogging("     There were no validation issues related to order of business keys in the Link tables.\r\n\r\n");
-            }
-        }
-        internal void ValidateBasicDataVaultAttributeExistence()
-        {
-            // Informing the user.
-            _alertValidation.SetTextLogging("--> Commencing the validation to check if basic Data Vault attributes are present.\r\n");
-
-            List<Tuple<string,string,bool>> masterResultList = new List<Tuple<string, string, bool>>();
-            
-            var localDataTable = (DataTable)BindingSourceDataObjectMappings.DataSource;
-            foreach (DataRow row in localDataTable.Rows)
-            {               
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True")
-                {
-                    var localDataObjectSourceName = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
-                    var localDataObjectSourceConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    var localDataObjectSourceConnection = GetTeamConnectionByConnectionId(localDataObjectSourceConnectionId);
-                    var localDataObjectSourceTableType = MetadataHandling.GetDataObjectType(localDataObjectSourceName, "", TeamConfiguration);
-                    
-                    var localDataObjectTargetName = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
-                    var localDataObjectTargetConnectionId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    var localDataObjectTargetConnection = GetTeamConnectionByConnectionId(localDataObjectTargetConnectionId);
-                    var localDataObjectTargetTableType = MetadataHandling.GetDataObjectType(localDataObjectTargetName, "", TeamConfiguration);
-
-                    // Source
-                    if (localDataObjectSourceTableType == MetadataHandling.DataObjectTypes.CoreBusinessConcept ||
-                        localDataObjectSourceTableType == MetadataHandling.DataObjectTypes.Context ||
-                        localDataObjectSourceTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship ||
-                        localDataObjectSourceTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext ||
-                        localDataObjectSourceTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
-                    {
-                        var result = MetadataValidation.BasicDataVaultValidation(localDataObjectSourceName, localDataObjectSourceConnection, localDataObjectSourceTableType);
-                        masterResultList.AddRange(result);
-                        
-                    }
-
-                    // Target
-                    if (localDataObjectTargetTableType == MetadataHandling.DataObjectTypes.CoreBusinessConcept ||
-                        localDataObjectTargetTableType == MetadataHandling.DataObjectTypes.Context ||
-                        localDataObjectTargetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship ||
-                        localDataObjectTargetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext ||
-                        localDataObjectTargetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
-                    {
-                        var result = MetadataValidation.BasicDataVaultValidation(localDataObjectTargetName, localDataObjectTargetConnection, localDataObjectTargetTableType);
-                        masterResultList.AddRange(result);
-
-                    }
-                }
-            }
-            
-            // Evaluate the results
-            int resultsCounter = 0;
-
-            // Deduplicate
-            List<Tuple<string,string,bool>> deduplicatedResultList = masterResultList.Distinct().ToList();
-
-            foreach (var result in deduplicatedResultList)
-            {
-                if (result.Item3 == false)
-                {
-                    _alertValidation.SetTextLogging($"     Warning - {result.Item1} was evaluated as a Data Vault object but the expected attribute {result.Item2} was not found in the table.\r\n");
-                    resultsCounter++;
-                }
-            }
-
-            if (resultsCounter == 0)
-            {
-                _alertValidation.SetTextLogging("     There were no validation issues related Data Vault attribute existence.\r\n\r\n");
-            }
-
-
-        }
-
-        /// <summary>
-        /// Checks if all the supporting mappings are available (e.g. a Context table also needs a Core Business Concept present).
-        /// </summary>
-        internal void ValidateLogicalGroup()
-        {
-            #region Retrieving the Integration Layer tables
-
-            // Informing the user.
-            _alertValidation.SetTextLogging("--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n");
-
-            // Creating a list of tables which are dependent on other tables being present
-            var objectList = new List<Tuple<string, string, string, string>>(); // Source Name, Target Name, Business Key, FilterCriterion
-
-            var localDataTable = (DataTable) BindingSourceDataObjectMappings.DataSource;
-            
-            foreach (DataRow row in localDataTable.Rows)
-            {
-                // Skip deleted rows
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True")
-                {
-                    var targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
-                    var targetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    var targetConnection = GetTeamConnectionByConnectionId(targetConnectionInternalId);
-                    var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-                    var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", TeamConfiguration);
-                    var targetFilterCriterion = row[DataObjectMappingGridColumns.FilterCriterion.ToString()].ToString();
-
-                    var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
-                    var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    var sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionInternalId);
-                    var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
-
-
-                    if (targetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship || targetTableType == MetadataHandling.DataObjectTypes.Context || targetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext)
-                    {
-                        var businessKey = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString().Replace("''''", "'");
-                        
-                        if (!objectList.Contains(new Tuple<string, string, string, string>
-                            (
-                            sourceFullyQualifiedName.Key+'.'+sourceFullyQualifiedName.Value, targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value, businessKey, targetFilterCriterion)
-                            )
-                        )
-                        {
-                            objectList.Add(new Tuple<string, string, string, string>
-                                (
-                                    sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value, targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value, businessKey, targetFilterCriterion)
-                            );
-                        }
-                    }
-                }
-            }
-
-            // Execute the validation check using the list of unique objects
-            var resultList = new Dictionary<string, bool>();
-
-            foreach (var validationObject in objectList)
-            {
-                // The validation check returns a Dictionary
-                var sourceObjectValidated = MetadataValidation.ValidateLogicalGroup(validationObject, (DataTable) BindingSourceDataObjectMappings.DataSource);
-
-                // Looping through the dictionary
-                foreach (var pair in sourceObjectValidated)
-                {
-                    if (pair.Value == false)
-                    {
-                        if (!resultList.ContainsKey(pair.Key)) // Prevent incorrect links to be added multiple times
-                        {
-                            resultList.Add(pair.Key, pair.Value); // Add objects that did not pass the test
-                        }
-                    }
-                }
-            }
-
-            #endregion
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var sourceObjectResult in resultList)
-                {
-                    _alertValidation.SetTextLogging("     " + sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "." +
-                                                    "\r\n     This means there is a Link or Satellite without it's supporting Hub(s) defined." +
-                                                    "\r\n     If a source loads a Link or Satellite, this source should also load a Hub that relates to the Link or Satellite.\r\n");
-                }
-
-                _alertValidation.SetTextLogging("\r\n");
-                MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + resultList.Count();
-            }
-            else
-            {
-                _alertValidation.SetTextLogging("     There were no validation issues related to the logical grouping of objects.\r\n\r\n");
-            }
-        }
-
-        /// <summary>
-        ///   A validation check to make sure the Business Key is available in the source model.
-        /// </summary>
-        private void ValidateBusinessKeyObject()
-        {
-            var resultList = new Dictionary<Tuple<string, string>, bool>();
-
-            // Informing the user.
-            _alertValidation.SetTextLogging("--> Commencing the validation to determine if the Business Key metadata attributes exist in the physical model.\r\n");
-
-
-            var localDataTable = (DataTable) BindingSourceDataObjectMappings.DataSource;
-            foreach (DataRow row in localDataTable.Rows)
-            {
-                // Skip deleted rows
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True") // If row is enabled
-                {
-                    Dictionary<Tuple<string, string>, bool> objectValidated = new Dictionary<Tuple<string, string>, bool>();
-
-                    // Source table and business key definitions.
-                    string validationObject = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
-                    string validationConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    TeamConnection validationConnection = GetTeamConnectionByConnectionId(validationConnectionId);
-                    string businessKeyDefinition = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString();
-
-                    // Exclude a lookup to the source
-                    if (MetadataHandling.GetDataObjectType(validationObject, "", TeamConfiguration).ToString() != MetadataHandling.DataObjectTypes.Source.ToString())
-                    {
-                        objectValidated = MetadataValidation.ValidateSourceBusinessKeyExistenceVirtual(validationObject, businessKeyDefinition, validationConnection, (DataTable) BindingSourcePhysicalModel.DataSource);
-                    }
-
-                    // Add negative results to dictionary
-                    foreach (var objectValidationTuple in objectValidated)
-                    {
-                        if (objectValidationTuple.Value == false && !resultList.ContainsKey(objectValidationTuple.Key))
-                        {
-                            resultList.Add(objectValidationTuple.Key, false); // Add objects that did not pass the test
-                        }
-                    }
-                }
-            }
-
-            // Return the results back to the user
-            if (resultList.Count > 0)
-            {
-                foreach (var sourceObjectResult in resultList)
-                {
-                    _alertValidation.SetTextLogging("     Table " + sourceObjectResult.Key.Item1 +
-                                                    " does not contain Business Key attribute " +
-                                                    sourceObjectResult.Key.Item2 + ".\r\n");
-                }
-
-                MetadataValidations.ValidationIssues = MetadataValidations.ValidationIssues + resultList.Count();
-            }
-            else
-            {
-                _alertValidation.SetTextLogging(
-                    "     There were no validation issues related to the existence of the business keys in the Source tables.\r\n");
-            }
-
-            _alertValidation.SetTextLogging("\r\n");
-        }
-
+     
         private void backgroundWorkerValidationOnly_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             // Show the progress in main form (GUI)
-            labelResult.Text = (e.ProgressPercentage + "%");
+            labelResult.Text = (e.ProgressPercentage + @"%");
 
             // Pass the progress to AlertForm label and progressbar
             _alertValidation.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
@@ -3238,15 +2600,15 @@ namespace TEAM
         {
             if (e.Cancelled)
             {
-                labelResult.Text = "Cancelled!";
+                labelResult.Text = @"Cancelled!";
             }
             else if (e.Error != null)
             {
-                labelResult.Text = "Error: " + e.Error.Message;
+                labelResult.Text = $@"Error: {e.Error.Message}";
             }
             else
             {
-                labelResult.Text = "Done!";
+                labelResult.Text = @"Done!";
                 richTextBoxInformation.Text += "\r\nThe metadata was validated successfully!\r\n";
             }
         }
@@ -3287,22 +2649,19 @@ namespace TEAM
 
             _generatedScripts = new Form_Alert();
             _generatedScripts.SetFormName("Display model metadata");
-            _generatedScripts.Canceled += buttonCancel_Click;
+            _generatedScripts.Canceled += buttonCancelParse_Click;
             _generatedScripts.Show();
 
-            results.AppendLine("IF OBJECT_ID('[" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value +
-                               "]', 'U') IS NOT NULL");
-            results.AppendLine(
-                "DROP TABLE [" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value + "]");
+            results.AppendLine("IF OBJECT_ID('[" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value + "]', 'U') IS NOT NULL");
+            results.AppendLine("DROP TABLE [" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value + "]");
             results.AppendLine();
-            results.AppendLine("CREATE TABLE [" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value +
-                               "]");
+            results.AppendLine("CREATE TABLE [" + _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value + "]");
             results.AppendLine("(");
 
             int counter = 1;
             foreach (DataRow row in rows)
             {
-                var commaSnippet = "";
+                string commaSnippet;
                 if (counter == 1)
                 {
                     commaSnippet = "  ";
@@ -3343,9 +2702,9 @@ namespace TEAM
         {
             try
             {
-                if (GlobalParameters.ConfigurationPath != "")
+                if (globalParameters.ConfigurationPath != "")
                 {
-                    Process.Start(GlobalParameters.ConfigurationPath);
+                    Process.Start(globalParameters.ConfigurationPath);
                 }
                 else
                 {
@@ -3357,13 +2716,13 @@ namespace TEAM
                 richTextBoxInformation.Text = $@"An error has occurred while attempting to open the configuration directory. The error message is: {ex.Message}";
             }
         }
-        private void openAttributeMappingFileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void openDataItemMappingFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var theDialog = new OpenFileDialog
             {
-                Title = @"Open Attribute Mapping Metadata File",
-                Filter = @"Attribute Mapping files|*.xml;*.json",
-                InitialDirectory = GlobalParameters.MetadataPath
+                Title = @"Open Data Item Mapping Metadata File",
+                Filter = @"Data Item Mapping files|*.json",
+                InitialDirectory = globalParameters.MetadataPath
             };
 
             var ret = STAShowDialog(theDialog);
@@ -3373,63 +2732,49 @@ namespace TEAM
                 try
                 {
                     var chosenFile = theDialog.FileName;
-                    var dataSet = new DataSet();
+                    
+                    // Load the file, convert it to a DataTable and bind it to the source
+                    List<DataItemMappingJson> jsonArray = JsonConvert.DeserializeObject<List<DataItemMappingJson>>(File.ReadAllText(chosenFile));
 
-                    string fileExtension = Path.GetExtension(theDialog.FileName);
-
-                    if (fileExtension == ".xml")
+                    if (jsonArray != null)
                     {
-                        dataSet.ReadXml(chosenFile);
-
-                        _dataGridViewDataItems.DataSource = dataSet.Tables[0];
-                        BindingSourceDataItemMappings.DataSource = _dataGridViewDataItems.DataSource;
-                    }
-                    else if (fileExtension == ".json")
-                    {
-                        // Load the file, convert it to a DataTable and bind it to the source
-                        List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(chosenFile));
-                        DataTable dt = Utility.ConvertToDataTable(jsonArray);
-
-                        // Set the column names in the datatable.
-                        //SetTeamDataTableProperties.SetAttributeDataTableColumns(dt);
-                        // Sort the columns in the datatable.
-                        //SetTeamDataTableProperties.SetAttributeDatTableSorting(dt);
-
-                        // Clear out the existing data from the grid
-                        BindingSourceDataItemMappings.DataSource = null;
-                        BindingSourceDataItemMappings.Clear();
-                        _dataGridViewDataItems.DataSource = null;
-
-                        // Bind the datatable to the gridview
-                        BindingSourceDataItemMappings.DataSource = dt;
-
-                        if (jsonArray != null)
+                        foreach (DataItemMappingJson dataItemMappingJson in jsonArray)
                         {
-                            // Set the column header names.
-                            _dataGridViewDataItems.DataSource = BindingSourceDataItemMappings;
-                            _dataGridViewDataItems.ColumnHeadersVisible = true;
-                            _dataGridViewDataItems.Columns[0].Visible = false;
-                            _dataGridViewDataItems.Columns[1].Visible = false;
-                            _dataGridViewDataItems.Columns[6].ReadOnly = false;
+                            // Check if the row does not already exist.
+                            var lookupRow = _dataGridViewDataItems.Rows
+                                .Cast<DataGridViewRow>()
+                                .FirstOrDefault(row => !row.IsNewRow && row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString() == dataItemMappingJson.sourceTable && 
+                                                       row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString() == dataItemMappingJson.targetTable &&
+                                                       row.Cells[(int)DataItemMappingGridColumns.SourceDataItem].Value.ToString() == dataItemMappingJson.sourceAttribute &&
+                                                       row.Cells[(int)DataItemMappingGridColumns.TargetDataItem].Value.ToString() == dataItemMappingJson.targetAttribute);
 
-                            _dataGridViewDataItems.Columns[0].HeaderText = "Hash Key";
-                            _dataGridViewDataItems.Columns[1].HeaderText = "Version ID";
-                            _dataGridViewDataItems.Columns[2].HeaderText = "Source Table";
-                            _dataGridViewDataItems.Columns[3].HeaderText = "Source Column";
-                            _dataGridViewDataItems.Columns[4].HeaderText = "Target Table";
-                            _dataGridViewDataItems.Columns[5].HeaderText = "Target Column";
-                            _dataGridViewDataItems.Columns[6].HeaderText = "Notes";
+                            // Add if it does not exist yet.
+                            if (lookupRow == null)
+                            {
+                                DataTable dataTable = (DataTable)BindingSourceDataItemMappings.DataSource;
+
+                                DataRow dataRow = dataTable.NewRow();
+
+                                dataRow[(int)DataItemMappingGridColumns.HashKey] = dataItemMappingJson.attributeMappingHash;
+                                dataRow[(int)DataItemMappingGridColumns.SourceDataObject] = dataItemMappingJson.sourceTable;
+                                dataRow[(int)DataItemMappingGridColumns.SourceDataItem] = dataItemMappingJson.sourceAttribute;
+                                dataRow[(int)DataItemMappingGridColumns.TargetDataObject] = dataItemMappingJson.targetTable;
+                                dataRow[(int)DataItemMappingGridColumns.TargetDataItem] = dataItemMappingJson.targetAttribute;
+                                dataRow[(int)DataItemMappingGridColumns.Notes] = dataItemMappingJson.notes;
+
+                                dataTable.Rows.Add(dataRow);
+                            }
                         }
                     }
 
                     GridAutoLayout(_dataGridViewDataItems);
-                    richTextBoxInformation.AppendText("The metadata has been loaded from file.\r\n");
+                    richTextBoxInformation.AppendText($"The data item metadata has been loaded from file '{chosenFile}'.\r\n");
                     ContentCounter();
                 }
                 catch (Exception ex)
                 {
                     richTextBoxInformation.AppendText("An error has been encountered. Please check the Event Log for more details.\r\n");
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex}."));
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
                 }
             }
         }
@@ -3445,7 +2790,7 @@ namespace TEAM
             {
                 Title = @"Open Data Object Mapping Metadata File",
                 Filter = @"Data Object Mapping files|*.json",
-                InitialDirectory = GlobalParameters.MetadataPath
+                InitialDirectory = globalParameters.MetadataPath
             };
 
             var dialogResult = STAShowDialog(dialog);
@@ -3456,10 +2801,10 @@ namespace TEAM
 
                 try
                 {
-                    #region Build the Data Table
-                    var fileName = dialog.FileName;
+                    // Get the selected file in tabular JSON format.
+                    List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(dialog.FileName));
 
-                    List<TableMappingJson> jsonArray = JsonConvert.DeserializeObject<List<TableMappingJson>>(File.ReadAllText(fileName));
+                    #region Build the Data Table
 
                     var localDataTable = new DataTable();
 
@@ -3514,6 +2859,7 @@ namespace TEAM
                     }
 
                     //Make sure the changes are seen as committed, so that changes can be detected later on.
+
                     localDataTable.AcceptChanges();
 
                     // Clear out the existing data from the grid
@@ -3531,7 +2877,8 @@ namespace TEAM
                     GridAutoLayout(_dataGridViewDataObjects);
                     ContentCounter();
 
-                    richTextBoxInformation.AppendText($"The file '{fileName}' was loaded.\r\n");
+                    richTextBoxInformation.AppendText($"The file '{dialog.FileName}' was loaded.\r\n");
+
                     #endregion
 
                     #region Generate the JSON files
@@ -3552,12 +2899,9 @@ namespace TEAM
                     #endregion
 
                     #region Reload the full Data Grid
-                    // Get the JSON files and load these into memory.
-                    TeamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(GlobalParameters.MetadataPath);
-                    TeamDataObjectMappingFileCombinations.GetMetadata();
 
-                    //Load the grids from the repository after being updated.This resets everything.
-                    PopulateDataObjectMappingGrid(TeamDataObjectMappingFileCombinations);
+                    //Load the grids from the repository after being updated. This resets everything.
+                    PopulateDataObjectMappingGrid();
 
                     // Notify the user of any errors that were detected.
                     var errors = TeamEventLog.ReportErrors(TeamEventLog);
@@ -3641,7 +2985,7 @@ namespace TEAM
             {
                 // create a new instance of the alert form
                 _alertEventLog = new Form_Alert();
-                _alertEventLog.Text = "Event Log";
+                _alertEventLog.Text = @"Event Log";
                 _alertEventLog.ShowLogButton(false);
                 _alertEventLog.ShowCancelButton(false);
                 _alertEventLog.ShowProgressBar(false);
@@ -3662,7 +3006,6 @@ namespace TEAM
             internal string targetDataObjectName { get; set; }
             internal string targetDataObjectConnectionId { get; set; }
             internal string targetDataItemName { get; set; }
-
         }
 
         private void validateMetadataToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3671,7 +3014,7 @@ namespace TEAM
 
             if (BindingSourcePhysicalModel.Count == 0)
             {
-                richTextBoxInformation.Text += "There is no physical model metadata available.\r\n ";
+                richTextBoxInformation.Text += @"There is no physical model metadata available. Validations cannot be done without a physical model snapshot.";
             }
             else
             {
@@ -3679,8 +3022,9 @@ namespace TEAM
 
                 _alertValidation = new Form_Alert();
 
-                _alertValidation.Canceled += buttonCancel_Click;
+                _alertValidation.Canceled += buttonCancelParse_Click;
                 _alertValidation.Show();
+                _alertValidation.SetFormName("Validating the design metadata");
                 _alertValidation.ShowLogButton(false);
                 _alertValidation.ShowCancelButton(false);
 
@@ -3716,7 +3060,7 @@ namespace TEAM
                     DataObject sourceDataObject = (DataObject)dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value;
 
                     var sourceConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
-                    TeamConnection sourceConnection = GetTeamConnectionByConnectionId(sourceConnectionId);
+                    TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionId, TeamConfiguration, TeamEventLog);
 
                     var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObject.name, sourceConnection).FirstOrDefault();
 
@@ -3738,7 +3082,7 @@ namespace TEAM
                     DataObject targetDataObject = (DataObject)dataObjectRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
 
                     var targetConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                    TeamConnection targetConnection = GetTeamConnectionByConnectionId(targetConnectionId);
+                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
 
                     var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.name, targetConnection).FirstOrDefault();
 
@@ -3826,7 +3170,7 @@ namespace TEAM
 
                             DataRow newRow = localDataItemDataTable.NewRow();
 
-                            newRow[DataItemMappingGridColumns.HashKey.ToString()] = Utility.CreateMd5(new string[] {Utility.GetRandomString(100)}, "#");
+                            newRow[DataItemMappingGridColumns.HashKey.ToString()] = Utility.CreateMd5(new[] {Utility.GetRandomString(100)}, "#");
                             newRow[DataItemMappingGridColumns.SourceDataObject.ToString()] = matchedDataItemMappingFromDatabase.sourceDataObjectName;
                             newRow[DataItemMappingGridColumns.SourceDataItem.ToString()] = matchedDataItemMappingFromDatabase.sourceDataItemName;
                             newRow[DataItemMappingGridColumns.TargetDataObject.ToString()] = matchedDataItemMappingFromDatabase.targetDataObjectName;
@@ -3845,7 +3189,7 @@ namespace TEAM
             {
                 try
                 {
-                    Process.Start(GlobalParameters.MetadataPath);
+                    Process.Start(globalParameters.MetadataPath);
                 }
                 catch (Exception ex)
                 {
@@ -3867,15 +3211,17 @@ namespace TEAM
             _physicalModelQuery.ShowCancelButton(false);
             _physicalModelQuery.ShowProgressBar(false);
             _physicalModelQuery.ShowProgressLabel(false);
-            _physicalModelQuery.Canceled += buttonCancel_Click;
+            _physicalModelQuery.Canceled += buttonCancelParse_Click;
             _physicalModelQuery.Show();
 
             List<string> resultQueryList = new List<string>();
 
+            var filteredDataObjectMappingDataRows = GetFilteredDataObjectMappingDataTableRows();
+
             foreach (var item in checkedListBoxReverseEngineeringAreas.CheckedItems)
             {
                 var localConnectionObject = (KeyValuePair<TeamConnection, string>)item;
-                resultQueryList.Add(SqlStatementForDataItems(localConnectionObject.Key.DatabaseServer.DatabaseName, true));
+                resultQueryList.Add(SqlStatementForDataItems(GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), localConnectionObject.Key, true));
             }
 
             foreach (var query in resultQueryList)
@@ -3896,8 +3242,7 @@ namespace TEAM
             {
                 var localConnectionObject = (KeyValuePair<TeamConnection, string>)checkedItem;
 
-                var localSqlConnection = new SqlConnection { ConnectionString = localConnectionObject.Key.CreateSqlServerConnectionString(false) };
-                var reverseEngineerResults = ReverseEngineerModelMetadata(localSqlConnection, localConnectionObject.Key.DatabaseServer.DatabaseName);
+                var reverseEngineerResults = ReverseEngineerModelMetadata(localConnectionObject.Key, GetFilteredDataObjectMappingDataTableRows());
 
                 if (reverseEngineerResults != null)
                 {
@@ -3920,22 +3265,35 @@ namespace TEAM
             //DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
 
             // Deduplication.
-            var distinctTable = completeDataTable.AsEnumerable()
-                .GroupBy(row => new
-                {
-                    databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.Database_Name.ToString()),
-                    schemaName = row.Field<string>(PhysicalModelMappingMetadataColumns.Schema_Name.ToString()),
-                    tableName = row.Field<string>(PhysicalModelMappingMetadataColumns.Table_Name.ToString()),
-                    columnName = row.Field<string>(PhysicalModelMappingMetadataColumns.Column_Name.ToString()),
-                })
-                .Select(y => y.First())
-                .CopyToDataTable();
+            
+            DataTable distinctTable = null;
+
+            if (completeDataTable != null && completeDataTable.Rows.Count > 0)
+            {
+                distinctTable = completeDataTable.AsEnumerable()
+                    .GroupBy(row => new
+                    {
+                        databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.Database_Name.ToString()),
+                        schemaName = row.Field<string>(PhysicalModelMappingMetadataColumns.Schema_Name.ToString()),
+                        tableName = row.Field<string>(PhysicalModelMappingMetadataColumns.Table_Name.ToString()),
+                        columnName = row.Field<string>(PhysicalModelMappingMetadataColumns.Column_Name.ToString()),
+                    })
+                    .Select(y => y.First())
+                    .CopyToDataTable();
+            }
 
             ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Deduplication completed completed at {DateTime.Now:HH:mm:ss tt}.");
 
             // Sort and display the results on the data grid.
-            distinctTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
-            _dataGridViewPhysicalModel.Invoke((Action)(() => _dataGridViewPhysicalModel.DataSource = distinctTable));
+            if (distinctTable != null)
+            {
+                distinctTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+                _dataGridViewPhysicalModel.Invoke((Action)(() => _dataGridViewPhysicalModel.DataSource = distinctTable));
+            }
+            else
+            {
+                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n There was nothing to process, and nothing to show.");
+            }
         }
 
         private void backgroundWorkerReverseEngineering_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -3951,9 +3309,13 @@ namespace TEAM
             else
             {
                 labelResult.Text = @"Done!";
-                richTextBoxInformation.Text += "\r\nThe phyiscal model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
+                richTextBoxInformation.Text += "\r\nThe physical model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
+
+                // Re-enable the checked list box.
+                checkedListBoxReverseEngineeringAreas.Enabled = true;
 
                 // Resize the grid
+                ApplyDataGridViewFiltering();
                 GridAutoLayout(_dataGridViewPhysicalModel);
             }
         }
@@ -3969,6 +3331,50 @@ namespace TEAM
         private void FormManageMetadata_ResizeBegin(object sender, EventArgs e)
         {
             formSize = Size;
+        }
+
+        private void tabControlDataMappings_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ApplyDataGridViewFiltering();
+        }
+
+        private void checkBoxShowStaging_CheckedChanged(object sender, EventArgs e)
+        {
+            var inputTableMappingDataObjectMappings = (DataTable)BindingSourceDataObjectMappings.DataSource;
+            var inputTableMappingDataItemMappings = (DataTable)BindingSourceDataItemMappings.DataSource;
+            var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
+
+            // Everything should be shown - no filters.
+            if (checkBoxShowStaging.Checked)
+            {
+                inputTableMappingDataObjectMappings.DefaultView.RowFilter = string.Empty;
+                inputTableMappingDataItemMappings.DefaultView.RowFilter = string.Empty;
+                inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
+
+                ApplyDataGridViewFiltering();
+            }
+            // Everything BUT staging layer objects should be shown.
+            else
+            {
+                // The target is not a STG process and not a PSA process.
+                var filterCriterionDataObjectMappings = $"[TargetDataObjectName] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [TargetDataObjectName] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
+                var filterCriterionDataItemMappings = $"[TargetDataObject] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [TargetDataObject] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
+                var filterCriterionPhysicalModel = $"[Table_Name] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [Table_Name] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
+
+                inputTableMappingDataObjectMappings.DefaultView.RowFilter = filterCriterionDataObjectMappings;
+                inputTableMappingDataItemMappings.DefaultView.RowFilter = filterCriterionDataItemMappings;
+                inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
+
+                ApplyDataGridViewFiltering();
+            }
+        }
+
+        private void checkedListBoxReverseEngineeringAreas_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (backgroundWorkerReverseEngineering.IsBusy)
+            {
+                MessageBox.Show(@"The reverse engineer process is running, please wait for this to be completed before changing any settings.", @"Process is running", MessageBoxButtons.OK);
+            }
         }
     }
 }

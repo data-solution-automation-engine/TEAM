@@ -17,8 +17,10 @@ namespace TEAM
         /// </summary>
         internal static void InitialiseEnvironmentPaths()
         {
-            FileHandling.InitialisePath(FormBase.GlobalParameters.BackupPath, TeamPathTypes.BackupPath, FormBase.TeamEventLog);
-            FileHandling.InitialisePath(FormBase.GlobalParameters.CorePath, TeamPathTypes.CorePath, FormBase.TeamEventLog);
+            FileHandling.InitialisePath(FormBase.globalParameters.BackupPath, TeamPathTypes.BackupPath, FormBase.TeamEventLog);
+            FileHandling.InitialisePath(FormBase.globalParameters.CorePath, TeamPathTypes.CorePath, FormBase.TeamEventLog);
+            FileHandling.InitialisePath(FormBase.globalParameters.ScriptPath, TeamPathTypes.ScriptPath, FormBase.TeamEventLog);
+            FileHandling.InitialisePath(FormBase.globalParameters.FilesPath, TeamPathTypes.FilesPath, FormBase.TeamEventLog);
         }
 
         /// <summary>
@@ -71,7 +73,7 @@ namespace TEAM
                 fs.Close();
 
                 // These variables are used as global variables throughout the application
-                FormBase.GlobalParameters.ActiveEnvironmentInternalId = configList["WorkingEnvironment"];
+                FormBase.globalParameters.ActiveEnvironmentInternalId = configList["WorkingEnvironment"];
             }
             catch (Exception)
             {
@@ -88,7 +90,6 @@ namespace TEAM
             {
                 var configurationFile = new StringBuilder();
                 configurationFile.AppendLine("/* TEAM Configuration Settings */");
-                configurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
 
                 configurationFile.AppendLine("MetadataConnectionId|" + FormBase.TeamConfiguration.MetadataConnection.ConnectionInternalId + "");
 
@@ -100,7 +101,8 @@ namespace TEAM
                 configurationFile.AppendLine("SatTablePrefix|" + FormBase.TeamConfiguration.SatTablePrefixValue + "");
                 configurationFile.AppendLine("LinkTablePrefix|" + FormBase.TeamConfiguration.LinkTablePrefixValue +"");
                 configurationFile.AppendLine("LinkSatTablePrefix|" + FormBase.TeamConfiguration.LsatTablePrefixValue + "");
-                configurationFile.AppendLine("KeyIdentifier|" + FormBase.TeamConfiguration.DwhKeyIdentifier + "");
+                configurationFile.AppendLine("KeyIdentifier|" + FormBase.TeamConfiguration.KeyIdentifier + "");
+                configurationFile.AppendLine("KeyPattern|" + FormBase.TeamConfiguration.KeyPattern + "");
                 configurationFile.AppendLine("SchemaName|" + FormBase.TeamConfiguration.SchemaName + "");
                 configurationFile.AppendLine("RowID|" + FormBase.TeamConfiguration.RowIdAttribute + "");
                 configurationFile.AppendLine("EventDateTimeStamp|" + FormBase.TeamConfiguration.EventDateTimeAttribute + "");
@@ -112,7 +114,6 @@ namespace TEAM
                 configurationFile.AppendLine("ETLUpdateProcessID|" +FormBase.TeamConfiguration.EtlProcessUpdateAttribute +"");
                 configurationFile.AppendLine("LogicalDeleteAttribute|" +FormBase.TeamConfiguration.LogicalDeleteAttribute +"");
                 configurationFile.AppendLine("TableNamingLocation|" + FormBase.TeamConfiguration.TableNamingLocation + "");
-                configurationFile.AppendLine("KeyNamingLocation|" + FormBase.TeamConfiguration.KeyNamingLocation +"");
                 configurationFile.AppendLine("RecordChecksum|" +FormBase.TeamConfiguration.RecordChecksumAttribute + "");
                 configurationFile.AppendLine("CurrentRecordAttribute|" +FormBase.TeamConfiguration.CurrentRowAttribute +"");
                 configurationFile.AppendLine("AlternativeRecordSource|" +FormBase.TeamConfiguration.AlternativeRecordSourceAttribute + "");
@@ -126,7 +127,7 @@ namespace TEAM
                 // Closing off
                 configurationFile.AppendLine("/* End of file */");
 
-                using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.ConfigFileName + '_' + FormBase.GlobalParameters.ActiveEnvironmentKey + FormBase.GlobalParameters.FileExtension)) 
+                using (var outfile = new StreamWriter(FormBase.globalParameters.ConfigurationPath + FormBase.globalParameters.ConfigFileName + '_' + FormBase.globalParameters.ActiveEnvironmentKey + FormBase.globalParameters.FileExtension)) 
                 {
                     outfile.Write(configurationFile.ToString());
                     outfile.Flush();

@@ -27,7 +27,7 @@ namespace TEAM_Library
 
         public void SaveTeamEnvironment(string fileName)
         {
-            // GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension
+            // globalParameters.CorePath + globalParameters.JsonEnvironmentFileName + globalParameters.JsonExtension
             // Update the environment on disk
             if (!File.Exists(fileName))
             {
@@ -155,11 +155,42 @@ namespace TEAM_Library
         }
 
         /// <summary>
-        /// Perform a safe lookup on the collection to retrieve the environment details by its key.
+        /// Perform a safe lookup on the collection to retrieve the environment details by its identification value.
+        /// </summary>
+        /// <param name="environmentId"></param>
+        /// <returns></returns>
+        public TeamEnvironment GetEnvironmentById(string environmentId)
+        {
+            TeamEnvironment localEnvironment = new TeamEnvironment();
+
+            if (string.IsNullOrEmpty(environmentId))
+            {
+                EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, "The environment id was not provided, so no environment was attempted to be retrieved from the collection."));
+            }
+            else
+            {
+                try
+                {
+                    localEnvironment = EnvironmentDictionary[environmentId];
+                    
+                    EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment '{localEnvironment.environmentName}' was retrieved using id {environmentId}."));
+                }
+                catch (Exception ex)
+                {
+                    EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered while trying to lookup the environment for id {environmentId}. The exception message is '{ex.Message}'"));
+
+                }
+            }
+
+            return localEnvironment;
+        }
+
+        /// <summary>
+        /// Perform a safe lookup on the collection to retrieve the environment details by its key value.
         /// </summary>
         /// <param name="environmentKey"></param>
         /// <returns></returns>
-        public TeamEnvironment GetEnvironmentById(string environmentKey)
+        public TeamEnvironment GetEnvironmentByKey(string environmentKey)
         {
             TeamEnvironment localEnvironment = new TeamEnvironment();
 
@@ -171,13 +202,14 @@ namespace TEAM_Library
             {
                 try
                 {
-                    localEnvironment = EnvironmentDictionary[environmentKey];
-                    
-                    EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment '{localEnvironment.environmentName}' was retrieved using key {localEnvironment.environmentKey}."));
+                    var selectedKeyValuePair = EnvironmentDictionary.FirstOrDefault(x => x.Value.environmentKey == environmentKey);
+                    localEnvironment = selectedKeyValuePair.Value;
+
+                    EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The environment '{localEnvironment.environmentName}' was retrieved using key {environmentKey}."));
                 }
                 catch (Exception ex)
                 {
-                    EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered while trying to lookup the environment for key {localEnvironment.environmentKey}. The exception message is '{ex.Message}'"));
+                    EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered while trying to lookup the environment for key {environmentKey}. The exception message is '{ex.Message}'"));
 
                 }
             }

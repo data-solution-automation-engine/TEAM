@@ -26,9 +26,13 @@
             "description": "schema name"
           }
         ]
-      }
-    },
-    "generationDateTime": "2022-11-02T11:23:08.0783348+10:00"
+      },
+      "dataObjectClassifications": [
+        {
+          "classification": "NaturalBusinessRelationshipContext"
+        }
+      ]
+    }
   },
   "dataObjectMappings": [
     {
@@ -55,7 +59,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "PersistentStagingArea"
+            }
+          ]
         }
       ],
       "targetDataObject": {
@@ -74,7 +83,12 @@
               "description": "schema name"
             }
           ]
-        }
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "NaturalBusinessRelationshipContext"
+          }
+        ]
       },
       "dataItemMappings": [
         {

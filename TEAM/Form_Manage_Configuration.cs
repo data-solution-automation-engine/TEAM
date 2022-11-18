@@ -19,8 +19,8 @@ namespace TEAM
             InitializeComponent();
 
             //Paths
-            textBoxConfigurationPath.Text = GlobalParameters.ConfigurationPath;
-            textBoxTeamMetadataPath.Text = GlobalParameters.MetadataPath;
+            textBoxConfigurationPath.Text = globalParameters.ConfigurationPath;
+            textBoxTeamMetadataPath.Text = globalParameters.MetadataPath;
 
             // Adding tab pages to the Environment tabs.
             IntPtr localHandle = tabControlEnvironments.Handle;
@@ -40,12 +40,12 @@ namespace TEAM
                 comboBoxEnvironments.DisplayMember = "Value";
             }
 
-            comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.ActiveEnvironmentKey);
+            comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(globalParameters.ActiveEnvironmentKey);
 
             // Load the configuration file using the paths retrieved from the application root contents (configuration path)
             try
             {
-                LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension);
+                LocalInitialiseConnections(globalParameters.ConfigurationPath + globalParameters.ConfigFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension);
             }
             catch (Exception ex)
             {
@@ -145,7 +145,8 @@ namespace TEAM
                 textBoxSatPrefix.Text = configList["SatTablePrefix"];
                 textBoxLinkTablePrefix.Text = configList["LinkTablePrefix"];
                 textBoxLinkSatPrefix.Text = configList["LinkSatTablePrefix"];
-                textBoxDWHKeyIdentifier.Text = configList["KeyIdentifier"];
+                textBoxKeyIdentifier.Text = configList["KeyIdentifier"];
+                textBoxKeyPattern.Text = configList["KeyPattern"];
                 textBoxEventDateTime.Text = configList["EventDateTimeStamp"];
                 textBoxLDST.Text = configList["LoadDateTimeStamp"];
                 textBoxExpiryDateTimeName.Text = configList["ExpiryDateTimeStamp"];
@@ -217,21 +218,7 @@ namespace TEAM
                     myTableRadioButton = tableSuffixRadiobutton;
                     myTableRadioButton.Checked = true;
                 }
-
-                //Radiobutton settings for on key location
-                RadioButton myKeyRadioButton;
-
-                if (configList["KeyNamingLocation"] == "Prefix")
-                {
-                    myKeyRadioButton = keyPrefixRadiobutton;
-                    myKeyRadioButton.Checked = true;
-                }
-                else
-                {
-                    myKeyRadioButton = keySuffixRadiobutton;
-                    myKeyRadioButton.Checked = true;
-                }
-
+                
                 //Radiobutton settings for PSA Natural Key determination
                 RadioButton myPsaBusinessKeyLocation;
 
@@ -268,7 +255,7 @@ namespace TEAM
             {
                 Title = @"Open Configuration File",
                 Filter = @"Text files|*.txt",
-                InitialDirectory = @""+ GlobalParameters.ConfigurationPath+""
+                InitialDirectory = @""+ globalParameters.ConfigurationPath+""
             };
 
             if (theDialog.ShowDialog() != DialogResult.OK) return;
@@ -285,7 +272,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                MessageBox.Show($@"Error: Could not read file from disk. Original error: {ex.Message}", @"An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($@"Error: Could not read file from disk. Original error: {ex.Message}", @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         
@@ -308,12 +295,12 @@ namespace TEAM
         {
             #region root path file
             // Update the paths in memory
-            GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
-            GlobalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
+            globalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
+            globalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
 
             var localEnvironment = (KeyValuePair<TeamEnvironment, string>) comboBoxEnvironments.SelectedItem;
-            GlobalParameters.ActiveEnvironmentInternalId = localEnvironment.Key.environmentInternalId;
-            GlobalParameters.ActiveEnvironmentKey = localEnvironment.Key.environmentKey;
+            globalParameters.ActiveEnvironmentInternalId = localEnvironment.Key.environmentInternalId;
+            globalParameters.ActiveEnvironmentKey = localEnvironment.Key.environmentKey;
 
             // Save the paths from memory to disk.
             UpdateRootPathFile();
@@ -321,17 +308,17 @@ namespace TEAM
 
             // Make sure the new paths as updated are available upon save for backup etc.
             // Check if the paths and files are available, just to be sure.
-            FileHandling.InitialisePath(GlobalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
-            FileHandling.InitialisePath(GlobalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
+            FileHandling.InitialisePath(globalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
+            FileHandling.InitialisePath(globalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
 
-            TeamConfiguration.CreateDummyTeamConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension);
-            ValidationSetting.CreateDummyValidationFile(GlobalParameters.ConfigurationPath + GlobalParameters.ValidationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension);
-            JsonExportSetting.CreateDummyJsonConfigurationFile(GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension);
+            TeamConfiguration.CreateDummyTeamConfigurationFile(globalParameters.ConfigurationPath + globalParameters.ConfigFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension);
+            ValidationSetting.CreateDummyValidationFile(globalParameters.ConfigurationPath + globalParameters.ValidationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension);
+            JsonExportSetting.CreateDummyJsonConfigurationFile(globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension, TeamEventLog);
 
             // Create a file backup for the configuration file
             try
             {
-                FileHandling.CreateFileBackup(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension, GlobalParameters.BackupPath);
+                FileHandling.CreateFileBackup(globalParameters.ConfigurationPath + globalParameters.ConfigFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension, globalParameters.BackupPath);
                 richTextBoxInformation.Text = $@"A backup of the current configuration was made at {DateTime.Now} in {textBoxConfigurationPath.Text}.";
             }
             catch (Exception)
@@ -345,9 +332,9 @@ namespace TEAM
 
             // Also updating the environments for paths etc.
             // TODO
-            localEnvironment.Key.metadataPath = GlobalParameters.MetadataPath;
-            localEnvironment.Key.configurationPath = GlobalParameters.ConfigurationPath;
-            localEnvironment.Key.SaveTeamEnvironment(GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension);
+            localEnvironment.Key.metadataPath = globalParameters.MetadataPath;
+            localEnvironment.Key.configurationPath = globalParameters.ConfigurationPath;
+            localEnvironment.Key.SaveTeamEnvironment(globalParameters.CorePath + globalParameters.JsonEnvironmentFileName + globalParameters.JsonExtension);
 
             // Save the information 
             LocalTeamEnvironmentConfiguration.SaveTeamConfigurationFile();
@@ -361,14 +348,14 @@ namespace TEAM
             var rootPathConfigurationFile = new StringBuilder();
             rootPathConfigurationFile.AppendLine("/* TEAM Core Settings */");
             rootPathConfigurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
-            //rootPathConfigurationFile.AppendLine("ConfigurationPath|" + GlobalParameters.ConfigurationPath + "");
-            //rootPathConfigurationFile.AppendLine("MetadataPath|" + GlobalParameters.MetadataPath + "");
-            rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + GlobalParameters.ActiveEnvironmentInternalId + "");
+            //rootPathConfigurationFile.AppendLine("ConfigurationPath|" + globalParameters.ConfigurationPath + "");
+            //rootPathConfigurationFile.AppendLine("MetadataPath|" + globalParameters.MetadataPath + "");
+            rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + globalParameters.ActiveEnvironmentInternalId + "");
             rootPathConfigurationFile.AppendLine("/* End of file */");
 
             try
             {
-                using (var outfile = new StreamWriter(GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension))
+                using (var outfile = new StreamWriter(globalParameters.CorePath + globalParameters.PathFileName + globalParameters.FileExtension))
                 {
                     outfile.Write(rootPathConfigurationFile.ToString());
                     outfile.Close();
@@ -376,7 +363,7 @@ namespace TEAM
             }
             catch (Exception ex)
             {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The configuration file {GlobalParameters.CorePath +GlobalParameters.PathFileName + GlobalParameters.FileExtension} could not be updated. The error message is: \r\n\r\b\n{ex}"));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The configuration file {globalParameters.CorePath +globalParameters.PathFileName + globalParameters.FileExtension} could not be updated. The error message is: \r\n\r\b\n{ex}"));
             }
         }
 
@@ -394,8 +381,8 @@ namespace TEAM
                 TeamConfiguration.MetadataConnection = TeamConfiguration.ConnectionDictionary[localConnectionKeyValuePair.Key.ConnectionInternalId];
             }
 
-            GlobalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
-            GlobalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
+            globalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
+            globalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
 
             TeamConfiguration.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
             TeamConfiguration.PsaTablePrefixValue = textBoxPSAPrefix.Text;
@@ -406,20 +393,8 @@ namespace TEAM
             TeamConfiguration.LinkTablePrefixValue = textBoxLinkTablePrefix.Text;
             TeamConfiguration.LsatTablePrefixValue = textBoxLinkSatPrefix.Text;
 
-            if (keyPrefixRadiobutton.Checked)
-            {
-                TeamConfiguration.KeyNamingLocation = "Prefix";
-            }
-            else if (keySuffixRadiobutton.Checked)
-            {
-                TeamConfiguration.KeyNamingLocation = "Suffix";
-            }
-            else
-            {
-                richTextBoxInformation.AppendText("Issues storing the key location (prefix/suffix). Is one of the radio buttons checked?");
-            }
-
-            TeamConfiguration.DwhKeyIdentifier = textBoxDWHKeyIdentifier.Text;
+            TeamConfiguration.KeyIdentifier = textBoxKeyIdentifier.Text;
+            TeamConfiguration.KeyPattern = textBoxKeyPattern.Text;
             TeamConfiguration.RowIdAttribute = textBoxSourceRowId.Text;
             TeamConfiguration.EventDateTimeAttribute = textBoxEventDateTime.Text;
             TeamConfiguration.LoadDateTimeAttribute = textBoxLDST.Text;
@@ -517,43 +492,6 @@ namespace TEAM
             }
         }
 
-        private void checkBoxAlternativeRecordSource_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBoxAlternativeRecordSource.Checked)
-            {
-                textBoxAlternativeRecordSource.Enabled = true;
-            }
-            if (!checkBoxAlternativeRecordSource.Checked)
-            {
-                textBoxAlternativeRecordSource.Enabled = false;
-            }
-        }
-
-        private void checkBoxAlternativeHubLDTS_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBoxAlternativeHubLDTS.Checked)
-            {
-                textBoxHubAlternativeLDTSAttribute.Enabled = true;
-            }
-            if (!checkBoxAlternativeHubLDTS.Checked)
-            {
-                textBoxHubAlternativeLDTSAttribute.Enabled = false;
-            }
-        }
-
-        private void checkBoxAlternativeSatLDTS_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBoxAlternativeSatLDTS.Checked)
-            {
-                textBoxSatelliteAlternativeLDTSAttribute.Enabled = true;
-            }
-
-            if (!checkBoxAlternativeSatLDTS.Checked)
-            {
-                textBoxSatelliteAlternativeLDTSAttribute.Enabled = false;
-            }
-        }
-
         private void FormManageConfiguration_FormClosed(object sender, FormClosedEventArgs e)
         {
             parentFormMain.RevalidateFlag=true;
@@ -574,7 +512,7 @@ namespace TEAM
                 connectionProfile.ConnectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100) }, " % $@");
                 connectionProfile.ConnectionName = "New connection";
                 connectionProfile.ConnectionKey = "New";
-                connectionProfile.ConnectionType = ConnectionTypes.Database;
+                connectionProfile.ConnectionType = ConnectionTypes.Catalog;
 
                 TeamDatabaseConnection connectionDatabase = new TeamDatabaseConnection();
                 connectionDatabase.SchemaName = "<Schema Name>";
@@ -584,12 +522,7 @@ namespace TEAM
                 connectionDatabase.NamedUserPassword = "<Password>";
                 connectionDatabase.authenticationType = ServerAuthenticationTypes.NamedUser;
 
-                TeamFileConnection connectionFile = new TeamFileConnection();
-                connectionFile.FilePath = @"<File Path>";
-                connectionFile.FileName = @"<File Name>";
-
                 connectionProfile.DatabaseServer = connectionDatabase;
-                connectionProfile.FileConnection = connectionFile;
 
                 bool newTabExists = false;
                 foreach (TabPage customTabPage in tabControlConnections.TabPages)
@@ -671,7 +604,7 @@ namespace TEAM
                 comboBoxEnvironments.DisplayMember = "Value";
             }
 
-            comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(GlobalParameters.ActiveEnvironmentKey);
+            comboBoxEnvironments.SelectedIndex = comboBoxEnvironments.FindStringExact(globalParameters.ActiveEnvironmentKey);
         }
 
         private void SaveConnection(object o, MyStringEventArgs e)
@@ -767,7 +700,7 @@ namespace TEAM
         {
             try
             {
-                Process.Start(GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension);
+                Process.Start(globalParameters.CorePath + globalParameters.PathFileName + globalParameters.FileExtension);
 
             }
             catch (Exception ex)
@@ -785,7 +718,7 @@ namespace TEAM
         {
             try
             {
-                Process.Start(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension);
+                Process.Start(globalParameters.ConfigurationPath + globalParameters.ConfigFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension);
 
             }
             catch (Exception ex)
@@ -814,19 +747,19 @@ namespace TEAM
                 var localEnvironment = TeamEnvironmentCollection.EnvironmentDictionary[selectedItem.environmentInternalId];
 
                 // Set the working environment in memory.
-                GlobalParameters.ActiveEnvironmentInternalId = localEnvironment.environmentInternalId;
-                GlobalParameters.ActiveEnvironmentKey = localEnvironment.environmentKey;
-                GlobalParameters.ConfigurationPath = localEnvironment.configurationPath;
-                GlobalParameters.MetadataPath = localEnvironment.metadataPath;
+                globalParameters.ActiveEnvironmentInternalId = localEnvironment.environmentInternalId;
+                globalParameters.ActiveEnvironmentKey = localEnvironment.environmentKey;
+                globalParameters.ConfigurationPath = localEnvironment.configurationPath;
+                globalParameters.MetadataPath = localEnvironment.metadataPath;
 
                 // Configuration Path
-                FileHandling.InitialisePath(GlobalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
+                FileHandling.InitialisePath(globalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
                 // Metadata Path
-                FileHandling.InitialisePath(GlobalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
+                FileHandling.InitialisePath(globalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
 
                 //Paths
-                textBoxConfigurationPath.Text = GlobalParameters.ConfigurationPath;
-                textBoxTeamMetadataPath.Text = GlobalParameters.MetadataPath;
+                textBoxConfigurationPath.Text = globalParameters.ConfigurationPath;
+                textBoxTeamMetadataPath.Text = globalParameters.MetadataPath;
 
                 // Update the root path file with the new working directory.
                 UpdateRootPathFile();
@@ -847,7 +780,7 @@ namespace TEAM
                     }
                 }
 
-                var connectionFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonConnectionFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.JsonExtension;
+                var connectionFileName = globalParameters.ConfigurationPath + globalParameters.JsonConnectionFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.JsonExtension;
 
                 TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
 
@@ -856,7 +789,7 @@ namespace TEAM
 
                 try
                 {
-                    LocalInitialiseConnections(GlobalParameters.ConfigurationPath + GlobalParameters.ConfigFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension);
+                    LocalInitialiseConnections(globalParameters.ConfigurationPath + globalParameters.ConfigFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension);
                 }
                 catch (Exception ex)
                 {
@@ -945,6 +878,43 @@ namespace TEAM
             catch (Exception ex)
             {
                 richTextBoxInformation.Text = $@"An error has occurred while attempting to open the metadata directory. The error message is: {ex.Message}";
+            }
+        }
+
+        private void checkBoxAlternativeRecordSource_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxAlternativeRecordSource.Checked)
+            {
+                textBoxAlternativeRecordSource.Enabled = true;
+            }
+            if (!checkBoxAlternativeRecordSource.Checked)
+            {
+                textBoxAlternativeRecordSource.Enabled = false;
+            }
+        }
+
+        private void checkBoxAlternativeHubLDTS_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxAlternativeHubLDTS.Checked)
+            {
+                textBoxHubAlternativeLDTSAttribute.Enabled = true;
+            }
+            if (!checkBoxAlternativeHubLDTS.Checked)
+            {
+                textBoxHubAlternativeLDTSAttribute.Enabled = false;
+            }
+        }
+
+        private void checkBoxAlternativeSatLDTS_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxAlternativeSatLDTS.Checked)
+            {
+                textBoxSatelliteAlternativeLDTSAttribute.Enabled = true;
+            }
+
+            if (!checkBoxAlternativeSatLDTS.Checked)
+            {
+                textBoxSatelliteAlternativeLDTSAttribute.Enabled = false;
             }
         }
     }

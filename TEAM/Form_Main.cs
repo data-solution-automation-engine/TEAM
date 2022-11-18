@@ -20,11 +20,11 @@ namespace TEAM
             InitializeComponent();
 
             // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.6.5";
+            const string versionNumberForTeamApplication = "v1.6.6";
             Text = $@"Taxonomy for ETL Automation Metadata {versionNumberForTeamApplication}";
 
-            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {GlobalParameters.RootPath}."));
-            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {GlobalParameters.ScriptPath}."));
+            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {globalParameters.RootPath}."));
+            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM script path is {globalParameters.ScriptPath}."));
 
             // Root paths (mandatory TEAM directories)
             // Make sure the application and custom location directories exist as per the start-up default.
@@ -41,11 +41,11 @@ namespace TEAM
 
             // Load the root file, to be able to locate the other configuration files.
             // This file contains the configuration directory, the output directory and the working environment.
-            string rootPathFileName = GlobalParameters.CorePath + GlobalParameters.PathFileName + GlobalParameters.FileExtension;
+            string rootPathFileName = globalParameters.CorePath + globalParameters.PathFileName + globalParameters.FileExtension;
 
             try
             {
-                LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, GlobalParameters.CorePath);
+                LocalTeamEnvironmentConfiguration.LoadRootPathFile(rootPathFileName, globalParameters.CorePath);
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The core configuration file {rootPathFileName} has been loaded."));
             }
             catch
@@ -58,7 +58,7 @@ namespace TEAM
             #region Environment file
 
             // Environments file
-            string environmentFile = GlobalParameters.CorePath + GlobalParameters.JsonEnvironmentFileName + GlobalParameters.JsonExtension;
+            string environmentFile = globalParameters.CorePath + globalParameters.JsonEnvironmentFileName + globalParameters.JsonExtension;
 
             try
             {
@@ -71,52 +71,28 @@ namespace TEAM
             }
 
             // Set the paths of the active environment
-            var activeEnvironment = TeamEnvironmentCollection.GetEnvironmentById(GlobalParameters.ActiveEnvironmentInternalId);
-            GlobalParameters.ActiveEnvironmentKey = activeEnvironment.environmentKey;
-            GlobalParameters.ConfigurationPath = activeEnvironment.configurationPath;
-            GlobalParameters.MetadataPath = activeEnvironment.metadataPath;
+            var activeEnvironment = TeamEnvironmentCollection.GetEnvironmentById(globalParameters.ActiveEnvironmentInternalId);
+            globalParameters.ActiveEnvironmentKey = activeEnvironment.environmentKey;
+            globalParameters.ConfigurationPath = activeEnvironment.configurationPath;
+            globalParameters.MetadataPath = activeEnvironment.metadataPath;
 
-            labelWorkingEnvironment.Text = GlobalParameters.ActiveEnvironmentKey;
+            labelWorkingEnvironment.Text = globalParameters.ActiveEnvironmentKey;
 
             #endregion
 
             #region Check if user configured paths exists (now that they have been loaded from the root file)
 
             // Configuration Path
-            FileHandling.InitialisePath(GlobalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
+            FileHandling.InitialisePath(globalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
             // Metadata Path
-            FileHandling.InitialisePath(GlobalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
-
-            #endregion
-
-            #region Team configuration file
-
-            // Create a dummy configuration file if it does not exist.
-            var teamConfigurationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.FileExtension}";
-
-            try
-            {
-                if (!File.Exists(teamConfigurationFileName))
-                {
-                    TeamConfiguration.CreateDummyTeamConfigurationFile(teamConfigurationFileName); 
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {teamConfigurationFileName} was created."));
-                }
-                else
-                {
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {teamConfigurationFileName} was detected."));
-                }
-            }
-            catch
-            {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {teamConfigurationFileName}."));
-            }
+            FileHandling.InitialisePath(globalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
 
             #endregion
 
             #region Validation file
 
             // Create a default validation file if the file does not exist as expected.
-            var validationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ValidationFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.FileExtension}";
+            var validationFileName = $"{globalParameters.ConfigurationPath}{globalParameters.ValidationFileName}{'_'}{globalParameters.ActiveEnvironmentKey}{globalParameters.FileExtension}";
 
             try
             {
@@ -132,11 +108,11 @@ namespace TEAM
 
             #region JSON export configuration file
             // Create a default json configuration file if the file does not exist as expected.
-            var jsonConfigurationFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonExportConfigurationFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.FileExtension}";
+            var jsonConfigurationFileName = $"{globalParameters.ConfigurationPath}{globalParameters.JsonExportConfigurationFileName}{'_'}{globalParameters.ActiveEnvironmentKey}{globalParameters.FileExtension}";
 
             try
             {
-                JsonExportSetting.CreateDummyJsonConfigurationFile(jsonConfigurationFileName);
+                JsonExportSetting.CreateDummyJsonConfigurationFile(jsonConfigurationFileName, TeamEventLog);
 
             }
             catch
@@ -149,16 +125,34 @@ namespace TEAM
             #region Connection file
 
             // Load the connections file for the respective environment.
-            var connectionFileName = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.JsonConnectionFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.JsonExtension}";
+            var connectionFileName = $"{globalParameters.ConfigurationPath}{globalParameters.JsonConnectionFileName}{'_'}{globalParameters.ActiveEnvironmentKey}{globalParameters.JsonExtension}";
 
             TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
 
             #endregion
 
-            #region Load configuration file
+            #region Team configuration file
 
-            // Load the available configuration file into memory.
-            var configurationFile = $"{GlobalParameters.ConfigurationPath}{GlobalParameters.ConfigFileName}{'_'}{GlobalParameters.ActiveEnvironmentKey}{GlobalParameters.FileExtension}";
+            // Create a dummy configuration file if it does not exist.
+            var configurationFile = $"{globalParameters.ConfigurationPath}{globalParameters.ConfigFileName}{'_'}{globalParameters.ActiveEnvironmentKey}{globalParameters.FileExtension}";
+
+            try
+            {
+                if (!File.Exists(configurationFile))
+                {
+                    TeamConfiguration.CreateDummyTeamConfigurationFile(configurationFile);
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file {configurationFile} was created."));
+                }
+                else
+                {
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {configurationFile} was detected."));
+                }
+            }
+            catch
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered creating or detecting the configuration paths for {configurationFile}."));
+            }
+
             try
             {
                 // Load the configuration file.
@@ -172,6 +166,7 @@ namespace TEAM
             {
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered loading the user configuration file ({configurationFile})."));
             }
+
             #endregion
 
             // Notify the user of any errors that were detected.
@@ -316,6 +311,7 @@ namespace TEAM
 
         // Form_Manage_Metadata form
         private FormManageMetadata _myMetadataForm;
+
         [STAThread]
         public void ThreadProcMetadata()
         {
@@ -328,12 +324,14 @@ namespace TEAM
             {
                 if (_myMetadataForm.InvokeRequired)
                 {
-                    // Thread Error
-                    _myMetadataForm.Invoke((MethodInvoker)delegate { _myMetadataForm.Close(); });
-                    _myMetadataForm.FormClosed += CloseMetadataForm;
+                    // Do nothing.
 
-                    _myMetadataForm = new FormManageMetadata(this);
-                    Application.Run(_myMetadataForm);
+                    //    // Thread Error
+                    //    _myMetadataForm.Invoke((MethodInvoker)delegate { _myMetadataForm.Close(); });
+                    //    _myMetadataForm.FormClosed += CloseMetadataForm;
+
+                    //    _myMetadataForm = new FormManageMetadata(this);
+                    //    Application.Run(_myMetadataForm);
                 }
                 else
                 {
@@ -535,7 +533,7 @@ namespace TEAM
             {
                 try
                 {
-                    Process.Start(GlobalParameters.MetadataPath);
+                    Process.Start(globalParameters.MetadataPath);
                 }
                 catch (Exception ex)
                 {

@@ -58,7 +58,7 @@
             // buttonCancelFormAlert
             // 
             this.buttonCancelFormAlert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCancelFormAlert.Location = new System.Drawing.Point(579, 430);
+            this.buttonCancelFormAlert.Location = new System.Drawing.Point(1028, 430);
             this.buttonCancelFormAlert.Name = "buttonCancelFormAlert";
             this.buttonCancelFormAlert.Size = new System.Drawing.Size(109, 40);
             this.buttonCancelFormAlert.TabIndex = 2;
@@ -69,7 +69,7 @@
             // buttonCloseFormAlert
             // 
             this.buttonCloseFormAlert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCloseFormAlert.Location = new System.Drawing.Point(694, 430);
+            this.buttonCloseFormAlert.Location = new System.Drawing.Point(1143, 430);
             this.buttonCloseFormAlert.Name = "buttonCloseFormAlert";
             this.buttonCloseFormAlert.Size = new System.Drawing.Size(109, 40);
             this.buttonCloseFormAlert.TabIndex = 3;
@@ -88,14 +88,14 @@
             this.richTextBoxMetadataLogFormAlert.Location = new System.Drawing.Point(12, 12);
             this.richTextBoxMetadataLogFormAlert.Name = "richTextBoxMetadataLogFormAlert";
             this.richTextBoxMetadataLogFormAlert.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
-            this.richTextBoxMetadataLogFormAlert.Size = new System.Drawing.Size(791, 412);
+            this.richTextBoxMetadataLogFormAlert.Size = new System.Drawing.Size(1240, 412);
             this.richTextBoxMetadataLogFormAlert.TabIndex = 4;
             this.richTextBoxMetadataLogFormAlert.Text = "";
             // 
             // buttonShowLogFormAlert
             // 
             this.buttonShowLogFormAlert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonShowLogFormAlert.Location = new System.Drawing.Point(464, 430);
+            this.buttonShowLogFormAlert.Location = new System.Drawing.Point(913, 430);
             this.buttonShowLogFormAlert.Name = "buttonShowLogFormAlert";
             this.buttonShowLogFormAlert.Size = new System.Drawing.Size(109, 40);
             this.buttonShowLogFormAlert.TabIndex = 5;
@@ -107,7 +107,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(815, 482);
+            this.ClientSize = new System.Drawing.Size(1264, 482);
             this.Controls.Add(this.buttonShowLogFormAlert);
             this.Controls.Add(this.richTextBoxMetadataLogFormAlert);
             this.Controls.Add(this.buttonCloseFormAlert);

@@ -26,9 +26,13 @@
             "description": "schema name"
           }
         ]
-      }
-    },
-    "generationDateTime": "2022-11-02T11:23:08.0287567+10:00"
+      },
+      "dataObjectClassifications": [
+        {
+          "classification": "CoreBusinessConcept"
+        }
+      ]
+    }
   },
   "dataObjectMappings": [
     {
@@ -55,7 +59,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "PersistentStagingArea"
+            }
+          ]
         }
       ],
       "targetDataObject": {
@@ -74,7 +83,12 @@
               "description": "schema name"
             }
           ]
-        }
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "CoreBusinessConcept"
+          }
+        ]
       },
       "businessKeys": [
         {
@@ -132,7 +146,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "PersistentStagingArea"
+            }
+          ]
         }
       ],
       "targetDataObject": {
@@ -151,7 +170,12 @@
               "description": "schema name"
             }
           ]
-        }
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "CoreBusinessConcept"
+          }
+        ]
       },
       "businessKeys": [
         {
@@ -209,7 +233,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "PersistentStagingArea"
+            }
+          ]
         }
       ],
       "targetDataObject": {
@@ -228,7 +257,12 @@
               "description": "schema name"
             }
           ]
-        }
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "CoreBusinessConcept"
+          }
+        ]
       },
       "businessKeys": [
         {
@@ -286,7 +320,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "PersistentStagingArea"
+            }
+          ]
         }
       ],
       "targetDataObject": {
@@ -305,7 +344,12 @@
               "description": "schema name"
             }
           ]
-        }
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "CoreBusinessConcept"
+          }
+        ]
       },
       "businessKeys": [
         {
@@ -363,7 +407,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "PersistentStagingArea"
+            }
+          ]
         }
       ],
       "targetDataObject": {
@@ -382,7 +431,12 @@
               "description": "schema name"
             }
           ]
-        }
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "CoreBusinessConcept"
+          }
+        ]
       },
       "businessKeys": [
         {

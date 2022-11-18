@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using TEAM_Library;
 
-namespace TEAM
+namespace TEAM_Library
 {
     /// <summary>
     /// Configuration settings related to the export of JSON files. This class manages the settings (true/false) that dictate whether certain objects are generated or not.
@@ -13,7 +12,6 @@ namespace TEAM
     public class JsonExportSetting
     {
         // Data Objects
-        public string AddDataObjectConnection { get; set; }
         public string AddDatabaseAsExtension { get; set; }
         public string AddSchemaAsExtension { get; set; }
         public string AddTypeAsClassification { get; set; }
@@ -26,13 +24,6 @@ namespace TEAM
         // Related Data Objects
         public string AddMetadataAsRelatedDataObject { get; set; }
         public string AddRelatedDataObjectsAsRelatedDataObject { get; set; }
-
-        public bool IsAddDataObjectConnection()
-        {
-            bool returnValue = AddDataObjectConnection == "True";
-
-            return returnValue;
-        }
 
         public bool IsAddDatabaseAsExtension()
         {
@@ -95,7 +86,7 @@ namespace TEAM
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="applyChecks"></param>
-        internal void LoadJsonConfigurationFile(string fileName, bool applyChecks = false)
+        public void LoadJsonConfigurationFile(string fileName, bool applyChecks = false)
         {
             try
             {
@@ -116,7 +107,6 @@ namespace TEAM
                 streamReader.Close();
                 fileStream.Close();
 
-                AddDataObjectConnection = configList["GenerateDataObjectConnection"];
                 AddDataObjectDataItems = configList["GenerateDataObjectDataItems"];
                 AddDatabaseAsExtension = configList["GenerateDatabaseAsExtension"];
                 AddSchemaAsExtension = configList["GenerateSchemaAsExtension"];
@@ -140,16 +130,14 @@ namespace TEAM
         /// <summary>
         /// Save the JSON export settings to disk.
         /// </summary>
-        internal void SaveJsonConfigurationFile()
+        public void SaveJsonConfigurationFile(GlobalParameters globalParameters)
         {
             try
             {
                 // Creating the file
                 var validationFile = new StringBuilder();
                 validationFile.AppendLine("/* TEAM JSON Export Configuration Settings */");
-                validationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
 
-                validationFile.AppendLine("GenerateDataObjectConnection|" + AddDataObjectConnection + "");
                 validationFile.AppendLine("GenerateDataObjectDataItems|" + AddDataObjectDataItems + "");
                 validationFile.AppendLine("GenerateDatabaseAsExtension|" + AddDatabaseAsExtension + "");
                 validationFile.AppendLine("GenerateSchemaAsExtension|" + AddSchemaAsExtension + "");
@@ -164,7 +152,7 @@ namespace TEAM
                 // Closing off
                 validationFile.AppendLine("/* End of file */");
 
-                using (var outfile = new StreamWriter(FormBase.GlobalParameters.ConfigurationPath + FormBase.GlobalParameters.JsonExportConfigurationFileName + '_' + FormBase.GlobalParameters.ActiveEnvironmentKey + FormBase.GlobalParameters.FileExtension))
+                using (var outfile = new StreamWriter(globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension))
                 {
                     outfile.Write(validationFile.ToString());
                     outfile.Close();
@@ -179,7 +167,7 @@ namespace TEAM
         /// <summary>
         /// Method to create a new validation file with default values, at the default location. Checks if the file already exists. If it does, nothing will happen.
         /// </summary>
-        internal static void CreateDummyJsonConfigurationFile(string fileName)
+        public void CreateDummyJsonConfigurationFile(string fileName, EventLog eventLog)
         {
             if (!File.Exists(fileName))
             {
@@ -188,7 +176,6 @@ namespace TEAM
                 validationFile.AppendLine("/* TEAM JSON Export File Settings */");
 
                 // Data Object group.
-                validationFile.AppendLine("GenerateDataObjectConnection|True");
                 validationFile.AppendLine("GenerateDataObjectDataItems|True");
                 validationFile.AppendLine("GenerateDatabaseAsExtension|True");
                 validationFile.AppendLine("GenerateSchemaAsExtension|True");
@@ -211,11 +198,11 @@ namespace TEAM
                     outfile.Close();
                 }
 
-                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new JSON extract configuration file was created ({fileName})."));
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new JSON extract configuration file was created ({fileName})."));
             }
             else
             {
-                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"An existing JSON extract configuration file ({fileName}) was detected and used."));
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"An existing JSON extract configuration file ({fileName}) was detected and used."));
             }
         }
     }

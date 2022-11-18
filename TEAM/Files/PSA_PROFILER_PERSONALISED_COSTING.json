@@ -26,9 +26,13 @@
             "description": "schema name"
           }
         ]
-      }
-    },
-    "generationDateTime": "2022-11-02T11:23:08.1183595+10:00"
+      },
+      "dataObjectClassifications": [
+        {
+          "classification": "PersistentStagingArea"
+        }
+      ]
+    }
   },
   "dataObjectMappings": [
     {
@@ -55,7 +59,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "StagingArea"
+            }
+          ]
         }
       ],
       "targetDataObject": {
@@ -74,7 +83,12 @@
               "description": "schema name"
             }
           ]
-        }
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "PersistentStagingArea"
+          }
+        ]
       },
       "relatedDataObjects": [
         {
@@ -93,7 +107,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "CoreBusinessConcept"
+            }
+          ]
         },
         {
           "name": "HUB_MEMBERSHIP_PLAN",
@@ -111,7 +130,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "CoreBusinessConcept"
+            }
+          ]
         },
         {
           "name": "HUB_SEGMENT",
@@ -129,7 +153,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "CoreBusinessConcept"
+            }
+          ]
         },
         {
           "name": "LNK_CUSTOMER_COSTING",
@@ -147,7 +176,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "NaturalBusinessRelationship"
+            }
+          ]
         },
         {
           "name": "LSAT_CUSTOMER_COSTING",
@@ -165,7 +199,12 @@
                 "description": "schema name"
               }
             ]
-          }
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "NaturalBusinessRelationshipContext"
+            }
+          ]
         }
       ],
       "dataItemMappings": [
@@ -268,7 +307,7 @@
               }
             }
           ],
-          "surrogateKey": "PSA_PROFILER_PERSONALISED_COSTING_SK"
+          "surrogateKey": "PROFILER_PERSONALISED_COSTING_SK"
         }
       ],
       "filterCriterion": "",

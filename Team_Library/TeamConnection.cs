@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Newtonsoft.Json;
 
 namespace TEAM_Library
@@ -21,8 +20,8 @@ namespace TEAM_Library
     /// </summary>
     public enum ConnectionTypes
     {
-        Database,
-        File
+        Catalog,
+        Custom
     }
     
     public class TeamConnection
@@ -41,7 +40,25 @@ namespace TEAM_Library
         public TeamDatabaseConnection DatabaseServer { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public TeamFileConnection FileConnection { get; set; }
+        public string ConnectionCustomQuery { get; set; }
+        
+        /// <summary>
+        /// Return the full TeamConnection object for a given (TeamConnection) connection Id string.
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <param name="eventLog"></param>
+        /// <returns></returns>
+        public static TeamConnection GetTeamConnectionByConnectionId(string connectionId, TeamConfiguration teamConfiguration, EventLog eventLog)
+        {
+            if (!teamConfiguration.ConnectionDictionary.TryGetValue(connectionId, out var teamConnection))
+            {
+                // The key isn't in the dictionary.
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Id {connectionId}."));
+            }
+
+            return teamConnection;
+        }
 
         /// <summary>
         /// Generate a SQL Server connection string from available information.
@@ -64,14 +81,15 @@ namespace TEAM_Library
                     outputConnectionString += ("," + localDatabaseConnection.PortNumber);
                 }
 
-
                 if (DatabaseServer.authenticationType == ServerAuthenticationTypes.SSPI)
                 {
+                    outputConnectionString += ";TrustServerCertificate=true";
                     outputConnectionString += ";Initial Catalog=" + localDatabaseConnection.DatabaseName;
                     outputConnectionString += ";Integrated Security=SSPI";
                 }
                 else if (DatabaseServer.authenticationType == ServerAuthenticationTypes.NamedUser)
                 {
+                    outputConnectionString += ";TrustServerCertificate=true";
                     outputConnectionString += ";Initial Catalog=" + localDatabaseConnection.DatabaseName;
                     outputConnectionString += ";user id=" + localDatabaseConnection.NamedUserName;
                     outputConnectionString += ";password=" + localDatabaseConnection.NamedUserPassword;
@@ -110,12 +128,6 @@ namespace TEAM_Library
 
             return returnTeamConnection;
         }
-    }
-
-    public class TeamFileConnection
-    {
-        public string FilePath { get; set; }
-        public string FileName { get; set; }
     }
 
     /// <summary>
@@ -275,7 +287,7 @@ namespace TEAM_Library
                 ConnectionInternalId = "MetadataConnectionInternalId",
                 ConnectionKey = "Metadata",
                 ConnectionName = "Metadata Repository",
-                ConnectionType = ConnectionTypes.Database,
+                ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = "Default metadata repository connection."
             };
 
@@ -298,7 +310,7 @@ namespace TEAM_Library
                 ConnectionInternalId =  "SourceConnectionInternalId",
                 ConnectionKey = "Source",
                 ConnectionName = "Source System",
-                ConnectionType = ConnectionTypes.Database,
+                ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = "Sample source system connection."
             };
 
@@ -321,7 +333,7 @@ namespace TEAM_Library
                 ConnectionInternalId =  "StagingConnectionInternalId",
                 ConnectionKey = "Staging",
                 ConnectionName = "Staging / Landing Area",
-                ConnectionType = ConnectionTypes.Database,
+                ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 
@@ -344,7 +356,7 @@ namespace TEAM_Library
                 ConnectionInternalId =  "PsaConnectionInternalId",
                 ConnectionKey = "PSA",
                 ConnectionName = "Persistent Staging Area",
-                ConnectionType = ConnectionTypes.Database,
+                ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 
@@ -367,7 +379,7 @@ namespace TEAM_Library
                 ConnectionInternalId =  "IntegrationConnectionInternalId",
                 ConnectionKey = "Integration",
                 ConnectionName = "Integration Layer",
-                ConnectionType = ConnectionTypes.Database,
+                ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 
@@ -390,7 +402,7 @@ namespace TEAM_Library
                 ConnectionInternalId = "PresentationConnectionInternalId",
                 ConnectionKey = "Presentation",
                 ConnectionName = "Presentation Layer",
-                ConnectionType = ConnectionTypes.Database,
+                ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 

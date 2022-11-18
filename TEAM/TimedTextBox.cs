@@ -11,7 +11,7 @@ namespace TEAM
 
         public TimedTextBox()
         {
-            DelayedTextChangedTimeout = 1000; // seconds
+            DelayedTextChangedTimeout = 1000; // 1 second
         }
 
         protected override void Dispose(bool disposing)

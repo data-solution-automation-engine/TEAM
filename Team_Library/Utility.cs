@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Net.Mime;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
@@ -15,6 +15,13 @@ namespace TEAM_Library
 {
     public static class Utility
     {
+        public static void DoubleBuffered(this DataGridView dgv, bool setting)
+        {
+            Type dgvType = dgv.GetType();
+            PropertyInfo pi = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+            pi.SetValue(dgv, setting, null);
+        }
+
         public static string GetDefaultBrowserPath()
         {
             string urlAssociation = @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http";

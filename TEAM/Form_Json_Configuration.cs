@@ -7,22 +7,19 @@ namespace TEAM
 {
     public partial class FormJsonConfiguration : FormBase
     {
-        private readonly FormManageMetadata _myParent;
-
-        public FormJsonConfiguration(FormManageMetadata parent)
+        public FormJsonConfiguration()
         {
-            _myParent = parent;
             InitializeComponent();
 
             // Make sure the configuration information is available in this form.
             try
             {
-                var jsonExportConfigurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
+                var jsonExportConfigurationFileName = globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension;
 
                 // If the JSON export configuration file does not exist yet, create it.
                 if (!File.Exists(jsonExportConfigurationFileName))
                 {
-                    JsonExportSetting.CreateDummyJsonConfigurationFile(jsonExportConfigurationFileName);
+                    JsonExportSetting.CreateDummyJsonConfigurationFile(jsonExportConfigurationFileName, TeamEventLog);
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path).
@@ -51,61 +48,50 @@ namespace TEAM
         }
 
         /// <summary>
-        /// This method will update the validation values on the form.
+        /// This method will update the JSON export configuration values on the form.
         /// </summary>
         private void LocalInitialiseJsonExtractSettings()
         {
             int issueCounter = 0;
 
             #region Data Objects
+
             // GenerateTypeAsClassification
             EvaluateJsonExportCheckbox(checkBoxAddType, JsonExportSetting.AddTypeAsClassification, ref issueCounter);
 
             // GenerateDataObjectDataItems
             EvaluateJsonExportCheckbox(checkBoxDataObjectDataItems, JsonExportSetting.AddDataObjectDataItems, ref issueCounter);
 
-            // GenerateDataObjectConnection
-            switch (JsonExportSetting.AddDataObjectConnection)
-            {
-                case "True":
-                    checkBoxSourceConnectionKey.Checked = true;
+            #endregion
 
-                    // GenerateDatabaseAsExtension
-                    EvaluateJsonExportCheckbox(checkBoxDatabaseExtension, JsonExportSetting.AddDatabaseAsExtension, ref issueCounter);
+            #region Connections
 
-                    // GenerateSchemaAsExtension
-                    EvaluateJsonExportCheckbox(checkBoxSchemaExtension, JsonExportSetting.AddSchemaAsExtension, ref issueCounter);
+            // GenerateDatabaseAsExtension
+            EvaluateJsonExportCheckbox(checkBoxDatabaseExtension, JsonExportSetting.AddDatabaseAsExtension, ref issueCounter);
 
-                    break;
-                case "False":
-                    checkBoxSourceConnectionKey.Checked = false;
-                    checkBoxDatabaseExtension.Visible = false; // Hide these checkboxes because they are related to the connection.
-                    checkBoxSchemaExtension.Visible = false;
+            // GenerateSchemaAsExtension
+            EvaluateJsonExportCheckbox(checkBoxSchemaExtension, JsonExportSetting.AddSchemaAsExtension, ref issueCounter);
 
-                    break;
-
-                default:
-                    richTextBoxJsonExportInformation.Text += JsonConfigurationWarning(checkBoxSourceConnectionKey.Text);
-                    checkBoxSourceConnectionKey.Checked = false;
-                    issueCounter++;
-                    break;
-            }
             #endregion
 
             #region Data Items
+
             // GenerateDataItemTypes
             EvaluateJsonExportCheckbox(checkBoxDataItemDataType, JsonExportSetting.AddDataItemDataTypes, ref issueCounter);
 
             // GenerateParentDataObject
             EvaluateJsonExportCheckbox(checkBoxDataItemAddParentDataObject, JsonExportSetting.AddParentDataObject, ref issueCounter);
+
             #endregion
 
             #region Related Data Objects
+
             // Add Metadata as object
             EvaluateJsonExportCheckbox(checkBoxAddMetadataConnection, JsonExportSetting.AddMetadataAsRelatedDataObject, ref issueCounter);
 
             // Add upstream connections as objects
             EvaluateJsonExportCheckbox(checkBoxNextUpDataObjects, JsonExportSetting.AddRelatedDataObjectsAsRelatedDataObject, ref issueCounter);
+
             #endregion
 
             // Report back the the user
@@ -142,7 +128,7 @@ namespace TEAM
 
         private void openConfigurationFileToolStripMenuItem_Click(object sender, EventArgs args)
         {
-            var jsonExportConfigurationFileName = GlobalParameters.ConfigurationPath + GlobalParameters.JsonExportConfigurationFileName + '_' + GlobalParameters.ActiveEnvironmentKey + GlobalParameters.FileExtension;
+            var jsonExportConfigurationFileName = globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension;
 
             try
             {
@@ -164,10 +150,6 @@ namespace TEAM
         {
             try
             {
-                // GenerateDataObjectConnection
-                var stringSourceConnection = checkBoxSourceConnectionKey.Checked ? "True" : "False";
-                JsonExportSetting.AddDataObjectConnection = stringSourceConnection;
-
                 // GenerateDataObjectDataItems
                 var stringDataObjectDataItems = checkBoxDataObjectDataItems.Checked ? "True" : "False";
                 JsonExportSetting.AddDataObjectDataItems = stringDataObjectDataItems;
@@ -201,13 +183,13 @@ namespace TEAM
                 JsonExportSetting.AddRelatedDataObjectsAsRelatedDataObject = stringAddNextUpObjects;
 
                 // Write to disk
-                JsonExportSetting.SaveJsonConfigurationFile();
+                JsonExportSetting.SaveJsonConfigurationFile(globalParameters);
 
-                richTextBoxJsonExportInformation.Text += "The values have been successfully saved.\r\n";
+                richTextBoxJsonExportInformation.Text += "The values have been saved successfully.\r\n";
             }
             catch (Exception ex)
             {
-                MessageBox.Show(@"Error: Could not write values to memory and disk. Original error: " + ex.Message, @"An issues has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Error: Could not write values to memory and disk. Original error: " + ex.Message, @"An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -215,7 +197,7 @@ namespace TEAM
         {
             try
             {
-                Process.Start(GlobalParameters.ConfigurationPath);
+                Process.Start(globalParameters.ConfigurationPath);
             }
             catch (Exception ex)
             {
@@ -225,21 +207,6 @@ namespace TEAM
         private void ExitToolStripMenuItem_Click(object sender, EventArgs args)
         {
             Close();
-        }
-
-        private void checkBoxSourceConnectionKey_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!checkBoxSourceConnectionKey.Checked)
-            {
-                checkBoxDatabaseExtension.Visible = false;
-                checkBoxSchemaExtension.Visible = false;
-            }
-
-            if (checkBoxSourceConnectionKey.Checked)
-            {
-                checkBoxDatabaseExtension.Visible = true;
-                checkBoxSchemaExtension.Visible = true;
-            }
         }
     }
 }

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace TEAM_Library
 {
-    public class AttributeMappingJson
+    public class DataItemMappingJson
     {
         //JSON representation of the attribute mapping metadata
         public string attributeMappingHash { get; set; }
@@ -32,7 +32,7 @@ namespace TEAM_Library
     {
         public EventLog EventLog { get; set; }
 
-        public List<AttributeMappingJson> JsonList { get; set; }
+        public List<DataItemMappingJson> JsonList { get; set; }
 
         public DataTable DataTable { get; set; }
 
@@ -40,7 +40,7 @@ namespace TEAM_Library
         {
             EventLog = new EventLog();
             DataTable = new DataTable();
-            JsonList = new List<AttributeMappingJson>();
+            JsonList = new List<DataItemMappingJson>();
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace TEAM_Library
             {
                 EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Reading file {fileName}"));
                 // Load the file, convert it to a DataTable and bind it to the source
-                List<AttributeMappingJson> jsonArray = JsonConvert.DeserializeObject<List<AttributeMappingJson>>(File.ReadAllText(fileName));
+                List<DataItemMappingJson> jsonArray = JsonConvert.DeserializeObject<List<DataItemMappingJson>>(File.ReadAllText(fileName));
 
                 // Commit to the object
                 JsonList = jsonArray;

@@ -73,7 +73,7 @@ namespace TEAM_Library
         /// <summary>
         /// Load compatible JSON files into memory.
         /// </summary>
-        public void GetMetadata()
+        public void GetMetadata(GlobalParameters globalParameters)
         {
             if (Directory.Exists(MetadataPath))
             {
@@ -105,9 +105,9 @@ namespace TEAM_Library
                             try
                             {
                                 // Validate the file contents against the schema definition.
-                                if (File.Exists(Application.StartupPath + @"\Schema\" + GlobalParameters.JsonSchemaForDataWarehouseAutomationFileName))
+                                if (File.Exists(Application.StartupPath + @"\Schema\" + globalParameters.JsonSchemaForDataWarehouseAutomationFileName))
                                 {
-                                    var result = JsonHandling.ValidateJsonFileAgainstSchema(Application.StartupPath + @"\Schema\" + GlobalParameters.JsonSchemaForDataWarehouseAutomationFileName, fileName);
+                                    var result = JsonHandling.ValidateJsonFileAgainstSchema(Application.StartupPath + @"\Schema\" + globalParameters.JsonSchemaForDataWarehouseAutomationFileName, fileName);
 
                                     foreach (var error in result.Errors)
                                     {
