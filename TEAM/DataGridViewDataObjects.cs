@@ -809,6 +809,27 @@ namespace TEAM
                 }
             }
 
+            // Driving Key
+            if (e.ColumnIndex == (int)DataObjectMappingGridColumns.DrivingKeyDefinition && targetDataObject.Value.ToString().IsDataVaultLinkSatellite(TeamConfiguration))
+            {
+                // Assume it's all good.
+                Rows[e.RowIndex].ErrorText = "";
+
+                // If there is a value, check against the business key definition.
+                if (e.FormattedValue != DBNull.Value && valueLength > 0)
+                {
+                    string businessKeyCell = Rows[e.RowIndex].Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString();
+
+                    if (!businessKeyCell.Contains(e.FormattedValue.ToString()))
+                    {
+                        Rows[e.RowIndex].ErrorText = "The definition of the Driving Key must use the corresponding part of the Business Key definition.";
+                        //CancelEdit();
+                        //e.Cancel = true;
+                        EndEdit();
+                    }
+                }
+            }
+
             // Filter criteria
             if (e.ColumnIndex == (int)DataObjectMappingGridColumns.FilterCriterion)
             {
