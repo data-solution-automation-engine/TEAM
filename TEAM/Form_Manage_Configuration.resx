@@ -123,9 +123,6 @@
   <metadata name="toolTipConfigurationSettings.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>188, 13</value>
   </metadata>
-  <metadata name="toolTipConfigurationSettings.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>188, 13</value>
-  </metadata>
   <data name="textBoxConfigurationPath.ToolTip" xml:space="preserve">
     <value>The configuration path is the path where TEAM stores, and interfaces with, its configuration files. 
 If this directory does not exist it will be created with default files (assuming sufficient priviliges to do so are in place at OS level).</value>
@@ -187,6 +184,16 @@ E.g. dbo.PSA_EXAMPLE or simply PSA_EXAMPLE will be evaluated as 'Persistent Stag
 
 The idea is that the key (plus an effective date/time stamp) will show the TEAM application what the natural key is, but for this it needs to know which convention is used.</value>
   </data>
+  <data name="textBoxRecordSource.ToolTip" xml:space="preserve">
+    <value>This label captures the attribute name of the Record Source / name.
+
+This is a pointer that can also be set in the data logistics control framework (e.g. DIRECT) but if used as independent attribute the name can be provided here.</value>
+  </data>
+  <data name="textBoxLDST.ToolTip" xml:space="preserve">
+    <value>This label captures the attribute name that represents the Load Date/Time Stamp (LDTS). 
+
+The LDTS captured the moment the data environment receives data, ideally as early as possible in the solution.</value>
+  </data>
   <data name="textBoxSatelliteAlternativeLDTSAttribute.ToolTip" xml:space="preserve">
     <value>In some scenarios, it may be required to provide an name of the load date/time stamp (LDTS) for a Context ('Satellite') type Data Object.
 
@@ -210,16 +217,6 @@ For example, if string values (full names) are used in the Staging Layer but ide
 
 In most use-cases, the same record source is used everywhere but this option is provided just in case.</value>
   </data>
-  <data name="textBoxRecordSource.ToolTip" xml:space="preserve">
-    <value>This label captures the attribute name of the Record Source / name.
-
-This is a pointer that can also be set in the data logistics control framework (e.g. DIRECT) but if used as independent attribute the name can be provided here.</value>
-  </data>
-  <data name="textBoxLDST.ToolTip" xml:space="preserve">
-    <value>This label captures the attribute name that represents the Load Date/Time Stamp (LDTS). 
-
-The LDTS captured the moment the data environment receives data, ideally as early as possible in the solution.</value>
-  </data>
   <data name="textBoxKeyIdentifier.ToolTip" xml:space="preserve">
     <value>This label captures the naming convention for the Data Platform / Data Warehouse key. 
 
@@ -234,6 +231,13 @@ In most scenarios, supplementary Data Warehouse keys are necessary to track chan
 
 TEAM will use this convention to evaluate (calculations of) business keys during the activation routines.</value>
   </data>
+  <data name="textBoxOtherExceptionColumns.ToolTip" xml:space="preserve">
+    <value>A comma-separated list of exception columns.
+
+These will not be created as data item mappings unless explicitly defined in the data item mapping grid.
+
+These values will be checked against the target data item.</value>
+  </data>
   <data name="textBoxSourceRowId.ToolTip" xml:space="preserve">
     <value>The Row Id (aka Source Row Id) is meant to be used as sequential number used within batch processing.
 
@@ -244,6 +248,11 @@ With the Row Id, every individual row can be identified in order of processing b
 
 While the LDTS is the moment the change was received by the Data Platform, the Event Date/Time is the moment the change was triggered or committed in the source system.</value>
   </data>
+  <data name="richTextBoxConnectionMain.Text" xml:space="preserve">
+    <value>Create new data connections so these can be assigned to metadata.
+
+A unique connection for the metadata repository needs to be assigned from the available connections. All connections can be assigned to metadata mappings.</value>
+  </data>
   <data name="tabPageConnectionMain.ToolTip" xml:space="preserve">
     <value>Connections are set per environment, so the connections as configured for the active environment are displayed here in tab pages.
 
@@ -251,10 +260,11 @@ Each connection can be linked to a Data Object Mapping, one for the source- and 
 
 New connections can be created by clicking on the empty tab.</value>
   </data>
-  <data name="richTextBoxConnectionMain.Text" xml:space="preserve">
-    <value>Create new data connections so these can be assigned to metadata.
+  <data name="richTextBoxEnvironmentsInformation.Text" xml:space="preserve">
+    <value>The overview and management of working environments. 
 
-A unique connection for the metadata repository needs to be assigned from the available connections. All connections can be assigned to metadata mappings.</value>
+Environments are the main tenant in TEAM and capture all further configuration settings. 
+All subsequent tabs are applicable to the selected working environment.</value>
   </data>
   <data name="tabPageEnvironmentMain.ToolTip" xml:space="preserve">
     <value>The 'environments' acts as logical separations of work in TEAM. They are akin to tenants where you can setup different environments each with their own connections and content.
@@ -262,12 +272,6 @@ A unique connection for the metadata repository needs to be assigned from the av
 An environment is the top-level separation in TEAM, and is used to define either a project or layer depending on preferences.
 
 Internally, an environment is identified with an environment key. At any time an environment is active, and the current one can be viewed or changed / selected here.</value>
-  </data>
-  <data name="richTextBoxEnvironmentsInformation.Text" xml:space="preserve">
-    <value>The overview and management of working environments. 
-
-Environments are the main tenant in TEAM and capture all further configuration settings. 
-All subsequent tabs are applicable to the selected working environment.</value>
   </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>55</value>

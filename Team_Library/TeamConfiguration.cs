@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -55,6 +56,7 @@ namespace TEAM_Library
         public string TransformationLabels { get; set; }
         #endregion
 
+        #region Properties
         public string KeyIdentifier { get; set; }
         public string KeyPattern { get; set; }
         public string PsaKeyLocation { get; set; }
@@ -74,8 +76,9 @@ namespace TEAM_Library
         public string AlternativeRecordSourceAttribute { get; set; }
         public string AlternativeLoadDateTimeAttribute { get; set; }
         public string AlternativeSatelliteLoadDateTimeAttribute { get; set; }
-        public  string LogicalDeleteAttribute { get; set; }
-        
+        public string LogicalDeleteAttribute { get; set; }
+        public string OtherExceptionColumns { get; set; }
+
         // Prefixes and suffixes
         public string TableNamingLocation { get; set; } // The location if the table classification (i.e. HUB OR SAT) is a prefix (HUB_CUSTOMER) or suffix (CUSTOMER_HUB).
 
@@ -83,11 +86,25 @@ namespace TEAM_Library
         public string EnableAlternativeRecordSourceAttribute { get; set; }
         public string EnableAlternativeLoadDateTimeAttribute { get; set; }
 
+        #endregion
+
         public TeamConfiguration()
         {
             ConnectionDictionary = new Dictionary<string, TeamConnection>();
             MetadataConnection = new TeamConnection();
             ConfigurationSettingsEventLog = new EventLog();
+        }
+
+        /// <summary>
+        /// Returns a list of trimmed values from the comma separate OtherExceptionColumns.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetExceptionColumns()
+        {
+            List<string> exceptionColumns = OtherExceptionColumns.Split(',').ToList();
+            exceptionColumns = exceptionColumns.Select(individualString => individualString.Trim()).ToList();
+
+            return exceptionColumns;
         }
 
         /// <summary>
@@ -132,6 +149,7 @@ namespace TEAM_Library
                     "ETLProcessID",
                     "ETLUpdateProcessID",
                     "LogicalDeleteAttribute",
+                    "OtherExceptionColumns",
                     "RecordChecksum",
                     "CurrentRecordAttribute",
                     "AlternativeRecordSource",
@@ -213,6 +231,9 @@ namespace TEAM_Library
                                 break;
                             case "LogicalDeleteAttribute":
                                 LogicalDeleteAttribute = configList[configuration];
+                                break;
+                            case "OtherExceptionColumns":
+                                OtherExceptionColumns = configList[configuration];
                                 break;
                             case "RecordChecksum":
                                 RecordChecksumAttribute = configList[configuration];
@@ -326,6 +347,7 @@ namespace TEAM_Library
                 initialConfigurationFile.AppendLine("ETLProcessID|ETL_INSERT_RUN_ID");
                 initialConfigurationFile.AppendLine("ETLUpdateProcessID|ETL_UPDATE_RUN_ID");
                 initialConfigurationFile.AppendLine("LogicalDeleteAttribute|DELETED_RECORD_INDICATOR");
+                initialConfigurationFile.AppendLine("OtherExceptionColumns|");
                 initialConfigurationFile.AppendLine("TableNamingLocation|Prefix");
                 initialConfigurationFile.AppendLine("RecordChecksum|HASH_FULL_RECORD");
                 initialConfigurationFile.AppendLine("CurrentRecordAttribute|CURRENT_RECORD_INDICATOR");

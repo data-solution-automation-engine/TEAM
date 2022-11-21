@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using TEAM_Library;
+using System.Linq;
 
 namespace TEAM
 {
@@ -165,6 +166,7 @@ namespace TEAM
                 textBoxHubAlternativeLDTSAttribute.Text = configList["AlternativeHubLDTS"];
                 textBoxSatelliteAlternativeLDTSAttribute.Text = configList["AlternativeSatelliteLDTS"];
                 textBoxLogicalDeleteAttributeName.Text = configList["LogicalDeleteAttribute"];
+                textBoxOtherExceptionColumns.Text = configList["OtherExceptionColumns"];
 
                 //Checkbox setting based on loaded configuration
                 CheckBox myConfigurationCheckBox;
@@ -404,6 +406,7 @@ namespace TEAM
             TeamConfiguration.EtlProcessAttribute = textBoxETLProcessID.Text;
             TeamConfiguration.EtlProcessUpdateAttribute = textBoxETLUpdateProcessID.Text;
             TeamConfiguration.LogicalDeleteAttribute = textBoxLogicalDeleteAttributeName.Text;
+            TeamConfiguration.OtherExceptionColumns = textBoxOtherExceptionColumns.Text;
 
             TeamConfiguration.RecordChecksumAttribute = textBoxRecordChecksum.Text;
             TeamConfiguration.CurrentRowAttribute = textBoxCurrentRecordAttributeName.Text;
@@ -467,7 +470,7 @@ namespace TEAM
             }
 
         }
-
+        
         /// <summary>
         ///    Open the Windows Explorer (directory) using the value available as Configuration Directory
         /// </summary>

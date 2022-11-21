@@ -113,6 +113,7 @@ namespace TEAM
                 configurationFile.AppendLine("ETLProcessID|" + FormBase.TeamConfiguration.EtlProcessAttribute + "");
                 configurationFile.AppendLine("ETLUpdateProcessID|" +FormBase.TeamConfiguration.EtlProcessUpdateAttribute +"");
                 configurationFile.AppendLine("LogicalDeleteAttribute|" +FormBase.TeamConfiguration.LogicalDeleteAttribute +"");
+                configurationFile.AppendLine("OtherExceptionColumns|" + FormBase.TeamConfiguration.OtherExceptionColumns + "");
                 configurationFile.AppendLine("TableNamingLocation|" + FormBase.TeamConfiguration.TableNamingLocation + "");
                 configurationFile.AppendLine("RecordChecksum|" +FormBase.TeamConfiguration.RecordChecksumAttribute + "");
                 configurationFile.AppendLine("CurrentRecordAttribute|" +FormBase.TeamConfiguration.CurrentRowAttribute +"");

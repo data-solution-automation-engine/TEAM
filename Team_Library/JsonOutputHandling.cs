@@ -1456,6 +1456,8 @@ namespace TEAM_Library
         {
             bool returnValue = true;
 
+            var exceptionColumns = teamConfiguration.GetExceptionColumns();
+
             if (dataItemName == teamConfiguration.LoadDateTimeAttribute)
             {
                 returnValue = false;
@@ -1501,6 +1503,10 @@ namespace TEAM_Library
                 returnValue = false;
             }
             else if (dataItemName == teamConfiguration.LogicalDeleteAttribute)
+            {
+                returnValue = false;
+            }
+            else if (exceptionColumns.Contains(dataItemName))
             {
                 returnValue = false;
             }

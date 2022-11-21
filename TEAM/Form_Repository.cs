@@ -327,6 +327,7 @@ namespace TEAM
                 var etlProcessId = "MODULE_INSTANCE_ID";
                 var etlUpdateProcessId = "MODULE_UPDATE_INSTANCE_ID";
                 var logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
+                var otherExceptionColumns = "";
                 var tableNamingLocation = "Prefix";
                 var recordChecksum = "HASH_FULL_RECORD";
                 var currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
@@ -360,6 +361,7 @@ namespace TEAM
                 TeamConfiguration.RecordChecksumAttribute = recordChecksum;
                 TeamConfiguration.CurrentRowAttribute = currentRecordIndicator;
                 TeamConfiguration.LogicalDeleteAttribute = logicalDeleteAttribute;
+                TeamConfiguration.OtherExceptionColumns = otherExceptionColumns;
                 TeamConfiguration.EnableAlternativeRecordSourceAttribute = alternativeRecordSourceFunction;
                 TeamConfiguration.AlternativeRecordSourceAttribute = alternativeRecordSource;
                 TeamConfiguration.EnableAlternativeLoadDateTimeAttribute = alternativeHubLoadDateTimeFunction;

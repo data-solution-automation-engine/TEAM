@@ -3076,7 +3076,7 @@ namespace TEAM
                 // Iterate across all Data Object Mappings, to see if there are corresponding Data Item Mappings.
                 foreach (DataGridViewRow dataObjectRow in _dataGridViewDataObjects.Rows)
                 {
-                    // Cancel if the row is a new row.
+                    // Skip if the row is a new row.
                     if (dataObjectRow.IsNewRow)
                     {
                         return;

@@ -102,6 +102,8 @@
             this.textBoxKeyPattern = new System.Windows.Forms.TextBox();
             this.labelSurrogateKeyPattern = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.labelOtherExceptionColumns = new System.Windows.Forms.Label();
+            this.textBoxOtherExceptionColumns = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
@@ -650,7 +652,7 @@
             this.groupBoxDataVaultSpecific.Controls.Add(this.label18);
             this.groupBoxDataVaultSpecific.Controls.Add(this.label11);
             this.groupBoxDataVaultSpecific.Controls.Add(this.label35);
-            this.groupBoxDataVaultSpecific.Location = new System.Drawing.Point(6, 355);
+            this.groupBoxDataVaultSpecific.Location = new System.Drawing.Point(6, 384);
             this.groupBoxDataVaultSpecific.Name = "groupBoxDataVaultSpecific";
             this.groupBoxDataVaultSpecific.Size = new System.Drawing.Size(1108, 112);
             this.groupBoxDataVaultSpecific.TabIndex = 73;
@@ -691,27 +693,27 @@
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(6, 26);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(225, 13);
+            this.label18.Size = new System.Drawing.Size(221, 13);
             this.label18.TabIndex = 53;
-            this.label18.Text = "Load Date/Time Stamp (LDTS) attribute name";
+            this.label18.Text = "Load Date/Time Stamp (LDTS) column name";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(6, 78);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(149, 13);
+            this.label11.Size = new System.Drawing.Size(145, 13);
             this.label11.TabIndex = 55;
-            this.label11.Text = "Record Source attribute name";
+            this.label11.Text = "Record Source column name";
             // 
             // label35
             // 
             this.label35.AutoSize = true;
             this.label35.Location = new System.Drawing.Point(6, 52);
             this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(159, 13);
+            this.label35.Size = new System.Drawing.Size(155, 13);
             this.label35.TabIndex = 57;
-            this.label35.Text = "Expiry Date/Time attribute name";
+            this.label35.Text = "Expiry Date/Time column name";
             // 
             // groupBoxAlternativeColumns
             // 
@@ -724,7 +726,7 @@
             this.groupBoxAlternativeColumns.Controls.Add(this.textBoxHubAlternativeLDTSAttribute);
             this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeHubLDTS);
             this.groupBoxAlternativeColumns.Controls.Add(this.textBoxAlternativeRecordSource);
-            this.groupBoxAlternativeColumns.Location = new System.Drawing.Point(6, 473);
+            this.groupBoxAlternativeColumns.Location = new System.Drawing.Point(6, 502);
             this.groupBoxAlternativeColumns.Name = "groupBoxAlternativeColumns";
             this.groupBoxAlternativeColumns.Size = new System.Drawing.Size(1108, 113);
             this.groupBoxAlternativeColumns.TabIndex = 72;
@@ -761,9 +763,9 @@
             this.label41.AutoSize = true;
             this.label41.Location = new System.Drawing.Point(6, 78);
             this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(197, 13);
+            this.label41.Size = new System.Drawing.Size(193, 13);
             this.label41.TabIndex = 69;
-            this.label41.Text = "Alternative Context LDTS attribute name";
+            this.label41.Text = "Alternative Context LDTS column name";
             this.toolTipConfigurationSettings.SetToolTip(this.label41, "In some scenarios, it may be required to provide an name of the load date/time st" +
         "amp (LDTS) for a Context (\'Satellite\') type Data Object.");
             // 
@@ -792,9 +794,9 @@
             this.label37.AutoSize = true;
             this.label37.Location = new System.Drawing.Point(6, 52);
             this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(182, 13);
+            this.label37.Size = new System.Drawing.Size(178, 13);
             this.label37.TabIndex = 62;
-            this.label37.Text = "Alternative CBC LDTS attribute name";
+            this.label37.Text = "Alternative CBC LDTS column name";
             this.toolTipConfigurationSettings.SetToolTip(this.label37, "In some scenarios, it may be required to provide an name of the load date/time st" +
         "amp (LDTS) for a Core Business Concept (CBC) type Data Object.");
             // 
@@ -878,6 +880,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.labelOtherExceptionColumns);
+            this.groupBox2.Controls.Add(this.textBoxOtherExceptionColumns);
             this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.label21);
             this.groupBox2.Controls.Add(this.label29);
@@ -894,57 +898,75 @@
             this.groupBox2.Controls.Add(this.textBoxSourceRowId);
             this.groupBox2.Controls.Add(this.textBoxETLProcessID);
             this.groupBox2.Controls.Add(this.textBoxEventDateTime);
-            this.groupBox2.Location = new System.Drawing.Point(6, 100);
+            this.groupBox2.Location = new System.Drawing.Point(9, 100);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1108, 245);
+            this.groupBox2.Size = new System.Drawing.Size(1108, 278);
             this.groupBox2.TabIndex = 69;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Data Warehouse special columns";
+            // 
+            // labelOtherExceptionColumns
+            // 
+            this.labelOtherExceptionColumns.AutoSize = true;
+            this.labelOtherExceptionColumns.Location = new System.Drawing.Point(6, 234);
+            this.labelOtherExceptionColumns.Name = "labelOtherExceptionColumns";
+            this.labelOtherExceptionColumns.Size = new System.Drawing.Size(126, 13);
+            this.labelOtherExceptionColumns.TabIndex = 68;
+            this.labelOtherExceptionColumns.Text = "Other Exception Columns";
+            // 
+            // textBoxOtherExceptionColumns
+            // 
+            this.textBoxOtherExceptionColumns.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxOtherExceptionColumns.Location = new System.Drawing.Point(233, 231);
+            this.textBoxOtherExceptionColumns.Name = "textBoxOtherExceptionColumns";
+            this.textBoxOtherExceptionColumns.Size = new System.Drawing.Size(422, 20);
+            this.textBoxOtherExceptionColumns.TabIndex = 67;
+            this.toolTipConfigurationSettings.SetToolTip(this.textBoxOtherExceptionColumns, resources.GetString("textBoxOtherExceptionColumns.ToolTip"));
             // 
             // label10
             // 
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(6, 25);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(224, 13);
+            this.label10.Size = new System.Drawing.Size(220, 13);
             this.label10.TabIndex = 49;
-            this.label10.Text = "Change Data Capture Indicator attribute name";
+            this.label10.Text = "Change Data Capture Indicator column name";
             // 
             // label21
             // 
             this.label21.AutoSize = true;
             this.label21.Location = new System.Drawing.Point(6, 51);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(181, 13);
+            this.label21.Size = new System.Drawing.Size(177, 13);
             this.label21.TabIndex = 54;
-            this.label21.Text = "ETL Insert Process ID attribute name";
+            this.label21.Text = "ETL Insert Process ID column name";
             // 
             // label29
             // 
             this.label29.AutoSize = true;
             this.label29.Location = new System.Drawing.Point(6, 103);
             this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(159, 13);
+            this.label29.Size = new System.Drawing.Size(155, 13);
             this.label29.TabIndex = 56;
-            this.label29.Text = "Event Date/Time attribute name";
+            this.label29.Text = "Event Date/Time column name";
             // 
             // label46
             // 
             this.label46.AutoSize = true;
             this.label46.Location = new System.Drawing.Point(6, 207);
             this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(145, 13);
+            this.label46.Size = new System.Drawing.Size(141, 13);
             this.label46.TabIndex = 66;
-            this.label46.Text = "Logical Delete attribute name";
+            this.label46.Text = "Logical Delete column name";
             // 
             // label30
             // 
             this.label30.AutoSize = true;
             this.label30.Location = new System.Drawing.Point(6, 129);
             this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(113, 13);
+            this.label30.Size = new System.Drawing.Size(109, 13);
             this.label30.TabIndex = 58;
-            this.label30.Text = "Row ID attribute name";
+            this.label30.Text = "Row ID column name";
             // 
             // textBoxLogicalDeleteAttributeName
             // 
@@ -961,9 +983,9 @@
             this.label32.AutoSize = true;
             this.label32.Location = new System.Drawing.Point(6, 155);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(165, 13);
+            this.label32.Size = new System.Drawing.Size(161, 13);
             this.label32.TabIndex = 60;
-            this.label32.Text = "Record Checksum attribute name";
+            this.label32.Text = "Record Checksum column name";
             // 
             // textBoxETLUpdateProcessID
             // 
@@ -980,9 +1002,9 @@
             this.label42.AutoSize = true;
             this.label42.Location = new System.Drawing.Point(6, 181);
             this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(149, 13);
+            this.label42.Size = new System.Drawing.Size(145, 13);
             this.label42.TabIndex = 62;
-            this.label42.Text = "Current Record attribute name";
+            this.label42.Text = "Current Record column name";
             // 
             // textBoxCurrentRecordAttributeName
             // 
@@ -998,9 +1020,9 @@
             this.label43.AutoSize = true;
             this.label43.Location = new System.Drawing.Point(6, 77);
             this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(190, 13);
+            this.label43.Size = new System.Drawing.Size(186, 13);
             this.label43.TabIndex = 64;
-            this.label43.Text = "ETL Update Process ID attribute name";
+            this.label43.Text = "ETL Update Process ID column name";
             // 
             // textBoxRecordChecksum
             // 
@@ -1388,6 +1410,8 @@
         internal System.Windows.Forms.TextBox textBoxHubAlternativeLDTSAttribute;
         internal System.Windows.Forms.CheckBox checkBoxAlternativeHubLDTS;
         internal System.Windows.Forms.TextBox textBoxAlternativeRecordSource;
+        private System.Windows.Forms.Label labelOtherExceptionColumns;
+        internal System.Windows.Forms.TextBox textBoxOtherExceptionColumns;
     }
 }
 
