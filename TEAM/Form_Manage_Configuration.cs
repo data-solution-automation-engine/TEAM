@@ -813,6 +813,8 @@ namespace TEAM
         private void pictureBoxMetadataPath_Click(object sender, EventArgs e)
         {
             var fileBrowserDialog = new FolderBrowserDialog();
+
+            fileBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
             fileBrowserDialog.SelectedPath = textBoxTeamMetadataPath.Text;
 
             DialogResult result = fileBrowserDialog.ShowDialog();
@@ -839,6 +841,8 @@ namespace TEAM
         private void pictureBoxConfigurationPath_Click(object sender, EventArgs e)
         {
             var fileBrowserDialog = new FolderBrowserDialog();
+
+            fileBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
             fileBrowserDialog.SelectedPath = textBoxConfigurationPath.Text;
 
             DialogResult result = fileBrowserDialog.ShowDialog();
