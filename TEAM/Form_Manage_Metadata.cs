@@ -609,78 +609,98 @@ namespace TEAM
         /// <param name="e"></param>
         private void ButtonSaveMetadata_Click(object sender, EventArgs e)
         {
+            bool validationIssue = false;
+
             if (backgroundWorkerReverseEngineering.IsBusy)
             {
                 MessageBox.Show(@"The reverse engineer process is running, please wait for this to be completed before saving metadata.", @"Process is running", MessageBoxButtons.OK);
             }
             else
             {
-                richTextBoxInformation.Clear();
+                foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
+                {
+                    if (!string.IsNullOrEmpty(row.ErrorText))
+                    {
+                        richTextBoxInformation.AppendText($"The Data Object Mapping from '{row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value}' to '{row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value}' has an unresolved validation warning.");
 
-                // Create a data table containing the changes, to check if there are changes made to begin with
-                var dataTableTableMappingChanges = ((DataTable)BindingSourceDataObjectMappings.DataSource).GetChanges();
-                var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
-                var dataTablePhysicalModelChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
+                        validationIssue = true;
+                    }
+                }
 
-                // Check if there are any rows available in the grid view, and if changes have been detected at all.
-                if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 ||
-                    _dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 ||
-                    _dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+                if (validationIssue == false)
                 {
 
-                    // Perform the saving of the metadata, one for each grid.
+                    richTextBoxInformation.Clear();
 
-                    if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0)
+                    // Create a data table containing the changes, to check if there are changes made to begin with
+                    var dataTableTableMappingChanges = ((DataTable)BindingSourceDataObjectMappings.DataSource).GetChanges();
+                    var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
+                    var dataTablePhysicalModelChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
+
+                    // Check if there are any rows available in the grid view, and if changes have been detected at all.
+                    if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 ||
+                        _dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 ||
+                        _dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
                     {
-                        try
-                        {
-                            SaveDataObjectMappingJson(dataTableTableMappingChanges);
 
-                            // Load the grids from the repository after being updated.This resets everything.
-                            PopulateDataObjectMappingGrid();
-                        }
-                        catch (Exception exception)
+                        // Perform the saving of the metadata, one for each grid.
+
+                        if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0)
                         {
-                            richTextBoxInformation.Text += $@"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                            try
+                            {
+                                SaveDataObjectMappingJson(dataTableTableMappingChanges);
+
+                                // Load the grids from the repository after being updated.This resets everything.
+                                PopulateDataObjectMappingGrid();
+                            }
+                            catch (Exception exception)
+                            {
+                                richTextBoxInformation.Text += $@"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                            }
                         }
+
+                        if (_dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
+                        {
+                            try
+                            {
+                                SaveDataItemMappingMetadata(dataTableAttributeMappingChanges);
+
+                                // Load the grids from the repository after being updated.This resets everything.
+                                PopulateDataItemMappingGrid();
+                            }
+                            catch (Exception exception)
+                            {
+                                richTextBoxInformation.Text += $@"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                            }
+                        }
+
+                        if (_dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+                        {
+                            try
+                            {
+                                SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
+
+                                // Load the grids from the repository after being updated.This resets everything.
+                                PopulatePhysicalModelGrid();
+                            }
+                            catch (Exception exception)
+                            {
+                                richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
+                            }
+                        }
+
+                        // Re-apply any filtering, if required.
+                        ApplyDataGridViewFiltering();
                     }
-
-                    if (_dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
+                    else
                     {
-                        try
-                        {
-                            SaveDataItemMappingMetadata(dataTableAttributeMappingChanges);
-                            
-                            // Load the grids from the repository after being updated.This resets everything.
-                            PopulateDataItemMappingGrid();
-                        }
-                        catch (Exception exception)
-                        {
-                            richTextBoxInformation.Text += $@"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
-                        }
+                        richTextBoxInformation.Text += @"There is no metadata to save!";
                     }
-
-                    if (_dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
-                    {
-                        try
-                        {
-                            SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
-
-                            // Load the grids from the repository after being updated.This resets everything.
-                            PopulatePhysicalModelGrid();
-                        }
-                        catch (Exception exception)
-                        {
-                            richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
-                        }
-                    }
-
-                    // Re-apply any filtering, if required.
-                    ApplyDataGridViewFiltering();
                 }
                 else
                 {
-                    richTextBoxInformation.Text += @"There is no metadata to save!";
+                    MessageBox.Show(@"There are unresolved validation issues, please check the information pane below.", @"Validation issues", MessageBoxButtons.OK);
                 }
             }
         }
