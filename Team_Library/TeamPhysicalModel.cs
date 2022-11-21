@@ -19,7 +19,7 @@ namespace TEAM_Library
         public string characterLength { get; set; }
         public string numericPrecision { get; set; }
         public string numericScale { get; set; }
-        public string ordinalPosition { get; set; }
+        public int ordinalPosition { get; set; }
         public string primaryKeyIndicator { get; set; }
         public string multiActiveIndicator { get; set; }
     }
@@ -29,17 +29,17 @@ namespace TEAM_Library
     /// </summary>
     public enum PhysicalModelMappingMetadataColumns
     {
-        Database_Name = 0,
-        Schema_Name = 1,
-        Table_Name = 2,
-        Column_Name = 3,
-        Data_Type = 4,
-        Character_Length = 5,
-        Numeric_Precision = 6,
-        Numeric_Scale = 7,
-        Ordinal_Position = 8,
-        Primary_Key_Indicator = 9,
-        Multi_Active_Indicator = 10
+        databaseName = 0,
+        schemaName = 1,
+        tableName = 2,
+        columnName = 3,
+        dataType = 4,
+        characterLength = 5,
+        numericPrecision = 6,
+        numericScale = 7,
+        ordinalPosition = 8,
+        primaryKeyIndicator = 9,
+        multiActiveIndicator = 10
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ namespace TEAM_Library
         /// </summary>
         public void SetDataTableSorting()
         {
-            DataTable.DefaultView.Sort = $"[{PhysicalModelMappingMetadataColumns.Database_Name}] ASC, [{PhysicalModelMappingMetadataColumns.Schema_Name}] ASC, [{PhysicalModelMappingMetadataColumns.Table_Name}] ASC, [{PhysicalModelMappingMetadataColumns.Ordinal_Position}] ASC";
+            DataTable.DefaultView.Sort = $"[{PhysicalModelMappingMetadataColumns.databaseName}] ASC, [{PhysicalModelMappingMetadataColumns.schemaName}] ASC, [{PhysicalModelMappingMetadataColumns.tableName}] ASC, [{PhysicalModelMappingMetadataColumns.ordinalPosition}] ASC";
         }
 
         /// <summary>
@@ -73,17 +73,17 @@ namespace TEAM_Library
         /// </summary>
         public void SetDataTableColumns()
         {
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Database_Name].ColumnName = PhysicalModelMappingMetadataColumns.Database_Name.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Schema_Name].ColumnName = PhysicalModelMappingMetadataColumns.Schema_Name.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Table_Name].ColumnName = PhysicalModelMappingMetadataColumns.Table_Name.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Column_Name].ColumnName = PhysicalModelMappingMetadataColumns.Column_Name.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Data_Type].ColumnName = PhysicalModelMappingMetadataColumns.Data_Type.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Character_Length].ColumnName = PhysicalModelMappingMetadataColumns.Character_Length.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Numeric_Precision].ColumnName = PhysicalModelMappingMetadataColumns.Numeric_Precision.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Numeric_Scale].ColumnName = PhysicalModelMappingMetadataColumns.Numeric_Scale.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Ordinal_Position].ColumnName = PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Primary_Key_Indicator].ColumnName = PhysicalModelMappingMetadataColumns.Primary_Key_Indicator.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.Multi_Active_Indicator].ColumnName = PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.databaseName].ColumnName = PhysicalModelMappingMetadataColumns.databaseName.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.schemaName].ColumnName = PhysicalModelMappingMetadataColumns.schemaName.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.tableName].ColumnName = PhysicalModelMappingMetadataColumns.tableName.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.columnName].ColumnName = PhysicalModelMappingMetadataColumns.columnName.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.dataType].ColumnName = PhysicalModelMappingMetadataColumns.dataType.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.characterLength].ColumnName = PhysicalModelMappingMetadataColumns.characterLength.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.numericPrecision].ColumnName = PhysicalModelMappingMetadataColumns.numericPrecision.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.numericScale].ColumnName = PhysicalModelMappingMetadataColumns.numericScale.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].ColumnName = PhysicalModelMappingMetadataColumns.ordinalPosition.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].ColumnName = PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString();
+            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.multiActiveIndicator].ColumnName = PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString();
         }
 
         /// <summary>
@@ -128,39 +128,39 @@ namespace TEAM_Library
             var returnValue = new StringBuilder();
 
             returnValue.AppendLine("SELECT ");
-            returnValue.AppendLine(" [DATABASE_NAME] ");
-            returnValue.AppendLine(",[SCHEMA_NAME]");
-            returnValue.AppendLine(",[TABLE_NAME]");
-            returnValue.AppendLine(",[COLUMN_NAME]");
-            returnValue.AppendLine(",[DATA_TYPE]");
-            returnValue.AppendLine(",[CHARACTER_MAXIMUM_LENGTH]");
-            returnValue.AppendLine(",[NUMERIC_PRECISION]");
-            returnValue.AppendLine(",[NUMERIC_SCALE]");
-            returnValue.AppendLine(",[ORDINAL_POSITION]");
-            returnValue.AppendLine(",[PRIMARY_KEY_INDICATOR]");
+            returnValue.AppendLine($" [{PhysicalModelMappingMetadataColumns.databaseName}] ");
+            returnValue.AppendLine($",[{PhysicalModelMappingMetadataColumns.schemaName}]");
+            returnValue.AppendLine($",[{PhysicalModelMappingMetadataColumns.tableName}]");
+            returnValue.AppendLine($",[{PhysicalModelMappingMetadataColumns.columnName}]");
+            returnValue.AppendLine($",[{PhysicalModelMappingMetadataColumns.dataType}]");
+            returnValue.AppendLine($",[{PhysicalModelMappingMetadataColumns.characterLength}]");
+            returnValue.AppendLine($",[{PhysicalModelMappingMetadataColumns.numericPrecision}]");
+            returnValue.AppendLine($",[{PhysicalModelMappingMetadataColumns.numericScale}]");
+            returnValue.AppendLine($",[{PhysicalModelMappingMetadataColumns.ordinalPosition}]");
+            returnValue.AppendLine($",[{PhysicalModelMappingMetadataColumns.primaryKeyIndicator}]");
             returnValue.AppendLine("FROM");
             returnValue.AppendLine("(");
 
             returnValue.AppendLine("SELECT");
-            returnValue.AppendLine("  DB_NAME(DB_ID('" + databaseName + "')) AS[DATABASE_NAME],");
-            returnValue.AppendLine("  OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('" + databaseName + "')) AS[SCHEMA_NAME],");
-            returnValue.AppendLine("  OBJECT_NAME(A.OBJECT_ID, DB_ID('" + databaseName + "')) AS TABLE_NAME,");
+            returnValue.AppendLine($"  DB_NAME(DB_ID('{databaseName}')) AS [{PhysicalModelMappingMetadataColumns.columnName}],");
+            returnValue.AppendLine($"  OBJECT_SCHEMA_NAME(OBJECT_ID, DB_ID('{databaseName}')) AS [{PhysicalModelMappingMetadataColumns.schemaName}],");
+            returnValue.AppendLine($"  OBJECT_NAME(A.OBJECT_ID, DB_ID('{databaseName}')) AS [{PhysicalModelMappingMetadataColumns.tableName}],");
             returnValue.AppendLine("  A.OBJECT_ID,");
-            returnValue.AppendLine("  A.[name] AS COLUMN_NAME,");
-            returnValue.AppendLine("  t.[name] AS[DATA_TYPE], ");
+            returnValue.AppendLine($"  A.[name] AS [{PhysicalModelMappingMetadataColumns.columnName}],");
+            returnValue.AppendLine($"  t.[name] AS [{PhysicalModelMappingMetadataColumns.dataType}], ");
             returnValue.AppendLine("  CAST(COALESCE(");
             returnValue.AppendLine("    CASE WHEN UPPER(t.[name]) = 'NVARCHAR' THEN A.[max_length]/2 ");
             returnValue.AppendLine("    ELSE A.[max_length]");
             returnValue.AppendLine("    END");
-            returnValue.AppendLine("   ,0) AS VARCHAR(100)) AS[CHARACTER_MAXIMUM_LENGTH],");
-            returnValue.AppendLine("  CAST(COALESCE(A.[precision],0) AS VARCHAR(100)) AS[NUMERIC_PRECISION], ");
-            returnValue.AppendLine("  CAST(COALESCE(A.[scale],0) AS VARCHAR(100)) AS[NUMERIC_SCALE], ");
-            returnValue.AppendLine("  CAST(A.[column_id] AS VARCHAR(100)) AS [ORDINAL_POSITION],");
+            returnValue.AppendLine($"   ,0) AS VARCHAR(100)) AS [{PhysicalModelMappingMetadataColumns.characterLength}],");
+            returnValue.AppendLine($"  CAST(COALESCE(A.[precision],0) AS VARCHAR(100)) AS [{PhysicalModelMappingMetadataColumns.numericPrecision}], ");
+            returnValue.AppendLine($"  CAST(COALESCE(A.[scale],0) AS VARCHAR(100)) AS [{PhysicalModelMappingMetadataColumns.numericScale}], ");
+            returnValue.AppendLine($"  CAST(A.[column_id] AS VARCHAR(100)) AS [{PhysicalModelMappingMetadataColumns.ordinalPosition}],");
             returnValue.AppendLine("  CASE");
             returnValue.AppendLine("    WHEN keysub.COLUMN_NAME IS NULL");
             returnValue.AppendLine("    THEN 'N' ");
             returnValue.AppendLine("    ELSE 'Y' ");
-            returnValue.AppendLine("  END AS PRIMARY_KEY_INDICATOR");
+            returnValue.AppendLine($"  END AS [{PhysicalModelMappingMetadataColumns.primaryKeyIndicator}]");
             returnValue.AppendLine("FROM [" + databaseName + "].sys.columns A");
             returnValue.AppendLine("JOIN sys.types t ON A.user_type_id= t.user_type_id");
             returnValue.AppendLine("-- Primary Key");

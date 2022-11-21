@@ -1370,9 +1370,9 @@ namespace TEAM
                             var physicalModelGridViewRow = _dataGridViewPhysicalModel.Rows
                                 .Cast<DataGridViewRow>()
                                 .Where(r => !r.IsNewRow)
-                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(localTargetDataItem))
-                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(localTargetDataObject))
-                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Primary_Key_Indicator].Value.ToString().Equals("Y"))
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(localTargetDataItem))
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(localTargetDataObject))
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Value.ToString().Equals("Y"))
                                 .FirstOrDefault();
 
                             if (physicalModelGridViewRow != null)
@@ -1455,7 +1455,7 @@ namespace TEAM
                     var physicalModelDataGridViewRows = _dataGridViewPhysicalModel.Rows
                         .Cast<DataGridViewRow>()
                         .Where(r => !r.IsNewRow)
-                        .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(targetDataObject.name))
+                        .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(targetDataObject.name))
                         .ToList();
 
                     foreach (var row in physicalModelDataGridViewRows)
@@ -1464,7 +1464,7 @@ namespace TEAM
                         {
                             dynamic sourceDataObject = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
 
-                            var autoMappedTargetDataItemName = row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString();
+                            var autoMappedTargetDataItemName = row.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString();
 
                             // If already exists as a target mapping it can be ignored.
                             if (targetDataItemNames.Contains(autoMappedTargetDataItemName))
@@ -1474,8 +1474,8 @@ namespace TEAM
                             var physicalModelSourceDataItemLookup = _dataGridViewPhysicalModel.Rows
                                 .Cast<DataGridViewRow>()
                                 .Where(r => !r.IsNewRow)
-                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(sourceDataObject.name))
-                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(autoMappedTargetDataItemName))
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(sourceDataObject.name))
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(autoMappedTargetDataItemName))
                                 .FirstOrDefault();
 
                             if (physicalModelSourceDataItemLookup == null)

@@ -393,6 +393,11 @@ namespace TEAM
             _dataGridViewPhysicalModel.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             _dataGridViewPhysicalModel.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
 
+            // Sort
+            //DataView view = PhysicalModel.DataTable.DefaultView;
+            //view.Sort = $"{PhysicalModelMappingMetadataColumns.databaseName} ASC, {PhysicalModelMappingMetadataColumns.schemaName} ASC, {PhysicalModelMappingMetadataColumns.tableName} ASC, {PhysicalModelMappingMetadataColumns.ordinalPosition} ASC";
+            //BindingSourcePhysicalModel.DataSource = view;
+
             // Resize the grid
             GridAutoLayout(_dataGridViewPhysicalModel);
         }
@@ -644,7 +649,7 @@ namespace TEAM
                     {
                         try
                         {
-                            SaveAttributeMappingMetadata(dataTableAttributeMappingChanges);
+                            SaveDataItemMappingMetadata(dataTableAttributeMappingChanges);
                             
                             // Load the grids from the repository after being updated.This resets everything.
                             PopulateDataItemMappingGrid();
@@ -880,71 +885,71 @@ namespace TEAM
                         var characterLength = "";
                         var numericPrecision = "";
                         var numericScale = "";
-                        var ordinalPosition = "";
+                        int ordinalPosition = 0;
                         var primaryKeyIndicator = "";
                         var multiActiveIndicator = "";
 
-                        if (row[PhysicalModelMappingMetadataColumns.Database_Name.ToString()] != DBNull.Value)
+                        if (row[PhysicalModelMappingMetadataColumns.databaseName.ToString()] != DBNull.Value)
                         {
-                            databaseName = (string) row[PhysicalModelMappingMetadataColumns.Database_Name.ToString()];
+                            databaseName = (string) row[PhysicalModelMappingMetadataColumns.databaseName.ToString()];
                         }
 
-                        if (row[PhysicalModelMappingMetadataColumns.Schema_Name.ToString()] != DBNull.Value)
+                        if (row[PhysicalModelMappingMetadataColumns.schemaName.ToString()] != DBNull.Value)
                         {
-                            schemaName = (string) row[PhysicalModelMappingMetadataColumns.Schema_Name.ToString()];
+                            schemaName = (string) row[PhysicalModelMappingMetadataColumns.schemaName.ToString()];
                         }
 
-                        if (row[PhysicalModelMappingMetadataColumns.Table_Name.ToString()] != DBNull.Value)
+                        if (row[PhysicalModelMappingMetadataColumns.tableName.ToString()] != DBNull.Value)
                         {
-                            tableName = (string) row[PhysicalModelMappingMetadataColumns.Table_Name.ToString()];
+                            tableName = (string) row[PhysicalModelMappingMetadataColumns.tableName.ToString()];
                         }
 
-                        if (row[PhysicalModelMappingMetadataColumns.Column_Name.ToString()] != DBNull.Value)
+                        if (row[PhysicalModelMappingMetadataColumns.columnName.ToString()] != DBNull.Value)
                         {
-                            columnName = (string) row[PhysicalModelMappingMetadataColumns.Column_Name.ToString()];
+                            columnName = (string) row[PhysicalModelMappingMetadataColumns.columnName.ToString()];
                         }
 
-                        if (row[PhysicalModelMappingMetadataColumns.Data_Type.ToString()] != DBNull.Value)
+                        if (row[PhysicalModelMappingMetadataColumns.dataType.ToString()] != DBNull.Value)
                         {
-                            dataType = (string) row[PhysicalModelMappingMetadataColumns.Data_Type.ToString()];
+                            dataType = (string) row[PhysicalModelMappingMetadataColumns.dataType.ToString()];
                         }
 
-                        if (row[PhysicalModelMappingMetadataColumns.Character_Length.ToString()] != DBNull.Value)
+                        if (row[PhysicalModelMappingMetadataColumns.characterLength.ToString()] != DBNull.Value)
                         {
-                            characterLength = (string) row[PhysicalModelMappingMetadataColumns.Character_Length.ToString()];
+                            characterLength = (string) row[PhysicalModelMappingMetadataColumns.characterLength.ToString()];
                         }
 
-                        if (row[PhysicalModelMappingMetadataColumns.Numeric_Precision.ToString()] != DBNull.Value)
+                        if (row[PhysicalModelMappingMetadataColumns.numericPrecision.ToString()] != DBNull.Value)
                         {
-                            numericPrecision = (string) row[PhysicalModelMappingMetadataColumns.Numeric_Precision.ToString()];
+                            numericPrecision = (string) row[PhysicalModelMappingMetadataColumns.numericPrecision.ToString()];
                         }
 
-                        if (row[PhysicalModelMappingMetadataColumns.Numeric_Scale.ToString()] != DBNull.Value)
+                        if (row[PhysicalModelMappingMetadataColumns.numericScale.ToString()] != DBNull.Value)
                         {
-                            numericScale = (string) row[PhysicalModelMappingMetadataColumns.Numeric_Scale.ToString()];
+                            numericScale = (string) row[PhysicalModelMappingMetadataColumns.numericScale.ToString()];
                         }
 
-                        if (row[PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString()] != DBNull.Value)
+                        if (row[PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()] != DBNull.Value)
                         {
-                            ordinalPosition = (string) row[PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString()];
+                            ordinalPosition = (Int32) row[PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()];
                         }
 
-                        if (row[PhysicalModelMappingMetadataColumns.Primary_Key_Indicator.ToString()] != DBNull.Value)
+                        if (row[PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString()] != DBNull.Value)
                         {
-                            primaryKeyIndicator = (string) row[PhysicalModelMappingMetadataColumns.Primary_Key_Indicator.ToString()];
+                            primaryKeyIndicator = (string) row[PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString()];
                         }
 
-                        if (row[PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString()] != DBNull.Value)
+                        if (row[PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString()] != DBNull.Value)
                         {
-                            multiActiveIndicator = (string) row[PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString()];
+                            multiActiveIndicator = (string) row[PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString()];
                         }
 
                         try
                         {
-                            var databaseNameOld = (string)row[PhysicalModelMappingMetadataColumns.Database_Name.ToString(), DataRowVersion.Original];
-                            var schemaNameOld = (string)row[PhysicalModelMappingMetadataColumns.Schema_Name.ToString(), DataRowVersion.Original];
-                            var tableNameOld = (string)row[PhysicalModelMappingMetadataColumns.Table_Name.ToString(), DataRowVersion.Original];
-                            var columnNameOld = (string)row[PhysicalModelMappingMetadataColumns.Column_Name.ToString(), DataRowVersion.Original];
+                            var databaseNameOld = (string)row[PhysicalModelMappingMetadataColumns.databaseName.ToString(), DataRowVersion.Original];
+                            var schemaNameOld = (string)row[PhysicalModelMappingMetadataColumns.schemaName.ToString(), DataRowVersion.Original];
+                            var tableNameOld = (string)row[PhysicalModelMappingMetadataColumns.tableName.ToString(), DataRowVersion.Original];
+                            var columnNameOld = (string)row[PhysicalModelMappingMetadataColumns.columnName.ToString(), DataRowVersion.Original];
 
                             //Checks if a matching 'old' JSON segment already exists.
                             var jsonSegmentForDelete = jsonArray.FirstOrDefault(obj => obj.databaseName == databaseNameOld && obj.schemaName == schemaNameOld && obj.tableName == tableNameOld && obj.columnName == columnNameOld);
@@ -994,63 +999,63 @@ namespace TEAM
                         string characterLength= "0";
                         string numericPrecision = "0";
                         string numericScale = "0";
-                        string ordinalPosition = "0";
+                        int ordinalPosition = 0;
                         string primaryKeyIndicator = "";
                         string multiActiveIndicator = "";
 
-                        if (row[(int) PhysicalModelMappingMetadataColumns.Database_Name] != DBNull.Value)
+                        if (row[(int) PhysicalModelMappingMetadataColumns.databaseName] != DBNull.Value)
                         {
-                            databaseName = (string) row[(int) PhysicalModelMappingMetadataColumns.Database_Name];
+                            databaseName = (string) row[(int) PhysicalModelMappingMetadataColumns.databaseName];
                         }
 
-                        if (row[(int) PhysicalModelMappingMetadataColumns.Schema_Name] != DBNull.Value)
+                        if (row[(int) PhysicalModelMappingMetadataColumns.schemaName] != DBNull.Value)
                         {
-                            schemaName = (string) row[(int) PhysicalModelMappingMetadataColumns.Schema_Name];
+                            schemaName = (string) row[(int) PhysicalModelMappingMetadataColumns.schemaName];
                         }
 
-                        if (row[(int) PhysicalModelMappingMetadataColumns.Table_Name] != DBNull.Value)
+                        if (row[(int) PhysicalModelMappingMetadataColumns.tableName] != DBNull.Value)
                         {
-                            tableName = (string) row[(int) PhysicalModelMappingMetadataColumns.Table_Name];
+                            tableName = (string) row[(int) PhysicalModelMappingMetadataColumns.tableName];
                         }
 
-                        if (row[(int) PhysicalModelMappingMetadataColumns.Column_Name] != DBNull.Value)
+                        if (row[(int) PhysicalModelMappingMetadataColumns.columnName] != DBNull.Value)
                         {
-                            columnName = (string) row[(int) PhysicalModelMappingMetadataColumns.Column_Name];
+                            columnName = (string) row[(int) PhysicalModelMappingMetadataColumns.columnName];
                         }
 
-                        if (row[(int) PhysicalModelMappingMetadataColumns.Data_Type] != DBNull.Value)
+                        if (row[(int) PhysicalModelMappingMetadataColumns.dataType] != DBNull.Value)
                         {
-                            dataType = (string) row[(int) PhysicalModelMappingMetadataColumns.Data_Type];
+                            dataType = (string) row[(int) PhysicalModelMappingMetadataColumns.dataType];
                         }
 
-                        if (row[(int) PhysicalModelMappingMetadataColumns.Character_Length] != DBNull.Value)
+                        if (row[(int) PhysicalModelMappingMetadataColumns.characterLength] != DBNull.Value)
                         {
-                            characterLength = (string) row[(int) PhysicalModelMappingMetadataColumns.Character_Length];
+                            characterLength = (string) row[(int) PhysicalModelMappingMetadataColumns.characterLength];
                         }
 
-                        if (row[(int) PhysicalModelMappingMetadataColumns.Numeric_Precision] != DBNull.Value)
+                        if (row[(int) PhysicalModelMappingMetadataColumns.numericPrecision] != DBNull.Value)
                         {
-                            numericPrecision = (string) row[(int) PhysicalModelMappingMetadataColumns.Numeric_Precision];
+                            numericPrecision = (string) row[(int) PhysicalModelMappingMetadataColumns.numericPrecision];
                         }
 
-                        if (row[(int) PhysicalModelMappingMetadataColumns.Numeric_Scale] != DBNull.Value)
+                        if (row[(int) PhysicalModelMappingMetadataColumns.numericScale] != DBNull.Value)
                         {
-                            numericScale = (string) row[(int) PhysicalModelMappingMetadataColumns.Numeric_Scale];
+                            numericScale = (string) row[(int) PhysicalModelMappingMetadataColumns.numericScale];
                         }
 
-                        if (row[(int) PhysicalModelMappingMetadataColumns.Ordinal_Position] != DBNull.Value)
+                        if (row[(int) PhysicalModelMappingMetadataColumns.ordinalPosition] != DBNull.Value)
                         {
-                            ordinalPosition = (string) row[(int) PhysicalModelMappingMetadataColumns.Ordinal_Position];
+                            ordinalPosition = (Int32) row[(int) PhysicalModelMappingMetadataColumns.ordinalPosition];
                         }
 
-                        if (row[(int) PhysicalModelMappingMetadataColumns.Primary_Key_Indicator] != DBNull.Value)
+                        if (row[(int) PhysicalModelMappingMetadataColumns.primaryKeyIndicator] != DBNull.Value)
                         {
-                            primaryKeyIndicator = (string) row[(int) PhysicalModelMappingMetadataColumns.Primary_Key_Indicator];
+                            primaryKeyIndicator = (string) row[(int) PhysicalModelMappingMetadataColumns.primaryKeyIndicator];
                         }
 
-                        if (row[(int) PhysicalModelMappingMetadataColumns.Multi_Active_Indicator] != DBNull.Value)
+                        if (row[(int) PhysicalModelMappingMetadataColumns.multiActiveIndicator] != DBNull.Value)
                         {
-                            multiActiveIndicator = (string) row[(int) PhysicalModelMappingMetadataColumns.Multi_Active_Indicator];
+                            multiActiveIndicator = (string) row[(int) PhysicalModelMappingMetadataColumns.multiActiveIndicator];
                         }
 
                         try
@@ -1098,16 +1103,13 @@ namespace TEAM
                     //Deleted rows
                     if ((row.RowState & DataRowState.Deleted) != 0)
                     {
-                        var databaseName = row[PhysicalModelMappingMetadataColumns.Database_Name.ToString(), DataRowVersion.Original].ToString();
-                        var schemaName = row[PhysicalModelMappingMetadataColumns.Schema_Name.ToString(), DataRowVersion.Original].ToString();
-                        var tableName = row[PhysicalModelMappingMetadataColumns.Table_Name.ToString(), DataRowVersion.Original].ToString();
-                        var columnName = row[PhysicalModelMappingMetadataColumns.Column_Name.ToString(), DataRowVersion.Original].ToString();
+                        var databaseName = row[PhysicalModelMappingMetadataColumns.databaseName.ToString(), DataRowVersion.Original].ToString();
+                        var schemaName = row[PhysicalModelMappingMetadataColumns.schemaName.ToString(), DataRowVersion.Original].ToString();
+                        var tableName = row[PhysicalModelMappingMetadataColumns.tableName.ToString(), DataRowVersion.Original].ToString();
+                        var columnName = row[PhysicalModelMappingMetadataColumns.columnName.ToString(), DataRowVersion.Original].ToString();
 
                         try
                         {
-                            //string inputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                            //var jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(inputFileName)).ToList();
-
                             //Retrieves the json segment in the file.
                             var jsonSegment = jsonArray.FirstOrDefault(obj => obj.databaseName == databaseName && obj.schemaName == schemaName && obj.tableName == tableName && obj.columnName == columnName);
 
@@ -1122,11 +1124,6 @@ namespace TEAM
                                 //Remove the segment from the JSON
                                 jsonArray.Remove(jsonSegment);
                             }
-
-                            //string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                            //string outputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                            //File.WriteAllText(outputFileName, output);
-
                         }
                         catch (JsonReaderException ex)
                         {
@@ -1155,7 +1152,7 @@ namespace TEAM
             }
         }
 
-        private void SaveAttributeMappingMetadata(DataTable dataTableChanges)
+        private void SaveDataItemMappingMetadata(DataTable dataTableChanges)
         {
             if (TeamJsonHandling.JsonFileConfiguration.newFileAttributeMapping == "true")
             {
@@ -2149,6 +2146,14 @@ namespace TEAM
             if (backgroundWorkerValidationOnly.IsBusy) 
                 return;
 
+            var changesDataTable = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
+
+            if (changesDataTable !=null && changesDataTable.Rows.Count>0)
+            {
+                MessageBox.Show(@"There are unsaved changes in the physical model, please save your changes first before reverse-engineering.", @"Please save changes", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             backgroundWorkerReverseEngineering.RunWorkerAsync();
         }
 
@@ -2159,21 +2164,27 @@ namespace TEAM
         /// <param name="filteredDataObjectMappingDataRows"></param>
         private DataTable ReverseEngineerModelMetadata(TeamConnection teamConnection, List<DataRow> filteredDataObjectMappingDataRows)
         {
+            DataTable reverseEngineerResults = new DataTable();
+
             var conn = new SqlConnection { ConnectionString = teamConnection.CreateSqlServerConnectionString(false) };
 
             try
             {
                 conn.Open();
+
+                var sqlStatementForDataItems = SqlStatementForDataItems(GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), teamConnection);
+
+                reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems);
             }
             catch (Exception exception)
             {
                 ThreadHelper.SetText(this, richTextBoxInformation, $@"An error has occurred uploading the model for the new version because the database could not be connected to. The error message is: {exception.Message}.");
             }
-
-            var sqlStatementForDataItems = SqlStatementForDataItems( GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), teamConnection);
-
-            var reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems);
-            conn.Close();
+            finally
+            {
+                conn.Close();
+                conn.Dispose();
+            }
 
             return reverseEngineerResults;
         }
@@ -2205,33 +2216,18 @@ namespace TEAM
         {
             var dwhKeyIdentifier = TeamConfiguration.KeyIdentifier; //Indicates _HSH, _SK etc.
 
-            string databaseColumnName = PhysicalModelMappingMetadataColumns.Database_Name.ToString();
-            string schemaColumnName = PhysicalModelMappingMetadataColumns.Schema_Name.ToString();
-            string tableColumnName = PhysicalModelMappingMetadataColumns.Table_Name.ToString();
-            string columnColumnName = PhysicalModelMappingMetadataColumns.Column_Name.ToString();
-            string dataTypeColumnName = PhysicalModelMappingMetadataColumns.Data_Type.ToString();
-            string characterLengthColumnName = PhysicalModelMappingMetadataColumns.Character_Length.ToString();
-            string numericPrecisionColumnName = PhysicalModelMappingMetadataColumns.Numeric_Precision.ToString();
-            string numericScaleColumnName = PhysicalModelMappingMetadataColumns.Numeric_Scale.ToString();
-            string ordinalPositionColumnName = PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString();
-            string primaryKeyColumnName = PhysicalModelMappingMetadataColumns.Primary_Key_Indicator.ToString();
-            string multiActiveKeyColumnName = PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString();
-
-            if (isJson)
-            {
-                databaseColumnName = "databaseName";
-                schemaColumnName = "schemaName";
-                tableColumnName = "tableName";
-                columnColumnName = "columnName";
-                dataTypeColumnName = "dataType";
-                characterLengthColumnName = "characterLength";
-                numericPrecisionColumnName = "numericPrecision";
-                numericScaleColumnName = "numericScale";
-                ordinalPositionColumnName = "ordinalPosition";
-                primaryKeyColumnName = "primaryKeyIndicator";
-                multiActiveKeyColumnName = "multiActiveIndicator";
-            }
-
+            string databaseColumnName = PhysicalModelMappingMetadataColumns.databaseName.ToString();
+            string schemaColumnName = PhysicalModelMappingMetadataColumns.schemaName.ToString();
+            string tableColumnName = PhysicalModelMappingMetadataColumns.tableName.ToString();
+            string columnColumnName = PhysicalModelMappingMetadataColumns.columnName.ToString();
+            string dataTypeColumnName = PhysicalModelMappingMetadataColumns.dataType.ToString();
+            string characterLengthColumnName = PhysicalModelMappingMetadataColumns.characterLength.ToString();
+            string numericPrecisionColumnName = PhysicalModelMappingMetadataColumns.numericPrecision.ToString();
+            string numericScaleColumnName = PhysicalModelMappingMetadataColumns.numericScale.ToString();
+            string ordinalPositionColumnName = PhysicalModelMappingMetadataColumns.ordinalPosition.ToString();
+            string primaryKeyColumnName = PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString();
+            string multiActiveKeyColumnName = PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString();
+            
             // Prepare the query, depending on the type.
             // Create the attribute selection statement for the array.
             var sqlStatementForDataItems = new StringBuilder();
@@ -2260,7 +2256,7 @@ namespace TEAM
                     sqlStatementForDataItems.AppendLine($"    ,0) AS VARCHAR(100)) AS [{characterLengthColumnName}],");
                     sqlStatementForDataItems.AppendLine($"    CAST(COALESCE(main.[precision],0) AS VARCHAR(100)) AS [{numericPrecisionColumnName}], ");
                     sqlStatementForDataItems.AppendLine($"    CAST(COALESCE(main.[scale], 0) AS VARCHAR(100)) AS [{numericScaleColumnName}], ");
-                    sqlStatementForDataItems.AppendLine($"    CAST(main.[column_id] AS VARCHAR(100)) AS [{ordinalPositionColumnName}], ");
+                    sqlStatementForDataItems.AppendLine($"    main.[column_id] AS [{ordinalPositionColumnName}], ");
                     sqlStatementForDataItems.AppendLine("     CASE ");
                     sqlStatementForDataItems.AppendLine("       WHEN keysub.COLUMN_NAME IS NULL ");
                     sqlStatementForDataItems.AppendLine("       THEN 'N' ");
@@ -2369,7 +2365,7 @@ namespace TEAM
                     var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2).FirstOrDefault();
 
                     // Always add the 'regular' mapping.
-                    sqlStatementForDataItems.AppendLine($"     ({tableColumnName} = '{fullyQualifiedName.Value}' AND {schemaColumnName} = '{fullyQualifiedName.Key}')");
+                    sqlStatementForDataItems.AppendLine($"     ([{tableColumnName}] = '{fullyQualifiedName.Value}' AND [{schemaColumnName}] = '{fullyQualifiedName.Key}')");
                     sqlStatementForDataItems.AppendLine("     OR");
                 }
 
@@ -2463,17 +2459,29 @@ namespace TEAM
                     {
                         // There is no broad filter, but a user filter has been set.
                         // Apply text box filter to support user filtering.
-                        filterCriterionPhysicalModel = $"[Database_Name] LIKE '{filterCriterion}%' OR [Table_Name] LIKE '{filterCriterion}%' OR [Column_Name] LIKE '{filterCriterion}%' OR [Schema_Name] LIKE '{filterCriterion}%'";
-                        inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
+                        filterCriterionPhysicalModel = $"[{PhysicalModelMappingMetadataColumns.databaseName}] LIKE '{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.tableName}] LIKE '{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.columnName}] LIKE '{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.schemaName}] LIKE '{filterCriterion}%'";inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
                     }
                     else if (!string.IsNullOrEmpty(currentFilter) && !string.IsNullOrEmpty(filterCriterion))
                     {
                         // There is already a broad filter, and a user filter has also been set.
+
+                        // Re-evaluate the need for the filter.
+                        if (checkBoxShowStaging.Checked)
+                        {
+                            // Show everything - reset the filter.
+                            currentFilter = "1=1 ";
+                        }
+                        else
+                        {
+                            // The target is not a STG process and not a PSA process.
+                            currentFilter = $"[{PhysicalModelMappingMetadataColumns.tableName}] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [{PhysicalModelMappingMetadataColumns.tableName}] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
+                        }
+
                         // Merge with existing filter.
-                        filterCriterionPhysicalModel = currentFilter +
-                                                       $"AND [Database_Name] LIKE '{filterCriterion}%' OR [Table_Name] LIKE '{filterCriterion}%' OR [Column_Name] LIKE '{filterCriterion}%' OR [Schema_Name] LIKE '{filterCriterion}%'";
-                        inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
+                        filterCriterionPhysicalModel = currentFilter + $"AND [{PhysicalModelMappingMetadataColumns.databaseName}] LIKE '{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.tableName}] LIKE '{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.columnName}] LIKE '{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.schemaName}] LIKE '{filterCriterion}%'";
                     }
+
+                    inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
                 }
             }
             else
@@ -2620,8 +2628,7 @@ namespace TEAM
 
             DataTable gridDataTable = (DataTable) BindingSourcePhysicalModel.DataSource;
             DataTable dt2 = gridDataTable.Clone();
-            dt2.Columns[PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString()].DataType =
-                Type.GetType("System.Int32");
+            dt2.Columns[PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()].DataType = Type.GetType("System.Int32");
 
             foreach (DataRow dr in gridDataTable.Rows)
             {
@@ -2631,16 +2638,15 @@ namespace TEAM
             dt2.AcceptChanges();
 
             // Make sure the output is sorted
-            dt2.DefaultView.Sort =
-                $"{PhysicalModelMappingMetadataColumns.Table_Name.ToString()} ASC, {PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString()} ASC";
+            dt2.DefaultView.Sort = $"{PhysicalModelMappingMetadataColumns.tableName.ToString()} ASC, {PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()} ASC";
 
             // Retrieve all rows relative to the selected row (e.g. all attributes for the table)
             IEnumerable<DataRow> rows = dt2.DefaultView.ToTable().AsEnumerable().Where(r =>
-                r.Field<string>(PhysicalModelMappingMetadataColumns.Table_Name.ToString()) ==
+                r.Field<string>(PhysicalModelMappingMetadataColumns.tableName.ToString()) ==
                 _dataGridViewPhysicalModel.Rows[selectedRow].Cells[4].Value.ToString()
-                && r.Field<string>(PhysicalModelMappingMetadataColumns.Schema_Name.ToString()) ==
+                && r.Field<string>(PhysicalModelMappingMetadataColumns.schemaName.ToString()) ==
                 _dataGridViewPhysicalModel.Rows[selectedRow].Cells[3].Value.ToString()
-                && r.Field<string>(PhysicalModelMappingMetadataColumns.Database_Name.ToString()) ==
+                && r.Field<string>(PhysicalModelMappingMetadataColumns.databaseName.ToString()) ==
                 _dataGridViewPhysicalModel.Rows[selectedRow].Cells[2].Value.ToString()
             );
 
@@ -2672,7 +2678,7 @@ namespace TEAM
                 }
 
                 counter++;
-                results.AppendLine(commaSnippet + row[PhysicalModelMappingMetadataColumns.Column_Name.ToString()] +" -- with ordinal position of " +row[PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString()]);
+                results.AppendLine(commaSnippet + row[PhysicalModelMappingMetadataColumns.columnName.ToString()] +" -- with ordinal position of " +row[PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()]);
             }
 
             results.AppendLine(")");
@@ -3237,15 +3243,18 @@ namespace TEAM
 
             // The full data table.
             DataTable completeDataTable = (DataTable)BindingSourcePhysicalModel.DataSource;
+            var existingFilter = completeDataTable.DefaultView.RowFilter;
 
             foreach (var checkedItem in checkedListBoxReverseEngineeringAreas.CheckedItems)
             {
                 var localConnectionObject = (KeyValuePair<TeamConnection, string>)checkedItem;
+                var filteredRows = GetFilteredDataObjectMappingDataTableRows();
 
-                var reverseEngineerResults = ReverseEngineerModelMetadata(localConnectionObject.Key, GetFilteredDataObjectMappingDataTableRows());
+                var reverseEngineerResults = ReverseEngineerModelMetadata(localConnectionObject.Key, filteredRows);
 
                 if (reverseEngineerResults != null)
                 {
+                    
                     interimDataTable.Merge(reverseEngineerResults);
                 }
 
@@ -3257,26 +3266,24 @@ namespace TEAM
             {
                 row.SetAdded();
             }
+
             ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Added new records completed at {DateTime.Now:HH:mm:ss tt}.");
 
             completeDataTable.Merge(interimDataTable);
             ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Merge of data tables completed at {DateTime.Now:HH:mm:ss tt}.");
 
-            //DataTable distinctTable = completeDataTable.DefaultView.ToTable( /*distinct*/ true);
-
-            // Deduplication.
-            
+            // De-duplication.
             DataTable distinctTable = null;
 
-            if (completeDataTable != null && completeDataTable.Rows.Count > 0)
+            if (completeDataTable.Rows.Count > 0)
             {
                 distinctTable = completeDataTable.AsEnumerable()
                     .GroupBy(row => new
                     {
-                        databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.Database_Name.ToString()),
-                        schemaName = row.Field<string>(PhysicalModelMappingMetadataColumns.Schema_Name.ToString()),
-                        tableName = row.Field<string>(PhysicalModelMappingMetadataColumns.Table_Name.ToString()),
-                        columnName = row.Field<string>(PhysicalModelMappingMetadataColumns.Column_Name.ToString()),
+                        databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.databaseName.ToString()),
+                        schemaName = row.Field<string>(PhysicalModelMappingMetadataColumns.schemaName.ToString()),
+                        tableName = row.Field<string>(PhysicalModelMappingMetadataColumns.tableName.ToString()),
+                        columnName = row.Field<string>(PhysicalModelMappingMetadataColumns.columnName.ToString()),
                     })
                     .Select(y => y.First())
                     .CopyToDataTable();
@@ -3287,7 +3294,12 @@ namespace TEAM
             // Sort and display the results on the data grid.
             if (distinctTable != null)
             {
-                distinctTable.DefaultView.Sort = "[DATABASE_NAME] ASC, [SCHEMA_NAME] ASC, [TABLE_NAME] ASC, [ORDINAL_POSITION] ASC";
+                distinctTable.DefaultView.Sort = $"[{PhysicalModelMappingMetadataColumns.databaseName}] ASC, [{PhysicalModelMappingMetadataColumns.schemaName}] ASC, [{PhysicalModelMappingMetadataColumns.tableName}] ASC, [{PhysicalModelMappingMetadataColumns.ordinalPosition}] ASC";
+
+                // Inherit the filter. Can't apply to the binding source yet because changes will need to be saved first.
+
+                distinctTable.DefaultView.RowFilter = existingFilter;
+
                 _dataGridViewPhysicalModel.Invoke((Action)(() => _dataGridViewPhysicalModel.DataSource = distinctTable));
             }
             else
@@ -3314,8 +3326,10 @@ namespace TEAM
                 // Re-enable the checked list box.
                 checkedListBoxReverseEngineeringAreas.Enabled = true;
 
-                // Resize the grid
+                // Apply filtering.
                 ApplyDataGridViewFiltering();
+
+                // Resize the grid.
                 GridAutoLayout(_dataGridViewPhysicalModel);
             }
         }
@@ -3359,7 +3373,7 @@ namespace TEAM
                 // The target is not a STG process and not a PSA process.
                 var filterCriterionDataObjectMappings = $"[TargetDataObjectName] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [TargetDataObjectName] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
                 var filterCriterionDataItemMappings = $"[TargetDataObject] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [TargetDataObject] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
-                var filterCriterionPhysicalModel = $"[Table_Name] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [Table_Name] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
+                var filterCriterionPhysicalModel = $"[{PhysicalModelMappingMetadataColumns.tableName}] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [{PhysicalModelMappingMetadataColumns.tableName}] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
 
                 inputTableMappingDataObjectMappings.DefaultView.RowFilter = filterCriterionDataObjectMappings;
                 inputTableMappingDataItemMappings.DefaultView.RowFilter = filterCriterionDataItemMappings;

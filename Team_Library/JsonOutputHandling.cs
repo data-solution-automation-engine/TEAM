@@ -78,12 +78,12 @@ namespace TEAM_Library
                 {
                     if (!physicalModelGridViewRow.IsNewRow)
                     {
-                        var schemaName = physicalModelGridViewRow.Cells[(int)PhysicalModelMappingMetadataColumns.Schema_Name].Value.ToString();
-                        var tableName = physicalModelGridViewRow.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString();
+                        var schemaName = physicalModelGridViewRow.Cells[(int)PhysicalModelMappingMetadataColumns.schemaName].Value.ToString();
+                        var tableName = physicalModelGridViewRow.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString();
 
                         if (fullyQualifiedName.Key == schemaName && fullyQualifiedName.Value == tableName)
                         {
-                            DataItem dataItem = new DataItem { name = physicalModelGridViewRow.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString() };
+                            DataItem dataItem = new DataItem { name = physicalModelGridViewRow.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString() };
 
                             // Apply or remove data item details.
                             SetDataItemDataType(dataItem, physicalModelGridViewRow, jsonExportSetting);
@@ -123,7 +123,7 @@ namespace TEAM_Library
             {
                 if (physicalModelRow != null)
                 {
-                    var dataType = physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Data_Type].Value.ToString();
+                    var dataType = physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.dataType].Value.ToString();
 
                     dataItem.dataType = dataType;
 
@@ -132,11 +132,11 @@ namespace TEAM_Library
                         case "varchar":
                         case "nvarchar":
                         case "binary":
-                            dataItem.characterLength = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Character_Length].Value.ToString());
+                            dataItem.characterLength = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.characterLength].Value.ToString());
                             break;
                         case "numeric":
-                            dataItem.numericPrecision = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Numeric_Precision].Value.ToString());
-                            dataItem.numericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Numeric_Scale].Value.ToString());
+                            dataItem.numericPrecision = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericPrecision].Value.ToString());
+                            dataItem.numericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
                             break;
                         case "int":
                             // No length etc.
@@ -144,11 +144,11 @@ namespace TEAM_Library
                         case "datetime":
                         case "datetime2":
                         case "date":
-                            dataItem.numericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Numeric_Scale].Value.ToString());
+                            dataItem.numericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
                             break;
                     }
 
-                    dataItem.ordinalPosition = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Ordinal_Position].Value.ToString());
+                    dataItem.ordinalPosition = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value.ToString());
                 }
             }
 
@@ -183,14 +183,14 @@ namespace TEAM_Library
 
                 // Find the matching physical model row.
                 DataGridViewRow physicalModelRow = dataGridViewRowsPhysicalModel
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Schema_Name].Value.ToString().Equals(fullyQualifiedName.Key))
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(fullyQualifiedName.Value))
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(dataItem.name))
+                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.schemaName].Value.ToString().Equals(fullyQualifiedName.Key))
+                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(fullyQualifiedName.Value))
+                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(dataItem.name))
                     .First();
 
                 if (physicalModelRow != null)
                 {
-                    var dataType = physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Data_Type].Value.ToString();
+                    var dataType = physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.dataType].Value.ToString();
 
                     dataItem.dataType = dataType;
 
@@ -199,11 +199,11 @@ namespace TEAM_Library
                         case "varchar":
                         case "nvarchar":
                         case "binary":
-                            dataItem.characterLength = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Character_Length].Value.ToString());
+                            dataItem.characterLength = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.characterLength].Value.ToString());
                             break;
                         case "numeric":
-                            dataItem.numericPrecision = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Numeric_Precision].Value.ToString());
-                            dataItem.numericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Numeric_Scale].Value.ToString());
+                            dataItem.numericPrecision = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericPrecision].Value.ToString());
+                            dataItem.numericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
                             break;
                         case "int":
                             // No length etc.
@@ -211,11 +211,11 @@ namespace TEAM_Library
                         case "datetime":
                         case "datetime2":
                         case "date":
-                            dataItem.numericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Numeric_Scale].Value.ToString());
+                            dataItem.numericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
                             break;
                     }
 
-                    dataItem.ordinalPosition = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Ordinal_Position].Value.ToString());
+                    dataItem.ordinalPosition = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value.ToString());
                 }
             }
 
@@ -965,15 +965,15 @@ namespace TEAM_Library
                         // This can ONLY be derived from the physical model to cater for same-as scenarios. To be improved.
                         var physicalModelDataGridViewRowList = dataGridViewRowsPhysicalModel
                             .Where(r => !r.IsNewRow)
-                            .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(tempComponent.originalTargetDataObject))
-                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(tempComponent.surrogateKey))
-                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.LoadDateTimeAttribute))
-                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.EtlProcessAttribute))
-                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.RecordSourceAttribute))
-                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.AlternativeSatelliteLoadDateTimeAttribute))
-                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.AlternativeLoadDateTimeAttribute))
-                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(teamConfiguration.AlternativeRecordSourceAttribute))
-                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString().Equals(tempComponent.surrogateKey))
+                            .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(tempComponent.originalTargetDataObject))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(tempComponent.surrogateKey))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(teamConfiguration.LoadDateTimeAttribute))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(teamConfiguration.EtlProcessAttribute))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(teamConfiguration.RecordSourceAttribute))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(teamConfiguration.AlternativeSatelliteLoadDateTimeAttribute))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(teamConfiguration.AlternativeLoadDateTimeAttribute))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(teamConfiguration.AlternativeRecordSourceAttribute))
+                            .Where(r => !r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(tempComponent.surrogateKey))
                             .ToList();
 
                         // The physical key order must now be established.
@@ -982,7 +982,7 @@ namespace TEAM_Library
                         {
                             if (ordinal == counter)
                             {
-                                individualTempComponent.surrogateKey = physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString();
+                                individualTempComponent.surrogateKey = physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString();
                             }
                             counter++;
                         }
@@ -1094,11 +1094,11 @@ namespace TEAM_Library
             {
                 var physicalModelDataGridViewRow = dataGridViewRowsPhysicalModel
                     .Where(r => !r.IsNewRow)
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.Table_Name].Value.ToString().Equals(lookupDataObject.name))
+                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(lookupDataObject.name))
                     .ToList();
 
                 // Sorting separately for debugging purposes. Issues were found in string to int conversion when sorting on ordinal position.
-                var orderedList = physicalModelDataGridViewRow.OrderBy(row => Int32.Parse(row.Cells[(int)PhysicalModelMappingMetadataColumns.Ordinal_Position].Value.ToString()));
+                var orderedList = physicalModelDataGridViewRow.OrderBy(row => Int32.Parse(row.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value.ToString()));
 
                 if (!orderedList.Any())
                 {
@@ -1109,7 +1109,7 @@ namespace TEAM_Library
 
                 foreach (var row in orderedList)
                 {
-                    var column = row.Cells[(int)PhysicalModelMappingMetadataColumns.Column_Name].Value.ToString();
+                    var column = row.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString();
 
                     // Add if it's not a standard element.
                     var surrogateKey = DeriveSurrogateKey(lookupDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);

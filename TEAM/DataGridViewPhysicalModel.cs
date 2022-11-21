@@ -42,122 +42,122 @@ namespace TEAM
             #region Columns
 
             // Database Name
-            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Database_Name.ToString()))
+            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.databaseName.ToString()))
             {
                 DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn();
-                column.Name = PhysicalModelMappingMetadataColumns.Database_Name.ToString();
+                column.Name = PhysicalModelMappingMetadataColumns.databaseName.ToString();
                 column.HeaderText = @"Database Name";
-                column.DataPropertyName = "DATABASE_NAME";
+                column.DataPropertyName = PhysicalModelMappingMetadataColumns.databaseName.ToString();
                 column.Visible = true;
                 Columns.Add(column);
             }
 
             // Schema Name
-            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Schema_Name.ToString()))
+            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.schemaName.ToString()))
             {
                 DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn();
-                column.Name = PhysicalModelMappingMetadataColumns.Schema_Name.ToString();
+                column.Name = PhysicalModelMappingMetadataColumns.schemaName.ToString();
                 column.HeaderText = @"Schema Name";
-                column.DataPropertyName = "SCHEMA_NAME";
+                column.DataPropertyName = PhysicalModelMappingMetadataColumns.schemaName.ToString();
                 column.Visible = true;
                 Columns.Add(column);
             }
 
             // Table Name
-            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Table_Name.ToString()))
+            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.tableName.ToString()))
             {
                 DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn();
-                column.Name = PhysicalModelMappingMetadataColumns.Table_Name.ToString();
+                column.Name = PhysicalModelMappingMetadataColumns.tableName.ToString();
                 column.HeaderText = @"Table Name";
-                column.DataPropertyName = "TABLE_NAME";
+                column.DataPropertyName = PhysicalModelMappingMetadataColumns.tableName.ToString();
                 column.Visible = true;
                 Columns.Add(column);
             }
 
             // Column Name
-            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Column_Name.ToString()))
+            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.columnName.ToString()))
             {
                 DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn();
-                column.Name = PhysicalModelMappingMetadataColumns.Column_Name.ToString();
+                column.Name = PhysicalModelMappingMetadataColumns.columnName.ToString();
                 column.HeaderText = @"Column Name";
-                column.DataPropertyName = "COLUMN_NAME";
+                column.DataPropertyName = PhysicalModelMappingMetadataColumns.columnName.ToString();
                 column.Visible = true;
                 Columns.Add(column);
             }
 
             // Data Type
-            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Data_Type.ToString()))
+            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.dataType.ToString()))
             {
                 DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn();
-                column.Name = PhysicalModelMappingMetadataColumns.Data_Type.ToString();
+                column.Name = PhysicalModelMappingMetadataColumns.dataType.ToString();
                 column.HeaderText = @"Data Type";
-                column.DataPropertyName = "DATA_TYPE";
+                column.DataPropertyName = PhysicalModelMappingMetadataColumns.dataType.ToString();
                 column.Visible = true;
                 Columns.Add(column);
             }
 
             // Character Length
-            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Character_Length.ToString()))
+            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.characterLength.ToString()))
             {
                 DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn();
-                column.Name = PhysicalModelMappingMetadataColumns.Character_Length.ToString();
+                column.Name = PhysicalModelMappingMetadataColumns.characterLength.ToString();
                 column.HeaderText = @"Character Length";
-                column.DataPropertyName = "CHARACTER_LENGTH";
+                column.DataPropertyName = PhysicalModelMappingMetadataColumns.characterLength.ToString();
                 column.Visible = true;
                 Columns.Add(column);
             }
 
             // Numeric Precision
-            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Numeric_Precision.ToString()))
+            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.numericPrecision.ToString()))
             {
                 DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn();
-                column.Name = PhysicalModelMappingMetadataColumns.Numeric_Precision.ToString();
+                column.Name = PhysicalModelMappingMetadataColumns.numericPrecision.ToString();
                 column.HeaderText = @"Numeric Precision";
-                column.DataPropertyName = "NUMERIC_PRECISION";
+                column.DataPropertyName = PhysicalModelMappingMetadataColumns.numericPrecision.ToString();
                 column.Visible = true;
                 Columns.Add(column);
             }
 
             // Numeric Scale
-            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Numeric_Scale.ToString()))
+            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.numericScale.ToString()))
             {
                 DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn();
-                column.Name = PhysicalModelMappingMetadataColumns.Numeric_Scale.ToString();
+                column.Name = PhysicalModelMappingMetadataColumns.numericScale.ToString();
                 column.HeaderText = @"Numeric Scale";
-                column.DataPropertyName = "NUMERIC_SCALE";
+                column.DataPropertyName = PhysicalModelMappingMetadataColumns.numericScale.ToString();
                 column.Visible = true;
                 Columns.Add(column);
             }
 
             // Ordinal Position
-            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString()))
+            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()))
             {
                 DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn();
-                column.Name = PhysicalModelMappingMetadataColumns.Ordinal_Position.ToString();
+                column.Name = PhysicalModelMappingMetadataColumns.ordinalPosition.ToString();
                 column.HeaderText = @"Ordinal Position";
-                column.DataPropertyName = "ORDINAL_POSITION";
+                column.DataPropertyName = PhysicalModelMappingMetadataColumns.ordinalPosition.ToString();
                 column.Visible = true;
                 Columns.Add(column);
             }
 
             // Primary Key Indicator
-            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Primary_Key_Indicator.ToString()))
+            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString()))
             {
                 DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn();
-                column.Name = PhysicalModelMappingMetadataColumns.Primary_Key_Indicator.ToString();
+                column.Name = PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString();
                 column.HeaderText = @"Primary Key Indicator";
-                column.DataPropertyName = "PRIMARY_KEY_INDICATOR";
+                column.DataPropertyName = PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString();
                 column.Visible = true;
                 Columns.Add(column);
             }
 
             // Multi Active Indicator
-            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString()))
+            if (!Controls.ContainsKey(PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString()))
             {
                 DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn();
-                column.Name = PhysicalModelMappingMetadataColumns.Multi_Active_Indicator.ToString();
+                column.Name = PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString();
                 column.HeaderText = @"Multi Active Indicator";
-                column.DataPropertyName = "MULTI_ACTIVE_INDICATOR";
+                column.DataPropertyName = PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString();
                 column.Visible = true;
                 Columns.Add(column);
             }
