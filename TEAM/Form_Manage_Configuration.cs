@@ -296,7 +296,19 @@ namespace TEAM
         private void SaveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             #region root path file
-            // Update the paths in memory
+            // Update the paths in memory.
+
+            // Add a backslash if not present for some reason.
+            if (!textBoxConfigurationPath.Text.EndsWith(@"\"))
+            {
+                textBoxConfigurationPath.Text += @"\";
+            }
+
+            if (!textBoxTeamMetadataPath.Text.EndsWith(@"\"))
+            {
+                textBoxTeamMetadataPath.Text += @"\";
+            }
+
             globalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
             globalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
 
@@ -333,7 +345,6 @@ namespace TEAM
             UpdateConfigurationInMemory();
 
             // Also updating the environments for paths etc.
-            // TODO
             localEnvironment.Key.metadataPath = globalParameters.MetadataPath;
             localEnvironment.Key.configurationPath = globalParameters.ConfigurationPath;
             localEnvironment.Key.SaveTeamEnvironment(globalParameters.CorePath + globalParameters.JsonEnvironmentFileName + globalParameters.JsonExtension);

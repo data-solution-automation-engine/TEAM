@@ -28,6 +28,7 @@ namespace TEAM
             RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
 
             EditMode = DataGridViewEditMode.EditOnKeystroke;
 

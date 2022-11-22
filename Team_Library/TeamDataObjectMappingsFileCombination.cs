@@ -104,23 +104,30 @@ namespace TEAM_Library
                         {
                             try
                             {
-                                // Validate the file contents against the schema definition.
-                                if (File.Exists(Application.StartupPath + @"\Schema\" + globalParameters.JsonSchemaForDataWarehouseAutomationFileName))
-                                {
-                                    var result = JsonHandling.ValidateJsonFileAgainstSchema(Application.StartupPath + @"\Schema\" + globalParameters.JsonSchemaForDataWarehouseAutomationFileName, fileName);
+                                #region Schema validation
 
-                                    foreach (var error in result.Errors)
+                                // Validate the file contents against the schema definition.
+                                var schemaDefinitionFileName = Application.StartupPath + @"\Schema\" + globalParameters.JsonSchemaForDataWarehouseAutomationFileName;
+
+                                if (File.Exists(schemaDefinitionFileName))
+                                {
+                                    var validationResult = JsonHandling.ValidateJsonFileAgainstSchema(schemaDefinitionFileName, fileName);
+
+                                    foreach (var error in validationResult.Errors)
                                     {
-                                        EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error was encountered validating the contents {fileName} against the Data Warehouse Automation schema. The error is {error.Message}"));
+                                        EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error was encountered validating the contents '{fileName}' against the Data Warehouse Automation schema. The error is {error.Message}"));
                                     }
                                 }
                                 else
                                 {
-                                    EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred locating the Data Warehouse Automation schema. Does the schema file exist?"));
+                                    EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The Data Warehouse Automation schema definition can not be found. Does the schema file exist?. The expected file is '{schemaDefinitionFileName}'."));
                                 }
 
-                                // Add the deserialised file to the list of mappings.
+                                #endregion
 
+                                #region Deserialise JSON file
+
+                                // Add the deserialised file to the list of mappings.
                                 var jsonInput = File.ReadAllText(fileName);
 
                                 try
@@ -143,14 +150,16 @@ namespace TEAM_Library
                                         EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The file {fileName} was successfully loaded."));
                                     }
                                 }
-                                catch
+                                catch (Exception exception)
                                 {
-                                    EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The file {fileName} could not be loaded."));
+                                    EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The file {fileName} could not be loaded. The reported error is {exception.Message}"));
                                 }
+
+                                #endregion
                             }
-                            catch
+                            catch (Exception exception)
                             {
-                                EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The file {fileName} could not be loaded."));
+                                EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The file {fileName} could not be loaded. The reported error is {exception.Message}"));
                             }
                         }
                     }

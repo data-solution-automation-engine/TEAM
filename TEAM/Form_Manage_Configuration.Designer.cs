@@ -615,9 +615,9 @@
             this.radioButtonPSABusinessKeyPK.AutoSize = true;
             this.radioButtonPSABusinessKeyPK.Location = new System.Drawing.Point(12, 42);
             this.radioButtonPSABusinessKeyPK.Name = "radioButtonPSABusinessKeyPK";
-            this.radioButtonPSABusinessKeyPK.Size = new System.Drawing.Size(167, 17);
+            this.radioButtonPSABusinessKeyPK.Size = new System.Drawing.Size(165, 17);
             this.radioButtonPSABusinessKeyPK.TabIndex = 28;
-            this.radioButtonPSABusinessKeyPK.Text = "Primary Key Constraint / Index";
+            this.radioButtonPSABusinessKeyPK.Text = "Primary Key constraint / index";
             this.radioButtonPSABusinessKeyPK.UseVisualStyleBackColor = true;
             // 
             // radioButtonPSABusinessKeyIndex
@@ -1193,9 +1193,9 @@
             this.labelEnvironmentKey.AutoSize = true;
             this.labelEnvironmentKey.Location = new System.Drawing.Point(3, 85);
             this.labelEnvironmentKey.Name = "labelEnvironmentKey";
-            this.labelEnvironmentKey.Size = new System.Drawing.Size(89, 13);
+            this.labelEnvironmentKey.Size = new System.Drawing.Size(101, 13);
             this.labelEnvironmentKey.TabIndex = 76;
-            this.labelEnvironmentKey.Text = "Environment key:";
+            this.labelEnvironmentKey.Text = "Active environment:";
             // 
             // comboBoxEnvironments
             // 

@@ -73,10 +73,10 @@ namespace TEAM
             labelLnkCount.Text = @"0 Relationships";
             labelLsatCount.Text = @"0 Relationship context entities";
 
-            //  Load the grids from the repository
+            //  Load the grids from the repository.
             richTextBoxInformation.Clear();
 
-            // Load the data grids
+            // Load the data grids.
             PopulateDataObjectMappingGrid();
             PopulateDataItemMappingGrid();
             PopulatePhysicalModelGrid();
@@ -86,6 +86,7 @@ namespace TEAM
             richTextBoxInformation.AppendText($"{userFeedback}\r\n");
             TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"{userFeedback}"));
 
+            // Make sure the validators are good to go.
             AssertValidationDetails();
 
             // Ensure that the count of object types is updated based on whatever is in the data grid.
@@ -98,25 +99,16 @@ namespace TEAM
             {
                 richTextBoxInformation.AppendText($"{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
             }
+        }
 
-            try
-            {
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.Enabled].Width = 40;
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceConnection].Width = 90;
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].Width = 250;
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetConnection].Width = 90;
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].Width = 250;
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Width = 125;
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Width = 50;
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].Width = 50;
-            }
-            catch
-            {
-                // Do nothing.
-            }
-
-            //_dataGridViewDataObjects.AutoResizeColumns();
-            //GridAutoLayout();
+        /// <summary>
+        /// Cross-thread event to update text on main form.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void InformOnDataObjectsResult(object sender, ParseEventArgs e)
+        {
+            richTextBoxInformation.Text = e.Text;
         }
 
         /// <summary>
@@ -148,11 +140,6 @@ namespace TEAM
             
             tabPageDataObjectMapping.ResumeLayout(false);
             ((ISupportInitialize)(_dataGridViewDataObjects)).EndInit();
-        }
-
-        private void InformOnDataObjectsResult(object sender, ParseEventArgs e)
-        {
-            richTextBoxInformation.Text = e.Text;
         }
 
         /// <summary>
@@ -211,6 +198,9 @@ namespace TEAM
             ((ISupportInitialize)(_dataGridViewPhysicalModel)).EndInit();
         }
 
+        /// <summary>
+        /// Make sure the validators are prepared, files are available etc.
+        /// </summary>
         private void AssertValidationDetails()
         {
             // Make sure the validation information is available for this form.
@@ -350,14 +340,27 @@ namespace TEAM
 
             // Bind the data source.
             BindingSourceDataObjectMappings.DataSource = teamDataObjectMappings.DataTable;
-
             _dataGridViewDataObjects.DataSource = BindingSourceDataObjectMappings;
 
-            _dataGridViewDataObjects.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            _dataGridViewDataObjects.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
+            try
+            {
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.Enabled].Width = 50;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceConnection].Width = 100;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].Width = 340;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetConnection].Width = 100;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].Width = 340;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Width = 150;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Width = 80;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].Width = 70;
 
-            // Auto resize the grid.
-            GridAutoLayout(_dataGridViewDataObjects);
+                _dataGridViewDataObjects.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            }
+            catch
+            {
+                // Do nothing.
+            }
         }
 
         /// <summary>
@@ -371,15 +374,25 @@ namespace TEAM
             //Make sure the changes are seen as committed, so that changes can be detected later on.
             AttributeMapping.DataTable.AcceptChanges();
 
+            // Bind the data source.
             BindingSourceDataItemMappings.DataSource = AttributeMapping.DataTable;
-
             _dataGridViewDataItems.DataSource = BindingSourceDataItemMappings;
 
-            _dataGridViewDataItems.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            _dataGridViewDataItems.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
+            try
+            {
+                _dataGridViewDataItems.Columns[(int)DataItemMappingGridColumns.SourceDataObject].Width = 350;
+                _dataGridViewDataItems.Columns[(int)DataItemMappingGridColumns.SourceDataItem].Width = 350;
+                _dataGridViewDataItems.Columns[(int)DataItemMappingGridColumns.TargetDataObject].Width = 350;
+                _dataGridViewDataItems.Columns[(int)DataItemMappingGridColumns.TargetDataItem].Width = 350;
 
-            // Resize the grid
-            GridAutoLayout(_dataGridViewDataItems);
+                _dataGridViewDataItems.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+
+                _dataGridViewDataItems.Columns[(int)DataItemMappingGridColumns.TargetDataItem].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            }
+            catch
+            {
+                // Do nothing.
+            }
         }
 
         /// <summary>
@@ -393,30 +406,38 @@ namespace TEAM
             //Make sure the changes are seen as committed, so that changes can be detected later on.
             PhysicalModel.DataTable.AcceptChanges();
 
-            _dataGridViewPhysicalModel.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
-
+            // Bind the data source.
             BindingSourcePhysicalModel.DataSource = PhysicalModel.DataTable;
-
-            if (PhysicalModel.DataTable.Rows.Count > 0)
-            {
-                BindingSourcePhysicalModel.Sort =
-                    $"{PhysicalModelMappingMetadataColumns.databaseName} ASC, {PhysicalModelMappingMetadataColumns.schemaName} ASC, {PhysicalModelMappingMetadataColumns.tableName} ASC, {PhysicalModelMappingMetadataColumns.ordinalPosition} ASC";
-            }
-
-
-            // Data Grid View - set the column header names etc. for the data grid view.
             _dataGridViewPhysicalModel.DataSource = BindingSourcePhysicalModel;
 
-            _dataGridViewPhysicalModel.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            _dataGridViewPhysicalModel.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
+            // Only apply the sort if there is anything to sort - otherwise the binding source runs into an exception.
+            if (PhysicalModel.DataTable.Rows.Count > 0)
+            {
+                BindingSourcePhysicalModel.Sort = $"{PhysicalModelMappingMetadataColumns.databaseName} ASC, {PhysicalModelMappingMetadataColumns.schemaName} ASC, {PhysicalModelMappingMetadataColumns.tableName} ASC, {PhysicalModelMappingMetadataColumns.ordinalPosition} ASC";
+            }
 
-            // Sort
-            //DataView view = PhysicalModel.DataTable.DefaultView;
-            //view.Sort = $"{PhysicalModelMappingMetadataColumns.databaseName} ASC, {PhysicalModelMappingMetadataColumns.schemaName} ASC, {PhysicalModelMappingMetadataColumns.tableName} ASC, {PhysicalModelMappingMetadataColumns.ordinalPosition} ASC";
-            //BindingSourcePhysicalModel.DataSource = view;
+            try
+            {
+                _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.databaseName].Width = 120;
+                _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.schemaName].Width = 50;
+                _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.tableName].Width = 305;
+                _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.columnName].Width = 305;
+                _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.dataType].Width = 120;
+                _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.characterLength].Width = 60;
+                _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.numericPrecision].Width = 60;
+                _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.numericScale].Width = 60;
+                _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Width = 60;
+                _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Width = 60;
+                _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.multiActiveIndicator].Width = 60;
 
-            // Resize the grid
-            GridAutoLayout(_dataGridViewPhysicalModel);
+                _dataGridViewPhysicalModel.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+
+                _dataGridViewPhysicalModel.Columns[(int)PhysicalModelMappingMetadataColumns.multiActiveIndicator].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            }
+            catch
+            {
+                // Do nothing.
+            }
         }
 
         private DialogResult STAShowDialog(FileDialog dialog)
@@ -442,19 +463,22 @@ namespace TEAM
             }
         }
 
-        public static void GridAutoLayout()
+        public void GridAutoLayout()
         {
+            richTextBoxInformation.Clear();
             GridAutoLayout(_dataGridViewDataObjects);
             GridAutoLayout(_dataGridViewDataItems);
             GridAutoLayout(_dataGridViewPhysicalModel);
         }
 
-        private static void GridAutoLayout(DataGridView dataGridView)
+
+        private void GridAutoLayout(DataGridView dataGridView)
         {
+            richTextBoxInformation.Text += $"\r\nThe {dataGridView.Name} grid is being reformatted.";
             try
             {
-                dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-                dataGridView.Columns[dataGridView.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                //dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                //dataGridView.Columns[dataGridView.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
                 // Disable the auto size again (to enable manual resizing).
                 for (var i = 0; i < dataGridView.Columns.Count - 1; i++)
@@ -2817,7 +2841,7 @@ namespace TEAM
                         }
                     }
 
-                    GridAutoLayout(_dataGridViewDataItems);
+                    //GridAutoLayout(_dataGridViewDataItems);
                     richTextBoxInformation.AppendText($"The data item metadata has been loaded from file '{chosenFile}'.\r\n");
                     ContentCounter();
                 }
@@ -2924,7 +2948,7 @@ namespace TEAM
                     // Set the column header names
                     _dataGridViewDataObjects.DataSource = BindingSourceDataObjectMappings;
 
-                    GridAutoLayout(_dataGridViewDataObjects);
+                    //GridAutoLayout(_dataGridViewDataObjects);
                     ContentCounter();
 
                     richTextBoxInformation.AppendText($"The file '{dialog.FileName}' was loaded.\r\n");
@@ -3433,7 +3457,7 @@ namespace TEAM
                 ApplyDataGridViewFiltering();
 
                 // Resize the grid.
-                GridAutoLayout(_dataGridViewPhysicalModel);
+                //GridAutoLayout(_dataGridViewPhysicalModel);
             }
         }
 

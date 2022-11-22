@@ -19,9 +19,11 @@ namespace TEAM
             BorderStyle = BorderStyle.None;
 
             // Disable resizing for performance, will be enabled after binding.
+
             RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
 
             EditMode = DataGridViewEditMode.EditOnKeystroke;
 
