@@ -448,14 +448,21 @@ namespace TEAM
 
         private static void GridAutoLayout(DataGridView dataGridView)
         {
-            dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            dataGridView.Columns[dataGridView.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-
-            // Disable the auto size again (to enable manual resizing).
-            for (var i = 0; i < dataGridView.Columns.Count - 1; i++)
+            try
             {
-                dataGridView.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dataGridView.Columns[i].Width = dataGridView.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
+                dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                dataGridView.Columns[dataGridView.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+                // Disable the auto size again (to enable manual resizing).
+                for (var i = 0; i < dataGridView.Columns.Count - 1; i++)
+                {
+                    dataGridView.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    dataGridView.Columns[i].Width = dataGridView.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
+                }
+            }
+            catch
+            {
+                // Ignore it for now.
             }
         }
 
