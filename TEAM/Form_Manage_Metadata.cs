@@ -3329,7 +3329,6 @@ namespace TEAM
                 distinctTable.DefaultView.Sort = $"[{PhysicalModelMappingMetadataColumns.databaseName}] ASC, [{PhysicalModelMappingMetadataColumns.schemaName}] ASC, [{PhysicalModelMappingMetadataColumns.tableName}] ASC, [{PhysicalModelMappingMetadataColumns.ordinalPosition}] ASC";
 
                 // Inherit the filter. Can't apply to the binding source yet because changes will need to be saved first.
-
                 distinctTable.DefaultView.RowFilter = existingFilter;
 
                 _dataGridViewPhysicalModel.Invoke((Action)(() => _dataGridViewPhysicalModel.DataSource = distinctTable));
@@ -3357,6 +3356,9 @@ namespace TEAM
 
                 // Re-enable the checked list box.
                 checkedListBoxReverseEngineeringAreas.Enabled = true;
+
+                // Update the binding source
+                BindingSourcePhysicalModel.DataSource = _dataGridViewPhysicalModel.DataSource;
 
                 // Apply filtering.
                 ApplyDataGridViewFiltering();
