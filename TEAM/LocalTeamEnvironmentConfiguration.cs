@@ -21,6 +21,7 @@ namespace TEAM
             FileHandling.InitialisePath(FormBase.globalParameters.CorePath, TeamPathTypes.CorePath, FormBase.TeamEventLog);
             FileHandling.InitialisePath(FormBase.globalParameters.ScriptPath, TeamPathTypes.ScriptPath, FormBase.TeamEventLog);
             FileHandling.InitialisePath(FormBase.globalParameters.FilesPath, TeamPathTypes.FilesPath, FormBase.TeamEventLog);
+            FileHandling.InitialisePath(FormBase.globalParameters.SchemaPath, TeamPathTypes.SchemaPath, FormBase.TeamEventLog);
         }
 
         /// <summary>
