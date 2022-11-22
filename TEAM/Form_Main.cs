@@ -214,11 +214,17 @@ namespace TEAM
 
         private void openMetadataFormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (metadataToolStripMenuItem.Enabled == false)
-                return;
-            var t = new Thread(ThreadProcMetadata);
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
+            //if (_myMetadataForm == null)
+            //{
+                richTextBoxInformation.Text += "\r\nOpening the metadata form - please wait, this may take up to a minute for large sets.";
+                var t = new Thread(ThreadProcMetadata);
+                t.SetApartmentState(ApartmentState.STA);
+                t.Start();
+            //}
+            //else
+            //{
+            //    richTextBoxInformation.Text += "\r\nA metadata form is being opened, please wait for the operation to complete.";
+            //}
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -310,7 +316,7 @@ namespace TEAM
         }
 
         // Form_Manage_Metadata form
-        private FormManageMetadata _myMetadataForm;
+        private FormManageMetadata _myMetadataForm = new FormManageMetadata();
 
         [STAThread]
         public void ThreadProcMetadata()
@@ -332,6 +338,9 @@ namespace TEAM
 
                     //    _myMetadataForm = new FormManageMetadata(this);
                     //    Application.Run(_myMetadataForm);
+                    _myMetadataForm.Invoke((MethodInvoker)delegate { _myMetadataForm.BringToFront(); });
+                    _myMetadataForm.Invoke((MethodInvoker)delegate { _myMetadataForm.Focus(); });
+                    _myMetadataForm.Invoke((MethodInvoker)delegate { _myMetadataForm.Activate(); });
                 }
                 else
                 {

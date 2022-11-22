@@ -46,6 +46,11 @@ namespace TEAM
 
         private MetadataValidations metadataValidations;
 
+        public FormManageMetadata()
+        {
+            // Placeholder.
+        }
+
         /// <summary>
         /// Default constructor.
         /// </summary>
@@ -94,14 +99,21 @@ namespace TEAM
                 richTextBoxInformation.AppendText($"{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
             }
 
-            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.Enabled].Width = 40;
-            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceConnection].Width = 90;
-            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].Width = 250;
-            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetConnection].Width = 90;
-            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].Width = 250;
-            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Width = 125;
-            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Width = 50;
-            _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].Width = 50;
+            try
+            {
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.Enabled].Width = 40;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceConnection].Width = 90;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].Width = 250;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetConnection].Width = 90;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].Width = 250;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Width = 125;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Width = 50;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].Width = 50;
+            }
+            catch
+            {
+                // Do nothing.
+            }
 
             //_dataGridViewDataObjects.AutoResizeColumns();
             //GridAutoLayout();
