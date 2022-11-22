@@ -6,6 +6,8 @@ using System.Threading;
 using System.Drawing;
 using System.IO;
 using TEAM_Library;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TEAM
 {
@@ -14,6 +16,8 @@ namespace TEAM
         internal bool RevalidateFlag = true;
 
         Form_Alert _alertEventLog;
+
+        List<Thread> threads = new List<Thread>();
 
         public FormMain()
         {
@@ -214,17 +218,22 @@ namespace TEAM
 
         private void openMetadataFormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //if (_myMetadataForm == null)
-            //{
+            var thread = threads.FirstOrDefault(x => x.Name == "metadataThread");
+
+            if (thread != null)
+            {
+                richTextBoxInformation.Text += "\r\nA metadata form is being opened, please wait for the operation to complete.";
+            }
+            else
+            {
                 richTextBoxInformation.Text += "\r\nOpening the metadata form - please wait, this may take up to a minute for large sets.";
-                var t = new Thread(ThreadProcMetadata);
-                t.SetApartmentState(ApartmentState.STA);
-                t.Start();
-            //}
-            //else
-            //{
-            //    richTextBoxInformation.Text += "\r\nA metadata form is being opened, please wait for the operation to complete.";
-            //}
+            }
+
+            var t = new Thread(ThreadProcMetadata);
+            t.Name = "metadataThread";
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+            threads.Add(t);
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -238,6 +247,12 @@ namespace TEAM
         private void CloseMetadataForm(object sender, FormClosedEventArgs e)
         {
             _myMetadataForm = null;
+
+            var thread = threads.FirstOrDefault(x => x.Name == "metadataThread");
+            if (thread != null)
+            {
+                threads.Remove(thread);
+            }
         }
 
         private void CloseRepositoryForm(object sender, FormClosedEventArgs e)
@@ -330,14 +345,6 @@ namespace TEAM
             {
                 if (_myMetadataForm.InvokeRequired)
                 {
-                    // Do nothing.
-
-                    //    // Thread Error
-                    //    _myMetadataForm.Invoke((MethodInvoker)delegate { _myMetadataForm.Close(); });
-                    //    _myMetadataForm.FormClosed += CloseMetadataForm;
-
-                    //    _myMetadataForm = new FormManageMetadata(this);
-                    //    Application.Run(_myMetadataForm);
                     _myMetadataForm.Invoke((MethodInvoker)delegate { _myMetadataForm.BringToFront(); });
                     _myMetadataForm.Invoke((MethodInvoker)delegate { _myMetadataForm.Focus(); });
                     _myMetadataForm.Invoke((MethodInvoker)delegate { _myMetadataForm.Activate(); });
@@ -346,7 +353,7 @@ namespace TEAM
                 {
                     try
                     {
-                        // No invoke required - same thread
+                        // No invoke required - same thread.
                         _myMetadataForm.FormClosed += CloseMetadataForm;
                         _myMetadataForm = new FormManageMetadata(this);
 
@@ -354,7 +361,7 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($@"Cannot close the form that is open. The reported reason is: {ex.Message}");
+                        //MessageBox.Show($@"Cannot close the form that is open. The reported reason is: {ex.Message}");
                     }
                 }
             }

@@ -368,77 +368,84 @@ namespace TEAM
                     string sourceDataObjectName = Rows[e.RowIndex].Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString();
 
                     // Check what the 'parent' is in the data object mapping, for further evaluation. Return if nothing is found (this should be picked up by validation later on).
-                    var dataObjectGridViewRow = _dataGridViewDataObjects.Rows
-                        .Cast<DataGridViewRow>()
-                        .Where(r => !r.IsNewRow)
-                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetdataObjectName))
-                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
-                        .FirstOrDefault();
-
-                    if (dataObjectGridViewRow != null)
+                    try
                     {
-                        var targetConnectionId = dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                        TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
+                        var dataObjectGridViewRow = _dataGridViewDataObjects.Rows
+                            .Cast<DataGridViewRow>()
+                            .Where(r => !r.IsNewRow)
+                            .Where(r => r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetdataObjectName))
+                            .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
+                            .FirstOrDefault();
 
-                        KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair =
-                            MetadataHandling.GetFullyQualifiedDataObjectName(targetdataObjectName, targetConnection).FirstOrDefault();
-
-                        // Only the name (e.g. without the schema) should be evaluated.
-                        string targetDataObjectNonQualifiedName = targetDataObjectFullyQualifiedKeyValuePair.Value;
-
-                        if (targetDataObjectNonQualifiedName != null && selectedRow.IsNewRow == false)
+                        if (dataObjectGridViewRow != null)
                         {
-                            var presentationLayerLabelArray = Utility.SplitLabelIntoArray(TeamConfiguration.PresentationLayerLabels);
-                            var transformationLabelArray = Utility.SplitLabelIntoArray(TeamConfiguration.TransformationLabels);
+                            var targetConnectionId = dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
+                            TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
 
-                            // Hub
-                            if (targetDataObjectNonQualifiedName.IsDataVaultHub(TeamConfiguration))
+                            KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair =
+                                MetadataHandling.GetFullyQualifiedDataObjectName(targetdataObjectName, targetConnection).FirstOrDefault();
+
+                            // Only the name (e.g. without the schema) should be evaluated.
+                            string targetDataObjectNonQualifiedName = targetDataObjectFullyQualifiedKeyValuePair.Value;
+
+                            if (targetDataObjectNonQualifiedName != null && selectedRow.IsNewRow == false)
                             {
-                                cell.Style.BackColor = Color.CornflowerBlue;
-                            }
-                            // Link-Sat
-                            else if (targetDataObjectNonQualifiedName.IsDataVaultLinkSatellite(TeamConfiguration))
-                            {
-                                cell.Style.BackColor = Color.Gold;
-                            }
-                            // Context
-                            else if (targetDataObjectNonQualifiedName.IsDataVaultSatellite(TeamConfiguration))
-                            {
-                                cell.Style.BackColor = Color.Yellow;
-                            }
-                            // Natural Business Relationship
-                            else if (targetDataObjectNonQualifiedName.IsDataVaultLink(TeamConfiguration))
-                            {
-                                cell.Style.BackColor = Color.OrangeRed;
-                            }
-                            // PSA
-                            else if (targetDataObjectNonQualifiedName.IsPsa(TeamConfiguration))
-                            {
-                                cell.Style.BackColor = Color.AntiqueWhite;
-                            }
-                            // Staging
-                            else if ((TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(TeamConfiguration.StgTablePrefixValue)) ||
-                                     (TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(TeamConfiguration.StgTablePrefixValue)))
-                            {
-                                cell.Style.BackColor = Color.WhiteSmoke;
-                            }
-                            // Presentation Layer
-                            else if ((TeamConfiguration.TableNamingLocation == "Prefix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s))) ||
-                                     (TeamConfiguration.TableNamingLocation == "Suffix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s))))
-                            {
-                                cell.Style.BackColor = Color.Aquamarine;
-                            }
-                            // Derived objects / transformations
-                            else if ((TeamConfiguration.TableNamingLocation == "Prefix" && transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s))) ||
-                                     (TeamConfiguration.TableNamingLocation == "Suffix" && transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s))))
-                            {
-                                cell.Style.BackColor = Color.LightGreen;
-                            }
-                            else
-                            {
-                                // Catch
+                                var presentationLayerLabelArray = Utility.SplitLabelIntoArray(TeamConfiguration.PresentationLayerLabels);
+                                var transformationLabelArray = Utility.SplitLabelIntoArray(TeamConfiguration.TransformationLabels);
+
+                                // Hub
+                                if (targetDataObjectNonQualifiedName.IsDataVaultHub(TeamConfiguration))
+                                {
+                                    cell.Style.BackColor = Color.CornflowerBlue;
+                                }
+                                // Link-Sat
+                                else if (targetDataObjectNonQualifiedName.IsDataVaultLinkSatellite(TeamConfiguration))
+                                {
+                                    cell.Style.BackColor = Color.Gold;
+                                }
+                                // Context
+                                else if (targetDataObjectNonQualifiedName.IsDataVaultSatellite(TeamConfiguration))
+                                {
+                                    cell.Style.BackColor = Color.Yellow;
+                                }
+                                // Natural Business Relationship
+                                else if (targetDataObjectNonQualifiedName.IsDataVaultLink(TeamConfiguration))
+                                {
+                                    cell.Style.BackColor = Color.OrangeRed;
+                                }
+                                // PSA
+                                else if (targetDataObjectNonQualifiedName.IsPsa(TeamConfiguration))
+                                {
+                                    cell.Style.BackColor = Color.AntiqueWhite;
+                                }
+                                // Staging
+                                else if ((TeamConfiguration.TableNamingLocation == "Prefix" && targetDataObjectNonQualifiedName.StartsWith(TeamConfiguration.StgTablePrefixValue)) ||
+                                         (TeamConfiguration.TableNamingLocation == "Suffix" && targetDataObjectNonQualifiedName.EndsWith(TeamConfiguration.StgTablePrefixValue)))
+                                {
+                                    cell.Style.BackColor = Color.WhiteSmoke;
+                                }
+                                // Presentation Layer
+                                else if ((TeamConfiguration.TableNamingLocation == "Prefix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s))) ||
+                                         (TeamConfiguration.TableNamingLocation == "Suffix" && presentationLayerLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s))))
+                                {
+                                    cell.Style.BackColor = Color.Aquamarine;
+                                }
+                                // Derived objects / transformations
+                                else if ((TeamConfiguration.TableNamingLocation == "Prefix" && transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.StartsWith(s))) ||
+                                         (TeamConfiguration.TableNamingLocation == "Suffix" && transformationLabelArray.Any(s => targetDataObjectNonQualifiedName.EndsWith(s))))
+                                {
+                                    cell.Style.BackColor = Color.LightGreen;
+                                }
+                                else
+                                {
+                                    // Catch
+                                }
                             }
                         }
+                    }
+                    catch
+                    {
+                        // TBD.
                     }
                 }
             }
