@@ -3401,7 +3401,7 @@ namespace TEAM
                                           row[(int)PhysicalModelMappingMetadataColumns.columnName].ToString() == columnName)
                             .FirstOrDefault();
 
-                        if (sourceColumnsDataTable != null)
+                        if (sourceColumnsDataTable != null && sourceColumnsDataTable.RowState == DataRowState.Unchanged)
                         {
                             sourceColumnsDataTable.SetAdded();
                         }
