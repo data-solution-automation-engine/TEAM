@@ -397,8 +397,11 @@ namespace TEAM
 
             BindingSourcePhysicalModel.DataSource = PhysicalModel.DataTable;
 
-            BindingSourcePhysicalModel.Sort =
-                $"{PhysicalModelMappingMetadataColumns.databaseName} ASC, {PhysicalModelMappingMetadataColumns.schemaName} ASC, {PhysicalModelMappingMetadataColumns.tableName} ASC, {PhysicalModelMappingMetadataColumns.ordinalPosition} ASC";
+            if (PhysicalModel.DataTable.Rows.Count > 0)
+            {
+                BindingSourcePhysicalModel.Sort =
+                    $"{PhysicalModelMappingMetadataColumns.databaseName} ASC, {PhysicalModelMappingMetadataColumns.schemaName} ASC, {PhysicalModelMappingMetadataColumns.tableName} ASC, {PhysicalModelMappingMetadataColumns.ordinalPosition} ASC";
+            }
 
 
             // Data Grid View - set the column header names etc. for the data grid view.
@@ -3301,48 +3304,65 @@ namespace TEAM
             foreach (var checkedItem in checkedListBoxReverseEngineeringAreas.CheckedItems)
             {
                 var localConnectionObject = (KeyValuePair<TeamConnection, string>)checkedItem;
-                var filteredRows = GetFilteredDataObjectMappingDataTableRows();
 
-                var reverseEngineerResults = ReverseEngineerModelMetadata(localConnectionObject.Key, filteredRows);
-
-                if (reverseEngineerResults != null)
+                try
                 {
-                    
-                    interimDataTable.Merge(reverseEngineerResults);
-                }
+                    var filteredRows = GetFilteredDataObjectMappingDataTableRows();
 
-                ThreadHelper.SetText(this, richTextBoxInformation,$"\r\n - Completed {localConnectionObject.Key.ConnectionKey} at {DateTime.Now:HH:mm:ss tt}.");
+                    var reverseEngineerResults = ReverseEngineerModelMetadata(localConnectionObject.Key, filteredRows);
+
+                    if (reverseEngineerResults != null)
+                    {
+                        interimDataTable.Merge(reverseEngineerResults);
+                    }
+
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - Completed {localConnectionObject.Key.ConnectionKey} at {DateTime.Now:HH:mm:ss tt}.");
+                }
+                catch (Exception exception)
+                {
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - There was an issue reverse engineering '{localConnectionObject.Key.ConnectionKey}'. The error is {exception.Message}.");
+                }
             }
 
             // Flag as new row so it's detected by the save button.
-            foreach (DataRow row in interimDataTable.Rows)
+            if (interimDataTable != null && interimDataTable.Rows.Count > 0)
             {
-                row.SetAdded();
+                foreach (DataRow row in interimDataTable.Rows)
+                {
+                    row.SetAdded();
+                }
+
+                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Added new records completed at {DateTime.Now:HH:mm:ss tt}.");
+
+                completeDataTable.Merge(interimDataTable);
             }
 
-            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Added new records completed at {DateTime.Now:HH:mm:ss tt}.");
-
-            completeDataTable.Merge(interimDataTable);
             ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Merge of data tables completed at {DateTime.Now:HH:mm:ss tt}.");
 
             // De-duplication.
             DataTable distinctTable = null;
-
-            if (completeDataTable.Rows.Count > 0)
+            try
             {
-                distinctTable = completeDataTable.AsEnumerable()
-                    .GroupBy(row => new
-                    {
-                        databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.databaseName.ToString()),
-                        schemaName = row.Field<string>(PhysicalModelMappingMetadataColumns.schemaName.ToString()),
-                        tableName = row.Field<string>(PhysicalModelMappingMetadataColumns.tableName.ToString()),
-                        columnName = row.Field<string>(PhysicalModelMappingMetadataColumns.columnName.ToString()),
-                    })
-                    .Select(y => y.First())
-                    .CopyToDataTable();
-            }
+                if (completeDataTable != null && completeDataTable.Rows.Count > 0)
+                {
+                    distinctTable = completeDataTable.AsEnumerable()
+                        .GroupBy(row => new
+                        {
+                            databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.databaseName.ToString()),
+                            schemaName = row.Field<string>(PhysicalModelMappingMetadataColumns.schemaName.ToString()),
+                            tableName = row.Field<string>(PhysicalModelMappingMetadataColumns.tableName.ToString()),
+                            columnName = row.Field<string>(PhysicalModelMappingMetadataColumns.columnName.ToString()),
+                        })
+                        .Select(y => y.First())
+                        .CopyToDataTable();
+                }
 
-            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Deduplication completed completed at {DateTime.Now:HH:mm:ss tt}.");
+                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Deduplication completed completed at {DateTime.Now:HH:mm:ss tt}.");
+            }
+            catch (Exception exception)
+            {
+                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - There was an issue deduplicating the result set. The error is {exception.Message}.");
+            }
 
             // Sort and display the results on the data grid.
             if (distinctTable != null)
@@ -3385,7 +3405,7 @@ namespace TEAM
                 BindingSourcePhysicalModel.DataSource = _dataGridViewPhysicalModel.DataSource;
 
                 // And then we have to re-set the changes so that they can be seen as saved.
-                if (tempChanges.Rows.Count > 0)
+                if (tempChanges != null && tempChanges.Rows.Count > 0)
                 {
                     foreach (DataRow changeRow in tempChanges.Rows)
                     {
