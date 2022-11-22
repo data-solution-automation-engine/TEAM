@@ -3425,12 +3425,12 @@ namespace TEAM
                 // At this stage, the changes can be identified.
                 var tempChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
 
-                // Update the binding source. This can't be invoked unfortunately, hence this workaround.
-                BindingSourcePhysicalModel.DataSource = _dataGridViewPhysicalModel.DataSource;
-
                 // And then we have to re-set the changes so that they can be seen as saved.
                 if (tempChanges != null && tempChanges.Rows.Count > 0)
                 {
+                    // Update the binding source. This can't be invoked unfortunately, hence this workaround.
+                    BindingSourcePhysicalModel.DataSource = _dataGridViewPhysicalModel.DataSource;
+
                     foreach (DataRow changeRow in tempChanges.Rows)
                     {
                         var databaseName = changeRow[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString();
@@ -3450,14 +3450,10 @@ namespace TEAM
                             sourceColumnsDataTable.SetAdded();
                         }
                     }
-
                 }
 
                 // Apply filtering.
                 ApplyDataGridViewFiltering();
-
-                // Resize the grid.
-                //GridAutoLayout(_dataGridViewPhysicalModel);
             }
         }
 
@@ -3516,6 +3512,12 @@ namespace TEAM
             {
                 MessageBox.Show(@"The reverse engineer process is running, please wait for this to be completed before changing any settings.", @"Process is running", MessageBoxButtons.OK);
             }
+        }
+
+        private void richTextBoxInformation_TextChanged(object sender, EventArgs e)
+        {
+            richTextBoxInformation.SelectionStart = richTextBoxInformation.Text.Length;
+            richTextBoxInformation.ScrollToCaret();
         }
     }
 }

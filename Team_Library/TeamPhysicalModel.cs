@@ -97,6 +97,7 @@ namespace TEAM_Library
             if (!File.Exists(fileName))
             {
                 EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, "No Json Table Mapping file was found."));
+                DataTable.Clear();
             }
             else
             {

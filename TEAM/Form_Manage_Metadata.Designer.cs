@@ -318,6 +318,7 @@ namespace TEAM
             this.richTextBoxInformation.Size = new System.Drawing.Size(1122, 69);
             this.richTextBoxInformation.TabIndex = 2;
             this.richTextBoxInformation.Text = "";
+            this.richTextBoxInformation.TextChanged += new System.EventHandler(this.richTextBoxInformation_TextChanged);
             // 
             // menuStripMetadata
             // 
