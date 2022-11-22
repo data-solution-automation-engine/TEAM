@@ -339,7 +339,6 @@ namespace TEAM
             // Bind the data source.
             BindingSourceDataObjectMappings.DataSource = teamDataObjectMappings.DataTable;
 
-            // Assign the data grid view to the data source.
             _dataGridViewDataObjects.DataSource = BindingSourceDataObjectMappings;
 
             _dataGridViewDataObjects.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -362,7 +361,6 @@ namespace TEAM
 
             BindingSourceDataItemMappings.DataSource = AttributeMapping.DataTable;
 
-            // Set the column header names.
             _dataGridViewDataItems.DataSource = BindingSourceDataItemMappings;
 
             _dataGridViewDataItems.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -386,6 +384,10 @@ namespace TEAM
             _dataGridViewPhysicalModel.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
 
             BindingSourcePhysicalModel.DataSource = PhysicalModel.DataTable;
+
+            BindingSourcePhysicalModel.Sort =
+                $"{PhysicalModelMappingMetadataColumns.databaseName} ASC, {PhysicalModelMappingMetadataColumns.schemaName} ASC, {PhysicalModelMappingMetadataColumns.tableName} ASC, {PhysicalModelMappingMetadataColumns.ordinalPosition} ASC";
+
 
             // Data Grid View - set the column header names etc. for the data grid view.
             _dataGridViewPhysicalModel.DataSource = BindingSourcePhysicalModel;
@@ -3357,8 +3359,36 @@ namespace TEAM
                 // Re-enable the checked list box.
                 checkedListBoxReverseEngineeringAreas.Enabled = true;
 
-                // Update the binding source
+                // At this stage, the changes can be identified.
+                var tempChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
+
+                // Update the binding source. This can't be invoked unfortunately, hence this workaround.
                 BindingSourcePhysicalModel.DataSource = _dataGridViewPhysicalModel.DataSource;
+
+                // And then we have to re-set the changes so that they can be seen as saved.
+                if (tempChanges.Rows.Count > 0)
+                {
+                    foreach (DataRow changeRow in tempChanges.Rows)
+                    {
+                        var databaseName = changeRow[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString();
+                        var schemaName = changeRow[(int)PhysicalModelMappingMetadataColumns.schemaName].ToString();
+                        var tableName = changeRow[(int)PhysicalModelMappingMetadataColumns.tableName].ToString();
+                        var columnName = changeRow[(int)PhysicalModelMappingMetadataColumns.columnName].ToString();
+
+                        var sourceColumnsDataTable = ((DataTable)BindingSourcePhysicalModel.DataSource).AsEnumerable()
+                            .Where(row => row[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString() == databaseName &&
+                                          row[(int)PhysicalModelMappingMetadataColumns.schemaName].ToString() == schemaName &&
+                                          row[(int)PhysicalModelMappingMetadataColumns.tableName].ToString() == tableName &&
+                                          row[(int)PhysicalModelMappingMetadataColumns.columnName].ToString() == columnName)
+                            .FirstOrDefault();
+
+                        if (sourceColumnsDataTable != null)
+                        {
+                            sourceColumnsDataTable.SetAdded();
+                        }
+                    }
+
+                }
 
                 // Apply filtering.
                 ApplyDataGridViewFiltering();
