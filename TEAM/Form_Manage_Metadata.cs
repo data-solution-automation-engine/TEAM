@@ -3066,15 +3066,23 @@ namespace TEAM
 
             if (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
             {
-                string localMessage = "You have unsaved edits in the Data Item (attribute mapping) grid, please save your work before running the auto map.";
+                string localMessage = "You have unsaved edits in the Data Item (attribute mapping) grid, please save your work before running the auto mapper.";
                 MessageBox.Show(localMessage);
                 richTextBoxInformation.AppendText(localMessage);
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, localMessage));
             }
             else
             {
+                // Get the datatable for the physical model.
+                DataTable physicalModelDataTable = (DataTable)BindingSourcePhysicalModel.DataSource;
+
+                var exceptionColumns = TeamConfiguration.GetExceptionColumns();
+
                 // Iterate across all Data Object Mappings, to see if there are corresponding Data Item Mappings.
-                foreach (DataGridViewRow dataObjectRow in _dataGridViewDataObjects.Rows)
+                var filteredDataObjectMappingGridViewRows = GetFilteredDataObjectMappingDataGridViewRows();
+
+
+                foreach (DataGridViewRow dataObjectRow in filteredDataObjectMappingGridViewRows)
                 {
                     // Skip if the row is a new row.
                     if (dataObjectRow.IsNewRow)
@@ -3082,27 +3090,29 @@ namespace TEAM
                         return;
                     }
 
-                    // Source Data Object details
-                    DataObject sourceDataObject = (DataObject)dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value;
+                    #region Source Data Object
 
                     var sourceConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
                     TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionId, TeamConfiguration, TeamEventLog);
 
+                    DataObject sourceDataObject = (DataObject)dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value;
                     var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObject.name, sourceConnection).FirstOrDefault();
 
-                    // Get the source details from the database
-                    string tableFilterObjectsSource = $"OBJECT_ID(N'[{sourceConnection.DatabaseServer.DatabaseName}].{sourceDataObjectFullyQualifiedKeyValuePair.Key}.{sourceDataObjectFullyQualifiedKeyValuePair.Value}')";
+                    var sourceColumnsDataTable = physicalModelDataTable.AsEnumerable()
+                        .Where(row => row[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString() == sourceConnection.DatabaseServer.DatabaseName &&
+                               row[(int)PhysicalModelMappingMetadataColumns.schemaName].ToString() == sourceDataObjectFullyQualifiedKeyValuePair.Key &&
+                               row[(int)PhysicalModelMappingMetadataColumns.tableName].ToString() == sourceDataObjectFullyQualifiedKeyValuePair.Value)
+                        .CopyToDataTable();
 
-                    var localSourceSqlConnection = new SqlConnection {ConnectionString = sourceConnection.CreateSqlServerConnectionString(false)};
-                    var localSourceQuery = TeamPhysicalModel.PhysicalModelQuery(sourceConnection.DatabaseServer.DatabaseName, tableFilterObjectsSource);
-
-                    DataTable localSourceDatabaseDataTable = Utility.GetDataTable(ref localSourceSqlConnection, localSourceQuery);
-
-                    if (localSourceDatabaseDataTable == null || localSourceDatabaseDataTable.Rows.Count == 0)
+                    if (sourceColumnsDataTable != null && sourceColumnsDataTable.Rows.Count == 0)
                     {
-                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"Source physical model structures could not be imported."));
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The source physical model structures could not be queried."));
                         return;
                     }
+
+                    #endregion
+
+                    #region Target Data Object
 
                     // Target Data Object details
                     DataObject targetDataObject = (DataObject)dataObjectRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
@@ -3112,33 +3122,35 @@ namespace TEAM
 
                     var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.name, targetConnection).FirstOrDefault();
 
-                    // Get the target details from the database
-                    string tableFilterObjectsTarget = $"OBJECT_ID(N'[{targetConnection.DatabaseServer.DatabaseName}].{targetDataObjectFullyQualifiedKeyValuePair.Key}.{targetDataObjectFullyQualifiedKeyValuePair.Value}')";
+                    var targetColumnDataTable = physicalModelDataTable.AsEnumerable()
+                        .Where(row => row[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString() == targetConnection.DatabaseServer.DatabaseName &&
+                                      row[(int)PhysicalModelMappingMetadataColumns.schemaName].ToString() == targetDataObjectFullyQualifiedKeyValuePair.Key &&
+                                      row[(int)PhysicalModelMappingMetadataColumns.tableName].ToString() == targetDataObjectFullyQualifiedKeyValuePair.Value)
+                        .CopyToDataTable();
 
-                    var localTargetSqlConnection = new SqlConnection {ConnectionString = targetConnection.CreateSqlServerConnectionString(false)};
-                    var localTargetQuery = TeamPhysicalModel.PhysicalModelQuery(targetConnection.DatabaseServer.DatabaseName, tableFilterObjectsTarget);
-
-                    DataTable localTargetDatabaseDataTable = Utility.GetDataTable(ref localTargetSqlConnection, localTargetQuery);
-
-                    if (localTargetDatabaseDataTable == null || localTargetDatabaseDataTable.Rows.Count == 0)
+                    if (targetColumnDataTable != null && targetColumnDataTable.Rows.Count == 0)
                     {
-                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"Target physical model structures could not be imported."));
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The target physical model structures could not be queried."));
                         return;
                     }
+
+                    #endregion
 
                     List<TeamDataItemMappingRow> localDataItemMappings = new List<TeamDataItemMappingRow>();
 
                     // For each source Data Object, check if there is a matching target
-                    foreach (DataRow sourceDataObjectRow in localSourceDatabaseDataTable.Rows)
+                    foreach (DataRow sourceDataObjectRow in sourceColumnsDataTable.Rows)
                     {
                         // Do the lookup in the target data table
-                        var results = from localRow in localTargetDatabaseDataTable.AsEnumerable()
-                            where localRow.Field<string>("COLUMN_NAME") == sourceDataObjectRow["COLUMN_NAME"].ToString()
+                        var results = from localRow in targetColumnDataTable.AsEnumerable()
+                            where localRow.Field<string>(PhysicalModelMappingMetadataColumns.columnName.ToString()) == sourceDataObjectRow[PhysicalModelMappingMetadataColumns.columnName.ToString()].ToString()
                             select localRow;
 
                         if (results.FirstOrDefault() != null)
                         {
                             // There is a match and it's not a standard attribute.
+
+                            var sourceColumn = sourceDataObjectRow[PhysicalModelMappingMetadataColumns.columnName.ToString()].ToString();
 
                             string[] exclusionAttribute =
                             {
@@ -3157,16 +3169,16 @@ namespace TEAM
                                 TeamConfiguration.AlternativeSatelliteLoadDateTimeAttribute,
                             };
 
-                            if (!exclusionAttribute.Contains(sourceDataObjectRow["COLUMN_NAME"].ToString()))
+                            if (!exclusionAttribute.Contains(sourceColumn) && !exceptionColumns.Contains(sourceColumn))
                             {
                                 var localMapping = new TeamDataItemMappingRow
                                 {
                                     sourceDataObjectName = sourceDataObject.name,
                                     sourceDataObjectConnectionId = sourceConnectionId,
-                                    sourceDataItemName = sourceDataObjectRow["COLUMN_NAME"].ToString(),
+                                    sourceDataItemName = sourceDataObjectRow[PhysicalModelMappingMetadataColumns.columnName.ToString()].ToString(),
                                     targetDataObjectName = targetDataObject.name,
                                     targetDataObjectConnectionId = targetConnectionId,
-                                    targetDataItemName = sourceDataObjectRow["COLUMN_NAME"].ToString() // Same as source, as it's a direct match on this value.
+                                    targetDataItemName = sourceDataObjectRow[PhysicalModelMappingMetadataColumns.columnName.ToString()].ToString() // Same as source, as it's a direct match on this value.
                                 };
 
                                 localDataItemMappings.Add(localMapping);
