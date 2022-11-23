@@ -52,11 +52,15 @@
             this.groupBoxConnectivity = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBoxDataObjectConnections = new System.Windows.Forms.GroupBox();
+            this.checkBoxAddParentDataObject = new System.Windows.Forms.CheckBox();
+            this.checkBoxAddDrivingKeyAsExtension = new System.Windows.Forms.CheckBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.menuStripMainMenu.SuspendLayout();
             this.groupBoxDataItems.SuspendLayout();
             this.groupBoxConnectivity.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBoxDataObjectConnections.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStripMainMenu
@@ -125,7 +129,7 @@
             this.groupBoxDataItems.Controls.Add(this.checkBoxDataItemDataType);
             this.groupBoxDataItems.Location = new System.Drawing.Point(238, 27);
             this.groupBoxDataItems.Name = "groupBoxDataItems";
-            this.groupBoxDataItems.Size = new System.Drawing.Size(226, 106);
+            this.groupBoxDataItems.Size = new System.Drawing.Size(226, 121);
             this.groupBoxDataItems.TabIndex = 6;
             this.groupBoxDataItems.TabStop = false;
             this.groupBoxDataItems.Text = "Data Items";
@@ -267,18 +271,19 @@
             this.groupBoxConnectivity.Controls.Add(this.checkBoxAddType);
             this.groupBoxConnectivity.Location = new System.Drawing.Point(12, 27);
             this.groupBoxConnectivity.Name = "groupBoxConnectivity";
-            this.groupBoxConnectivity.Size = new System.Drawing.Size(220, 106);
+            this.groupBoxConnectivity.Size = new System.Drawing.Size(220, 121);
             this.groupBoxConnectivity.TabIndex = 29;
             this.groupBoxConnectivity.TabStop = false;
             this.groupBoxConnectivity.Text = "Data Objects";
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBoxAddParentDataObject);
             this.groupBox1.Controls.Add(this.checkBoxNextUpDataObjects);
             this.groupBox1.Controls.Add(this.checkBoxAddMetadataConnection);
             this.groupBox1.Location = new System.Drawing.Point(470, 27);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(220, 106);
+            this.groupBox1.Size = new System.Drawing.Size(220, 121);
             this.groupBox1.TabIndex = 30;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Related Data Objects";
@@ -287,18 +292,58 @@
             // 
             this.groupBoxDataObjectConnections.Controls.Add(this.checkBoxDatabaseExtension);
             this.groupBoxDataObjectConnections.Controls.Add(this.checkBoxSchemaExtension);
-            this.groupBoxDataObjectConnections.Location = new System.Drawing.Point(12, 139);
+            this.groupBoxDataObjectConnections.Location = new System.Drawing.Point(12, 154);
             this.groupBoxDataObjectConnections.Name = "groupBoxDataObjectConnections";
-            this.groupBoxDataObjectConnections.Size = new System.Drawing.Size(220, 76);
+            this.groupBoxDataObjectConnections.Size = new System.Drawing.Size(220, 107);
             this.groupBoxDataObjectConnections.TabIndex = 31;
             this.groupBoxDataObjectConnections.TabStop = false;
             this.groupBoxDataObjectConnections.Text = "Connections";
+            // 
+            // checkBoxAddParentDataObject
+            // 
+            this.checkBoxAddParentDataObject.AutoSize = true;
+            this.checkBoxAddParentDataObject.Checked = true;
+            this.checkBoxAddParentDataObject.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxAddParentDataObject.Location = new System.Drawing.Point(6, 65);
+            this.checkBoxAddParentDataObject.Name = "checkBoxAddParentDataObject";
+            this.checkBoxAddParentDataObject.Size = new System.Drawing.Size(177, 17);
+            this.checkBoxAddParentDataObject.TabIndex = 27;
+            this.checkBoxAddParentDataObject.Text = "Add \'parent\' related Data Object";
+            this.toolTipJsonExtractConfiguration.SetToolTip(this.checkBoxAddParentDataObject, "This option will retrieve the related data objects that conceptually are the pare" +
+        "nt, and add these as relatedDataObjects to the output Json file.\r\n\r\nThe parent i" +
+        "s the entity the object references to.");
+            this.checkBoxAddParentDataObject.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxAddDrivingKeyAsExtension
+            // 
+            this.checkBoxAddDrivingKeyAsExtension.AutoSize = true;
+            this.checkBoxAddDrivingKeyAsExtension.Checked = true;
+            this.checkBoxAddDrivingKeyAsExtension.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxAddDrivingKeyAsExtension.Location = new System.Drawing.Point(6, 19);
+            this.checkBoxAddDrivingKeyAsExtension.Name = "checkBoxAddDrivingKeyAsExtension";
+            this.checkBoxAddDrivingKeyAsExtension.Size = new System.Drawing.Size(165, 17);
+            this.checkBoxAddDrivingKeyAsExtension.TabIndex = 28;
+            this.checkBoxAddDrivingKeyAsExtension.Text = "Add Driving Key as Extension";
+            this.toolTipJsonExtractConfiguration.SetToolTip(this.checkBoxAddDrivingKeyAsExtension, "This option will add an extension to the business keys segment to add the parent " +
+        "key as extension value.");
+            this.checkBoxAddDrivingKeyAsExtension.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.checkBoxAddDrivingKeyAsExtension);
+            this.groupBox2.Location = new System.Drawing.Point(238, 154);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(226, 107);
+            this.groupBox2.TabIndex = 32;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Data Vault";
             // 
             // FormJsonConfiguration
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(701, 485);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBoxDataObjectConnections);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBoxConnectivity);
@@ -321,6 +366,8 @@
             this.groupBox1.PerformLayout();
             this.groupBoxDataObjectConnections.ResumeLayout(false);
             this.groupBoxDataObjectConnections.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -349,5 +396,8 @@
         private System.Windows.Forms.CheckBox checkBoxDataItemAddParentDataObject;
         private System.Windows.Forms.CheckBox checkBoxDataObjectDataItems;
         private System.Windows.Forms.GroupBox groupBoxDataObjectConnections;
+        private System.Windows.Forms.CheckBox checkBoxAddParentDataObject;
+        private System.Windows.Forms.CheckBox checkBoxAddDrivingKeyAsExtension;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }

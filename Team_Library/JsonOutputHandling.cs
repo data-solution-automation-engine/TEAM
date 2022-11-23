@@ -64,11 +64,11 @@ namespace TEAM_Library
         public static DataObject SetDataObjectDataItems(DataObject dataObject, TeamConnection teamConnection, TeamConfiguration teamConfiguration, JsonExportSetting jsonExportSetting, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
         {
             // Remove the list if the setting is disabled.
-            if (!jsonExportSetting.IsAddDataObjectDataItems())
+            if (!jsonExportSetting.IsAddDataItemsToDataObject())
             {
                 dataObject.dataItems = null;
             }
-            else if (jsonExportSetting.IsAddDataObjectDataItems())
+            else if (jsonExportSetting.IsAddDataItemsToDataObject())
             {
                 var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject.name, teamConnection).FirstOrDefault();
 
@@ -108,7 +108,7 @@ namespace TEAM_Library
         /// <returns></returns>
         public static DataItem SetDataItemDataType(DataItem dataItem, DataGridViewRow physicalModelRow, JsonExportSetting jsonExportSetting)
         {
-            if (!jsonExportSetting.IsAddDataItemDataTypes())
+            if (!jsonExportSetting.IsAddDataTypeToDataItem())
             {
                 // Remove any data type details.
                 dataItem.characterLength = null;
@@ -119,7 +119,7 @@ namespace TEAM_Library
                 dataItem.isPrimaryKey = null;
                 dataItem.isHardCodedValue = null;
             }
-            else if (jsonExportSetting.IsAddDataItemDataTypes())
+            else if (jsonExportSetting.IsAddDataTypeToDataItem())
             {
                 if (physicalModelRow != null)
                 {
@@ -166,7 +166,7 @@ namespace TEAM_Library
         /// <returns></returns>
         public static DataItem SetDataItemMappingDataType(DataItem dataItem, DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
         {
-            if (!jsonExportSetting.IsAddDataItemDataTypes())
+            if (!jsonExportSetting.IsAddDataTypeToDataItem())
             {
                 // Remove any data type details.
                 dataItem.characterLength = null;
@@ -177,7 +177,7 @@ namespace TEAM_Library
                 dataItem.isPrimaryKey = null;
                 dataItem.isHardCodedValue = null;
             }
-            else if (jsonExportSetting.IsAddDataItemDataTypes())
+            else if (jsonExportSetting.IsAddDataTypeToDataItem())
             {
                 var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject.name, teamConnection).FirstOrDefault();
 
@@ -279,7 +279,7 @@ namespace TEAM_Library
 
             #region Add related data object(s)
 
-            if (jsonExportSetting.IsAddRelatedDataObjectsAsRelatedDataObject())
+            if (jsonExportSetting.IsAddNextUpDataObjectsAsRelatedDataObject())
             {
                 relatedDataObjects.AddRange(GetLineageRelatedDataObjectList(dataObjectName, dataObjectMappingGrid, jsonExportSetting, teamConfiguration,eventLog, dataGridViewRowsPhysicalModel));
             }
@@ -301,7 +301,7 @@ namespace TEAM_Library
         {
             List<DataObject> dataObjectList = new List<DataObject>();
 
-            if (jsonExportSetting.AddRelatedDataObjectsAsRelatedDataObject == "True")
+            if (jsonExportSetting.AddNextUpDataObjectsAsRelatedDataObject == "True")
             {
                 var dataObjectMappings = dataObjectDataGrid.Rows.Cast<DataGridViewRow>()
                     .Where(x => !x.IsNewRow)
@@ -333,11 +333,11 @@ namespace TEAM_Library
         public static DataItem SetParentDataObjectToDataItem(DataItem dataItem, DataObject dataObject, JsonExportSetting jsonExportSetting)
         {
             // If the setting is disabled, remove the data object from the data item
-            if (!jsonExportSetting.IsAddParentDataObject())
+            if (!jsonExportSetting.IsAddParentDataObjectToDataItem())
             {
                 dataItem.dataObject = null;
             }
-            else if (jsonExportSetting.IsAddParentDataObject())
+            else if (jsonExportSetting.IsAddParentDataObjectToDataItem())
             {
                 // Create a separate, smaller / limited, data object to avoid any circular dependencies when assigning the Data Object to the Data Item.
                 var localDataObject = new DataObject
@@ -415,7 +415,7 @@ namespace TEAM_Library
         {
             // Remove an existing classification, if indeed existing.
             // If no classifications exists, do nothing. Otherwise check if one needs removal.
-            if (!jsonExportSetting.IsAddDatabaseAsExtension())
+            if (!jsonExportSetting.IsAddDatabaseAsExtensionToConnection())
             {
                 if (dataObject.dataObjectConnection != null && dataObject.dataObjectConnection.extensions != null)
                 {
@@ -441,7 +441,7 @@ namespace TEAM_Library
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddDatabaseAsExtension() && dataObject.dataObjectConnection != null)
+            else if (jsonExportSetting.IsAddDatabaseAsExtensionToConnection() && dataObject.dataObjectConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
                 List<Extension> returnExtensions = new List<Extension>();
@@ -481,7 +481,7 @@ namespace TEAM_Library
         {
             // Remove an existing classification, if indeed existing.
             // If no classifications exists, do nothing. Otherwise check if one needs removal.
-            if (!jsonExportSetting.IsAddDatabaseAsExtension())
+            if (!jsonExportSetting.IsAddDatabaseAsExtensionToConnection())
             {
                 if (dataQuery.dataQueryConnection != null && dataQuery.dataQueryConnection.extensions != null)
                 {
@@ -507,7 +507,7 @@ namespace TEAM_Library
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddDatabaseAsExtension() && dataQuery.dataQueryConnection != null)
+            else if (jsonExportSetting.IsAddDatabaseAsExtensionToConnection() && dataQuery.dataQueryConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
                 List<Extension> returnExtensions = new List<Extension>();
@@ -553,7 +553,7 @@ namespace TEAM_Library
         {
             // Remove an existing extension, if indeed existing.
             // If no extensions exists, do nothing. Otherwise check if one needs removal.
-            if (!jsonExportSetting.IsAddSchemaAsExtension())
+            if (!jsonExportSetting.IsAddSchemaAsExtensionToConnection())
             {
                 if (dataObject.dataObjectConnection?.extensions != null)
                 {
@@ -579,7 +579,7 @@ namespace TEAM_Library
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddSchemaAsExtension() && dataObject.dataObjectConnection != null)
+            else if (jsonExportSetting.IsAddSchemaAsExtensionToConnection() && dataObject.dataObjectConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
                 List<Extension> returnExtensions = new List<Extension>();
@@ -621,7 +621,7 @@ namespace TEAM_Library
         {
             // Remove an existing classification, if indeed existing.
             // If no classifications exists, do nothing. Otherwise check if one needs removal.
-            if (!jsonExportSetting.IsAddSchemaAsExtension())
+            if (!jsonExportSetting.IsAddSchemaAsExtensionToConnection())
             {
                 if (dataQuery.dataQueryConnection != null && dataQuery.dataQueryConnection.extensions != null)
                 {
@@ -647,7 +647,7 @@ namespace TEAM_Library
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddSchemaAsExtension() && dataQuery.dataQueryConnection != null)
+            else if (jsonExportSetting.IsAddSchemaAsExtensionToConnection() && dataQuery.dataQueryConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
                 List<Extension> returnExtensions = new List<Extension>();
@@ -705,7 +705,7 @@ namespace TEAM_Library
                 dataObjectType = GetDataObjectType(dataObject.name, "", teamConfiguration).ToString();
             }
 
-            if (!jsonExportSetting.IsAddTypeAsClassification())
+            if (!jsonExportSetting.IsAddTypeAsClassificationToDataObject())
             {
                 // Remove an existing classification, if indeed existing.
                 // If no classifications exists, do nothing. Otherwise check if one needs removal.

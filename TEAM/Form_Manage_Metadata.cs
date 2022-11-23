@@ -3425,7 +3425,7 @@ namespace TEAM
                 // At this stage, the changes can be identified.
                 var tempChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
 
-                // And then we have to re-set the changes so that they can be seen as saved.
+                // And then we have to re-set the changes in the full data table, so that they can be seen as saved.
                 if (tempChanges != null && tempChanges.Rows.Count > 0)
                 {
                     // Update the binding source. This can't be invoked unfortunately, hence this workaround.
