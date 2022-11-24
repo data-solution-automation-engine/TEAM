@@ -1369,13 +1369,14 @@ namespace TEAM
             }
             catch (Exception exception)
             {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the next up data object as a related data object.. The message is: {exception.Message}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the next up data object as a related data object. The message is: {exception.Message}."));
             }
             
             // Parent data objects.
             try
             {
                 var parentRelatedDataObjects = JsonOutputHandling.GetParentRelatedDataObjectList(targetDataObjectName, dataObjectMapping.sourceDataObjects[0].name, dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString(), dataGridViewRowsDataObjects, JsonExportSetting, TeamConfiguration);
+
                 if (parentRelatedDataObjects != null && parentRelatedDataObjects.Count > 0)
                 {
                     relatedDataObjects.AddRange(parentRelatedDataObjects);
@@ -1383,9 +1384,8 @@ namespace TEAM
             }
             catch (Exception exception)
             {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the parent data object as a related data object.. The message is: {exception.Message}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the parent data object as a related data object. The message is: {exception.Message}."));
             }
-
 
             if (relatedDataObjects.Count > 0)
             {
@@ -1633,11 +1633,12 @@ namespace TEAM
                 var businessKeyDefinition = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString();
                 var sourceDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value.ToString();
                 var drivingKeyValue = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value.ToString();
-                JsonOutputHandling.SetBusinessKeys(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, targetConnection, TeamConfiguration, drivingKeyValue, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, TeamEventLog);
+
+                JsonOutputHandling.SetBusinessKeys(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, targetConnection, JsonExportSetting, TeamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, TeamEventLog);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                // Catch TBD
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the business key definition. The message is: {exception.Message}."));
             }
 
             #endregion

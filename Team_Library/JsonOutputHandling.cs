@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using DataWarehouseAutomation;
+using Microsoft.SqlServer.Management.Smo;
 using static TEAM_Library.MetadataHandling;
 using DataObject = DataWarehouseAutomation.DataObject;
 using Extension = DataWarehouseAutomation.Extension;
@@ -279,9 +280,11 @@ namespace TEAM_Library
         /// Get the 'parent' data object for a given data object, i.e. the object that is referenced to in the data model.
         /// </summary>
         /// <param name="targetDataObjectName"></param>
+        /// <param name="businessKeyDefinition"></param>
         /// <param name="dataObjectDataGridViewRows"></param>
         /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
+        /// <param name="sourceDataObjectName"></param>
         /// <returns></returns>
         public static List<DataObject> GetParentRelatedDataObjectList(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, List<DataGridViewRow> dataObjectDataGridViewRows, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
         {
@@ -289,21 +292,15 @@ namespace TEAM_Library
 
             if (jsonExportSetting.AddParentDataObjectAsRelatedDataObject == "True")
             {
-                // Get the type first, because what the parent is depends on the type.
-                var dataObjectType = GetDataObjectType(targetDataObjectName, "", teamConfiguration).ToString();
+                // Find the parent data object.
+                var parentDataObject = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataObjectDataGridViewRows);
 
-                //if (dataObjectType == DataObjectTypes.Context.ToString())
-                //{
-                    // Find the parent data object.
-                    var parentDataObject = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataObjectDataGridViewRows);
-
-                    // Create the parent data object.
-                    if (parentDataObject != null && parentDataObject.name != null)
-                    {
-                        // Set the name and further settings.
-                        relatedDataObjectList.Add(parentDataObject);
-                    }
-               // }
+                // Create the parent data object.
+                if (parentDataObject != null && parentDataObject.name != null)
+                {
+                    // Set the name and further settings.
+                    relatedDataObjectList.Add(parentDataObject);
+                }
             }
 
             return relatedDataObjectList;
@@ -709,6 +706,7 @@ namespace TEAM_Library
         /// </summary>
         /// <param name="dataObject"></param>
         /// <param name="jsonExportSetting"></param>
+        /// <param name="teamConfiguration"></param>
         /// <param name="classificationOverrideValue"></param>
         /// <returns></returns>
         public static DataObject SetDataObjectTypeClassification(DataObject dataObject, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, string classificationOverrideValue=null)
@@ -818,15 +816,19 @@ namespace TEAM_Library
         /// <param name="businessKeyDefinition"></param>
         /// <param name="sourceDataObjectName"></param>
         /// <param name="teamConnection"></param>
+        /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
         /// <param name="drivingKeyValue"></param>
+        /// <param name="dataGridViewRowsDataObjects"></param>
+        /// <param name="dataGridViewRowsPhysicalModel"></param>
+        /// <param name="eventLog"></param>
         /// <returns></returns>
-        public static DataObjectMapping SetBusinessKeys(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration, string drivingKeyValue, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
+        public static DataObjectMapping SetBusinessKeys(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
         {
             // The list of business keys that will be saved against the data object mapping.
             List<BusinessKey> businessKeys = new List<BusinessKey>();
 
-            List<BusinessKeyComponentList> businessKeyComponentValueList = GetBusinessKeyComponents(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+            List<BusinessKeyComponentList> businessKeyComponentValueList = GetBusinessKeyComponents(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
 
             foreach (BusinessKeyComponentList businessKeyComponentList in businessKeyComponentValueList)
             {
@@ -849,7 +851,11 @@ namespace TEAM_Library
 
                         for (int i = 0; i < diff; i++)
                         {
-                            businessKeyComponentList.targetComponentList.Add("Placeholder");
+                            var localTargetBusinessKeyComponent = new BusinessKeyComponentElement();
+                            localTargetBusinessKeyComponent.businessKeyComponentElement = "Placeholder";
+                            localTargetBusinessKeyComponent.businessKeyComponentElementSurrogateKey = "Placeholder";
+
+                            businessKeyComponentList.targetComponentList.Add(localTargetBusinessKeyComponent);
                         }
 
                     }
@@ -870,11 +876,11 @@ namespace TEAM_Library
                     if (dataObjectMapping.mappingClassifications[0].classification == DataObjectTypes.Presentation.ToString())
                     {
                         // Map the key to itself (workaround as above).
-                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i], businessKeyComponentList.sourceComponentList[i], drivingKeyValue);
+                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, drivingKeyValue);
                     }
                     else
                     {
-                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i], businessKeyComponentList.targetComponentList[i], drivingKeyValue);
+                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, businessKeyComponentList.targetComponentList[i].businessKeyComponentElement, drivingKeyValue);
                     }
 
                     businessKeyComponentMapping.Add(businessKeyDataItemMapping);
@@ -883,9 +889,31 @@ namespace TEAM_Library
                 businessKey.businessKeyComponentMapping = businessKeyComponentMapping;
 
                 // Evaluate the surrogate key that comes with the business key component mapping.
-
-                //var targetDataObjectSurrogateKey = GetSurrogateKey(businessKeyComponentList.originalTargetDataObject, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration);
                 businessKey.surrogateKey = businessKeyComponentList.surrogateKey;
+
+                // If the mapping is for a driving key AND the extension setting is enabled, add the surrogate key as extension.
+                if (jsonExportSetting.IsAddDrivingKeyAsBusinessKeyExtension() && dataObjectMapping.mappingClassifications[0].classification == DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey.ToString())
+                {
+                    var businessKeyExtensions = new List<Extension>();
+
+                    // The Driving Key is set on the source, but we need to add the SK here. We can do this by position.
+                    var test = businessKeyComponentList.sourceComponentList.Select(x => x.isDrivingKey == true);
+
+                    for (int i = 0; i < businessKeyComponentList.sourceComponentList.Count; i++)
+                    {
+                        if (businessKeyComponentList.sourceComponentList[i].isDrivingKey)
+                        {
+                            var drivingKeySurrogateKeyExtension = new Extension();
+                            drivingKeySurrogateKeyExtension.key = "DrivingKey";
+                            drivingKeySurrogateKeyExtension.value = businessKeyComponentList.targetComponentList[i].businessKeyComponentElementSurrogateKey;
+                            drivingKeySurrogateKeyExtension.description = "DrivingKey";
+
+                            businessKeyExtensions.Add(drivingKeySurrogateKeyExtension);
+                        }
+                    }
+
+                    businessKey.extensions = businessKeyExtensions;
+                }
 
                 businessKeys.Add(businessKey);
             }
@@ -898,8 +926,8 @@ namespace TEAM_Library
         public class BusinessKeyComponentList
         {
             internal string originalTargetDataObject { get; set; }
-            internal List<string> sourceComponentList { get; set; }
-            internal List<string> targetComponentList { get; set; }
+            internal List<BusinessKeyComponentElement> sourceComponentList { get; set; }
+            internal List<BusinessKeyComponentElement> targetComponentList { get; set; }
             internal int ordinal { get; set; }
             internal string surrogateKey { get; set; }
         }
@@ -912,8 +940,11 @@ namespace TEAM_Library
         /// <param name="sourceDataObjectName"></param>
         /// <param name="teamConnection"></param>
         /// <param name="teamConfiguration"></param>
+        /// <param name="dataGridViewRowsDataObjects"></param>
+        /// <param name="dataGridViewRowsPhysicalModel"></param>
+        /// <param name="eventLog"></param>
         /// <returns></returns>
-        public static List<BusinessKeyComponentList>  GetBusinessKeyComponents(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
+        public static List<BusinessKeyComponentList>  GetBusinessKeyComponents(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
         {
             List<BusinessKeyComponentList> businessKeyComponents = new List<BusinessKeyComponentList>();
 
@@ -931,7 +962,7 @@ namespace TEAM_Library
                 // Add the full list straight away (the relationships).
                 var tempComponent = new BusinessKeyComponentList
                 {
-                    sourceComponentList = GetBusinessKeySourceComponentElements(businessKeyDefinition)
+                    sourceComponentList = GetBusinessKeySourceComponentElements(businessKeyDefinition, drivingKeyValue)
                 };
                 businessKeyComponents.Add(tempComponent);
 
@@ -939,7 +970,7 @@ namespace TEAM_Library
                 tempComponent.originalTargetDataObject = dataObjectMapping.targetDataObject.name;
 
                 // Get the target column(s) for the business key, based on the target data object (the Link in this case).
-                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, businessKeyDefinition, sourceDataObjectName, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
                 tempComponent.targetComponentList = tempTargetComponentList;
 
                 tempComponent.ordinal = ordinal;
@@ -955,7 +986,7 @@ namespace TEAM_Library
                 {
                     var individualTempComponent = new BusinessKeyComponentList();
 
-                    individualTempComponent.sourceComponentList = GetBusinessKeySourceComponentElements(componentElement);
+                    individualTempComponent.sourceComponentList = GetBusinessKeySourceComponentElements(componentElement, drivingKeyValue);
 
                     // First, let's get the Hubs for the key. It's the one with the same source and business key definition.
                     // Find the matching physical model row.
@@ -976,7 +1007,7 @@ namespace TEAM_Library
                         individualTempComponent.originalTargetDataObject = originalTargetDataObjectName;
 
                         // Get the target column(s) for the business key, based on the target data object.
-                        var individualTempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, componentElement, originalSourceDataObjectName, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+                        var individualTempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, componentElement, originalSourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
                         individualTempComponent.targetComponentList = individualTempTargetComponentList;
                         individualTempComponent.ordinal = ordinal;
 
@@ -1005,9 +1036,6 @@ namespace TEAM_Library
                             }
                             counter++;
                         }
-
-                        //var individualSurrogateKey = GetSurrogateKey(dataObjectMapping.targetDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration);
-                        //tempComponent.surrogateKey = individualSurrogateKey;
                     }
                     else
                     {
@@ -1023,14 +1051,14 @@ namespace TEAM_Library
                 // Not a relationship, add the list straight away.
                 var tempComponent = new BusinessKeyComponentList();
 
-                var tempSourceComponentList = GetBusinessKeySourceComponentElements(businessKeyDefinition);
+                var tempSourceComponentList = GetBusinessKeySourceComponentElements(businessKeyDefinition, drivingKeyValue);
                 tempComponent.sourceComponentList = tempSourceComponentList;
 
                 // The associated target data object is just the original one.
                 tempComponent.originalTargetDataObject = dataObjectMapping.targetDataObject.name;
 
                 // Get the target column(s) for the business key, based on the target data object.
-                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, businessKeyDefinition, sourceDataObjectName, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
                 tempComponent.targetComponentList = tempTargetComponentList;
 
                 tempComponent.ordinal = ordinal;
@@ -1044,6 +1072,14 @@ namespace TEAM_Library
             return businessKeyComponents;
         }
 
+        public class BusinessKeyComponentElement
+        {
+            public string businessKeyComponentElement { get; set; }
+            public string businessKeyComponentElementSurrogateKey { get; set;}
+            public bool isDrivingKey { get; set; } = false;
+        }
+
+
         /// <summary>
         /// Get the target business key component elements in the context of the data item mapping for the business key.
         /// </summary>
@@ -1052,10 +1088,13 @@ namespace TEAM_Library
         /// <param name="sourceDataObjectName"></param>
         /// <param name="teamConnection"></param>
         /// <param name="teamConfiguration"></param>
+        /// <param name="dataGridViewRowsDataObjects"></param>
+        /// <param name="dataGridViewRowsPhysicalModel"></param>
+        /// <param name="eventLog"></param>
         /// <returns></returns>
-        public static List<string> GetBusinessKeyTargetComponentElements(DataObject dataObject, string businessKeyDefinition, string sourceDataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
+        public static List<BusinessKeyComponentElement> GetBusinessKeyTargetComponentElements(DataObject dataObject, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
         {
-            List<string> targetBusinessKeyComponents = new List<string>();
+            List<BusinessKeyComponentElement> targetBusinessKeyComponents = new List<BusinessKeyComponentElement>();
             
             // ReSharper disable once RedundantAssignment
             List<DataObject> lookupDataObjects = new List<DataObject>();
@@ -1132,10 +1171,17 @@ namespace TEAM_Library
 
                     // Add if it's not a standard element.
                     var surrogateKey = DeriveSurrogateKey(lookupDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
-
+                    
                     if (!column.IsExcludedBusinessKeyDataItem(dataObjectType, surrogateKey, businessKeyDefinition, teamConnection, teamConfiguration))
                     {
-                        targetBusinessKeyComponents.Add(column);
+                        // Get the corresponding Surrogate Key for the (target) component element.
+                        var localSurrogateKey = GetSurrogateKey(lookupDataObject.name, teamConfiguration, teamConnection);
+
+                        var localBusinessKeyTargetComponentElement = new BusinessKeyComponentElement();
+                        localBusinessKeyTargetComponentElement.businessKeyComponentElement = column;
+                        localBusinessKeyTargetComponentElement.businessKeyComponentElementSurrogateKey = localSurrogateKey;
+
+                        targetBusinessKeyComponents.Add(localBusinessKeyTargetComponentElement);
                     }
                 }
             }
@@ -1193,11 +1239,11 @@ namespace TEAM_Library
         /// </summary>
         /// <param name="businessKeyDefinition"></param>
         /// <returns></returns>
-        private static List<string> GetBusinessKeySourceComponentElements(string businessKeyDefinition)
+        private static List<BusinessKeyComponentElement> GetBusinessKeySourceComponentElements(string businessKeyDefinition, string drivingKeyValue)
         {
-            var temporaryBusinessKeyComponentList = businessKeyDefinition.Split(',').ToList();
+            var businessKeyComponentList = new List<BusinessKeyComponentElement>();
 
-            var businessKeyComponentList = new List<string>();
+            var temporaryBusinessKeyComponentList = businessKeyDefinition.Split(',').ToList();
 
             foreach (var keyComponent in temporaryBusinessKeyComponentList)
             {
@@ -1210,7 +1256,11 @@ namespace TEAM_Library
                     var temporaryKeyPartList = keyPart.Split(';').ToList();
                     foreach (var item in temporaryKeyPartList)
                     {
-                        businessKeyComponentList.Add(item);
+                        var localBusinessComponentElement = new BusinessKeyComponentElement();
+                        localBusinessComponentElement.businessKeyComponentElement = item.Trim();
+                        localBusinessComponentElement.businessKeyComponentElementSurrogateKey = "Not applicable";
+
+                        businessKeyComponentList.Add(localBusinessComponentElement);
                     }
                 }
                 else if (keyPart.StartsWith("CONCATENATE"))
@@ -1218,15 +1268,35 @@ namespace TEAM_Library
                     keyPart = keyPart.Replace("CONCATENATE", "");
                     keyPart = keyPart.Replace(";", "+");
 
-                    businessKeyComponentList.Add(keyPart);
+                    var localBusinessComponentElement = new BusinessKeyComponentElement();
+                    localBusinessComponentElement.businessKeyComponentElement = keyPart.Trim();
+                    localBusinessComponentElement.businessKeyComponentElementSurrogateKey = "Not applicable";
+
+                    businessKeyComponentList.Add(localBusinessComponentElement);
                 }
                 else
                 {
-                    businessKeyComponentList.Add(keyPart);
+                    var localBusinessComponentElement = new BusinessKeyComponentElement();
+                    localBusinessComponentElement.businessKeyComponentElement = keyPart.Trim();
+                    localBusinessComponentElement.businessKeyComponentElementSurrogateKey = "Not applicable";
+
+                    businessKeyComponentList.Add(localBusinessComponentElement);
                 }
             }
 
-            businessKeyComponentList = businessKeyComponentList.Select(t => t.Trim()).ToList();
+            // Check for Driving Keys.
+            if (!string.IsNullOrEmpty(drivingKeyValue))
+            {
+                foreach (var localComponent in businessKeyComponentList)
+                {
+                    if (drivingKeyValue == localComponent.businessKeyComponentElement)
+                    {
+                        localComponent.isDrivingKey = true;
+                    }
+                }
+            }
+
+            //businessKeyComponentList = businessKeyComponentList.Select(t => t.businessKeyComponentElement.Trim().ToList);
             return businessKeyComponentList;
         }
 
@@ -1400,7 +1470,7 @@ namespace TEAM_Library
         {
             bool returnValue = false;
             
-            var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition);
+            var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition, "");
 
             if (dataItemName == surrogateKey)
             {
@@ -1463,9 +1533,15 @@ namespace TEAM_Library
                 returnValue = true;
             }
             // Other.
-            else if (new[] { DataObjectTypes.StagingArea, DataObjectTypes.PersistentStagingArea }.Contains(dataObjectType) && !businessKeyComponentElements.Contains(dataItemName))
+            else if (new[] { DataObjectTypes.StagingArea, DataObjectTypes.PersistentStagingArea }.Contains(dataObjectType))
             {
-                returnValue = true;
+                foreach (var element in businessKeyComponentElements)
+                {
+                    if (element.businessKeyComponentElement == dataItemName)
+                    {
+                        returnValue = true;
+                    }
+                }
             }
 
             return returnValue;
