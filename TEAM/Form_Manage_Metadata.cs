@@ -2242,11 +2242,14 @@ namespace TEAM
 
                 var sqlStatementForDataItems = SqlStatementForDataItems(GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), teamConnection);
 
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The reverse-engineering query run for connection '{teamConnection.ConnectionKey}' is \r\n {sqlStatementForDataItems}"));
+
                 reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems);
             }
             catch (Exception exception)
             {
                 ThreadHelper.SetText(this, richTextBoxInformation, $@"An error has occurred uploading the model for the new version because the database could not be connected to. The error message is: {exception.Message}.");
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The reverse-engineering query run for connection '{teamConnection.ConnectionKey}' encountered an error. The reported error is {exception.Message}"));
             }
             finally
             {
@@ -2263,17 +2266,13 @@ namespace TEAM
 
             if (filteredDataObjectMappingDataRows.Any())
             {
-                tempFilterDataObjects.AddRange(filteredDataObjectMappingDataRows
-                    .Distinct()
-                    .ToList());
+                tempFilterDataObjects.AddRange(filteredDataObjectMappingDataRows.Distinct().ToList());
             }
             else
             {
                 DataTable localDataTable = (DataTable)BindingSourceDataObjectMappings.DataSource;
 
-                tempFilterDataObjects.AddRange(localDataTable.AsEnumerable()
-                    .Distinct()
-                    .ToList());
+                tempFilterDataObjects.AddRange(localDataTable.AsEnumerable().Distinct().ToList());
             }
 
             var filterDataObjects = tempFilterDataObjects.Distinct().ToList();
@@ -3329,11 +3328,18 @@ namespace TEAM
             {
                 var localConnectionObject = (KeyValuePair<TeamConnection, string>)checkedItem;
 
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Reverse-engineering is attempted for connection '{localConnectionObject.Value}'"));
+
                 try
                 {
                     var filteredRows = GetFilteredDataObjectMappingDataTableRows();
-
+                    
                     var reverseEngineerResults = ReverseEngineerModelMetadata(localConnectionObject.Key, filteredRows);
+
+                    if (reverseEngineerResults == null  || (reverseEngineerResults != null && reverseEngineerResults.Rows.Count==0))
+                    {
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"Reverse-engineering against connection '{localConnectionObject.Value}' did not return any results."));
+                    }
 
                     if (reverseEngineerResults != null)
                     {
@@ -3345,11 +3351,12 @@ namespace TEAM
                 catch (Exception exception)
                 {
                     ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - There was an issue reverse engineering '{localConnectionObject.Key.ConnectionKey}'. The error is {exception.Message}.");
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"Reverse-engineering failed for connection '{localConnectionObject.Value}'. The error message is {exception.Message}"));
                 }
             }
 
             // Flag as new row so it's detected by the save button.
-            if (interimDataTable != null && interimDataTable.Rows.Count > 0)
+            if (interimDataTable.Rows.Count > 0)
             {
                 foreach (DataRow row in interimDataTable.Rows)
                 {
@@ -3367,7 +3374,7 @@ namespace TEAM
             DataTable distinctTable = null;
             try
             {
-                if (completeDataTable != null && completeDataTable.Rows.Count > 0)
+                if (completeDataTable.Rows.Count > 0)
                 {
                     distinctTable = completeDataTable.AsEnumerable()
                         .GroupBy(row => new
@@ -3379,6 +3386,10 @@ namespace TEAM
                         })
                         .Select(y => y.First())
                         .CopyToDataTable();
+                }
+                else
+                {
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"Reverse-engineering does not have any rows to deduplicate."));
                 }
 
                 ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Deduplication completed completed at {DateTime.Now:HH:mm:ss tt}.");

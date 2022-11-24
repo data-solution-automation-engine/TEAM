@@ -251,18 +251,15 @@ namespace TEAM_Library
         }
 
         /// <summary>
-        /// Assert upstream (next layer) data objects and add them to the existing data object mapping.
+        /// Create a data object for the metadata connection as a related data object.
         /// </summary>
-        /// <param name="dataObjectName"></param>
-        /// <param name="dataObjectMappingGrid"></param>
         /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
+        /// <param name="dataGridViewRowsPhysicalModel"></param>
         /// <returns></returns>
-        public static List<DataObject> SetRelatedDataObjects(string dataObjectName, DataGridView dataObjectMappingGrid, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, EventLog eventLog, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
+        public static DataObject SetMetadataAsRelatedDataObject(JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
         {
-            List<DataObject> relatedDataObjects = new List<DataObject>();
-
-            #region Add metadata connection as related data object
+            DataObject returnDataObject = new DataObject();
 
             // Add the metadata connection as related data object (assuming this is set in the json export settings).
             if (jsonExportSetting.IsAddMetadataAsRelatedDataObject())
@@ -271,42 +268,64 @@ namespace TEAM_Library
 
                 if (metaDataObject.name != null)
                 {
-                    relatedDataObjects.Add(metaDataObject);
+                    returnDataObject = metaDataObject;
                 }
             }
 
-            #endregion
+            return returnDataObject;
+        }
 
-            #region Add related data object(s)
+        /// <summary>
+        /// Get the 'parent' data object for a given data object, i.e. the object that is referenced to in the data model.
+        /// </summary>
+        /// <param name="targetDataObjectName"></param>
+        /// <param name="dataObjectDataGridViewRows"></param>
+        /// <param name="jsonExportSetting"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <returns></returns>
+        public static List<DataObject> GetParentRelatedDataObjectList(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, List<DataGridViewRow> dataObjectDataGridViewRows, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
+        {
+            List<DataObject> relatedDataObjectList = new List<DataObject>();
 
-            if (jsonExportSetting.IsAddNextUpDataObjectsAsRelatedDataObject())
+            if (jsonExportSetting.AddParentDataObjectAsRelatedDataObject == "True")
             {
-                relatedDataObjects.AddRange(GetLineageRelatedDataObjectList(dataObjectName, dataObjectMappingGrid, jsonExportSetting, teamConfiguration,eventLog, dataGridViewRowsPhysicalModel));
+                // Get the type first, because what the parent is depends on the type.
+                var dataObjectType = GetDataObjectType(targetDataObjectName, "", teamConfiguration).ToString();
+
+                //if (dataObjectType == DataObjectTypes.Context.ToString())
+                //{
+                    // Find the parent data object.
+                    var parentDataObject = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataObjectDataGridViewRows);
+
+                    // Create the parent data object.
+                    if (parentDataObject != null && parentDataObject.name != null)
+                    {
+                        // Set the name and further settings.
+                        relatedDataObjectList.Add(parentDataObject);
+                    }
+               // }
             }
 
-            #endregion
-
-            return relatedDataObjects;
+            return relatedDataObjectList;
         }
-    
+
         /// <summary>
         /// Convenience method to identify the next-layer-up data objects for a given data object (string).
         /// </summary>
-        /// <param name="targetDataObject"></param>
+        /// <param name="targetDataObjectName"></param>
         /// <param name="dataObjectDataGrid"></param>
         /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        public static List<DataObject> GetLineageRelatedDataObjectList(string targetDataObject, DataGridView dataObjectDataGrid, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, EventLog eventLog, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
+        public static List<DataObject> SetNextUpRelatedDataObjectList(string targetDataObjectName, DataGridView dataObjectDataGrid, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, EventLog eventLog, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
         {
             List<DataObject> dataObjectList = new List<DataObject>();
 
-            if (jsonExportSetting.AddNextUpDataObjectsAsRelatedDataObject == "True")
+            if (jsonExportSetting.IsAddNextUpDataObjectsAsRelatedDataObject())
             {
                 var dataObjectMappings = dataObjectDataGrid.Rows.Cast<DataGridViewRow>()
                     .Where(x => !x.IsNewRow)
-                    .Where(x => ((DataRowView)x.DataBoundItem).Row.Field<DataObject>(DataObjectMappingGridColumns.SourceDataObject.ToString()).name == targetDataObject).ToList();
-
+                    .Where(x => ((DataRowView)x.DataBoundItem).Row.Field<DataObject>(DataObjectMappingGridColumns.SourceDataObject.ToString()).name == targetDataObjectName).ToList();
 
                 foreach (DataGridViewRow row in dataObjectMappings)
                 {
@@ -1211,23 +1230,32 @@ namespace TEAM_Library
             return businessKeyComponentList;
         }
 
-        public static string GetParentDataObject(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConfiguration teamConfiguration, List<DataGridViewRow>dataGridViewRowsDataObjects)
+        /// <summary>
+        /// Find out what the parent (referenced to object) is, for a given input data object.
+        /// </summary>
+        /// <param name="targetDataObjectName"></param>
+        /// <param name="sourceDataObjectName"></param>
+        /// <param name="businessKeyDefinition"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <param name="dataGridViewRowsDataObjects"></param>
+        /// <returns></returns>
+        public static DataObject GetParentDataObject(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConfiguration teamConfiguration, List<DataGridViewRow>dataGridViewRowsDataObjects)
         {
-            string returnValue = "";
+            DataObject returnValue = new DataObject();
 
             var dataObjectGridViewRow = dataGridViewRowsDataObjects
                 .Where(r => !r.IsNewRow)
                 .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyDefinition))
                 .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
                 .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName))
-                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != MetadataHandling.DataObjectTypes.Context)
-                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext)
-                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
+                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.Context)
+                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContext)
+                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
                 .FirstOrDefault();
 
             if (dataObjectGridViewRow != null)
             {
-                returnValue = dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString();
+                returnValue = (DataObject)dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
             }
 
             return returnValue;
@@ -1251,7 +1279,7 @@ namespace TEAM_Library
             // If a data object has been evaluated to be a Satellite (or Link-Satellite), replace the data object to query with the parent Hub or Link.
             if (new [] { DataObjectTypes.Context, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey}.Contains(dataObjectType))
             {
-                targetDataObjectName = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects);
+                targetDataObjectName = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects).name;
             }
 
             var surrogateKey = GetSurrogateKey(targetDataObjectName, teamConfiguration, teamConnection);

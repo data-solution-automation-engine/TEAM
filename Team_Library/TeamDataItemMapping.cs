@@ -7,12 +7,14 @@ namespace TEAM_Library
 {
     public class DataItemMappingJson
     {
-        //JSON representation of the attribute mapping metadata
+        //JSON representation of the attribute mapping metadata.
         public string attributeMappingHash { get; set; }
         public string sourceTable { get; set; }
         public string sourceAttribute { get; set; }
         public string targetTable { get; set; }
         public string targetAttribute { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string notes { get; set; }
     }
     /// <summary>

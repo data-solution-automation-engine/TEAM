@@ -1214,20 +1214,28 @@ namespace TEAM
 
             #region Enabled
 
-            var enabledIntermediate = "False";
-
-            if (dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value != DBNull.Value)
+            try
             {
-                enabledIntermediate = (string)dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value;
-            }
+                var enabledIntermediate = "False";
 
-            bool enabled = false;
-            if (enabledIntermediate == "True")
+                if (dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value != DBNull.Value)
+                {
+                    enabledIntermediate = (string)dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value;
+                }
+
+                bool enabled = false;
+
+                if (enabledIntermediate == "True")
+                {
+                    enabled = true;
+                }
+
+                dataObjectMapping.enabled = enabled;
+            }
+            catch (Exception exception) 
             {
-                enabled = true;
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The enabled indicator could not be correctly defined. The message is: {exception.Message}."));
             }
-
-            dataObjectMapping.enabled = enabled;
 
             #endregion
 
@@ -1239,14 +1247,11 @@ namespace TEAM
             var targetDataObject = (DataObject)dataObjectMappingGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
             dataObjectMapping.targetDataObject = targetDataObject;
 
-            // Grab the grids
-            var dataGridViewRowsPhysicalModel = _dataGridViewPhysicalModel.Rows.Cast<DataGridViewRow>()
-                        .Where(row => !row.IsNewRow)
-                        .ToList();
+            // Grab the data objects grid.
+            var dataGridViewRowsDataObjects = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>().Where(row => !row.IsNewRow).ToList();
 
-            var dataGridViewRowsDataObjects = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>()
-                .Where(row => !row.IsNewRow)
-                .ToList();
+            // Grab the physical model grid.
+            var dataGridViewRowsPhysicalModel = _dataGridViewPhysicalModel.Rows.Cast<DataGridViewRow>().Where(row => !row.IsNewRow).ToList();
 
             // Manage classifications
             JsonOutputHandling.SetDataObjectTypeClassification(targetDataObject, JsonExportSetting, TeamConfiguration);
@@ -1272,9 +1277,9 @@ namespace TEAM
                 var mappingClassifications = JsonOutputHandling.SetMappingClassifications(targetDataObjectName, JsonExportSetting, TeamConfiguration, drivingKeyValue);
                 dataObjectMapping.mappingClassifications = mappingClassifications;
             }
-            catch
+            catch (Exception exception)
             {
-                //
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The data object classification could not be correctly defined. The message is: {exception.Message}."));
             }
 
             #endregion
@@ -1286,7 +1291,6 @@ namespace TEAM
                 string sourceDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value.ToString();
 
                 List<dynamic> sourceDataObjects = new List<dynamic>();
-
 
                 if (sourceDataObjectName.IsDataQuery())
                 {
@@ -1332,17 +1336,58 @@ namespace TEAM
 
                 dataObjectMapping.sourceDataObjects = sourceDataObjects;
             }
-            catch
+            catch (Exception exception)
             {
-                //
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The source data objects could not be correctly defined. The message is: {exception.Message}."));
             }
 
             #endregion
 
             #region Related Data Objects
 
-            var relatedDataObjects = JsonOutputHandling.SetRelatedDataObjects(targetDataObjectName, this, JsonExportSetting, TeamConfiguration, TeamEventLog, dataGridViewRowsPhysicalModel);
-            if (relatedDataObjects != null && relatedDataObjects.Count > 0)
+            var relatedDataObjects = new List<DataObject>();
+
+            // Metadata object.
+            try
+            {
+                var metadataRelatedDataObject = JsonOutputHandling.SetMetadataAsRelatedDataObject(JsonExportSetting, TeamConfiguration, dataGridViewRowsPhysicalModel);
+
+                if (metadataRelatedDataObject != null && metadataRelatedDataObject.name != null)
+                {
+                    relatedDataObjects.Add(metadataRelatedDataObject);
+                }
+            }
+            catch (Exception exception)
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the metadata connection as related data object. The error message is: {exception.Message}."));
+            }
+
+            // Next up (lineage) objects.
+            try
+            {
+                relatedDataObjects.AddRange(JsonOutputHandling.SetNextUpRelatedDataObjectList(targetDataObjectName, this, JsonExportSetting, TeamConfiguration, TeamEventLog, dataGridViewRowsPhysicalModel));
+            }
+            catch (Exception exception)
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the next up data object as a related data object.. The message is: {exception.Message}."));
+            }
+            
+            // Parent data objects.
+            try
+            {
+                var parentRelatedDataObjects = JsonOutputHandling.GetParentRelatedDataObjectList(targetDataObjectName, dataObjectMapping.sourceDataObjects[0].name, dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString(), dataGridViewRowsDataObjects, JsonExportSetting, TeamConfiguration);
+                if (parentRelatedDataObjects != null && parentRelatedDataObjects.Count > 0)
+                {
+                    relatedDataObjects.AddRange(parentRelatedDataObjects);
+                }
+            }
+            catch (Exception exception)
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the parent data object as a related data object.. The message is: {exception.Message}."));
+            }
+
+
+            if (relatedDataObjects.Count > 0)
             {
                 dataObjectMapping.relatedDataObjects = relatedDataObjects;
             }
