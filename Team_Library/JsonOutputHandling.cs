@@ -1630,5 +1630,35 @@ namespace TEAM_Library
 
             return returnValue;
         }
+
+        /// <summary>
+        /// Add a Multi Active Key classification to a (source) data item.
+        /// </summary>
+        /// <param name="targetDataItem"></param>
+        /// <param name="targetDataObjectName"></param>
+        /// <param name="physicalModelGridView"></param>
+        public static void AddMultiActiveKeyClassificationToDataItem(DataItem targetDataItem, string targetDataObjectName, DataGridView physicalModelGridView)
+        {
+            // If the source data item is part of the key, a MAK classification can be added.
+            // This is done using a lookup against the physical model.
+
+            var physicalModelGridViewRow = physicalModelGridView.Rows
+                .Cast<DataGridViewRow>()
+                .Where(r => !r.IsNewRow)
+                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(targetDataItem.name))
+                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(targetDataObjectName))
+                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Value.ToString().Equals("Y"))
+                .FirstOrDefault();
+
+            if (physicalModelGridViewRow != null)
+            {
+                List<Classification> classificationList = new List<Classification>();
+                Classification classification = new Classification();
+                classification.classification = "MultiActiveKey";
+                classification.notes = "The attribute that supports granularity shift in describing context.";
+                classificationList.Add(classification);
+                targetDataItem.dataItemClassification = classificationList;
+            }
+        }
     }
 }

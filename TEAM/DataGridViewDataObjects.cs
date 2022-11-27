@@ -1411,9 +1411,10 @@ namespace TEAM
                     {
                         dynamic sourceDataObject = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
 
-                        var localSourceDataObject = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataObject.ToString()].Value.ToString(); var localTargetDataObject = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataObject.ToString()].Value.ToString();
+                        var localSourceDataObjectName = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataObject.ToString()].Value.ToString();
+                        var localTargetDataObjectName = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataObject.ToString()].Value.ToString();
 
-                        if (localSourceDataObject == sourceDataObject.name && localTargetDataObject == targetDataObject.name)
+                        if (localSourceDataObjectName == sourceDataObject.name && localTargetDataObjectName == targetDataObject.name)
                         {
                             var localSourceDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataItem.ToString()].Value.ToString();
                             var localTargetDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataItem.ToString()].Value.ToString();
@@ -1430,27 +1431,7 @@ namespace TEAM
 
                             #region Multi-Active Key
 
-                            // If the source data item is part of the key, a MAK classification can be added.
-                            // This is done using a lookup against the physical model.
-
-                            var physicalModelGridViewRow = _dataGridViewPhysicalModel.Rows
-                                .Cast<DataGridViewRow>()
-                                .Where(r => !r.IsNewRow)
-                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(localTargetDataItem))
-                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(localTargetDataObject))
-                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Value.ToString().Equals("Y"))
-                                .FirstOrDefault();
-
-                            if (physicalModelGridViewRow != null)
-                            {
-                                List<Classification> classificationList = new List<Classification>();
-                                Classification classification = new Classification();
-                                classification.classification = "MultiActiveKey";
-                                classification.notes = "The attribute that supports granularity shift in describing context.";
-                                classificationList.Add(classification);
-                                targetDataItem.dataItemClassification = classificationList;
-                            }
-
+                            JsonOutputHandling.AddMultiActiveKeyClassificationToDataItem(targetDataItem, localTargetDataObjectName, _dataGridViewPhysicalModel);
 
                             #endregion
 
@@ -1562,6 +1543,7 @@ namespace TEAM
                             // Otherwise, create a data item for both source and target, and add it.
                             List<dynamic> sourceDataItems = new List<dynamic>();
                             var autoMappedSourceDataItem = new DataItem();
+
                             sourceDataItems.Add(autoMappedSourceDataItem);
 
                             var autoMappedTargetDataItem = new DataItem();
@@ -1580,6 +1562,12 @@ namespace TEAM
                             // Add parent Data Object to the Data Item.
                             JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedSourceDataItem, sourceDataObject, JsonExportSetting);
                             JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedTargetDataItem, dataObjectMapping.targetDataObject, JsonExportSetting);
+
+                            #region Multi-Active Key
+
+                            JsonOutputHandling.AddMultiActiveKeyClassificationToDataItem(autoMappedTargetDataItem, targetDataObject.name,  _dataGridViewPhysicalModel);
+
+                            #endregion
 
                             // Create a Data Item Mapping.
                             DataItemMapping dataItemMapping = new DataItemMapping
@@ -1645,5 +1633,7 @@ namespace TEAM
 
             return dataObjectMapping;
         }
+
+
     }
 }
