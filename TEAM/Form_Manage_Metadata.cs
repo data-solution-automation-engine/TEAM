@@ -149,6 +149,8 @@ namespace TEAM
         {
             _dataGridViewDataItems = new DataGridViewDataItems(TeamConfiguration);
             ((ISupportInitialize)(_dataGridViewDataItems)).BeginInit();
+
+            _dataGridViewDataItems.OnDataObjectParse += InformOnDataObjectsResult;
             _dataGridViewDataItems.DoubleBuffered(true);
 
             // Add tab page.
@@ -677,7 +679,6 @@ namespace TEAM
 
                 if (validationIssue == false)
                 {
-
                     richTextBoxInformation.Clear();
 
                     // Create a data table containing the changes, to check if there are changes made to begin with
@@ -698,9 +699,6 @@ namespace TEAM
                             try
                             {
                                 SaveDataObjectMappingJson(dataTableTableMappingChanges);
-
-                                // Load the grids from the repository after being updated.This resets everything.
-                                PopulateDataObjectMappingGrid();
                             }
                             catch (Exception exception)
                             {
@@ -713,9 +711,6 @@ namespace TEAM
                             try
                             {
                                 SaveDataItemMappingMetadata(dataTableAttributeMappingChanges);
-
-                                // Load the grids from the repository after being updated.This resets everything.
-                                PopulateDataItemMappingGrid();
                             }
                             catch (Exception exception)
                             {
@@ -728,9 +723,6 @@ namespace TEAM
                             try
                             {
                                 SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
-
-                                // Load the grids from the repository after being updated.This resets everything.
-                                PopulatePhysicalModelGrid();
                             }
                             catch (Exception exception)
                             {
@@ -1195,7 +1187,7 @@ namespace TEAM
                         }
                         catch (JsonReaderException ex)
                         {
-                            richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex;
+                            richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex.Message;
                         }
                     }
                     #endregion
@@ -1241,30 +1233,30 @@ namespace TEAM
                     {
                         //Grab the attributes into local variables
                         var hashKey = (string)row[DataItemMappingGridColumns.HashKey.ToString()];
-                        var stagingTable = "";
-                        var stagingColumn = "";
-                        var integrationTable = "";
-                        var integrationColumn = "";
+                        var sourceDataObject = "";
+                        var sourceDataItem = "";
+                        var targetDataObject = "";
+                        var targetDataItem = "";
                         var notes = "";
 
                         if (row[DataItemMappingGridColumns.SourceDataObject.ToString()] != DBNull.Value)
                         {
-                            stagingTable = (string)row[DataItemMappingGridColumns.SourceDataObject.ToString()];
+                            sourceDataObject = (string)row[DataItemMappingGridColumns.SourceDataObject.ToString()];
                         }
 
                         if (row[DataItemMappingGridColumns.SourceDataItem.ToString()] != DBNull.Value)
                         {
-                            stagingColumn = (string)row[DataItemMappingGridColumns.SourceDataItem.ToString()];
+                            sourceDataItem = (string)row[DataItemMappingGridColumns.SourceDataItem.ToString()];
                         }
 
                         if (row[DataItemMappingGridColumns.TargetDataObject.ToString()] != DBNull.Value)
                         {
-                            integrationTable = (string)row[DataItemMappingGridColumns.TargetDataObject.ToString()];
+                            targetDataObject = (string)row[DataItemMappingGridColumns.TargetDataObject.ToString()];
                         }
 
                         if (row[DataItemMappingGridColumns.TargetDataItem.ToString()] != DBNull.Value)
                         {
-                            integrationColumn = (string)row[DataItemMappingGridColumns.TargetDataItem.ToString()];
+                            targetDataItem = (string)row[DataItemMappingGridColumns.TargetDataItem.ToString()];
                         }
 
                         if (row[DataItemMappingGridColumns.Notes.ToString()] != DBNull.Value)
@@ -1286,11 +1278,11 @@ namespace TEAM
                             }
                             else
                             {
-                                // Update the values in the JSON segment
-                                jsonHash.sourceTable = stagingTable;
-                                jsonHash.sourceAttribute = stagingColumn;
-                                jsonHash.targetTable = integrationTable;
-                                jsonHash.targetAttribute = integrationColumn;
+                                // Update the values in the JSON segment.
+                                jsonHash.sourceTable = sourceDataObject;
+                                jsonHash.sourceAttribute = sourceDataItem;
+                                jsonHash.targetTable = targetDataObject;
+                                jsonHash.targetAttribute = targetDataItem;
                                 jsonHash.notes = notes;
                             }
 
@@ -1299,7 +1291,7 @@ namespace TEAM
                             File.WriteAllText(outputFileName, output);
 
                             // Update the data object mapping.
-                            WriteDataObjectMappingsToFile(integrationTable);
+                            WriteDataObjectMappingsToFile(targetDataObject);
                         }
                         catch (JsonReaderException ex)
                         {
@@ -1410,7 +1402,7 @@ namespace TEAM
 
                             jsonArray.Remove(jsonSegment);
 
-                            if (jsonSegment.attributeMappingHash == "")
+                            if (string.IsNullOrEmpty(jsonSegment.attributeMappingHash))
                             {
                                 richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
                             }
@@ -1556,9 +1548,6 @@ namespace TEAM
                 backgroundWorkerParse.CancelAsync();
 
                 BindingSourceDataObjectMappings.ResumeBinding();
-
-                // Close the AlertForm
-                //_alertParse.Close();
             }
         }
 
@@ -1591,7 +1580,7 @@ namespace TEAM
         private void backgroundWorkerParse_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             // Show the progress in main form
-            labelResult.Text = (e.ProgressPercentage + "%");
+            labelResult.Text = (e.ProgressPercentage + @"%");
 
             // Pass the progress to AlertForm label and progress bar
             _alertParse.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
@@ -1616,45 +1605,52 @@ namespace TEAM
 
             foreach (DataGridViewRow dataObjectMappingGridViewRow in filteredRowSet)
             {
-                // Manage cancellation.
-                if (worker.CancellationPending)
+                try
                 {
-                    continue;
-                }
-
-                if (!dataObjectMappingGridViewRow.IsNewRow)
-                {
-                    var targetDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
-
-                    if (!targetNameList.Contains(targetDataObjectName))
+                    // Manage cancellation.
+                    if (worker.CancellationPending)
                     {
-                        LogMetadataEvent($"Parsing '{targetDataObjectName}'.", EventTypes.Information);
-
-                        try
-                        {
-                            var targetDataObject = (DataObject)dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
-
-                            WriteDataObjectMappingsToFile(targetDataObject);
-
-                            LogMetadataEvent($"  --> Saved as '{globalParameters.GetMetadataFilePath(targetDataObject.name)}'.", EventTypes.Information);
-
-                            targetNameList.Add(targetDataObjectName);
-                        }
-                        catch (JsonReaderException ex)
-                        {
-                            LogMetadataEvent($"There were issues updating the JSON. The error message is {ex.Message}.", EventTypes.Error);
-                        }
-
-                        // Normalize all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.
-                        var normalizedValue = 1 + (counter - 0) * (100 - 1) / (filteredRowSet.Count - 0);
-                        worker?.ReportProgress(normalizedValue);
-                        counter++;
+                        continue;
                     }
+
+                    if (!dataObjectMappingGridViewRow.IsNewRow)
+                    {
+                        var targetDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
+
+                        if (!targetNameList.Contains(targetDataObjectName))
+                        {
+                            LogMetadataEvent($"Parsing '{targetDataObjectName}'.", EventTypes.Information);
+
+                            try
+                            {
+                                var targetDataObject = (DataObject)dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
+
+                                WriteDataObjectMappingsToFile(targetDataObject);
+
+                                LogMetadataEvent($"  --> Saved as '{globalParameters.GetMetadataFilePath(targetDataObject.name)}'.", EventTypes.Information);
+
+                                targetNameList.Add(targetDataObjectName);
+                            }
+                            catch (JsonReaderException ex)
+                            {
+                                LogMetadataEvent($"There were issues updating the JSON. The error message is {ex.Message}.", EventTypes.Error);
+                            }
+
+                            // Normalize all values in array against a 0-100 scale to support the progress bar relative to the number of commands to execute.
+                            var normalizedValue = 1 + (counter - 0) * (100 - 1) / (filteredRowSet.Count - 0);
+                            worker.ReportProgress(normalizedValue);
+                            counter++;
+                        }
+                    }
+                }
+                catch (Exception exception)
+                {
+                    LogMetadataEvent($"A row in the grid could not be parsed. The reported exception is {exception.Message}.", EventTypes.Error);
                 }
             }
 
             // Manage cancellation.
-            if (worker.CancellationPending)
+            if (worker != null && worker.CancellationPending)
             {
                 LogMetadataEvent($"The parsing was cancelled.", EventTypes.Warning);
             }
@@ -2081,30 +2077,23 @@ namespace TEAM
 
                     //Add categories
                     dgmlExtract.AppendLine("  <Categories>");
-                    dgmlExtract.AppendLine(
-                        "    <Category Id = \"Sources\" Label = \"Sources\" Background = \"#FFE51400\" IsTag = \"True\" /> ");
-                    dgmlExtract.AppendLine(
-                        "    <Category Id = \"Landing Area\" Label = \"Landing Area\" IsTag = \"True\" /> ");
-                    dgmlExtract.AppendLine(
-                        "    <Category Id = \"Persistent Staging Area\" Label = \"Persistent Staging Area\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("    <Category Id = \"Sources\" Label = \"Sources\" Background = \"#FFE51400\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("    <Category Id = \"Landing Area\" Label = \"Landing Area\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("    <Category Id = \"Persistent Staging Area\" Label = \"Persistent Staging Area\" IsTag = \"True\" /> ");
                     dgmlExtract.AppendLine("    <Category Id = \"Hub\" Label = \"Hub\" IsTag = \"True\" /> ");
                     dgmlExtract.AppendLine("    <Category Id = \"Link\" Label = \"Link\" IsTag = \"True\" /> ");
-                    dgmlExtract.AppendLine(
-                        "    <Category Id = \"Satellite\" Label = \"Satellite\" IsTag = \"True\" /> ");
-                    dgmlExtract.AppendLine(
-                        "    <Category Id = \"Subject Area\" Label = \"Subject Area\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("    <Category Id = \"Satellite\" Label = \"Satellite\" IsTag = \"True\" /> ");
+                    dgmlExtract.AppendLine("    <Category Id = \"Subject Area\" Label = \"Subject Area\" IsTag = \"True\" /> ");
                     dgmlExtract.AppendLine("  </Categories>");
 
                     //Add category styles 
                     dgmlExtract.AppendLine("  <Styles >");
 
-                    dgmlExtract.AppendLine(
-                        "    <Style TargetType = \"Node\" GroupLabel = \"Sources\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Sources\" ValueLabel = \"Has category\" >");
                     dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Sources')\" />");
                     dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
                     dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFFFFFFF\" />");
-                    dgmlExtract.AppendLine(
-                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
                     dgmlExtract.AppendLine(
@@ -2112,62 +2101,49 @@ namespace TEAM
                     dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Landing Area')\" />");
                     dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FE000000\" />");
                     dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FE6E6A69\" />");
-                    dgmlExtract.AppendLine(
-                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
-                    dgmlExtract.AppendLine(
-                        "    <Style TargetType = \"Node\" GroupLabel = \"Persistent Staging Area\" ValueLabel = \"Has category\" >");
-                    dgmlExtract.AppendLine(
-                        "      <Condition Expression = \"HasCategory('Persistent Staging Area')\" />");
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Persistent Staging Area\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Persistent Staging Area')\" />");
                     dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FA000000\" />");
                     dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FA6E6A69\" />");
-                    dgmlExtract.AppendLine(
-                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
-                    dgmlExtract.AppendLine(
-                        "    <Style TargetType = \"Node\" GroupLabel = \"Hub\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Hub\" ValueLabel = \"Has category\" >");
                     dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Hub')\" />");
                     dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
                     dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FF6495ED\" />");
-                    dgmlExtract.AppendLine(
-                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
-                    dgmlExtract.AppendLine(
-                        "    <Style TargetType = \"Node\" GroupLabel = \"Link\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Link\" ValueLabel = \"Has category\" >");
                     dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Link')\" />");
                     dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
                     dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFB22222\" />");
-                    dgmlExtract.AppendLine(
-                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
-                    dgmlExtract.AppendLine(
-                        "    <Style TargetType = \"Node\" GroupLabel = \"Satellite\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Satellite\" ValueLabel = \"Has category\" >");
                     dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Satellite')\" />");
                     dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
                     dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFC0A000\" />");
-                    dgmlExtract.AppendLine(
-                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
-                    dgmlExtract.AppendLine(
-                        "    <Style TargetType = \"Node\" GroupLabel = \"Subject Area\" ValueLabel = \"Has category\" >");
+                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Subject Area\" ValueLabel = \"Has category\" >");
                     dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Subject Area')\" />");
                     dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
                     dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFFFFFFF\" />");
-                    dgmlExtract.AppendLine(
-                        "      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
                     dgmlExtract.AppendLine("    </Style >");
 
                     dgmlExtract.AppendLine("  </Styles >");
 
                     dgmlExtract.AppendLine("</DirectedGraph>");
                     // End of graph file creation
-
-
+                    
                     // Error handling
                     if (errorCounter > 0)
                     {

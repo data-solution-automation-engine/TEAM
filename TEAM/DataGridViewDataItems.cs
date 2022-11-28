@@ -1,9 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TEAM_Library;
+using static TEAM.DataGridViewDataObjects;
 using static TEAM.FormBase;
 
 namespace TEAM
@@ -14,6 +18,9 @@ namespace TEAM
 
         private readonly ContextMenuStrip contextMenuStrip;
         private readonly ContextMenuStrip contextMenuStripMultipleRows;
+
+        public delegate void DataObjectParseHandler(object sender, ParseEventArgs e);
+        public event DataObjectParseHandler OnDataObjectParse;
 
         public DataGridViewDataItems(TeamConfiguration teamConfiguration)
         {
@@ -160,8 +167,33 @@ namespace TEAM
             deleteRow.Text = @"Delete this row from the grid";
             deleteRow.Click += DeleteRowFromGridToolStripMenuItem_Click;
 
+            // Parse as DataObjectMappings JSON (collection) menu item
+            var parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem = new ToolStripMenuItem();
+            parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Name = "parseThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
+            parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Size = new Size(339, 22);
+            parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Text = @"Parse this row as Data Object Mapping Collection";
+            parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Click += ParseThisRowAsJSONDataObjectMappingCollectionToolStripMenuItem_Click;
+
+            // Show as DataObjectMappings JSON (collection) menu item
+            var exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem = new ToolStripMenuItem();
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Name = "exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Size = new Size(339, 22);
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Text = @"Display this row as Data Object Mapping Collection";
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Click += DisplayThisRowAsJSONDataObjectMappingCollectionToolStripMenuItem_Click;
+
+            // Show as single DataObjectMappings JSON menu item
+            var exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem = new ToolStripMenuItem();
+            exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem.Name = "exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem";
+            exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem.Size = new Size(339, 22);
+            exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem.Text = @"Display this row as single Data Object Mapping";
+            exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem.Click += DisplayThisRowAsJSONSingleDataObjectMappingToolStripMenuItem_Click;
+
+
             contextMenuStrip.ImageScalingSize = new Size(24, 24);
             contextMenuStrip.Items.AddRange(new ToolStripItem[] {
+                parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem,
+                exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem,
+                exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem,
                 deleteRow
             });
 
@@ -174,6 +206,128 @@ namespace TEAM
 
             #endregion
         }
+
+        /// <summary>
+        /// This method is called from the context menu, and applies all TEAM conventions to the Data Mapping collection (list / DataObjectMappings).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ParseThisRowAsJSONDataObjectMappingCollectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Get the value from the data item grid.
+            int selectedRow = Rows.GetFirstRow(DataGridViewElementStates.Selected);
+
+            var generationMetadataRow = ((DataRowView)Rows[selectedRow].DataBoundItem).Row;
+            var targetDataObjectName = generationMetadataRow[DataItemMappingGridColumns.TargetDataObject.ToString()];
+
+            try
+            {
+                // Get the value from the data object grid, based on the name.
+                var dataObjectGridLookupRow = _dataGridViewDataObjects.Rows
+                    .Cast<DataGridViewRow>()
+                    .Where(r => !r.IsNewRow)
+                    .Where(r => r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName))
+                    .FirstOrDefault();
+
+                var targetDataObject = (DataWarehouseAutomation.DataObject)dataObjectGridLookupRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
+
+
+                var dataObjectMappings = _dataGridViewDataObjects.GetDataObjectMappings(targetDataObject);
+                var vdwDataObjectMappingList = FormManageMetadata.GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
+
+                string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
+                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.name), output);
+
+                // Update the original form through the delegate/event handler.
+                DataObjectsParse($"A parse action has been called from the context menu. The Data Object Mapping for '{targetDataObject.name}' has been saved.\r\n");
+            }
+
+            catch (Exception exception)
+            {
+                DataObjectsParse($"An error occurred while generating the JSON. The error message is {exception.Message}\r\n");
+            }
+        }
+
+        /// <summary>
+        /// This method is called from the context menu on the data grid. It exports the selected row to JSON.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void DisplayThisRowAsJSONDataObjectMappingCollectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Get the selected row from the data item grid.
+            int selectedRow = Rows.GetFirstRow(DataGridViewElementStates.Selected);
+
+            var generationMetadataRow = ((DataRowView)Rows[selectedRow].DataBoundItem).Row;
+            var targetDataObjectName = generationMetadataRow[DataItemMappingGridColumns.TargetDataObject.ToString()];
+
+            try
+            {
+                // Get the value from the data object grid, based on the name.
+                var dataObjectGridLookupRow = _dataGridViewDataObjects.Rows
+                    .Cast<DataGridViewRow>()
+                    .Where(r => !r.IsNewRow)
+                    .Where(r => r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName))
+                    .FirstOrDefault();
+
+                var targetDataObject = (DataWarehouseAutomation.DataObject)dataObjectGridLookupRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
+
+                var dataObjectMappings = _dataGridViewDataObjects.GetDataObjectMappings(targetDataObject);
+
+                string output = JsonConvert.SerializeObject(dataObjectMappings, Formatting.Indented);
+
+                FormManageMetadata.ManageFormJsonInteraction(output);
+            }
+            catch (Exception exception)
+            {
+                DataObjectsParse($"An error occurred while generating the JSON. The error message is {exception.Message}\r\n");
+            }
+        }
+
+        /// <summary>
+        /// This method is called from the context menu on the data grid. It exports the selected row to JSON.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void DisplayThisRowAsJSONSingleDataObjectMappingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Get the selected row from the data item grid.
+            int selectedRow = Rows.GetFirstRow(DataGridViewElementStates.Selected);
+
+            var generationMetadataRow = ((DataRowView)Rows[selectedRow].DataBoundItem).Row;
+            var targetDataObjectName = generationMetadataRow[DataItemMappingGridColumns.TargetDataObject.ToString()];
+
+            try
+            {
+                // Get the value from the data object grid, based on the name.
+                var dataObjectGridLookupRow = _dataGridViewDataObjects.Rows
+                    .Cast<DataGridViewRow>()
+                    .Where(r => !r.IsNewRow)
+                    .Where(r => r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName))
+                    .FirstOrDefault();
+
+                var dataObjectMapping = _dataGridViewDataObjects.GetDataObjectMapping(dataObjectGridLookupRow);
+
+                string output = JsonConvert.SerializeObject(dataObjectMapping, Formatting.Indented);
+
+                FormManageMetadata.ManageFormJsonInteraction(output);
+            }
+            catch (Exception exception)
+            {
+                DataObjectsParse($"An error occurred while generating the JSON. The error message is {exception.Message}\r\n");
+            }
+        }
+
+        internal void DataObjectsParse(string text)
+        {
+            // Make sure something is listening to the event.
+            if (OnDataObjectParse == null) return;
+
+            // Pass through the custom arguments when this method is called.
+            ParseEventArgs args = new ParseEventArgs(text);
+            OnDataObjectParse(this, args);
+        }
+
         private void toolStripMenuItemDeleteMultipleRows_Click(object sender, EventArgs e)
         {
 

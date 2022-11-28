@@ -1202,7 +1202,7 @@ namespace TEAM
         /// </summary>
         /// <param name="dataObjectMappingGridViewRow"></param>
         /// <returns></returns>
-        private DataObjectMapping GetDataObjectMapping(DataGridViewRow dataObjectMappingGridViewRow)
+        public DataObjectMapping GetDataObjectMapping(DataGridViewRow dataObjectMappingGridViewRow)
         {
             var targetDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
 
@@ -1211,6 +1211,8 @@ namespace TEAM
             {
                 mappingName = targetDataObjectName
             };
+
+
 
             #region Enabled
 
@@ -1494,7 +1496,9 @@ namespace TEAM
                 #region Auto map
 
                 // For presentation layer, Hubs and Links, only manual mappings are supported.
-                if (dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.Presentation.ToString() && dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.CoreBusinessConcept.ToString() && dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.NaturalBusinessRelationship.ToString())
+                if (dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.Presentation.ToString() && 
+                    dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.CoreBusinessConcept.ToString() && 
+                    dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.NaturalBusinessRelationship.ToString())
                 {
                     // Auto-map any data items that are not yet manually mapped, but exist in source and target.
                     var physicalModelTargetDataGridViewRows = _dataGridViewPhysicalModel.Rows
