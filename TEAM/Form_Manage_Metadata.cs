@@ -369,9 +369,17 @@ namespace TEAM
         /// Populates the Attribute Mapping DataGrid directly from an existing JSON file.
         /// </summary>
         private void PopulateDataItemMappingGrid()
-        { 
+        {
+            var dataItemMappingFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
+
+            if (!File.Exists(dataItemMappingFileName))
+            {
+                richTextBoxInformation.AppendText("\r\nA new data item mapping file is created, because it did not exist yet.");
+                TeamDataItemMapping.CreateEmptyDataItemMappingJson(dataItemMappingFileName, TeamEventLog);
+            }
+
             // Load the file into memory (data table and json list)
-            AttributeMapping.GetMetadata(TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName());
+            AttributeMapping.GetMetadata(dataItemMappingFileName);
 
             //Make sure the changes are seen as committed, so that changes can be detected later on.
             AttributeMapping.DataTable.AcceptChanges();
@@ -402,8 +410,16 @@ namespace TEAM
         /// </summary>
         private void PopulatePhysicalModelGrid()
         {
+            var physicalModelFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+
+            if (!File.Exists(physicalModelFileName))
+            {
+                richTextBoxInformation.AppendText("\r\nA new physical model file is created, because it did not exist yet.");
+                TeamDataItemMapping.CreateEmptyDataItemMappingJson(physicalModelFileName, TeamEventLog);
+            }
+
             // Load the file into memory (data table and json list)
-            PhysicalModel.GetMetadata(TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName());
+            PhysicalModel.GetMetadata(physicalModelFileName);
 
             //Make sure the changes are seen as committed, so that changes can be detected later on.
             PhysicalModel.DataTable.AcceptChanges();
@@ -914,19 +930,13 @@ namespace TEAM
 
         private void SaveModelPhysicalModelMetadata(DataTable dataTableChanges)
         {
-            if (TeamJsonHandling.JsonFileConfiguration.newFilePhysicalModel == "true")
-            {
-                TeamJsonHandling.RemoveExistingJsonFile(globalParameters.JsonModelMetadataFileName + ".json");
-                TeamJsonHandling.CreatePlaceholderJsonFile(globalParameters.JsonModelMetadataFileName);
-                TeamJsonHandling.JsonFileConfiguration.newFilePhysicalModel = "false";
-            }
-
             //Grabbing the generic settings from the main forms
             if (dataTableChanges != null && dataTableChanges.Rows.Count > 0) //Check if there are any changes made at all
             {
                 // Retrieve the physical model snapshot file.
-                var inputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-                var jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(inputFileName)).ToList();
+                var physicalModelFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+
+                var jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(physicalModelFileName)).ToList();
 
                 foreach (DataRow row in dataTableChanges.Rows) //Loop through the detected changes
                 {
@@ -1197,9 +1207,8 @@ namespace TEAM
 
                 // Write the result.
                 string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                string outputFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
 
-                File.WriteAllText(outputFileName, output);
+                File.WriteAllText(physicalModelFileName, output);
 
                 //Committing the changes to the data table
                 dataTableChanges.AcceptChanges();
@@ -1213,16 +1222,11 @@ namespace TEAM
 
         private void SaveDataItemMappingMetadata(DataTable dataTableChanges)
         {
-            if (TeamJsonHandling.JsonFileConfiguration.newFileAttributeMapping == "true")
-            {
-                TeamJsonHandling.RemoveExistingJsonFile(globalParameters.JsonAttributeMappingFileName + ".json");
-                TeamJsonHandling.CreatePlaceholderJsonFile(globalParameters.JsonAttributeMappingFileName);
-                TeamJsonHandling.JsonFileConfiguration.newFileAttributeMapping = "false";
-            }
-
             //Check if there are any changes made at all.
             if (dataTableChanges != null && (dataTableChanges.Rows.Count > 0))
             {
+                string dataItemMappingFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
+
                 // Loop through the changes captured in the data table.
                 foreach (DataRow row in dataTableChanges.Rows)
                 {
@@ -1265,8 +1269,7 @@ namespace TEAM
 
                         try
                         {
-                            var inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                            DataItemMappingJson[] jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(inputFileName));
+                            DataItemMappingJson[] jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(dataItemMappingFileName));
 
                             //Retrieves the json segment in the file.
                             var jsonHash = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
@@ -1286,8 +1289,7 @@ namespace TEAM
                             }
 
                             string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                            string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                            File.WriteAllText(outputFileName, output);
+                            File.WriteAllText(dataItemMappingFileName, output);
 
                             // Update the data object mapping.
                             WriteDataObjectMappingsToFile(targetDataObject);
@@ -1340,17 +1342,17 @@ namespace TEAM
                         {
                             var jsonAttributeMappingFull = new JArray();
 
-                            // Load the file, if existing information needs to be merged
-                            string inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                            DataItemMappingJson[] jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(inputFileName));
+                            // Load the file, if existing information needs to be merged.
 
-                            // Convert it into a JArray so segments can be added easily
+                            DataItemMappingJson[] jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(dataItemMappingFileName));
+
+                            // Convert it into a JArray so segments can be added easily.
                             if (jsonArray != null)
                             {
                                 jsonAttributeMappingFull = JArray.FromObject(jsonArray);
                             }
 
-                            string[] inputHashValue = new string[] { sourceTable, sourceColumn, targetTable, targetColumn, notes };
+                            string[] inputHashValue = new[] { sourceTable, sourceColumn, targetTable, targetColumn, notes };
                             var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
 
                             JObject newJsonSegment = new JObject(
@@ -1365,8 +1367,7 @@ namespace TEAM
                             jsonAttributeMappingFull.Add(newJsonSegment);
 
                             string output = JsonConvert.SerializeObject(jsonAttributeMappingFull, Formatting.Indented);
-                            string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                            File.WriteAllText(outputFileName, output);
+                            File.WriteAllText(dataItemMappingFileName, output);
 
                             // Update the data object mapping.
                             WriteDataObjectMappingsToFile(targetTable);
@@ -1374,9 +1375,9 @@ namespace TEAM
                             //Making sure the hash key value is added to the data table as well
                             row[(int)DataItemMappingGridColumns.HashKey] = hashKey;
                         }
-                        catch (JsonReaderException ex)
+                        catch (JsonReaderException exception)
                         {
-                            richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex.Message;
+                            richTextBoxInformation.Text += $"There were issues inserting the JSON segment / record.\r\nThe error message is {exception.Message}";
                         }
                     }
 
@@ -1392,8 +1393,7 @@ namespace TEAM
 
                         try
                         {
-                            string inputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                            var jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(inputFileName)).ToList();
+                            var jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(dataItemMappingFileName)).ToList();
 
                             //Retrieves the json segment in the file for the given hash returns value or NULL
                             var jsonSegment = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
@@ -1411,8 +1411,7 @@ namespace TEAM
                             }
 
                             string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                            string outputFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
-                            File.WriteAllText(outputFileName, output);
+                            File.WriteAllText(dataItemMappingFileName, output);
 
                             // Update the data object mapping.
                             WriteDataObjectMappingsToFile(targetDataObject);

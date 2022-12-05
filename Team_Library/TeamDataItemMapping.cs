@@ -45,6 +45,12 @@ namespace TEAM_Library
             JsonList = new List<DataItemMappingJson>();
         }
 
+        public static void CreateEmptyDataItemMappingJson(string fileName, EventLog eventLog)
+        {
+            File.WriteAllText(fileName, "[]");
+            eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "A new data item mapping file is created, because it did not exist yet."));
+        }
+
         /// <summary>
         /// Set the sort order for the data table.
         /// </summary>
@@ -65,7 +71,6 @@ namespace TEAM_Library
             DataTable.Columns[(int)DataItemMappingGridColumns.TargetDataItem].ColumnName = DataItemMappingGridColumns.TargetDataItem.ToString();
             DataTable.Columns[(int)DataItemMappingGridColumns.Notes].ColumnName = DataItemMappingGridColumns.Notes.ToString();
         }
-
 
         /// <summary>
         /// Creates a  object (Json List and DataTable) from a Json file.
