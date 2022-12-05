@@ -1162,7 +1162,7 @@ namespace TEAM_Library
                 {
                     // There are no matching target values. This should not happen and should be caught by the validator. 
                     // But just in case...
-                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was no matching target business key component found for {dataObject.name} with business key definition {businessKeyDefinition} in the physical model."));
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"There was no matching target business key component found for {dataObject.name} with business key definition {businessKeyDefinition} in the physical model."));
                 }
 
                 foreach (var row in orderedList)

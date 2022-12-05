@@ -118,41 +118,48 @@ namespace TEAM
         /// </summary>
         internal void CreateDummyValidationFile(string fileName)
         {
-            if (!File.Exists(fileName))
+            try
             {
-                var validationFile = new StringBuilder();
-
-                validationFile.AppendLine("/* TEAM Validation Settings */");
-
-                // Object existence validation
-                validationFile.AppendLine("DataObjectExistence|True");
-                validationFile.AppendLine("BusinessKeyExistence|True");
-
-                validationFile.AppendLine("DataItemExistence|True");
-
-                // Consistency validation
-                validationFile.AppendLine("LogicalGroup|True");
-                validationFile.AppendLine("LinkKeyOrder|True");
-                validationFile.AppendLine("BusinessKeySyntax|True");
-                validationFile.AppendLine("LinkCompletion|True");
-
-                validationFile.AppendLine("BasicDataVaultValidation|True");
-
-                validationFile.AppendLine("DuplicateDataObjectMappings|True");
-
-                validationFile.AppendLine("/* End of file */");
-
-                using (var outfile = new StreamWriter(fileName))
+                if (!File.Exists(fileName))
                 {
-                    outfile.Write(validationFile.ToString());
-                    outfile.Close();
-                }
+                    var validationFile = new StringBuilder();
 
-                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file was created for {fileName}."));
+                    validationFile.AppendLine("/* TEAM Validation Settings */");
+
+                    // Object existence validation
+                    validationFile.AppendLine("DataObjectExistence|True");
+                    validationFile.AppendLine("BusinessKeyExistence|True");
+
+                    validationFile.AppendLine("DataItemExistence|True");
+
+                    // Consistency validation
+                    validationFile.AppendLine("LogicalGroup|True");
+                    validationFile.AppendLine("LinkKeyOrder|True");
+                    validationFile.AppendLine("BusinessKeySyntax|True");
+                    validationFile.AppendLine("LinkCompletion|True");
+
+                    validationFile.AppendLine("BasicDataVaultValidation|True");
+
+                    validationFile.AppendLine("DuplicateDataObjectMappings|True");
+
+                    validationFile.AppendLine("/* End of file */");
+
+                    using (var outfile = new StreamWriter(fileName))
+                    {
+                        outfile.Write(validationFile.ToString());
+                        outfile.Close();
+                    }
+
+                    FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new configuration file was created for {fileName}."));
+                }
+                else
+                {
+                    FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {fileName} was detected."));
+                }
             }
-            else
+            catch (Exception exception)
             {
-                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The existing configuration file {fileName} was detected."));
+                FormBase.TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred creating a new default validation file. The reported error is {exception.Message}"));
             }
         }
     }
