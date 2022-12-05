@@ -783,7 +783,8 @@ namespace TEAM
                         // If there is no change in the file name / target data object name, the change must be made in an existing file.
                         // If there is a change, the values must be written to a new or other file and an existing segment must be removed.
 
-                        if (previousDataObjectName == newDataObject.name)
+                        // Note that case is ignored here, because this will cause issues on the file system (which is not case-sensitive by default).
+                        if (string.Equals(previousDataObjectName, newDataObject.name, StringComparison.OrdinalIgnoreCase))
                         {
                             // A file already exists, and must only be updated.
                             try
@@ -803,7 +804,7 @@ namespace TEAM
                                 // Write the new file.
                                 WriteDataObjectMappingsToFile(newDataObject);
 
-                                // Update the old file, and/or delete if there are no segments left
+                                // Update the old file, and/or delete if there are no segments left.
                                 WriteDataObjectMappingsToFile(previousDataObjectName);
                             }
                             catch (JsonReaderException ex)
@@ -873,16 +874,34 @@ namespace TEAM
                 var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.name), output);
+                string outputFilePath = globalParameters.GetMetadataFilePath(targetDataObject.name);
 
-                ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
+                try
+                {
+                    File.WriteAllText(outputFilePath, output);
 
-                ThreadHelper.SetText(this, richTextBoxInformation, $"The Data Object Mapping for '{targetDataObject.name}' has been saved.\r\n");
+                    ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
+
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"The Data Object Mapping for '{targetDataObject.name}' has been saved.\r\n");
+                }
+                catch (Exception exception)
+                {
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"There was an issue saving the Data Object Mapping for '{targetDataObject.name}', the reported exception is {exception.Message}\r\n");
+                }
             }
             else
             {
-                var fileToDelete = globalParameters.GetMetadataFilePath(targetDataObject.name);
-                File.Delete(fileToDelete);
+                // Deleting a file that has been renamed, removed or otherwise emptied.
+                try
+                {
+                    var fileToDelete = globalParameters.GetMetadataFilePath(targetDataObject.name);
+                    File.Delete(fileToDelete);
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"Data Object Mapping for '{targetDataObject.name}' has been removed.\r\n");
+                }
+                catch (Exception exception)
+                {
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"There was an issue deleting the Data Object Mapping for '{targetDataObject.name}', the reported exception is {exception.Message}\r\n");
+                }
             }
         }
 
@@ -2447,8 +2466,8 @@ namespace TEAM
 
                     if (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
                     {
-                        if (!row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(filterCriterion) &&
-                            !row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(filterCriterion))
+                        if (!row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase) &&
+                            !row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase))
                         {
                             CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataObjects.DataSource];
                             currencyManager.SuspendBinding();
