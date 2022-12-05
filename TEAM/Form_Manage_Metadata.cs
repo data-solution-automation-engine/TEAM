@@ -693,7 +693,6 @@ namespace TEAM
                     {
 
                         // Perform the saving of the metadata, one for each grid.
-
                         if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0)
                         {
                             try
@@ -1224,7 +1223,7 @@ namespace TEAM
             //Check if there are any changes made at all.
             if (dataTableChanges != null && (dataTableChanges.Rows.Count > 0))
             {
-                // Loop through the changes captured in the data table
+                // Loop through the changes captured in the data table.
                 foreach (DataRow row in dataTableChanges.Rows)
                 {
                     #region Changes
@@ -1374,7 +1373,6 @@ namespace TEAM
 
                             //Making sure the hash key value is added to the data table as well
                             row[(int)DataItemMappingGridColumns.HashKey] = hashKey;
-
                         }
                         catch (JsonReaderException ex)
                         {
