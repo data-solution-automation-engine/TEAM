@@ -354,9 +354,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Properties\app.manifest" />
-    <Content Include="Schema\interfaceDataWarehouseAutomationMetadata.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Schema\interfaceDataWarehouseAutomationMetadata.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

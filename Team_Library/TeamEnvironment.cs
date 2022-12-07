@@ -25,9 +25,15 @@ namespace TEAM_Library
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string environmentNotes { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Dictionary<string,TeamModelLayer> Layers
+        {
+            get;
+            set;
+        }
+
         public void SaveTeamEnvironment(string fileName)
         {
-            // globalParameters.CorePath + globalParameters.JsonEnvironmentFileName + globalParameters.JsonExtension
             // Update the environment on disk
             if (!File.Exists(fileName))
             {
@@ -67,6 +73,7 @@ namespace TEAM_Library
                 jsonKeyLookup.configurationPath = configurationPath;
                 jsonKeyLookup.metadataPath = metadataPath;
                 jsonKeyLookup.environmentNotes = environmentNotes;
+                jsonKeyLookup.Layers = Layers;
             }
 
             // Save the updated file to disk.
