@@ -2485,10 +2485,10 @@ namespace TEAM
 
                     if (row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value != null)
                     {
-                        if (!row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(filterCriterion) &&
-                            !row.Cells[(int)DataItemMappingGridColumns.SourceDataItem].Value.ToString().Contains(filterCriterion) &&
-                            !row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(filterCriterion) &&
-                            !row.Cells[(int)DataItemMappingGridColumns.TargetDataItem].Value.ToString().Contains(filterCriterion))
+                        if (!row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase) &&
+                            !row.Cells[(int)DataItemMappingGridColumns.SourceDataItem].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase) &&
+                            !row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase) &&
+                            !row.Cells[(int)DataItemMappingGridColumns.TargetDataItem].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase))
                         {
                             CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataItems.DataSource];
                             currencyManager.SuspendBinding();
@@ -2518,7 +2518,8 @@ namespace TEAM
                     {
                         // There is no broad filter, but a user filter has been set.
                         // Apply text box filter to support user filtering.
-                        filterCriterionPhysicalModel = $"[{PhysicalModelMappingMetadataColumns.databaseName}] LIKE '{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.tableName}] LIKE '{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.columnName}] LIKE '{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.schemaName}] LIKE '{filterCriterion}%'";inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
+                        filterCriterionPhysicalModel = $"[{PhysicalModelMappingMetadataColumns.databaseName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.tableName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.columnName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.schemaName}] LIKE '%{filterCriterion}%'";
+                        inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
                     }
                     else if (!string.IsNullOrEmpty(currentFilter) && !string.IsNullOrEmpty(filterCriterion))
                     {
@@ -2533,11 +2534,11 @@ namespace TEAM
                         else
                         {
                             // The target is not a STG process and not a PSA process.
-                            currentFilter = $"[{PhysicalModelMappingMetadataColumns.tableName}] NOT LIKE '{TeamConfiguration.StgTablePrefixValue}%' AND [{PhysicalModelMappingMetadataColumns.tableName}] NOT LIKE '{TeamConfiguration.PsaTablePrefixValue}%'";
+                            currentFilter = $"[{PhysicalModelMappingMetadataColumns.tableName}] NOT LIKE '%{TeamConfiguration.StgTablePrefixValue}%' AND [{PhysicalModelMappingMetadataColumns.tableName}] NOT LIKE '%{TeamConfiguration.PsaTablePrefixValue}%'";
                         }
 
                         // Merge with existing filter.
-                        filterCriterionPhysicalModel = currentFilter + $"AND [{PhysicalModelMappingMetadataColumns.databaseName}] LIKE '{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.tableName}] LIKE '{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.columnName}] LIKE '{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.schemaName}] LIKE '{filterCriterion}%'";
+                        filterCriterionPhysicalModel = currentFilter + $"AND [{PhysicalModelMappingMetadataColumns.databaseName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.tableName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.columnName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.schemaName}] LIKE '%{filterCriterion}%'";
                     }
 
                     inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;

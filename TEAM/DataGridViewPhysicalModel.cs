@@ -170,6 +170,7 @@ namespace TEAM
             KeyDown += DataGridView_KeyDown;
             MouseDown += DataGridView_MouseDown;
             RowPostPaint += OnRowPostPaint;
+            DataError += OnDataError;
 
             #endregion
 
@@ -222,6 +223,19 @@ namespace TEAM
             #endregion
 
             #endregion
+        }
+
+        private void OnDataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            try
+            {
+                Rows[e.RowIndex].ErrorText = $"{e.Exception}";
+                e.Cancel = true;
+            }
+            catch (Exception exception)
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered formatting the physical model grid: {exception.Message}."));
+            }
         }
 
         private void toolStripMenuItemDeleteMultipleRows_Click(object sender, EventArgs e)
