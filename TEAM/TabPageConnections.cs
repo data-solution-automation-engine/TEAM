@@ -362,7 +362,7 @@ namespace TEAM
             var groupBoxConnection = new GroupBox();
             localPanel.Controls.Add(groupBoxConnection);
             groupBoxConnection.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            groupBoxConnection.Location = new Point(562, 6);
+            groupBoxConnection.Location = new Point(550, 6);
             groupBoxConnection.Size = new Size(535, 223);
             groupBoxConnection.Name = "groupBoxConnection";
             groupBoxConnection.Text = @"Connection";

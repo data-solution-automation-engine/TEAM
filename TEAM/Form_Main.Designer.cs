@@ -62,7 +62,7 @@
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox2.Controls.Add(this.labelWorkingEnvironment);
             this.groupBox2.Controls.Add(this.labelWorkingEnvironmentType);
-            this.groupBox2.Location = new System.Drawing.Point(12, 737);
+            this.groupBox2.Location = new System.Drawing.Point(12, 501);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(252, 49);
             this.groupBox2.TabIndex = 22;
@@ -95,7 +95,7 @@
             this.richTextBoxInformation.Location = new System.Drawing.Point(14, 59);
             this.richTextBoxInformation.Name = "richTextBoxInformation";
             this.richTextBoxInformation.ReadOnly = true;
-            this.richTextBoxInformation.Size = new System.Drawing.Size(1122, 512);
+            this.richTextBoxInformation.Size = new System.Drawing.Size(758, 512);
             this.richTextBoxInformation.TabIndex = 2;
             this.richTextBoxInformation.Text = "";
             this.richTextBoxInformation.TextChanged += new System.EventHandler(this.richTextBoxInformation_TextChanged);
@@ -110,7 +110,7 @@
             this.helpToolStripMenuItem});
             this.menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
             this.menuStripMainMenu.Name = "menuStripMainMenu";
-            this.menuStripMainMenu.Size = new System.Drawing.Size(1148, 24);
+            this.menuStripMainMenu.Size = new System.Drawing.Size(784, 24);
             this.menuStripMainMenu.TabIndex = 4;
             this.menuStripMainMenu.Text = "menuStrip1";
             // 
@@ -252,7 +252,7 @@
             // 
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Image = global::TEAM.Properties.Resources.RavosLogo;
-            this.pictureBox1.Location = new System.Drawing.Point(1027, 684);
+            this.pictureBox1.Location = new System.Drawing.Point(663, 448);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(109, 100);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -263,16 +263,15 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1148, 797);
+            this.ClientSize = new System.Drawing.Size(784, 561);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.richTextBoxInformation);
             this.Controls.Add(this.menuStripMainMenu);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripMainMenu;
-            this.MinimumSize = new System.Drawing.Size(1164, 835);
+            this.MinimumSize = new System.Drawing.Size(600, 400);
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Taxonomy for ETL Automation Metadata ";

@@ -5,7 +5,6 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using TEAM_Library;
-using System.Linq;
 
 namespace TEAM
 {
@@ -934,6 +933,16 @@ namespace TEAM
             {
                 textBoxSatelliteAlternativeLDTSAttribute.Enabled = false;
             }
+        }
+
+        private void tabPageDataWarehouse_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPageEnvironments_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
