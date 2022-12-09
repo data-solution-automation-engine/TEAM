@@ -1500,10 +1500,10 @@ namespace TEAM
                 {
                     // Auto-map any data items that are not yet manually mapped, but exist in source and target.
                     var physicalModelTargetDataGridViewRows = _dataGridViewPhysicalModel.Rows
-                        .Cast<DataGridViewRow>()
-                        .Where(r => !r.IsNewRow)
-                        .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(targetDataObject.name))
-                        .ToList();
+                    .Cast<DataGridViewRow>()
+                    .Where(r => !r.IsNewRow)
+                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(targetDataObject.name))
+                    .ToList();
 
                     foreach (var row in physicalModelTargetDataGridViewRows)
                     {

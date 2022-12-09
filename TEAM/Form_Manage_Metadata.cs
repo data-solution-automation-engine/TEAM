@@ -2476,6 +2476,10 @@ namespace TEAM
                         }
                     }
                 }
+
+                // Reset the physical model filter. This is important because some checks need access to all the information.
+                var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
+                inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
             }
             else if (tabControlDataMappings.SelectedIndex == 1)
             {
@@ -2497,8 +2501,12 @@ namespace TEAM
                         }
                     }
                 }
+
+                // Reset the physical model filter. This is important because some checks need access to all the information.
+                var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
+                inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
             }
-            else if (tabControlDataMappings.SelectedIndex == 2)
+            else if (tabControlDataMappings.SelectedIndex == 2) // Physical model
             {
                 var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
                 var currentFilter = inputTableMappingPhysicalModel.DefaultView.RowFilter;
