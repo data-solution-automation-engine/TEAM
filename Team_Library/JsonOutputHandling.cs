@@ -873,7 +873,7 @@ namespace TEAM_Library
 
                     DataItemMapping businessKeyDataItemMapping = new DataItemMapping();
 
-                    if (dataObjectMapping.mappingClassifications[0].classification == DataObjectTypes.Presentation.ToString())
+                    if (new[] { DataObjectTypes.Presentation.ToString(), DataObjectTypes.StagingArea.ToString(), DataObjectTypes.PersistentStagingArea.ToString() }.Contains(dataObjectMapping.mappingClassifications[0].classification))
                     {
                         // Map the key to itself (workaround as above).
                         businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, drivingKeyValue);
