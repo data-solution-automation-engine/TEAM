@@ -288,6 +288,7 @@
             // 
             // tabPagePaths
             // 
+            this.tabPagePaths.AutoScroll = true;
             this.tabPagePaths.Controls.Add(this.pictureBox4);
             this.tabPagePaths.Controls.Add(this.textBoxTeamMetadataPath);
             this.tabPagePaths.Controls.Add(this.label2);
@@ -383,6 +384,7 @@
             // 
             // tabPageDataObjectTypes
             // 
+            this.tabPageDataObjectTypes.AutoScroll = true;
             this.tabPageDataObjectTypes.Controls.Add(this.groupBox4);
             this.tabPageDataObjectTypes.Controls.Add(this.groupBoxDataObjectIdentification);
             this.tabPageDataObjectTypes.Controls.Add(this.groupBoxPrefixSuffix);
@@ -1174,6 +1176,7 @@
             // 
             // tabPageConnectionMain
             // 
+            this.tabPageConnectionMain.AutoScroll = true;
             this.tabPageConnectionMain.Controls.Add(this.labelMetadataConnectionKey);
             this.tabPageConnectionMain.Controls.Add(this.comboBoxMetadataConnection);
             this.tabPageConnectionMain.Controls.Add(this.richTextBoxConnectionMain);
@@ -1254,6 +1257,7 @@
             // 
             // tabPageEnvironmentMain
             // 
+            this.tabPageEnvironmentMain.AutoScroll = true;
             this.tabPageEnvironmentMain.Controls.Add(this.labelEnvironmentKey);
             this.tabPageEnvironmentMain.Controls.Add(this.comboBoxEnvironments);
             this.tabPageEnvironmentMain.Controls.Add(this.richTextBoxEnvironmentsInformation);
@@ -1343,7 +1347,6 @@
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripMainMenu;
-            this.MinimumSize = new System.Drawing.Size(1152, 836);
             this.Name = "FormManageConfiguration";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Manage the configuration settings";

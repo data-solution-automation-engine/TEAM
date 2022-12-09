@@ -53,6 +53,7 @@ namespace TEAM
             Size = new Size(1330, 601);
             AutoSizeMode = AutoSizeMode.GrowOnly;
             AutoSize = true;
+            AutoScroll = true;
 
             // Add Panel to facilitate docking
             var localPanel = new Panel();
