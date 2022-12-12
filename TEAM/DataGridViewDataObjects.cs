@@ -31,6 +31,9 @@ namespace TEAM
         public delegate void DataObjectParseHandler(object sender, ParseEventArgs e);
         public event DataObjectParseHandler OnDataObjectParse;
 
+        public delegate void HeaderSortHandler(object sender, FilterEventArgs e);
+        public event HeaderSortHandler OnHeaderSort;
+
         /// <summary>
         /// The definition of the Data Grid View for table mappings (DataObject mappings).
         /// </summary>
@@ -76,7 +79,6 @@ namespace TEAM
             ColumnHeaderMouseClick += DataGridViewDataObjects_ColumnHeaderMouseClick;
             CellEnter += DataGridViewDataObjects_CellEnter; // Open Combo Boxes on first click
             DefaultValuesNeeded += DataGridViewDataObjectMapping_DefaultValuesNeeded;
-            Sorted += TextBoxFilterCriterion_OnDelayedTextChanged;
             CellValueChanged += OnCheckBoxValueChanged;
             RowPostPaint += OnRowPostPaint;
 
@@ -364,6 +366,15 @@ namespace TEAM
             ParseEventArgs args = new ParseEventArgs(text);
             OnDataObjectParse(this, args);
         }
+        internal void HeaderSort()
+        {
+            // Make sure something is listening to the event.
+            if (OnHeaderSort == null) return;
+
+            // Pass through the custom arguments when this method is called.
+            FilterEventArgs args = new FilterEventArgs(true);
+            OnHeaderSort(this, args);
+        }
 
         private void OnCheckBoxValueChanged(object sender, DataGridViewCellEventArgs e)
         {
@@ -483,6 +494,9 @@ namespace TEAM
                     Sort(Columns[(int)DataObjectMappingGridColumns.TargetDataObjectName], ListSortDirection.Ascending);
                 }
             }
+
+            // Callback to parent form.
+            HeaderSort();
         }
         
         private void toolStripMenuItemModifyJson_Click(object sender, EventArgs e)
@@ -521,36 +535,6 @@ namespace TEAM
             DataGridViewCell dummyCell = this[CurrentCell.ColumnIndex, CurrentCell.RowIndex + 1];
             CurrentCell = dummyCell;
             CurrentCell = cell;
-        }
-
-        private void TextBoxFilterCriterion_OnDelayedTextChanged(object sender, EventArgs e)
-        {
-            ApplyDataGridViewFiltering();
-        }
-
-        public void ApplyDataGridViewFiltering()
-        {
-            foreach (DataGridViewRow dr in Rows)
-            {
-                dr.Visible = true;
-            }
-
-            foreach (DataGridViewRow dr in Rows)
-            {
-                if (dr.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
-                {
-                    if (!dr.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString()
-                            .Contains(Text) && !dr
-                            .Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString()
-                            .Contains(Text))
-                    {
-                        CurrencyManager currencyManager1 = (CurrencyManager)BindingContext[DataSource];
-                        currencyManager1.SuspendBinding();
-                        dr.Visible = false;
-                        currencyManager1.ResumeBinding();
-                    }
-                }
-            }
         }
 
         /// <summary>

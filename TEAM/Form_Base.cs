@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using TEAM_Library;
 
 namespace TEAM
@@ -59,5 +60,15 @@ namespace TEAM
         internal static DataGridViewPhysicalModel _dataGridViewPhysicalModel;
 
         internal static EventLog TeamEventLog { get; set; } = new EventLog();
+
+        public class FilterEventArgs : EventArgs
+        {
+            public bool DoFilter { get; private set; }
+
+            public FilterEventArgs(bool doFilter)
+            {
+                DoFilter = doFilter;
+            }
+        }
     }
 }

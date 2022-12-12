@@ -24,6 +24,9 @@ namespace TEAM
         public delegate void DataObjectParseHandler(object sender, ParseEventArgs e);
         public event DataObjectParseHandler OnDataObjectParse;
 
+        public delegate void HeaderSortHandler(object sender, FilterEventArgs e);
+        public event HeaderSortHandler OnHeaderSort;
+
         internal Form Parent;
 
         public DataGridViewDataItems(TeamConfiguration teamConfiguration, Form parent)
@@ -395,6 +398,9 @@ namespace TEAM
                     }
                 }
             }
+
+            // Callback to parent form.
+            HeaderSort();
         }
 
         /// <summary>
@@ -746,6 +752,16 @@ namespace TEAM
                 ThreadHelper.SetText(Parent, targetControl, $"{exceptionMessage}\r\n");
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, exceptionMessage ));
             }
+        }
+
+        internal void HeaderSort()
+        {
+            // Make sure something is listening to the event.
+            if (OnHeaderSort == null) return;
+
+            // Pass through the custom arguments when this method is called.
+            FilterEventArgs args = new FilterEventArgs(true);
+            OnHeaderSort(this, args);
         }
 
         /// <summary>

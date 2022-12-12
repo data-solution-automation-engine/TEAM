@@ -121,6 +121,7 @@ namespace TEAM
             ((ISupportInitialize)(_dataGridViewDataObjects)).BeginInit();
 
             _dataGridViewDataObjects.OnDataObjectParse += InformOnDataObjectsResult;
+            _dataGridViewDataObjects.OnHeaderSort += ApplyFilter;
             _dataGridViewDataObjects.DoubleBuffered(true);
 
             // Add tab page.
@@ -142,6 +143,14 @@ namespace TEAM
             ((ISupportInitialize)(_dataGridViewDataObjects)).EndInit();
         }
 
+        private void ApplyFilter(object sender, FilterEventArgs e)
+        {
+            if (e.DoFilter)
+            {
+                ApplyDataGridViewFiltering();
+            }
+        }
+        
         /// <summary>
         /// Definition of the Data Item grid view.
         /// </summary>
@@ -151,6 +160,7 @@ namespace TEAM
             ((ISupportInitialize)(_dataGridViewDataItems)).BeginInit();
 
             _dataGridViewDataItems.OnDataObjectParse += InformOnDataObjectsResult;
+            _dataGridViewDataItems.OnHeaderSort += ApplyFilter;
             _dataGridViewDataItems.DoubleBuffered(true);
 
             // Add tab page.
