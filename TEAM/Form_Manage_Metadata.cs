@@ -1419,14 +1419,17 @@ namespace TEAM
 
                             jsonArray.Remove(jsonSegment);
 
-                            if (string.IsNullOrEmpty(jsonSegment.attributeMappingHash))
+                            if (jsonSegment != null)
                             {
-                                richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
-                            }
-                            else
-                            {
-                                //Remove the segment from the JSON
-                                jsonArray.Remove(jsonSegment);
+                                if (string.IsNullOrEmpty(jsonSegment.attributeMappingHash))
+                                {
+                                    richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
+                                }
+                                else
+                                {
+                                    //Remove the segment from the JSON
+                                    jsonArray.Remove(jsonSegment);
+                                }
                             }
 
                             string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
