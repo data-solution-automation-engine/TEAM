@@ -7,8 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TEAM_Library;
+using Windows.UI.Xaml.Controls;
 using static TEAM.DataGridViewDataObjects;
 using static TEAM.FormBase;
+using Utility = TEAM_Library.Utility;
 
 namespace TEAM
 {
@@ -22,9 +24,12 @@ namespace TEAM
         public delegate void DataObjectParseHandler(object sender, ParseEventArgs e);
         public event DataObjectParseHandler OnDataObjectParse;
 
-        public DataGridViewDataItems(TeamConfiguration teamConfiguration)
+        internal Form Parent;
+
+        public DataGridViewDataItems(TeamConfiguration teamConfiguration, Form parent)
         {
             TeamConfiguration = teamConfiguration;
+            Parent = parent;
 
             #region Basic properties
 
@@ -663,46 +668,61 @@ namespace TEAM
         {
             try
             {
-                string s = Clipboard.GetText();
-                string[] lines = s.Split('\n');
+                string clipboardText = Clipboard.GetText();
+                List<string> clipboardTextLines = clipboardText.Split('\n').ToList();
 
-                int iRow = CurrentCell.RowIndex;
-                int iCol = CurrentCell.ColumnIndex;
-                DataGridViewCell oCell;
-                if (iRow + lines.Length > Rows.Count - 1)
+                for (int i = 0; i < clipboardTextLines.Count; i++)
                 {
-                    bool bFlag = false;
-                    foreach (string sEmpty in lines)
+                    if (clipboardTextLines[i] == "")
                     {
-                        if (sEmpty == "")
-                        {
-                            bFlag = true;
-                        }
+                        clipboardTextLines.RemoveAt(i);
                     }
-
-                    int iNewRows = iRow + lines.Length - Rows.Count;
-                    if (iNewRows > 0)
-                    {
-                        if (bFlag)
-                            Rows.Add(iNewRows);
-                        else
-                            Rows.Add(iNewRows + 1);
-                    }
-                    else
-                        Rows.Add(iNewRows + 1);
                 }
 
-                foreach (string line in lines)
+                int currentRowIndex = CurrentCell.RowIndex;
+                int currentColumnIndex = CurrentCell.ColumnIndex;
+
+                // Add rows to the grid.
+                if (currentRowIndex + clipboardTextLines.Count > Rows.Count - 1)
                 {
-                    if (iRow < RowCount && line.Length > 0)
+                    int newRowCount = currentRowIndex + clipboardTextLines.Count - Rows.Count;
+
+                    BindingSource bindingSource = DataSource as BindingSource;
+                    DataTable dataTable = (DataTable)bindingSource.DataSource;
+
+                    if (newRowCount > 0)
+                    {
+                        foreach (var value in clipboardTextLines)
+                        {
+                            // Add the row(s) to the underlying data table.
+                            DataRow drToAdd = dataTable.NewRow();
+                            dataTable.Rows.Add(drToAdd);
+                        }
+                    }
+                    else
+                    {
+                        // Add the row(s) to the underlying data table.
+                        DataRow drToAdd = dataTable.NewRow();
+                        dataTable.Rows.Add(drToAdd);
+                    }
+
+                    // Remove superfluous rows.
+                    Rows.RemoveAt(Rows.Count - 2);
+                }
+
+                // Adding the values.
+                foreach (string line in clipboardTextLines)
+                {
+                    if (currentRowIndex < RowCount && line.Length > 0)
                     {
                         string[] sCells = line.Split('\t');
+
                         for (int i = 0; i < sCells.GetLength(0); ++i)
                         {
-                            if (iCol + i < ColumnCount)
+                            if (currentColumnIndex + i < ColumnCount)
                             {
-                                oCell = this[iCol + i, iRow];
-                                oCell.Value = Convert.ChangeType(sCells[i].Replace("\r", ""), oCell.ValueType);
+                                var cell = this[currentColumnIndex + i, currentRowIndex];
+                                cell.Value = Convert.ChangeType(sCells[i].Replace("\r", ""), cell.ValueType);
                             }
                             else
                             {
@@ -710,19 +730,21 @@ namespace TEAM
                             }
                         }
 
-                        iRow++;
+                        currentRowIndex++;
                     }
                     else
                     {
                         break;
                     }
                 }
-
-                //Clipboard.Clear();
             }
-            catch (FormatException ex)
+            catch (Exception exception)
             {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
+                var exceptionMessage = $"An exception has been encountered: {exception.Message}.";
+                var targetControl = Parent.Controls.Find("richTextBoxInformation", true).FirstOrDefault() as RichTextBox;
+
+                ThreadHelper.SetText(Parent, targetControl, $"{exceptionMessage}\r\n");
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, exceptionMessage ));
             }
         }
 
@@ -745,9 +767,13 @@ namespace TEAM
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                MessageBox.Show(@"Pasting into the data grid has failed", @"Copy/Paste", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                var exceptionMessage = $"Copy/paste has failed.";
+                var targetControl = Parent.Controls.Find("richTextBoxInformation", true).FirstOrDefault() as RichTextBox;
+
+                ThreadHelper.SetText(Parent, targetControl, $"{exceptionMessage}\r\n");
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, exceptionMessage));
             }
         }
     }

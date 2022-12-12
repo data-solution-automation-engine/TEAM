@@ -147,7 +147,7 @@ namespace TEAM
         /// </summary>
         private void SetDataItemGridView()
         {
-            _dataGridViewDataItems = new DataGridViewDataItems(TeamConfiguration);
+            _dataGridViewDataItems = new DataGridViewDataItems(TeamConfiguration, this);
             ((ISupportInitialize)(_dataGridViewDataItems)).BeginInit();
 
             _dataGridViewDataItems.OnDataObjectParse += InformOnDataObjectsResult;
@@ -1254,7 +1254,8 @@ namespace TEAM
                     if ((row.RowState & DataRowState.Modified) != 0)
                     {
                         //Grab the attributes into local variables
-                        var hashKey = (string)row[DataItemMappingGridColumns.HashKey.ToString()];
+                        //var hashKey = "";
+                        
                         var sourceDataObject = "";
                         var sourceDataItem = "";
                         var targetDataObject = "";
@@ -1291,6 +1292,18 @@ namespace TEAM
                             DataItemMappingJson[] jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(dataItemMappingFileName));
 
                             //Retrieves the json segment in the file.
+                            string hashKey = "";
+
+                            if (row[DataItemMappingGridColumns.HashKey.ToString()] != DBNull.Value)
+                            {
+                                hashKey = (string)row[DataItemMappingGridColumns.HashKey.ToString()];
+                            }
+                            else
+                            {
+                                string[] inputHashValue = new[] { sourceDataObject, sourceDataItem, targetDataObject, targetDataItem, notes };
+                                hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
+                            }
+
                             var jsonHash = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
 
                             if (jsonHash.attributeMappingHash == "")
