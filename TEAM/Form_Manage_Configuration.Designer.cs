@@ -36,6 +36,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -189,6 +190,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openConfigurationFileToolStripMenuItem,
             this.toolStripMenuItem2,
+            this.saveAllToolStripMenuItem,
             this.toolStripSeparator2,
             this.openConfigurationDirectoryToolStripMenuItem,
             this.openMetadataDirectoryToolStripMenuItem,
@@ -216,8 +218,18 @@
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.toolStripMenuItem2.Size = new System.Drawing.Size(271, 22);
-            this.toolStripMenuItem2.Text = "&Save Configuration File";
+            this.toolStripMenuItem2.Text = "&Save Current Tab";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.SaveConfigurationFileToolStripMenuItem_Click);
+            // 
+            // saveAllToolStripMenuItem
+            // 
+            this.saveAllToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
+            this.saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
+            this.saveAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.saveAllToolStripMenuItem.Text = "Save All";
+            this.saveAllToolStripMenuItem.Click += new System.EventHandler(this.saveAllToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -674,7 +686,6 @@
             this.tabPageDataWarehouse.TabIndex = 1;
             this.tabPageDataWarehouse.Text = "Data Warehouse";
             this.tabPageDataWarehouse.UseVisualStyleBackColor = true;
-            this.tabPageDataWarehouse.Click += new System.EventHandler(this.tabPageDataWarehouse_Click);
             // 
             // groupBoxDataVaultSpecific
             // 
@@ -1237,7 +1248,6 @@
             this.tabPageEnvironments.TabIndex = 5;
             this.tabPageEnvironments.Text = "Environments";
             this.tabPageEnvironments.UseVisualStyleBackColor = true;
-            this.tabPageEnvironments.Click += new System.EventHandler(this.tabPageEnvironments_Click);
             // 
             // tabControlEnvironments
             // 
@@ -1306,7 +1316,7 @@
             this.tabPageEnvironmentNewTab.Location = new System.Drawing.Point(4, 22);
             this.tabPageEnvironmentNewTab.Name = "tabPageEnvironmentNewTab";
             this.tabPageEnvironmentNewTab.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageEnvironmentNewTab.Size = new System.Drawing.Size(787, 582);
+            this.tabPageEnvironmentNewTab.Size = new System.Drawing.Size(1094, 582);
             this.tabPageEnvironmentNewTab.TabIndex = 1;
             this.tabPageEnvironmentNewTab.UseVisualStyleBackColor = true;
             // 
@@ -1496,6 +1506,7 @@
         internal System.Windows.Forms.TextBox textBoxAlternativeRecordSource;
         private System.Windows.Forms.Label labelOtherExceptionColumns;
         internal System.Windows.Forms.TextBox textBoxOtherExceptionColumns;
+        private System.Windows.Forms.ToolStripMenuItem saveAllToolStripMenuItem;
     }
 }
 

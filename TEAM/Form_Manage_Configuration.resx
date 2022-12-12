@@ -123,17 +123,9 @@
   <metadata name="toolTipConfigurationSettings.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>188, 13</value>
   </metadata>
-  <metadata name="toolTipConfigurationSettings.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>188, 13</value>
-  </metadata>
   <data name="textBoxConfigurationPath.ToolTip" xml:space="preserve">
     <value>The configuration path is the path where TEAM stores, and interfaces with, its configuration files. 
 If this directory does not exist it will be created with default files (assuming sufficient priviliges to do so are in place at OS level).</value>
-  </data>
-  <data name="groupBox8.ToolTip" xml:space="preserve">
-    <value>This is a special setting for the Persistent Staging Area only, to determine the natural key. Either an index can be used to understand the natural key, or a primary key.
-
-The idea is that the key (plus an effective date/time stamp) will show the TEAM application what the natural key is, but for this it needs to know which convention is used.</value>
   </data>
   <data name="textBoxHubTablePrefix.ToolTip" xml:space="preserve">
     <value>This label will be used to evaluate the type of Data Object, and by extent, the data loading (or interpretation) vector.
@@ -186,6 +178,11 @@ This label is used in conjunction with the prefix/suffix setting. If the prefix 
 
 E.g. dbo.PSA_EXAMPLE or simply PSA_EXAMPLE will be evaluated as 'Persistent Staging' if the prefix is selected.
 </value>
+  </data>
+  <data name="groupBox8.ToolTip" xml:space="preserve">
+    <value>This is a special setting for the Persistent Staging Area only, to determine the natural key. Either an index can be used to understand the natural key, or a primary key.
+
+The idea is that the key (plus an effective date/time stamp) will show the TEAM application what the natural key is, but for this it needs to know which convention is used.</value>
   </data>
   <data name="textBoxRecordSource.ToolTip" xml:space="preserve">
     <value>This label captures the attribute name of the Record Source / name.

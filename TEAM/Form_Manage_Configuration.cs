@@ -235,7 +235,7 @@ namespace TEAM
                 }
              
                 // Also commit the values to memory
-                UpdateConfigurationInMemory();
+                UpdateDataWarehouseConfigurationInMemory();
 
                 richTextBoxInformation.AppendText(@"The file " + connectionFile + " was uploaded successfully.\r\n");
             }
@@ -294,74 +294,56 @@ namespace TEAM
         /// <param name="e"></param>
         private void SaveConfigurationFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            #region root path file
-            // Update the paths in memory.
+            var selectedTab = tabControlDefaultDetails.SelectedTab.Text;
 
-            // Add a backslash if not present for some reason.
-            if (!textBoxConfigurationPath.Text.EndsWith(@"\"))
+            if (selectedTab == "Environments")
             {
-                textBoxConfigurationPath.Text += @"\";
-            }
+                SaveTeamCoreFile();
+                richTextBoxInformation.Text += $"The selected environment '{globalParameters.ActiveEnvironmentKey}' has been saved, and is now active.";
 
-            if (!textBoxTeamMetadataPath.Text.EndsWith(@"\"))
+            }
+            else if (selectedTab == "Connections")
             {
-                textBoxTeamMetadataPath.Text += @"\";
+                UpdateMetadataConnectionConfigurationInMemory();
+                LocalTeamEnvironmentConfiguration.SaveTeamConfigurationFile();
+                richTextBoxInformation.Text += "\r\nThe metadata connection has been set.";
             }
+            else if (selectedTab == "Data Object Types")
+            {
+                UpdateDataObjectTypesConfigurationInMemory();
+                LocalTeamEnvironmentConfiguration.SaveTeamConfigurationFile();
+                richTextBoxInformation.Text += "\r\nThe Data Object Type settings have been updated.";
+            }
+            else if (selectedTab == "Data Warehouse")
+            {
+                UpdateDataWarehouseConfigurationInMemory();
+                LocalTeamEnvironmentConfiguration.SaveTeamConfigurationFile();
+                richTextBoxInformation.Text += "\r\nThe Data Warehouse settings have been updated.";
+            }
+            else if (selectedTab == "Paths")
+            {
+                SaveEnvironmentPaths();
+                richTextBoxInformation.Text += "\r\nThe paths have been updated.";
+            }
+            else
+            {
+                // Do nothing
+            }
+        }
 
-            globalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
-            globalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
-
-            var localEnvironment = (KeyValuePair<TeamEnvironment, string>) comboBoxEnvironments.SelectedItem;
+        /// <summary>
+        /// Save the TEAM Core file, that contains the working environment.
+        /// </summary>
+        private void SaveTeamCoreFile()
+        {
+            // Get the selected environment.
+            var localEnvironment = (KeyValuePair<TeamEnvironment, string>)comboBoxEnvironments.SelectedItem;
             globalParameters.ActiveEnvironmentInternalId = localEnvironment.Key.environmentInternalId;
             globalParameters.ActiveEnvironmentKey = localEnvironment.Key.environmentKey;
 
-            // Save the paths from memory to disk.
-            UpdateRootPathFile();
-            #endregion
-
-            // Make sure the new paths as updated are available upon save for backup etc.
-            // Check if the paths and files are available, just to be sure.
-            FileHandling.InitialisePath(globalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
-            FileHandling.InitialisePath(globalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
-
-            TeamConfiguration.CreateDummyTeamConfigurationFile(globalParameters.ConfigurationPath + globalParameters.ConfigFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension);
-            ValidationSetting.CreateDummyValidationFile(globalParameters.ConfigurationPath + globalParameters.ValidationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension);
-            JsonExportSetting.CreateDummyJsonConfigurationFile(globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension, TeamEventLog);
-
-            // Create a file backup for the configuration file
-            try
-            {
-                FileHandling.CreateFileBackup(globalParameters.ConfigurationPath + globalParameters.ConfigFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension, globalParameters.BackupPath);
-                richTextBoxInformation.Text = $@"A backup of the current configuration was made at {DateTime.Now} in {textBoxConfigurationPath.Text}.";
-            }
-            catch (Exception)
-            {
-                richTextBoxInformation.Text = @"TEAM was unable to create a backup of the configuration file.";
-            }
-            
-            // Update the in-memory variables for use throughout the application, to commit the saved changes for runtime use. 
-            // This is needed before saving to disk, as the EnvironmentConfiguration Class retrieves the values from memory.
-            UpdateConfigurationInMemory();
-
-            // Also updating the environments for paths etc.
-            localEnvironment.Key.metadataPath = globalParameters.MetadataPath;
-            localEnvironment.Key.configurationPath = globalParameters.ConfigurationPath;
-            localEnvironment.Key.SaveTeamEnvironment(globalParameters.CorePath + globalParameters.JsonEnvironmentFileName + globalParameters.JsonExtension);
-
-            // Save the information 
-            LocalTeamEnvironmentConfiguration.SaveTeamConfigurationFile();
-            parentFormMain.RevalidateFlag = true;
-        }
-
-        // Save the root path file (configuration path, output path and working environment).
-        private void UpdateRootPathFile()
-        {
             // Update the root path file, part of the core solution to be able to store the config and output path
             var rootPathConfigurationFile = new StringBuilder();
-            rootPathConfigurationFile.AppendLine("/* TEAM Core Settings */");
-            rootPathConfigurationFile.AppendLine("/* Saved at " + DateTime.Now + " */");
-            //rootPathConfigurationFile.AppendLine("ConfigurationPath|" + globalParameters.ConfigurationPath + "");
-            //rootPathConfigurationFile.AppendLine("MetadataPath|" + globalParameters.MetadataPath + "");
+            rootPathConfigurationFile.AppendLine("/* TEAM Core */");
             rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + globalParameters.ActiveEnvironmentInternalId + "");
             rootPathConfigurationFile.AppendLine("/* End of file */");
 
@@ -373,18 +355,20 @@ namespace TEAM
                     outfile.Close();
                 }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The configuration file {globalParameters.CorePath +globalParameters.PathFileName + globalParameters.FileExtension} could not be updated. The error message is: \r\n\r\b\n{ex}"));
+                var errorMessage = $"The TEAM Core configuration file {globalParameters.CorePath + globalParameters.PathFileName + globalParameters.FileExtension} could not be updated. The error message is: \r\n\r\b\n{exception.Message}";
+                richTextBoxInformation.Text += errorMessage;
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, errorMessage));
             }
         }
 
         /// <summary>
-        ///    Retrieve the information from the Configuration Settings from and commit these to memory
+        /// Make sure the information on the metadata repository is committed to memory, and saved.
         /// </summary>
-        private void UpdateConfigurationInMemory()
+        private void UpdateMetadataConnectionConfigurationInMemory()
         {
-            if (comboBoxMetadataConnection.SelectedItem!=null)
+            if (comboBoxMetadataConnection.SelectedItem != null)
             {
                 // Get the object in the Combobox into a Key Value Pair (object / id)
                 var localConnectionKeyValuePair = (KeyValuePair<TeamConnection, string>)(comboBoxMetadataConnection.SelectedItem);
@@ -392,10 +376,14 @@ namespace TEAM
                 // Lookup the object in the dictionary using the key (id)
                 TeamConfiguration.MetadataConnection = TeamConfiguration.ConnectionDictionary[localConnectionKeyValuePair.Key.ConnectionInternalId];
             }
+        }
 
-            globalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
-            globalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
-
+        /// <summary>
+        /// Make sure the information on the Data Object Types tab is committed to memory, and saved.
+        /// </summary>
+        private void UpdateDataObjectTypesConfigurationInMemory()
+        {
+            // Data Object Types tab.
             TeamConfiguration.StgTablePrefixValue = textBoxStagingAreaPrefix.Text;
             TeamConfiguration.PsaTablePrefixValue = textBoxPSAPrefix.Text;
             TeamConfiguration.PresentationLayerLabels = textBoxPresentationLayerLabels.Text;
@@ -405,6 +393,40 @@ namespace TEAM
             TeamConfiguration.LinkTablePrefixValue = textBoxLinkTablePrefix.Text;
             TeamConfiguration.LsatTablePrefixValue = textBoxLinkSatPrefix.Text;
 
+            // Prefix radio buttons
+            if (tablePrefixRadiobutton.Checked)
+            {
+                TeamConfiguration.TableNamingLocation = "Prefix";
+            }
+            else if (tableSuffixRadiobutton.Checked)
+            {
+                TeamConfiguration.TableNamingLocation = "Suffix";
+            }
+            else
+            {
+                richTextBoxInformation.AppendText("Issues storing the table prefix location (prefix/suffix). Is one of the radio buttons checked?");
+            }
+
+            if (radioButtonPSABusinessKeyIndex.Checked)
+            {
+                TeamConfiguration.PsaKeyLocation = "UniqueIndex";
+            }
+            else if (radioButtonPSABusinessKeyPK.Checked)
+            {
+                TeamConfiguration.PsaKeyLocation = "PrimaryKey";
+            }
+            else
+            {
+                richTextBoxInformation.AppendText("Issues storing the PSA key location (Unique Index / Primary Key Index). Is one of the radio buttons checked?");
+            }
+        }
+
+        /// <summary>
+        /// Make sure the information on the Data Warehouse tab is committed to memory, and saved.
+        /// </summary>
+        private void UpdateDataWarehouseConfigurationInMemory()
+        {
+            // Data Warehouse tab.
             TeamConfiguration.KeyIdentifier = textBoxKeyIdentifier.Text;
             TeamConfiguration.KeyPattern = textBoxKeyPattern.Text;
             TeamConfiguration.RowIdAttribute = textBoxSourceRowId.Text;
@@ -451,38 +473,10 @@ namespace TEAM
             {
                 TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute = "False";
             }
-
-            // Prefix radio buttons
-            if (tablePrefixRadiobutton.Checked)
-            {
-                TeamConfiguration.TableNamingLocation = "Prefix";
-            }
-            else if (tableSuffixRadiobutton.Checked)
-            {
-                TeamConfiguration.TableNamingLocation = "Suffix";
-            }
-            else
-            {
-                richTextBoxInformation.AppendText("Issues storing the table prefix location (prefix/suffix). Is one of the radio buttons checked?");
-            }
-
-            if (radioButtonPSABusinessKeyIndex.Checked)
-            {
-                TeamConfiguration.PsaKeyLocation = "UniqueIndex";
-            }
-            else if (radioButtonPSABusinessKeyPK.Checked)
-            {
-                TeamConfiguration.PsaKeyLocation = "PrimaryKey";
-            }
-            else
-            {
-                richTextBoxInformation.AppendText("Issues storing the table prefix location (prefix/suffix). Is one of the radio buttons checked?");
-            }
-
         }
-        
+
         /// <summary>
-        ///    Open the Windows Explorer (directory) using the value available as Configuration Directory
+        ///  Open the Windows Explorer (directory) using the value available as Configuration Directory.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -775,7 +769,7 @@ namespace TEAM
                 textBoxTeamMetadataPath.Text = globalParameters.MetadataPath;
 
                 // Update the root path file with the new working directory.
-                UpdateRootPathFile();
+                SaveTeamCoreFile();
 
                 // Initialise new environment in configuration settings.
                 UpdateEnvironment(localEnvironment);
@@ -935,14 +929,65 @@ namespace TEAM
             }
         }
 
-        private void tabPageDataWarehouse_Click(object sender, EventArgs e)
+        private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            richTextBoxInformation.Clear();
+            // Save the paths against the selected TEAM environment.
+            SaveEnvironmentPaths();
 
+            // Save the TEAM Core file to set the currently selected working environment.
+            SaveTeamCoreFile();
+
+            // Update the in-memory variables for use throughout the application, to commit the saved changes for runtime use. 
+            // This is needed before saving to disk, as the EnvironmentConfiguration Class retrieves the values from memory.
+            UpdateMetadataConnectionConfigurationInMemory();
+            UpdateDataObjectTypesConfigurationInMemory();
+            UpdateDataWarehouseConfigurationInMemory();
+
+            // Save the information 
+            LocalTeamEnvironmentConfiguration.SaveTeamConfigurationFile();
+            parentFormMain.RevalidateFlag = true;
+
+            richTextBoxInformation.Text += "The full configuration has been saved.";
         }
 
-        private void tabPageEnvironments_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Update the information on the 'paths' tab against the selected TEAM environment.
+        /// </summary>
+        private void SaveEnvironmentPaths()
         {
+            // Add a backslash, if not present for some reason.
+            if (!textBoxConfigurationPath.Text.EndsWith(@"\"))
+            {
+                textBoxConfigurationPath.Text += @"\";
+            }
 
+            if (!textBoxTeamMetadataPath.Text.EndsWith(@"\"))
+            {
+                textBoxTeamMetadataPath.Text += @"\";
+            }
+
+            // Set the parameters with the form values.
+            globalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
+            globalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
+
+            var localEnvironment = (KeyValuePair<TeamEnvironment, string>)comboBoxEnvironments.SelectedItem;
+            globalParameters.ActiveEnvironmentInternalId = localEnvironment.Key.environmentInternalId;
+            globalParameters.ActiveEnvironmentKey = localEnvironment.Key.environmentKey;
+
+            // Make sure the new paths as updated are available upon save for backup etc.
+            // Check if the paths and files are available, just to be sure.
+            FileHandling.InitialisePath(globalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
+            FileHandling.InitialisePath(globalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
+
+            TeamConfiguration.CreateDummyTeamConfigurationFile(globalParameters.ConfigurationPath + globalParameters.ConfigFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension);
+            ValidationSetting.CreateDummyValidationFile(globalParameters.ConfigurationPath + globalParameters.ValidationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension);
+            JsonExportSetting.CreateDummyJsonConfigurationFile(globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension, TeamEventLog);
+
+            // Also updating the environments for paths etc.
+            localEnvironment.Key.metadataPath = globalParameters.MetadataPath;
+            localEnvironment.Key.configurationPath = globalParameters.ConfigurationPath;
+            localEnvironment.Key.SaveTeamEnvironment(globalParameters.CorePath + globalParameters.JsonEnvironmentFileName + globalParameters.JsonExtension);
         }
     }
 }
