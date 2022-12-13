@@ -247,7 +247,6 @@
     <Content Include="Files\sample_TEAM_Model_Metadata.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Core\TEAM_environments.json" />
     <Content Include="Files\DIM_CUSTOMER.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -473,7 +472,9 @@
       <Version>13.0.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Core\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

@@ -98,26 +98,30 @@ namespace TEAM_Library
         /// <param name="inputPath"></param>
         public static void InitialisePath(string inputPath, TeamPathTypes pathType, EventLog eventLog)
         {
-            bool isError = false;
-            // Create the configuration directory if it does not exist yet.
-            try
+            if (!string.IsNullOrEmpty(inputPath))
             {
-                if (!Directory.Exists(inputPath))
-                {
-                    Directory.CreateDirectory(inputPath);
-                    eventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Created a new directory '{inputPath}'."));
-                }
-            }
-            catch (Exception ex)
-            {
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"Error creation directory '{inputPath}' the message is {ex.Message}.\r\n"));
-                isError = true;
-            }
+                bool isError = false;
 
-            if (isError == false)
-            {
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"'{pathType}' set as '{inputPath}'."));
+                try
+                {
+                    if (!Directory.Exists(inputPath))
+                    {
+                        Directory.CreateDirectory(inputPath);
+                        eventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Created a new directory '{inputPath}'."));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error,
+                        "The directories required to operate TEAM are not available and can not be created. Do you have administrative privileges in the installation directory to create these additional directories?"));
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"Error creation directory '{inputPath}' the message is {ex.Message}.\r\n"));
+                    isError = true;
+                }
+
+                if (isError == false)
+                {
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"'{pathType}' set as '{inputPath}'."));
+                }
             }
         }
 
