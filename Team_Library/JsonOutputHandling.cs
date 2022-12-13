@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using DataWarehouseAutomation;
+using Microsoft.SqlServer.Management.Smo;
 using static TEAM_Library.MetadataHandling;
 using DataObject = DataWarehouseAutomation.DataObject;
 using Extension = DataWarehouseAutomation.Extension;
@@ -64,11 +65,11 @@ namespace TEAM_Library
         public static DataObject SetDataObjectDataItems(DataObject dataObject, TeamConnection teamConnection, TeamConfiguration teamConfiguration, JsonExportSetting jsonExportSetting, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
         {
             // Remove the list if the setting is disabled.
-            if (!jsonExportSetting.IsAddDataObjectDataItems())
+            if (!jsonExportSetting.IsAddDataItemsToDataObject())
             {
                 dataObject.dataItems = null;
             }
-            else if (jsonExportSetting.IsAddDataObjectDataItems())
+            else if (jsonExportSetting.IsAddDataItemsToDataObject())
             {
                 var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject.name, teamConnection).FirstOrDefault();
 
@@ -108,7 +109,7 @@ namespace TEAM_Library
         /// <returns></returns>
         public static DataItem SetDataItemDataType(DataItem dataItem, DataGridViewRow physicalModelRow, JsonExportSetting jsonExportSetting)
         {
-            if (!jsonExportSetting.IsAddDataItemDataTypes())
+            if (!jsonExportSetting.IsAddDataTypeToDataItem())
             {
                 // Remove any data type details.
                 dataItem.characterLength = null;
@@ -119,7 +120,7 @@ namespace TEAM_Library
                 dataItem.isPrimaryKey = null;
                 dataItem.isHardCodedValue = null;
             }
-            else if (jsonExportSetting.IsAddDataItemDataTypes())
+            else if (jsonExportSetting.IsAddDataTypeToDataItem())
             {
                 if (physicalModelRow != null)
                 {
@@ -166,7 +167,7 @@ namespace TEAM_Library
         /// <returns></returns>
         public static DataItem SetDataItemMappingDataType(DataItem dataItem, DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
         {
-            if (!jsonExportSetting.IsAddDataItemDataTypes())
+            if (!jsonExportSetting.IsAddDataTypeToDataItem())
             {
                 // Remove any data type details.
                 dataItem.characterLength = null;
@@ -177,7 +178,7 @@ namespace TEAM_Library
                 dataItem.isPrimaryKey = null;
                 dataItem.isHardCodedValue = null;
             }
-            else if (jsonExportSetting.IsAddDataItemDataTypes())
+            else if (jsonExportSetting.IsAddDataTypeToDataItem())
             {
                 var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject.name, teamConnection).FirstOrDefault();
 
@@ -251,18 +252,15 @@ namespace TEAM_Library
         }
 
         /// <summary>
-        /// Assert upstream (next layer) data objects and add them to the existing data object mapping.
+        /// Create a data object for the metadata connection as a related data object.
         /// </summary>
-        /// <param name="dataObjectName"></param>
-        /// <param name="dataObjectMappingGrid"></param>
         /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
+        /// <param name="dataGridViewRowsPhysicalModel"></param>
         /// <returns></returns>
-        public static List<DataObject> SetRelatedDataObjects(string dataObjectName, DataGridView dataObjectMappingGrid, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, EventLog eventLog, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
+        public static DataObject SetMetadataAsRelatedDataObject(JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
         {
-            List<DataObject> relatedDataObjects = new List<DataObject>();
-
-            #region Add metadata connection as related data object
+            DataObject returnDataObject = new DataObject();
 
             // Add the metadata connection as related data object (assuming this is set in the json export settings).
             if (jsonExportSetting.IsAddMetadataAsRelatedDataObject())
@@ -271,42 +269,60 @@ namespace TEAM_Library
 
                 if (metaDataObject.name != null)
                 {
-                    relatedDataObjects.Add(metaDataObject);
+                    returnDataObject = metaDataObject;
                 }
             }
 
-            #endregion
+            return returnDataObject;
+        }
 
-            #region Add related data object(s)
+        /// <summary>
+        /// Get the 'parent' data object for a given data object, i.e. the object that is referenced to in the data model.
+        /// </summary>
+        /// <param name="targetDataObjectName"></param>
+        /// <param name="businessKeyDefinition"></param>
+        /// <param name="dataObjectDataGridViewRows"></param>
+        /// <param name="jsonExportSetting"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <param name="sourceDataObjectName"></param>
+        /// <returns></returns>
+        public static List<DataObject> GetParentRelatedDataObjectList(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, List<DataGridViewRow> dataObjectDataGridViewRows, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
+        {
+            List<DataObject> relatedDataObjectList = new List<DataObject>();
 
-            if (jsonExportSetting.IsAddRelatedDataObjectsAsRelatedDataObject())
+            if (jsonExportSetting.AddParentDataObjectAsRelatedDataObject == "True")
             {
-                relatedDataObjects.AddRange(GetLineageRelatedDataObjectList(dataObjectName, dataObjectMappingGrid, jsonExportSetting, teamConfiguration,eventLog, dataGridViewRowsPhysicalModel));
+                // Find the parent data object.
+                var parentDataObject = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataObjectDataGridViewRows);
+
+                // Create the parent data object.
+                if (parentDataObject != null && parentDataObject.name != null)
+                {
+                    // Set the name and further settings.
+                    relatedDataObjectList.Add(parentDataObject);
+                }
             }
 
-            #endregion
-
-            return relatedDataObjects;
+            return relatedDataObjectList;
         }
-    
+
         /// <summary>
         /// Convenience method to identify the next-layer-up data objects for a given data object (string).
         /// </summary>
-        /// <param name="targetDataObject"></param>
+        /// <param name="targetDataObjectName"></param>
         /// <param name="dataObjectDataGrid"></param>
         /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        public static List<DataObject> GetLineageRelatedDataObjectList(string targetDataObject, DataGridView dataObjectDataGrid, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, EventLog eventLog, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
+        public static List<DataObject> SetNextUpRelatedDataObjectList(string targetDataObjectName, DataGridView dataObjectDataGrid, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, EventLog eventLog, List<DataGridViewRow> dataGridViewRowsPhysicalModel)
         {
             List<DataObject> dataObjectList = new List<DataObject>();
 
-            if (jsonExportSetting.AddRelatedDataObjectsAsRelatedDataObject == "True")
+            if (jsonExportSetting.IsAddNextUpDataObjectsAsRelatedDataObject())
             {
                 var dataObjectMappings = dataObjectDataGrid.Rows.Cast<DataGridViewRow>()
                     .Where(x => !x.IsNewRow)
-                    .Where(x => ((DataRowView)x.DataBoundItem).Row.Field<DataObject>(DataObjectMappingGridColumns.SourceDataObject.ToString()).name == targetDataObject).ToList();
-
+                    .Where(x => ((DataRowView)x.DataBoundItem).Row.Field<DataObject>(DataObjectMappingGridColumns.SourceDataObject.ToString()).name == targetDataObjectName).ToList();
 
                 foreach (DataGridViewRow row in dataObjectMappings)
                 {
@@ -333,11 +349,11 @@ namespace TEAM_Library
         public static DataItem SetParentDataObjectToDataItem(DataItem dataItem, DataObject dataObject, JsonExportSetting jsonExportSetting)
         {
             // If the setting is disabled, remove the data object from the data item
-            if (!jsonExportSetting.IsAddParentDataObject())
+            if (!jsonExportSetting.IsAddParentDataObjectToDataItem())
             {
                 dataItem.dataObject = null;
             }
-            else if (jsonExportSetting.IsAddParentDataObject())
+            else if (jsonExportSetting.IsAddParentDataObjectToDataItem())
             {
                 // Create a separate, smaller / limited, data object to avoid any circular dependencies when assigning the Data Object to the Data Item.
                 var localDataObject = new DataObject
@@ -415,7 +431,7 @@ namespace TEAM_Library
         {
             // Remove an existing classification, if indeed existing.
             // If no classifications exists, do nothing. Otherwise check if one needs removal.
-            if (!jsonExportSetting.IsAddDatabaseAsExtension())
+            if (!jsonExportSetting.IsAddDatabaseAsExtensionToConnection())
             {
                 if (dataObject.dataObjectConnection != null && dataObject.dataObjectConnection.extensions != null)
                 {
@@ -441,7 +457,7 @@ namespace TEAM_Library
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddDatabaseAsExtension() && dataObject.dataObjectConnection != null)
+            else if (jsonExportSetting.IsAddDatabaseAsExtensionToConnection() && dataObject.dataObjectConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
                 List<Extension> returnExtensions = new List<Extension>();
@@ -481,7 +497,7 @@ namespace TEAM_Library
         {
             // Remove an existing classification, if indeed existing.
             // If no classifications exists, do nothing. Otherwise check if one needs removal.
-            if (!jsonExportSetting.IsAddDatabaseAsExtension())
+            if (!jsonExportSetting.IsAddDatabaseAsExtensionToConnection())
             {
                 if (dataQuery.dataQueryConnection != null && dataQuery.dataQueryConnection.extensions != null)
                 {
@@ -507,7 +523,7 @@ namespace TEAM_Library
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddDatabaseAsExtension() && dataQuery.dataQueryConnection != null)
+            else if (jsonExportSetting.IsAddDatabaseAsExtensionToConnection() && dataQuery.dataQueryConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
                 List<Extension> returnExtensions = new List<Extension>();
@@ -553,7 +569,7 @@ namespace TEAM_Library
         {
             // Remove an existing extension, if indeed existing.
             // If no extensions exists, do nothing. Otherwise check if one needs removal.
-            if (!jsonExportSetting.IsAddSchemaAsExtension())
+            if (!jsonExportSetting.IsAddSchemaAsExtensionToConnection())
             {
                 if (dataObject.dataObjectConnection?.extensions != null)
                 {
@@ -579,7 +595,7 @@ namespace TEAM_Library
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddSchemaAsExtension() && dataObject.dataObjectConnection != null)
+            else if (jsonExportSetting.IsAddSchemaAsExtensionToConnection() && dataObject.dataObjectConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
                 List<Extension> returnExtensions = new List<Extension>();
@@ -621,7 +637,7 @@ namespace TEAM_Library
         {
             // Remove an existing classification, if indeed existing.
             // If no classifications exists, do nothing. Otherwise check if one needs removal.
-            if (!jsonExportSetting.IsAddSchemaAsExtension())
+            if (!jsonExportSetting.IsAddSchemaAsExtensionToConnection())
             {
                 if (dataQuery.dataQueryConnection != null && dataQuery.dataQueryConnection.extensions != null)
                 {
@@ -647,7 +663,7 @@ namespace TEAM_Library
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddSchemaAsExtension() && dataQuery.dataQueryConnection != null)
+            else if (jsonExportSetting.IsAddSchemaAsExtensionToConnection() && dataQuery.dataQueryConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
                 List<Extension> returnExtensions = new List<Extension>();
@@ -690,6 +706,7 @@ namespace TEAM_Library
         /// </summary>
         /// <param name="dataObject"></param>
         /// <param name="jsonExportSetting"></param>
+        /// <param name="teamConfiguration"></param>
         /// <param name="classificationOverrideValue"></param>
         /// <returns></returns>
         public static DataObject SetDataObjectTypeClassification(DataObject dataObject, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, string classificationOverrideValue=null)
@@ -705,7 +722,7 @@ namespace TEAM_Library
                 dataObjectType = GetDataObjectType(dataObject.name, "", teamConfiguration).ToString();
             }
 
-            if (!jsonExportSetting.IsAddTypeAsClassification())
+            if (!jsonExportSetting.IsAddTypeAsClassificationToDataObject())
             {
                 // Remove an existing classification, if indeed existing.
                 // If no classifications exists, do nothing. Otherwise check if one needs removal.
@@ -799,15 +816,19 @@ namespace TEAM_Library
         /// <param name="businessKeyDefinition"></param>
         /// <param name="sourceDataObjectName"></param>
         /// <param name="teamConnection"></param>
+        /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
         /// <param name="drivingKeyValue"></param>
+        /// <param name="dataGridViewRowsDataObjects"></param>
+        /// <param name="dataGridViewRowsPhysicalModel"></param>
+        /// <param name="eventLog"></param>
         /// <returns></returns>
-        public static DataObjectMapping SetBusinessKeys(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration, string drivingKeyValue, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
+        public static DataObjectMapping SetBusinessKeys(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
         {
             // The list of business keys that will be saved against the data object mapping.
             List<BusinessKey> businessKeys = new List<BusinessKey>();
 
-            List<BusinessKeyComponentList> businessKeyComponentValueList = GetBusinessKeyComponents(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+            List<BusinessKeyComponentList> businessKeyComponentValueList = GetBusinessKeyComponents(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
 
             foreach (BusinessKeyComponentList businessKeyComponentList in businessKeyComponentValueList)
             {
@@ -830,7 +851,11 @@ namespace TEAM_Library
 
                         for (int i = 0; i < diff; i++)
                         {
-                            businessKeyComponentList.targetComponentList.Add("Placeholder");
+                            var localTargetBusinessKeyComponent = new BusinessKeyComponentElement();
+                            localTargetBusinessKeyComponent.businessKeyComponentElement = "Placeholder";
+                            localTargetBusinessKeyComponent.businessKeyComponentElementSurrogateKey = "Placeholder";
+
+                            businessKeyComponentList.targetComponentList.Add(localTargetBusinessKeyComponent);
                         }
 
                     }
@@ -848,14 +873,14 @@ namespace TEAM_Library
 
                     DataItemMapping businessKeyDataItemMapping = new DataItemMapping();
 
-                    if (dataObjectMapping.mappingClassifications[0].classification == DataObjectTypes.Presentation.ToString())
+                    if (new[] { DataObjectTypes.Presentation.ToString(), DataObjectTypes.StagingArea.ToString(), DataObjectTypes.PersistentStagingArea.ToString() }.Contains(dataObjectMapping.mappingClassifications[0].classification))
                     {
                         // Map the key to itself (workaround as above).
-                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i], businessKeyComponentList.sourceComponentList[i], drivingKeyValue);
+                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, drivingKeyValue);
                     }
                     else
                     {
-                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i], businessKeyComponentList.targetComponentList[i], drivingKeyValue);
+                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, businessKeyComponentList.targetComponentList[i].businessKeyComponentElement, drivingKeyValue);
                     }
 
                     businessKeyComponentMapping.Add(businessKeyDataItemMapping);
@@ -864,9 +889,31 @@ namespace TEAM_Library
                 businessKey.businessKeyComponentMapping = businessKeyComponentMapping;
 
                 // Evaluate the surrogate key that comes with the business key component mapping.
-
-                //var targetDataObjectSurrogateKey = GetSurrogateKey(businessKeyComponentList.originalTargetDataObject, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration);
                 businessKey.surrogateKey = businessKeyComponentList.surrogateKey;
+
+                // If the mapping is for a driving key AND the extension setting is enabled, add the surrogate key as extension.
+                if (jsonExportSetting.IsAddDrivingKeyAsBusinessKeyExtension() && dataObjectMapping.mappingClassifications[0].classification == DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey.ToString())
+                {
+                    var businessKeyExtensions = new List<Extension>();
+
+                    // The Driving Key is set on the source, but we need to add the SK here. We can do this by position.
+                    var test = businessKeyComponentList.sourceComponentList.Select(x => x.isDrivingKey == true);
+
+                    for (int i = 0; i < businessKeyComponentList.sourceComponentList.Count; i++)
+                    {
+                        if (businessKeyComponentList.sourceComponentList[i].isDrivingKey)
+                        {
+                            var drivingKeySurrogateKeyExtension = new Extension();
+                            drivingKeySurrogateKeyExtension.key = "DrivingKey";
+                            drivingKeySurrogateKeyExtension.value = businessKeyComponentList.targetComponentList[i].businessKeyComponentElementSurrogateKey;
+                            drivingKeySurrogateKeyExtension.description = "DrivingKey";
+
+                            businessKeyExtensions.Add(drivingKeySurrogateKeyExtension);
+                        }
+                    }
+
+                    businessKey.extensions = businessKeyExtensions;
+                }
 
                 businessKeys.Add(businessKey);
             }
@@ -879,8 +926,8 @@ namespace TEAM_Library
         public class BusinessKeyComponentList
         {
             internal string originalTargetDataObject { get; set; }
-            internal List<string> sourceComponentList { get; set; }
-            internal List<string> targetComponentList { get; set; }
+            internal List<BusinessKeyComponentElement> sourceComponentList { get; set; }
+            internal List<BusinessKeyComponentElement> targetComponentList { get; set; }
             internal int ordinal { get; set; }
             internal string surrogateKey { get; set; }
         }
@@ -893,8 +940,11 @@ namespace TEAM_Library
         /// <param name="sourceDataObjectName"></param>
         /// <param name="teamConnection"></param>
         /// <param name="teamConfiguration"></param>
+        /// <param name="dataGridViewRowsDataObjects"></param>
+        /// <param name="dataGridViewRowsPhysicalModel"></param>
+        /// <param name="eventLog"></param>
         /// <returns></returns>
-        public static List<BusinessKeyComponentList>  GetBusinessKeyComponents(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
+        public static List<BusinessKeyComponentList>  GetBusinessKeyComponents(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
         {
             List<BusinessKeyComponentList> businessKeyComponents = new List<BusinessKeyComponentList>();
 
@@ -912,7 +962,7 @@ namespace TEAM_Library
                 // Add the full list straight away (the relationships).
                 var tempComponent = new BusinessKeyComponentList
                 {
-                    sourceComponentList = GetBusinessKeySourceComponentElements(businessKeyDefinition)
+                    sourceComponentList = GetBusinessKeySourceComponentElements(businessKeyDefinition, drivingKeyValue)
                 };
                 businessKeyComponents.Add(tempComponent);
 
@@ -920,7 +970,7 @@ namespace TEAM_Library
                 tempComponent.originalTargetDataObject = dataObjectMapping.targetDataObject.name;
 
                 // Get the target column(s) for the business key, based on the target data object (the Link in this case).
-                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, businessKeyDefinition, sourceDataObjectName, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
                 tempComponent.targetComponentList = tempTargetComponentList;
 
                 tempComponent.ordinal = ordinal;
@@ -936,7 +986,7 @@ namespace TEAM_Library
                 {
                     var individualTempComponent = new BusinessKeyComponentList();
 
-                    individualTempComponent.sourceComponentList = GetBusinessKeySourceComponentElements(componentElement);
+                    individualTempComponent.sourceComponentList = GetBusinessKeySourceComponentElements(componentElement, drivingKeyValue);
 
                     // First, let's get the Hubs for the key. It's the one with the same source and business key definition.
                     // Find the matching physical model row.
@@ -957,7 +1007,7 @@ namespace TEAM_Library
                         individualTempComponent.originalTargetDataObject = originalTargetDataObjectName;
 
                         // Get the target column(s) for the business key, based on the target data object.
-                        var individualTempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, componentElement, originalSourceDataObjectName, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+                        var individualTempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, componentElement, originalSourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
                         individualTempComponent.targetComponentList = individualTempTargetComponentList;
                         individualTempComponent.ordinal = ordinal;
 
@@ -986,9 +1036,6 @@ namespace TEAM_Library
                             }
                             counter++;
                         }
-
-                        //var individualSurrogateKey = GetSurrogateKey(dataObjectMapping.targetDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration);
-                        //tempComponent.surrogateKey = individualSurrogateKey;
                     }
                     else
                     {
@@ -1004,14 +1051,14 @@ namespace TEAM_Library
                 // Not a relationship, add the list straight away.
                 var tempComponent = new BusinessKeyComponentList();
 
-                var tempSourceComponentList = GetBusinessKeySourceComponentElements(businessKeyDefinition);
+                var tempSourceComponentList = GetBusinessKeySourceComponentElements(businessKeyDefinition, drivingKeyValue);
                 tempComponent.sourceComponentList = tempSourceComponentList;
 
                 // The associated target data object is just the original one.
                 tempComponent.originalTargetDataObject = dataObjectMapping.targetDataObject.name;
 
                 // Get the target column(s) for the business key, based on the target data object.
-                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, businessKeyDefinition, sourceDataObjectName, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
                 tempComponent.targetComponentList = tempTargetComponentList;
 
                 tempComponent.ordinal = ordinal;
@@ -1025,6 +1072,14 @@ namespace TEAM_Library
             return businessKeyComponents;
         }
 
+        public class BusinessKeyComponentElement
+        {
+            public string businessKeyComponentElement { get; set; }
+            public string businessKeyComponentElementSurrogateKey { get; set;}
+            public bool isDrivingKey { get; set; } = false;
+        }
+
+
         /// <summary>
         /// Get the target business key component elements in the context of the data item mapping for the business key.
         /// </summary>
@@ -1033,10 +1088,13 @@ namespace TEAM_Library
         /// <param name="sourceDataObjectName"></param>
         /// <param name="teamConnection"></param>
         /// <param name="teamConfiguration"></param>
+        /// <param name="dataGridViewRowsDataObjects"></param>
+        /// <param name="dataGridViewRowsPhysicalModel"></param>
+        /// <param name="eventLog"></param>
         /// <returns></returns>
-        public static List<string> GetBusinessKeyTargetComponentElements(DataObject dataObject, string businessKeyDefinition, string sourceDataObjectName, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
+        public static List<BusinessKeyComponentElement> GetBusinessKeyTargetComponentElements(DataObject dataObject, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
         {
-            List<string> targetBusinessKeyComponents = new List<string>();
+            List<BusinessKeyComponentElement> targetBusinessKeyComponents = new List<BusinessKeyComponentElement>();
             
             // ReSharper disable once RedundantAssignment
             List<DataObject> lookupDataObjects = new List<DataObject>();
@@ -1104,7 +1162,7 @@ namespace TEAM_Library
                 {
                     // There are no matching target values. This should not happen and should be caught by the validator. 
                     // But just in case...
-                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was no matching target business key component found for {dataObject.name} with business key definition {businessKeyDefinition} in the physical model."));
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"There was no matching target business key component found for {dataObject.name} with business key definition {businessKeyDefinition} in the physical model."));
                 }
 
                 foreach (var row in orderedList)
@@ -1113,10 +1171,17 @@ namespace TEAM_Library
 
                     // Add if it's not a standard element.
                     var surrogateKey = DeriveSurrogateKey(lookupDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
-
+                    
                     if (!column.IsExcludedBusinessKeyDataItem(dataObjectType, surrogateKey, businessKeyDefinition, teamConnection, teamConfiguration))
                     {
-                        targetBusinessKeyComponents.Add(column);
+                        // Get the corresponding Surrogate Key for the (target) component element.
+                        var localSurrogateKey = GetSurrogateKey(lookupDataObject.name, teamConfiguration, teamConnection);
+
+                        var localBusinessKeyTargetComponentElement = new BusinessKeyComponentElement();
+                        localBusinessKeyTargetComponentElement.businessKeyComponentElement = column;
+                        localBusinessKeyTargetComponentElement.businessKeyComponentElementSurrogateKey = localSurrogateKey;
+
+                        targetBusinessKeyComponents.Add(localBusinessKeyTargetComponentElement);
                     }
                 }
             }
@@ -1174,11 +1239,11 @@ namespace TEAM_Library
         /// </summary>
         /// <param name="businessKeyDefinition"></param>
         /// <returns></returns>
-        private static List<string> GetBusinessKeySourceComponentElements(string businessKeyDefinition)
+        private static List<BusinessKeyComponentElement> GetBusinessKeySourceComponentElements(string businessKeyDefinition, string drivingKeyValue)
         {
-            var temporaryBusinessKeyComponentList = businessKeyDefinition.Split(',').ToList();
+            var businessKeyComponentList = new List<BusinessKeyComponentElement>();
 
-            var businessKeyComponentList = new List<string>();
+            var temporaryBusinessKeyComponentList = businessKeyDefinition.Split(',').ToList();
 
             foreach (var keyComponent in temporaryBusinessKeyComponentList)
             {
@@ -1191,7 +1256,11 @@ namespace TEAM_Library
                     var temporaryKeyPartList = keyPart.Split(';').ToList();
                     foreach (var item in temporaryKeyPartList)
                     {
-                        businessKeyComponentList.Add(item);
+                        var localBusinessComponentElement = new BusinessKeyComponentElement();
+                        localBusinessComponentElement.businessKeyComponentElement = item.Trim();
+                        localBusinessComponentElement.businessKeyComponentElementSurrogateKey = "Not applicable";
+
+                        businessKeyComponentList.Add(localBusinessComponentElement);
                     }
                 }
                 else if (keyPart.StartsWith("CONCATENATE"))
@@ -1199,35 +1268,64 @@ namespace TEAM_Library
                     keyPart = keyPart.Replace("CONCATENATE", "");
                     keyPart = keyPart.Replace(";", "+");
 
-                    businessKeyComponentList.Add(keyPart);
+                    var localBusinessComponentElement = new BusinessKeyComponentElement();
+                    localBusinessComponentElement.businessKeyComponentElement = keyPart.Trim();
+                    localBusinessComponentElement.businessKeyComponentElementSurrogateKey = "Not applicable";
+
+                    businessKeyComponentList.Add(localBusinessComponentElement);
                 }
                 else
                 {
-                    businessKeyComponentList.Add(keyPart);
+                    var localBusinessComponentElement = new BusinessKeyComponentElement();
+                    localBusinessComponentElement.businessKeyComponentElement = keyPart.Trim();
+                    localBusinessComponentElement.businessKeyComponentElementSurrogateKey = "Not applicable";
+
+                    businessKeyComponentList.Add(localBusinessComponentElement);
                 }
             }
 
-            businessKeyComponentList = businessKeyComponentList.Select(t => t.Trim()).ToList();
+            // Check for Driving Keys.
+            if (!string.IsNullOrEmpty(drivingKeyValue))
+            {
+                foreach (var localComponent in businessKeyComponentList)
+                {
+                    if (drivingKeyValue == localComponent.businessKeyComponentElement)
+                    {
+                        localComponent.isDrivingKey = true;
+                    }
+                }
+            }
+
+            //businessKeyComponentList = businessKeyComponentList.Select(t => t.businessKeyComponentElement.Trim().ToList);
             return businessKeyComponentList;
         }
 
-        public static string GetParentDataObject(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConfiguration teamConfiguration, List<DataGridViewRow>dataGridViewRowsDataObjects)
+        /// <summary>
+        /// Find out what the parent (referenced to object) is, for a given input data object.
+        /// </summary>
+        /// <param name="targetDataObjectName"></param>
+        /// <param name="sourceDataObjectName"></param>
+        /// <param name="businessKeyDefinition"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <param name="dataGridViewRowsDataObjects"></param>
+        /// <returns></returns>
+        public static DataObject GetParentDataObject(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConfiguration teamConfiguration, List<DataGridViewRow>dataGridViewRowsDataObjects)
         {
-            string returnValue = "";
+            DataObject returnValue = new DataObject();
 
             var dataObjectGridViewRow = dataGridViewRowsDataObjects
                 .Where(r => !r.IsNewRow)
                 .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyDefinition))
                 .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
                 .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName))
-                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != MetadataHandling.DataObjectTypes.Context)
-                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext)
-                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
+                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.Context)
+                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContext)
+                .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
                 .FirstOrDefault();
 
             if (dataObjectGridViewRow != null)
             {
-                returnValue = dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString();
+                returnValue = (DataObject)dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
             }
 
             return returnValue;
@@ -1251,7 +1349,7 @@ namespace TEAM_Library
             // If a data object has been evaluated to be a Satellite (or Link-Satellite), replace the data object to query with the parent Hub or Link.
             if (new [] { DataObjectTypes.Context, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey}.Contains(dataObjectType))
             {
-                targetDataObjectName = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects);
+                targetDataObjectName = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects).name;
             }
 
             var surrogateKey = GetSurrogateKey(targetDataObjectName, teamConfiguration, teamConnection);
@@ -1372,7 +1470,7 @@ namespace TEAM_Library
         {
             bool returnValue = false;
             
-            var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition);
+            var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition, "");
 
             if (dataItemName == surrogateKey)
             {
@@ -1435,9 +1533,15 @@ namespace TEAM_Library
                 returnValue = true;
             }
             // Other.
-            else if (new[] { DataObjectTypes.StagingArea, DataObjectTypes.PersistentStagingArea }.Contains(dataObjectType) && !businessKeyComponentElements.Contains(dataItemName))
+            else if (new[] { DataObjectTypes.StagingArea, DataObjectTypes.PersistentStagingArea }.Contains(dataObjectType))
             {
-                returnValue = true;
+                foreach (var element in businessKeyComponentElements)
+                {
+                    if (element.businessKeyComponentElement == dataItemName)
+                    {
+                        returnValue = true;
+                    }
+                }
             }
 
             return returnValue;
@@ -1525,6 +1629,36 @@ namespace TEAM_Library
             }
 
             return returnValue;
+        }
+
+        /// <summary>
+        /// Add a Multi Active Key classification to a (source) data item.
+        /// </summary>
+        /// <param name="targetDataItem"></param>
+        /// <param name="targetDataObjectName"></param>
+        /// <param name="physicalModelGridView"></param>
+        public static void AddMultiActiveKeyClassificationToDataItem(DataItem targetDataItem, string targetDataObjectName, DataGridView physicalModelGridView)
+        {
+            // If the source data item is part of the key, a MAK classification can be added.
+            // This is done using a lookup against the physical model.
+
+            var physicalModelGridViewRow = physicalModelGridView.Rows
+                .Cast<DataGridViewRow>()
+                .Where(r => !r.IsNewRow)
+                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(targetDataItem.name))
+                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(targetDataObjectName))
+                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Value.ToString().Equals("Y"))
+                .FirstOrDefault();
+
+            if (physicalModelGridViewRow != null)
+            {
+                List<Classification> classificationList = new List<Classification>();
+                Classification classification = new Classification();
+                classification.classification = "MultiActiveKey";
+                classification.notes = "The attribute that supports granularity shift in describing context.";
+                classificationList.Add(classification);
+                targetDataItem.dataItemClassification = classificationList;
+            }
         }
     }
 }

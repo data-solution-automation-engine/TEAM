@@ -1,10 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TEAM_Library;
+using static TEAM.DataGridViewDataObjects;
 using static TEAM.FormBase;
+using Utility = TEAM_Library.Utility;
 
 namespace TEAM
 {
@@ -15,9 +20,18 @@ namespace TEAM
         private readonly ContextMenuStrip contextMenuStrip;
         private readonly ContextMenuStrip contextMenuStripMultipleRows;
 
-        public DataGridViewDataItems(TeamConfiguration teamConfiguration)
+        public delegate void DataObjectParseHandler(object sender, ParseEventArgs e);
+        public event DataObjectParseHandler OnDataObjectParse;
+
+        public delegate void HeaderSortHandler(object sender, FilterEventArgs e);
+        public event HeaderSortHandler OnHeaderSort;
+
+        internal Form Parent;
+
+        public DataGridViewDataItems(TeamConfiguration teamConfiguration, Form parent)
         {
             TeamConfiguration = teamConfiguration;
+            Parent = parent;
 
             #region Basic properties
 
@@ -160,8 +174,33 @@ namespace TEAM
             deleteRow.Text = @"Delete this row from the grid";
             deleteRow.Click += DeleteRowFromGridToolStripMenuItem_Click;
 
+            // Parse as DataObjectMappings JSON (collection) menu item
+            var parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem = new ToolStripMenuItem();
+            parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Name = "parseThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
+            parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Size = new Size(339, 22);
+            parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Text = @"Parse this row as Data Object Mapping Collection";
+            parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Click += ParseThisRowAsJSONDataObjectMappingCollectionToolStripMenuItem_Click;
+
+            // Show as DataObjectMappings JSON (collection) menu item
+            var exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem = new ToolStripMenuItem();
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Name = "exportThisRowAsSourcetoTargetInterfaceJSONToolStripMenuItem";
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Size = new Size(339, 22);
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Text = @"Display this row as Data Object Mapping Collection";
+            exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem.Click += DisplayThisRowAsJSONDataObjectMappingCollectionToolStripMenuItem_Click;
+
+            // Show as single DataObjectMappings JSON menu item
+            var exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem = new ToolStripMenuItem();
+            exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem.Name = "exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem";
+            exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem.Size = new Size(339, 22);
+            exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem.Text = @"Display this row as single Data Object Mapping";
+            exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem.Click += DisplayThisRowAsJSONSingleDataObjectMappingToolStripMenuItem_Click;
+
+
             contextMenuStrip.ImageScalingSize = new Size(24, 24);
             contextMenuStrip.Items.AddRange(new ToolStripItem[] {
+                parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem,
+                exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem,
+                exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem,
                 deleteRow
             });
 
@@ -174,6 +213,128 @@ namespace TEAM
 
             #endregion
         }
+
+        /// <summary>
+        /// This method is called from the context menu, and applies all TEAM conventions to the Data Mapping collection (list / DataObjectMappings).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ParseThisRowAsJSONDataObjectMappingCollectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Get the value from the data item grid.
+            int selectedRow = Rows.GetFirstRow(DataGridViewElementStates.Selected);
+
+            var generationMetadataRow = ((DataRowView)Rows[selectedRow].DataBoundItem).Row;
+            var targetDataObjectName = generationMetadataRow[DataItemMappingGridColumns.TargetDataObject.ToString()];
+
+            try
+            {
+                // Get the value from the data object grid, based on the name.
+                var dataObjectGridLookupRow = _dataGridViewDataObjects.Rows
+                    .Cast<DataGridViewRow>()
+                    .Where(r => !r.IsNewRow)
+                    .Where(r => r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName))
+                    .FirstOrDefault();
+
+                var targetDataObject = (DataWarehouseAutomation.DataObject)dataObjectGridLookupRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
+
+
+                var dataObjectMappings = _dataGridViewDataObjects.GetDataObjectMappings(targetDataObject);
+                var vdwDataObjectMappingList = FormManageMetadata.GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
+
+                string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
+                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.name), output);
+
+                // Update the original form through the delegate/event handler.
+                DataObjectsParse($"A parse action has been called from the context menu. The Data Object Mapping for '{targetDataObject.name}' has been saved.\r\n");
+            }
+
+            catch (Exception exception)
+            {
+                DataObjectsParse($"An error occurred while generating the JSON. The error message is {exception.Message}\r\n");
+            }
+        }
+
+        /// <summary>
+        /// This method is called from the context menu on the data grid. It exports the selected row to JSON.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void DisplayThisRowAsJSONDataObjectMappingCollectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Get the selected row from the data item grid.
+            int selectedRow = Rows.GetFirstRow(DataGridViewElementStates.Selected);
+
+            var generationMetadataRow = ((DataRowView)Rows[selectedRow].DataBoundItem).Row;
+            var targetDataObjectName = generationMetadataRow[DataItemMappingGridColumns.TargetDataObject.ToString()];
+
+            try
+            {
+                // Get the value from the data object grid, based on the name.
+                var dataObjectGridLookupRow = _dataGridViewDataObjects.Rows
+                    .Cast<DataGridViewRow>()
+                    .Where(r => !r.IsNewRow)
+                    .Where(r => r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName))
+                    .FirstOrDefault();
+
+                var targetDataObject = (DataWarehouseAutomation.DataObject)dataObjectGridLookupRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
+
+                var dataObjectMappings = _dataGridViewDataObjects.GetDataObjectMappings(targetDataObject);
+
+                string output = JsonConvert.SerializeObject(dataObjectMappings, Formatting.Indented);
+
+                FormManageMetadata.ManageFormJsonInteraction(output);
+            }
+            catch (Exception exception)
+            {
+                DataObjectsParse($"An error occurred while generating the JSON. The error message is {exception.Message}\r\n");
+            }
+        }
+
+        /// <summary>
+        /// This method is called from the context menu on the data grid. It exports the selected row to JSON.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void DisplayThisRowAsJSONSingleDataObjectMappingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Get the selected row from the data item grid.
+            int selectedRow = Rows.GetFirstRow(DataGridViewElementStates.Selected);
+
+            var generationMetadataRow = ((DataRowView)Rows[selectedRow].DataBoundItem).Row;
+            var targetDataObjectName = generationMetadataRow[DataItemMappingGridColumns.TargetDataObject.ToString()];
+
+            try
+            {
+                // Get the value from the data object grid, based on the name.
+                var dataObjectGridLookupRow = _dataGridViewDataObjects.Rows
+                    .Cast<DataGridViewRow>()
+                    .Where(r => !r.IsNewRow)
+                    .Where(r => r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName))
+                    .FirstOrDefault();
+
+                var dataObjectMapping = _dataGridViewDataObjects.GetDataObjectMapping(dataObjectGridLookupRow);
+
+                string output = JsonConvert.SerializeObject(dataObjectMapping, Formatting.Indented);
+
+                FormManageMetadata.ManageFormJsonInteraction(output);
+            }
+            catch (Exception exception)
+            {
+                DataObjectsParse($"An error occurred while generating the JSON. The error message is {exception.Message}\r\n");
+            }
+        }
+
+        internal void DataObjectsParse(string text)
+        {
+            // Make sure something is listening to the event.
+            if (OnDataObjectParse == null) return;
+
+            // Pass through the custom arguments when this method is called.
+            ParseEventArgs args = new ParseEventArgs(text);
+            OnDataObjectParse(this, args);
+        }
+
         private void toolStripMenuItemDeleteMultipleRows_Click(object sender, EventArgs e)
         {
 
@@ -236,6 +397,9 @@ namespace TEAM
                     }
                 }
             }
+
+            // Callback to parent form.
+            HeaderSort();
         }
 
         /// <summary>
@@ -509,46 +673,61 @@ namespace TEAM
         {
             try
             {
-                string s = Clipboard.GetText();
-                string[] lines = s.Split('\n');
+                string clipboardText = Clipboard.GetText();
+                List<string> clipboardTextLines = clipboardText.Split('\n').ToList();
 
-                int iRow = CurrentCell.RowIndex;
-                int iCol = CurrentCell.ColumnIndex;
-                DataGridViewCell oCell;
-                if (iRow + lines.Length > Rows.Count - 1)
+                for (int i = 0; i < clipboardTextLines.Count; i++)
                 {
-                    bool bFlag = false;
-                    foreach (string sEmpty in lines)
+                    if (clipboardTextLines[i] == "")
                     {
-                        if (sEmpty == "")
-                        {
-                            bFlag = true;
-                        }
+                        clipboardTextLines.RemoveAt(i);
                     }
-
-                    int iNewRows = iRow + lines.Length - Rows.Count;
-                    if (iNewRows > 0)
-                    {
-                        if (bFlag)
-                            Rows.Add(iNewRows);
-                        else
-                            Rows.Add(iNewRows + 1);
-                    }
-                    else
-                        Rows.Add(iNewRows + 1);
                 }
 
-                foreach (string line in lines)
+                int currentRowIndex = CurrentCell.RowIndex;
+                int currentColumnIndex = CurrentCell.ColumnIndex;
+
+                // Add rows to the grid.
+                if (currentRowIndex + clipboardTextLines.Count > Rows.Count - 1)
                 {
-                    if (iRow < RowCount && line.Length > 0)
+                    int newRowCount = currentRowIndex + clipboardTextLines.Count - Rows.Count;
+
+                    BindingSource bindingSource = DataSource as BindingSource;
+                    DataTable dataTable = (DataTable)bindingSource.DataSource;
+
+                    if (newRowCount > 0)
+                    {
+                        foreach (var value in clipboardTextLines)
+                        {
+                            // Add the row(s) to the underlying data table.
+                            DataRow drToAdd = dataTable.NewRow();
+                            dataTable.Rows.Add(drToAdd);
+                        }
+                    }
+                    else
+                    {
+                        // Add the row(s) to the underlying data table.
+                        DataRow drToAdd = dataTable.NewRow();
+                        dataTable.Rows.Add(drToAdd);
+                    }
+
+                    // Remove superfluous rows.
+                    Rows.RemoveAt(Rows.Count - 2);
+                }
+
+                // Adding the values.
+                foreach (string line in clipboardTextLines)
+                {
+                    if (currentRowIndex < RowCount && line.Length > 0)
                     {
                         string[] sCells = line.Split('\t');
+
                         for (int i = 0; i < sCells.GetLength(0); ++i)
                         {
-                            if (iCol + i < ColumnCount)
+                            if (currentColumnIndex + i < ColumnCount)
                             {
-                                oCell = this[iCol + i, iRow];
-                                oCell.Value = Convert.ChangeType(sCells[i].Replace("\r", ""), oCell.ValueType);
+                                var cell = this[currentColumnIndex + i, currentRowIndex];
+                                cell.Value = Convert.ChangeType(sCells[i].Replace("\r", ""), cell.ValueType);
                             }
                             else
                             {
@@ -556,20 +735,32 @@ namespace TEAM
                             }
                         }
 
-                        iRow++;
+                        currentRowIndex++;
                     }
                     else
                     {
                         break;
                     }
                 }
-
-                //Clipboard.Clear();
             }
-            catch (FormatException ex)
+            catch (Exception exception)
             {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}."));
+                var exceptionMessage = $"An exception has been encountered: {exception.Message}.";
+                var targetControl = Parent.Controls.Find("richTextBoxInformation", true).FirstOrDefault() as RichTextBox;
+
+                ThreadHelper.SetText(Parent, targetControl, $"{exceptionMessage}\r\n");
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, exceptionMessage ));
             }
+        }
+
+        internal void HeaderSort()
+        {
+            // Make sure something is listening to the event.
+            if (OnHeaderSort == null) return;
+
+            // Pass through the custom arguments when this method is called.
+            FilterEventArgs args = new FilterEventArgs(true);
+            OnHeaderSort(this, args);
         }
 
         /// <summary>
@@ -591,9 +782,13 @@ namespace TEAM
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                MessageBox.Show(@"Pasting into the data grid has failed", @"Copy/Paste", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                var exceptionMessage = $"Copy/paste has failed.";
+                var targetControl = Parent.Controls.Find("richTextBoxInformation", true).FirstOrDefault() as RichTextBox;
+
+                ThreadHelper.SetText(Parent, targetControl, $"{exceptionMessage}\r\n");
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, exceptionMessage));
             }
         }
     }

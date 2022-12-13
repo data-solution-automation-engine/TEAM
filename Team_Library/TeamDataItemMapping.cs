@@ -7,12 +7,14 @@ namespace TEAM_Library
 {
     public class DataItemMappingJson
     {
-        //JSON representation of the attribute mapping metadata
+        //JSON representation of the attribute mapping metadata.
         public string attributeMappingHash { get; set; }
         public string sourceTable { get; set; }
         public string sourceAttribute { get; set; }
         public string targetTable { get; set; }
         public string targetAttribute { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string notes { get; set; }
     }
     /// <summary>
@@ -43,6 +45,12 @@ namespace TEAM_Library
             JsonList = new List<DataItemMappingJson>();
         }
 
+        public static void CreateEmptyDataItemMappingJson(string fileName, EventLog eventLog)
+        {
+            File.WriteAllText(fileName, "[]");
+            eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "A new data item mapping file is created, because it did not exist yet."));
+        }
+
         /// <summary>
         /// Set the sort order for the data table.
         /// </summary>
@@ -63,7 +71,6 @@ namespace TEAM_Library
             DataTable.Columns[(int)DataItemMappingGridColumns.TargetDataItem].ColumnName = DataItemMappingGridColumns.TargetDataItem.ToString();
             DataTable.Columns[(int)DataItemMappingGridColumns.Notes].ColumnName = DataItemMappingGridColumns.Notes.ToString();
         }
-
 
         /// <summary>
         /// Creates a  object (Json List and DataTable) from a Json file.

@@ -56,41 +56,44 @@ namespace TEAM
 
             #region Data Objects
 
-            // GenerateTypeAsClassification
-            EvaluateJsonExportCheckbox(checkBoxAddType, JsonExportSetting.AddTypeAsClassification, ref issueCounter);
+            // AddTypeAsClassificationToDataObject
+            EvaluateJsonExportCheckbox(checkBoxAddType, JsonExportSetting.AddTypeAsClassificationToDataObject, ref issueCounter);
 
-            // GenerateDataObjectDataItems
-            EvaluateJsonExportCheckbox(checkBoxDataObjectDataItems, JsonExportSetting.AddDataObjectDataItems, ref issueCounter);
+            // AddDataItemsToDataObject
+            EvaluateJsonExportCheckbox(checkBoxDataObjectDataItems, JsonExportSetting.AddDataItemsToDataObject, ref issueCounter);
 
             #endregion
 
             #region Connections
 
-            // GenerateDatabaseAsExtension
-            EvaluateJsonExportCheckbox(checkBoxDatabaseExtension, JsonExportSetting.AddDatabaseAsExtension, ref issueCounter);
+            // AddDatabaseAsExtensionToConnection
+            EvaluateJsonExportCheckbox(checkBoxDatabaseExtension, JsonExportSetting.AddDatabaseAsExtensionToConnection, ref issueCounter);
 
-            // GenerateSchemaAsExtension
-            EvaluateJsonExportCheckbox(checkBoxSchemaExtension, JsonExportSetting.AddSchemaAsExtension, ref issueCounter);
+            // AddSchemaAsExtensionToConnection
+            EvaluateJsonExportCheckbox(checkBoxSchemaExtension, JsonExportSetting.AddSchemaAsExtensionToConnection, ref issueCounter);
 
             #endregion
 
             #region Data Items
 
-            // GenerateDataItemTypes
-            EvaluateJsonExportCheckbox(checkBoxDataItemDataType, JsonExportSetting.AddDataItemDataTypes, ref issueCounter);
+            // AddDataTypeToDataItem
+            EvaluateJsonExportCheckbox(checkBoxDataItemDataType, JsonExportSetting.AddDataTypeToDataItem, ref issueCounter);
 
-            // GenerateParentDataObject
-            EvaluateJsonExportCheckbox(checkBoxDataItemAddParentDataObject, JsonExportSetting.AddParentDataObject, ref issueCounter);
+            // AddParentDataObjectToDataItem
+            EvaluateJsonExportCheckbox(checkBoxDataItemAddParentDataObject, JsonExportSetting.AddParentDataObjectToDataItem, ref issueCounter);
 
             #endregion
 
             #region Related Data Objects
 
-            // Add Metadata as object
+            // AddMetadataAsRelatedDataObject
             EvaluateJsonExportCheckbox(checkBoxAddMetadataConnection, JsonExportSetting.AddMetadataAsRelatedDataObject, ref issueCounter);
 
-            // Add upstream connections as objects
-            EvaluateJsonExportCheckbox(checkBoxNextUpDataObjects, JsonExportSetting.AddRelatedDataObjectsAsRelatedDataObject, ref issueCounter);
+            // AddNextUpDataObjectsAsRelatedDataObject
+            EvaluateJsonExportCheckbox(checkBoxNextUpDataObjects, JsonExportSetting.AddNextUpDataObjectsAsRelatedDataObject, ref issueCounter);
+
+            // AddParentDataObjectAsRelatedDataObject
+            EvaluateJsonExportCheckbox(checkBoxAddParentDataObject, JsonExportSetting.AddParentDataObjectAsRelatedDataObject, ref issueCounter);
 
             #endregion
 
@@ -150,37 +153,45 @@ namespace TEAM
         {
             try
             {
-                // GenerateDataObjectDataItems
+                // AddDataItemsToDataObject
                 var stringDataObjectDataItems = checkBoxDataObjectDataItems.Checked ? "True" : "False";
-                JsonExportSetting.AddDataObjectDataItems = stringDataObjectDataItems;
+                JsonExportSetting.AddDataItemsToDataObject = stringDataObjectDataItems;
 
-                // GenerateDatabaseAsExtension
-                var stringDatabaseExtension = checkBoxDatabaseExtension.Checked ? "True" : "False";
-                JsonExportSetting.AddDatabaseAsExtension = stringDatabaseExtension;
-
-                // GenerateSchemaAsExtension
-                var stringSchemaExtension = checkBoxSchemaExtension.Checked ? "True" : "False";
-                JsonExportSetting.AddSchemaAsExtension = stringSchemaExtension;
-
-                // GenerateTypeAsClassification
+                // AddTypeAsClassificationToDataObject
                 var stringTypeClassification = checkBoxAddType.Checked ? "True" : "False";
-                JsonExportSetting.AddTypeAsClassification = stringTypeClassification;
+                JsonExportSetting.AddTypeAsClassificationToDataObject = stringTypeClassification;
 
-                // GenerateDataItemDataTypes
+                // AddDatabaseAsExtensionToConnection
+                var stringDatabaseExtension = checkBoxDatabaseExtension.Checked ? "True" : "False";
+                JsonExportSetting.AddDatabaseAsExtensionToConnection = stringDatabaseExtension;
+
+                // AddSchemaAsExtensionToConnection
+                var stringSchemaExtension = checkBoxSchemaExtension.Checked ? "True" : "False";
+                JsonExportSetting.AddSchemaAsExtensionToConnection = stringSchemaExtension;
+                
+                // AddDataTypeToDataItem
                 var stringSourceDataTypes = checkBoxDataItemDataType.Checked ? "True" : "False";
-                JsonExportSetting.AddDataItemDataTypes = stringSourceDataTypes;
+                JsonExportSetting.AddDataTypeToDataItem = stringSourceDataTypes;
 
-                // GenerateParentDataObject
+                // AddParentDataObjectToDataItem
                 var stringAddParentDataObject = checkBoxDataItemAddParentDataObject.Checked ? "True" : "False";
-                JsonExportSetting.AddParentDataObject = stringAddParentDataObject;
+                JsonExportSetting.AddParentDataObjectToDataItem = stringAddParentDataObject;
 
                 // AddMetadataAsRelatedDataObject
                 var stringAddMetadataConnection = checkBoxAddMetadataConnection.Checked ? "True" : "False";
                 JsonExportSetting.AddMetadataAsRelatedDataObject = stringAddMetadataConnection;
 
-                // AddUpstreamDataObjectsAsRelatedDataObject
+                // AddNextUpDataObjectsAsRelatedDataObject
                 var stringAddNextUpObjects = checkBoxNextUpDataObjects.Checked ? "True" : "False";
-                JsonExportSetting.AddRelatedDataObjectsAsRelatedDataObject = stringAddNextUpObjects;
+                JsonExportSetting.AddNextUpDataObjectsAsRelatedDataObject = stringAddNextUpObjects;
+
+                // AddParentDataObjectAsRelatedDataObject
+                var stringParentDataObject = checkBoxAddParentDataObject.Checked ? "True" : "False";
+                JsonExportSetting.AddParentDataObjectAsRelatedDataObject = stringParentDataObject;
+
+                // AddDrivingKeyAsBusinessKeyExtension
+                var stringDrivingKeyAsExtension = checkBoxAddDrivingKeyAsExtension.Checked ? "True" : "False";
+                JsonExportSetting.AddDrivingKeyAsBusinessKeyExtension = stringDrivingKeyAsExtension;
 
                 // Write to disk
                 JsonExportSetting.SaveJsonConfigurationFile(globalParameters);

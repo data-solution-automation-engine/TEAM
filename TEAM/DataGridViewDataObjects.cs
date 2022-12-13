@@ -31,6 +31,9 @@ namespace TEAM
         public delegate void DataObjectParseHandler(object sender, ParseEventArgs e);
         public event DataObjectParseHandler OnDataObjectParse;
 
+        public delegate void HeaderSortHandler(object sender, FilterEventArgs e);
+        public event HeaderSortHandler OnHeaderSort;
+
         /// <summary>
         /// The definition of the Data Grid View for table mappings (DataObject mappings).
         /// </summary>
@@ -76,7 +79,6 @@ namespace TEAM
             ColumnHeaderMouseClick += DataGridViewDataObjects_ColumnHeaderMouseClick;
             CellEnter += DataGridViewDataObjects_CellEnter; // Open Combo Boxes on first click
             DefaultValuesNeeded += DataGridViewDataObjectMapping_DefaultValuesNeeded;
-            Sorted += TextBoxFilterCriterion_OnDelayedTextChanged;
             CellValueChanged += OnCheckBoxValueChanged;
             RowPostPaint += OnRowPostPaint;
 
@@ -364,6 +366,15 @@ namespace TEAM
             ParseEventArgs args = new ParseEventArgs(text);
             OnDataObjectParse(this, args);
         }
+        internal void HeaderSort()
+        {
+            // Make sure something is listening to the event.
+            if (OnHeaderSort == null) return;
+
+            // Pass through the custom arguments when this method is called.
+            FilterEventArgs args = new FilterEventArgs(true);
+            OnHeaderSort(this, args);
+        }
 
         private void OnCheckBoxValueChanged(object sender, DataGridViewCellEventArgs e)
         {
@@ -483,6 +494,9 @@ namespace TEAM
                     Sort(Columns[(int)DataObjectMappingGridColumns.TargetDataObjectName], ListSortDirection.Ascending);
                 }
             }
+
+            // Callback to parent form.
+            HeaderSort();
         }
         
         private void toolStripMenuItemModifyJson_Click(object sender, EventArgs e)
@@ -521,36 +535,6 @@ namespace TEAM
             DataGridViewCell dummyCell = this[CurrentCell.ColumnIndex, CurrentCell.RowIndex + 1];
             CurrentCell = dummyCell;
             CurrentCell = cell;
-        }
-
-        private void TextBoxFilterCriterion_OnDelayedTextChanged(object sender, EventArgs e)
-        {
-            ApplyDataGridViewFiltering();
-        }
-
-        public void ApplyDataGridViewFiltering()
-        {
-            foreach (DataGridViewRow dr in Rows)
-            {
-                dr.Visible = true;
-            }
-
-            foreach (DataGridViewRow dr in Rows)
-            {
-                if (dr.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
-                {
-                    if (!dr.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString()
-                            .Contains(Text) && !dr
-                            .Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString()
-                            .Contains(Text))
-                    {
-                        CurrencyManager currencyManager1 = (CurrencyManager)BindingContext[DataSource];
-                        currencyManager1.SuspendBinding();
-                        dr.Visible = false;
-                        currencyManager1.ResumeBinding();
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -1202,7 +1186,7 @@ namespace TEAM
         /// </summary>
         /// <param name="dataObjectMappingGridViewRow"></param>
         /// <returns></returns>
-        private DataObjectMapping GetDataObjectMapping(DataGridViewRow dataObjectMappingGridViewRow)
+        public DataObjectMapping GetDataObjectMapping(DataGridViewRow dataObjectMappingGridViewRow)
         {
             var targetDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
 
@@ -1214,20 +1198,28 @@ namespace TEAM
 
             #region Enabled
 
-            var enabledIntermediate = "False";
-
-            if (dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value != DBNull.Value)
+            try
             {
-                enabledIntermediate = (string)dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value;
-            }
+                var enabledIntermediate = "False";
 
-            bool enabled = false;
-            if (enabledIntermediate == "True")
+                if (dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value != DBNull.Value)
+                {
+                    enabledIntermediate = (string)dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value;
+                }
+
+                bool enabled = false;
+
+                if (enabledIntermediate == "True")
+                {
+                    enabled = true;
+                }
+
+                dataObjectMapping.enabled = enabled;
+            }
+            catch (Exception exception) 
             {
-                enabled = true;
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The enabled indicator could not be correctly defined. The message is: {exception.Message}."));
             }
-
-            dataObjectMapping.enabled = enabled;
 
             #endregion
 
@@ -1239,14 +1231,11 @@ namespace TEAM
             var targetDataObject = (DataObject)dataObjectMappingGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
             dataObjectMapping.targetDataObject = targetDataObject;
 
-            // Grab the grids
-            var dataGridViewRowsPhysicalModel = _dataGridViewPhysicalModel.Rows.Cast<DataGridViewRow>()
-                        .Where(row => !row.IsNewRow)
-                        .ToList();
+            // Grab the data objects grid.
+            var dataGridViewRowsDataObjects = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>().Where(row => !row.IsNewRow).ToList();
 
-            var dataGridViewRowsDataObjects = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>()
-                .Where(row => !row.IsNewRow)
-                .ToList();
+            // Grab the physical model grid.
+            var dataGridViewRowsPhysicalModel = _dataGridViewPhysicalModel.Rows.Cast<DataGridViewRow>().Where(row => !row.IsNewRow).ToList();
 
             // Manage classifications
             JsonOutputHandling.SetDataObjectTypeClassification(targetDataObject, JsonExportSetting, TeamConfiguration);
@@ -1272,9 +1261,9 @@ namespace TEAM
                 var mappingClassifications = JsonOutputHandling.SetMappingClassifications(targetDataObjectName, JsonExportSetting, TeamConfiguration, drivingKeyValue);
                 dataObjectMapping.mappingClassifications = mappingClassifications;
             }
-            catch
+            catch (Exception exception)
             {
-                //
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The data object classification could not be correctly defined. The message is: {exception.Message}."));
             }
 
             #endregion
@@ -1286,7 +1275,6 @@ namespace TEAM
                 string sourceDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value.ToString();
 
                 List<dynamic> sourceDataObjects = new List<dynamic>();
-
 
                 if (sourceDataObjectName.IsDataQuery())
                 {
@@ -1332,17 +1320,58 @@ namespace TEAM
 
                 dataObjectMapping.sourceDataObjects = sourceDataObjects;
             }
-            catch
+            catch (Exception exception)
             {
-                //
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The source data objects could not be correctly defined. The message is: {exception.Message}."));
             }
 
             #endregion
 
             #region Related Data Objects
 
-            var relatedDataObjects = JsonOutputHandling.SetRelatedDataObjects(targetDataObjectName, this, JsonExportSetting, TeamConfiguration, TeamEventLog, dataGridViewRowsPhysicalModel);
-            if (relatedDataObjects != null && relatedDataObjects.Count > 0)
+            var relatedDataObjects = new List<DataObject>();
+
+            // Metadata object.
+            try
+            {
+                var metadataRelatedDataObject = JsonOutputHandling.SetMetadataAsRelatedDataObject(JsonExportSetting, TeamConfiguration, dataGridViewRowsPhysicalModel);
+
+                if (metadataRelatedDataObject != null && metadataRelatedDataObject.name != null)
+                {
+                    relatedDataObjects.Add(metadataRelatedDataObject);
+                }
+            }
+            catch (Exception exception)
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the metadata connection as related data object. The error message is: {exception.Message}."));
+            }
+
+            // Next up (lineage) objects.
+            try
+            {
+                relatedDataObjects.AddRange(JsonOutputHandling.SetNextUpRelatedDataObjectList(targetDataObjectName, this, JsonExportSetting, TeamConfiguration, TeamEventLog, dataGridViewRowsPhysicalModel));
+            }
+            catch (Exception exception)
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the next up data object as a related data object. The message is: {exception.Message}."));
+            }
+            
+            // Parent data objects.
+            try
+            {
+                var parentRelatedDataObjects = JsonOutputHandling.GetParentRelatedDataObjectList(targetDataObjectName, dataObjectMapping.sourceDataObjects[0].name, dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString(), dataGridViewRowsDataObjects, JsonExportSetting, TeamConfiguration);
+
+                if (parentRelatedDataObjects != null && parentRelatedDataObjects.Count > 0)
+                {
+                    relatedDataObjects.AddRange(parentRelatedDataObjects);
+                }
+            }
+            catch (Exception exception)
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the parent data object as a related data object. The message is: {exception.Message}."));
+            }
+
+            if (relatedDataObjects.Count > 0)
             {
                 dataObjectMapping.relatedDataObjects = relatedDataObjects;
             }
@@ -1366,9 +1395,10 @@ namespace TEAM
                     {
                         dynamic sourceDataObject = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
 
-                        var localSourceDataObject = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataObject.ToString()].Value.ToString(); var localTargetDataObject = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataObject.ToString()].Value.ToString();
+                        var localSourceDataObjectName = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataObject.ToString()].Value.ToString();
+                        var localTargetDataObjectName = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataObject.ToString()].Value.ToString();
 
-                        if (localSourceDataObject == sourceDataObject.name && localTargetDataObject == targetDataObject.name)
+                        if (localSourceDataObjectName == sourceDataObject.name && localTargetDataObjectName == targetDataObject.name)
                         {
                             var localSourceDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataItem.ToString()].Value.ToString();
                             var localTargetDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataItem.ToString()].Value.ToString();
@@ -1385,27 +1415,7 @@ namespace TEAM
 
                             #region Multi-Active Key
 
-                            // If the source data item is part of the key, a MAK classification can be added.
-                            // This is done using a lookup against the physical model.
-
-                            var physicalModelGridViewRow = _dataGridViewPhysicalModel.Rows
-                                .Cast<DataGridViewRow>()
-                                .Where(r => !r.IsNewRow)
-                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(localTargetDataItem))
-                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(localTargetDataObject))
-                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Value.ToString().Equals("Y"))
-                                .FirstOrDefault();
-
-                            if (physicalModelGridViewRow != null)
-                            {
-                                List<Classification> classificationList = new List<Classification>();
-                                Classification classification = new Classification();
-                                classification.classification = "MultiActiveKey";
-                                classification.notes = "The attribute that supports granularity shift in describing context.";
-                                classificationList.Add(classification);
-                                targetDataItem.dataItemClassification = classificationList;
-                            }
-
+                            JsonOutputHandling.AddMultiActiveKeyClassificationToDataItem(targetDataItem, localTargetDataObjectName, _dataGridViewPhysicalModel);
 
                             #endregion
 
@@ -1468,14 +1478,16 @@ namespace TEAM
                 #region Auto map
 
                 // For presentation layer, Hubs and Links, only manual mappings are supported.
-                if (dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.Presentation.ToString() && dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.CoreBusinessConcept.ToString() && dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.NaturalBusinessRelationship.ToString())
+                if (dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.Presentation.ToString() && 
+                    dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.CoreBusinessConcept.ToString() && 
+                    dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.NaturalBusinessRelationship.ToString())
                 {
                     // Auto-map any data items that are not yet manually mapped, but exist in source and target.
                     var physicalModelTargetDataGridViewRows = _dataGridViewPhysicalModel.Rows
-                        .Cast<DataGridViewRow>()
-                        .Where(r => !r.IsNewRow)
-                        .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(targetDataObject.name))
-                        .ToList();
+                    .Cast<DataGridViewRow>()
+                    .Where(r => !r.IsNewRow)
+                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(targetDataObject.name))
+                    .ToList();
 
                     foreach (var row in physicalModelTargetDataGridViewRows)
                     {
@@ -1517,6 +1529,7 @@ namespace TEAM
                             // Otherwise, create a data item for both source and target, and add it.
                             List<dynamic> sourceDataItems = new List<dynamic>();
                             var autoMappedSourceDataItem = new DataItem();
+
                             sourceDataItems.Add(autoMappedSourceDataItem);
 
                             var autoMappedTargetDataItem = new DataItem();
@@ -1535,6 +1548,12 @@ namespace TEAM
                             // Add parent Data Object to the Data Item.
                             JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedSourceDataItem, sourceDataObject, JsonExportSetting);
                             JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedTargetDataItem, dataObjectMapping.targetDataObject, JsonExportSetting);
+
+                            #region Multi-Active Key
+
+                            JsonOutputHandling.AddMultiActiveKeyClassificationToDataItem(autoMappedTargetDataItem, targetDataObject.name,  _dataGridViewPhysicalModel);
+
+                            #endregion
 
                             // Create a Data Item Mapping.
                             DataItemMapping dataItemMapping = new DataItemMapping
@@ -1588,16 +1607,19 @@ namespace TEAM
                 var businessKeyDefinition = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString();
                 var sourceDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value.ToString();
                 var drivingKeyValue = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value.ToString();
-                JsonOutputHandling.SetBusinessKeys(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, targetConnection, TeamConfiguration, drivingKeyValue, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, TeamEventLog);
+
+                JsonOutputHandling.SetBusinessKeys(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, targetConnection, JsonExportSetting, TeamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, TeamEventLog);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                // Catch TBD
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the business key definition. The message is: {exception.Message}."));
             }
 
             #endregion
 
             return dataObjectMapping;
         }
+
+
     }
 }

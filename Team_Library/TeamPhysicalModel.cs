@@ -59,6 +59,12 @@ namespace TEAM_Library
             JsonList = new List<PhysicalModelMetadataJson>();
         }
 
+        public static void CreateEmptyPhysicalModelJson(string fileName, EventLog eventLog)
+        {
+            File.WriteAllText(fileName, "[]");
+            eventLog.Add(Event.CreateNewEvent(EventTypes.Information, "A new physical model file is created, because it did not exist yet."));
+        }
+
         /// <summary>
         /// Set the sort order for the data table.
         /// </summary>

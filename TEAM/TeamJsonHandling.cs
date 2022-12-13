@@ -28,21 +28,7 @@ namespace TEAM
             {
                 string localJsonFileName = FormBase.globalParameters.MetadataPath + FormBase.globalParameters.ActiveEnvironmentKey + "_" + FormBase.globalParameters.JsonModelMetadataFileName + FormBase.globalParameters.JsonExtension;
                 return localJsonFileName; }
-
-            internal static string newFileTableMapping { get; set; }
-            internal static string newFileAttributeMapping { get; set; }
-            internal static string newFilePhysicalModel { get; set; }
         }
-
-        /// <summary>
-        /// Create a completely empty file.
-        /// </summary>
-        /// <param name="fileType"></param>
-        internal static void CreatePlaceholderJsonFile(string fileType)
-        {
-            File.WriteAllText(FormBase.globalParameters.ConfigurationPath + fileType + FormBase.globalParameters.JsonExtension, "");
-        }
-
 
         /// <summary>
         /// Create a backup of a given JSON file.
