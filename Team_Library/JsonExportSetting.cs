@@ -11,62 +11,77 @@ namespace TEAM_Library
     /// </summary>
     public class JsonExportSetting
     {
+        #region Properties
+
         // Data Objects
-        public string AddDatabaseAsExtension { get; set; }
-        public string AddSchemaAsExtension { get; set; }
-        public string AddTypeAsClassification { get; set; }
-        public string AddDataObjectDataItems { get; set; }
+        public string AddTypeAsClassificationToDataObject { get; set; }
+        public string AddDataItemsToDataObject { get; set; }
+
+        // Connections
+        public string AddDatabaseAsExtensionToConnection { get; set; }
+        public string AddSchemaAsExtensionToConnection { get; set; }
 
         // Data Items
-        public string AddDataItemDataTypes { get; set; }
-        public string AddParentDataObject { get; set; }
+        public string AddDataTypeToDataItem { get; set; }
+        public string AddParentDataObjectToDataItem { get; set; }
+
 
         // Related Data Objects
         public string AddMetadataAsRelatedDataObject { get; set; }
-        public string AddRelatedDataObjectsAsRelatedDataObject { get; set; }
+        public string AddNextUpDataObjectsAsRelatedDataObject { get; set; }
+        public string AddParentDataObjectAsRelatedDataObject { get; set; }
 
-        public bool IsAddDatabaseAsExtension()
+        // Data Vault
+        public string AddDrivingKeyAsBusinessKeyExtension { get; set; }
+
+        #endregion
+
+        // Data Objects
+        public bool IsAddTypeAsClassificationToDataObject()
         {
-            bool returnValue = AddDatabaseAsExtension == "True";
+            bool returnValue = AddTypeAsClassificationToDataObject == "True";
 
             return returnValue;
         }
 
-        public bool IsAddSchemaAsExtension()
+        public bool IsAddDataItemsToDataObject()
         {
-            bool returnValue = AddSchemaAsExtension == "True";
+            bool returnValue = AddDataItemsToDataObject == "True";
 
             return returnValue;
         }
 
-        public bool IsAddTypeAsClassification()
+        // Connections
+        public bool IsAddDatabaseAsExtensionToConnection()
         {
-            bool returnValue = AddTypeAsClassification == "True";
+            bool returnValue = AddDatabaseAsExtensionToConnection == "True";
 
             return returnValue;
         }
 
-        public bool IsAddDataObjectDataItems()
+        public bool IsAddSchemaAsExtensionToConnection()
         {
-            bool returnValue = AddDataObjectDataItems == "True";
+            bool returnValue = AddSchemaAsExtensionToConnection == "True";
 
             return returnValue;
         }
 
-        public bool IsAddDataItemDataTypes()
+        // Data Items
+        public bool IsAddDataTypeToDataItem()
         {
-            bool returnValue = AddDataItemDataTypes == "True";
+            bool returnValue = AddDataTypeToDataItem == "True";
 
             return returnValue;
         }
 
-        public bool IsAddParentDataObject()
+        public bool IsAddParentDataObjectToDataItem()
         {
-            bool returnValue = AddParentDataObject == "True";
+            bool returnValue = AddParentDataObjectToDataItem == "True";
 
             return returnValue;
         }
 
+        // Related Data Objects
         public bool IsAddMetadataAsRelatedDataObject()
         {
             bool returnValue = AddMetadataAsRelatedDataObject == "True";
@@ -74,9 +89,24 @@ namespace TEAM_Library
             return returnValue;
         }
 
-        public bool IsAddRelatedDataObjectsAsRelatedDataObject()
+        public bool IsAddNextUpDataObjectsAsRelatedDataObject()
         {
-            bool returnValue = AddRelatedDataObjectsAsRelatedDataObject == "True";
+            bool returnValue = AddNextUpDataObjectsAsRelatedDataObject == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddParentDataObjectAsRelatedDataObject()
+        {
+            bool returnValue = AddParentDataObjectAsRelatedDataObject == "True";
+
+            return returnValue;
+        }
+
+        // Data Vault.
+        public bool IsAddDrivingKeyAsBusinessKeyExtension()
+        {
+            bool returnValue = AddDrivingKeyAsBusinessKeyExtension == "True";
 
             return returnValue;
         }
@@ -107,16 +137,19 @@ namespace TEAM_Library
                 streamReader.Close();
                 fileStream.Close();
 
-                AddDataObjectDataItems = configList["GenerateDataObjectDataItems"];
-                AddDatabaseAsExtension = configList["GenerateDatabaseAsExtension"];
-                AddSchemaAsExtension = configList["GenerateSchemaAsExtension"];
-                AddTypeAsClassification = configList["GenerateTypeAsClassification"];
+                AddDataItemsToDataObject = configList["AddDataItemsToDataObject"];
+                AddDatabaseAsExtensionToConnection = configList["AddDatabaseAsExtensionToConnection"];
+                AddSchemaAsExtensionToConnection = configList["AddSchemaAsExtensionToConnection"];
+                AddTypeAsClassificationToDataObject = configList["AddTypeAsClassificationToDataObject"];
 
-                AddDataItemDataTypes = configList["GenerateDataItemDataTypes"];
-                AddParentDataObject = configList["GenerateParentDataObject"];
+                AddDataTypeToDataItem = configList["AddDataTypeToDataItem"];
+                AddParentDataObjectToDataItem = configList["AddParentDataObjectToDataItem"];
 
                 AddMetadataAsRelatedDataObject = configList["AddMetadataAsRelatedDataObject"];
-                AddRelatedDataObjectsAsRelatedDataObject = configList["AddUpstreamDataObjectsAsRelatedDataObject"];
+                AddNextUpDataObjectsAsRelatedDataObject = configList["AddNextUpDataObjectsAsRelatedDataObject"];
+                AddParentDataObjectAsRelatedDataObject = configList["AddParentDataObjectAsRelatedDataObject"];
+
+                AddDrivingKeyAsBusinessKeyExtension = configList["AddDrivingKeyAsBusinessKeyExtension"];
             }
             catch (Exception exception)
             {
@@ -138,16 +171,20 @@ namespace TEAM_Library
                 var validationFile = new StringBuilder();
                 validationFile.AppendLine("/* TEAM JSON Export Configuration Settings */");
 
-                validationFile.AppendLine("GenerateDataObjectDataItems|" + AddDataObjectDataItems + "");
-                validationFile.AppendLine("GenerateDatabaseAsExtension|" + AddDatabaseAsExtension + "");
-                validationFile.AppendLine("GenerateSchemaAsExtension|" + AddSchemaAsExtension + "");
-                validationFile.AppendLine("GenerateTypeAsClassification|" + AddTypeAsClassification + "");
+                validationFile.AppendLine("AddTypeAsClassificationToDataObject|" + AddTypeAsClassificationToDataObject + "");
+                validationFile.AppendLine("AddDataItemsToDataObject|" + AddDataItemsToDataObject + "");
 
-                validationFile.AppendLine("GenerateDataItemDataTypes|" + AddDataItemDataTypes + "");
-                validationFile.AppendLine("GenerateParentDataObject|" + AddParentDataObject + "");
+                validationFile.AppendLine("AddDatabaseAsExtensionToConnection|" + AddDatabaseAsExtensionToConnection + "");
+                validationFile.AppendLine("AddSchemaAsExtensionToConnection|" + AddSchemaAsExtensionToConnection + "");
+                
+                validationFile.AppendLine("AddDataTypeToDataItem|" + AddDataTypeToDataItem + "");
+                validationFile.AppendLine("AddParentDataObjectToDataItem|" + AddParentDataObjectToDataItem + "");
 
-                validationFile.AppendLine("AddMetadataAsRelatedDataObject|" +AddMetadataAsRelatedDataObject + "");
-                validationFile.AppendLine("AddUpstreamDataObjectsAsRelatedDataObject|" + AddRelatedDataObjectsAsRelatedDataObject + "");
+                validationFile.AppendLine("AddMetadataAsRelatedDataObject|" + AddMetadataAsRelatedDataObject + "");
+                validationFile.AppendLine("AddNextUpDataObjectsAsRelatedDataObject|" + AddNextUpDataObjectsAsRelatedDataObject + "");
+                validationFile.AppendLine("AddParentDataObjectAsRelatedDataObject|" + AddParentDataObjectAsRelatedDataObject + "");
+
+                validationFile.AppendLine("AddDrivingKeyAsBusinessKeyExtension|" + AddDrivingKeyAsBusinessKeyExtension + "");
 
                 // Closing off
                 validationFile.AppendLine("/* End of file */");
@@ -176,19 +213,23 @@ namespace TEAM_Library
                 validationFile.AppendLine("/* TEAM JSON Export File Settings */");
 
                 // Data Object group.
-                validationFile.AppendLine("GenerateDataObjectDataItems|True");
-                validationFile.AppendLine("GenerateDatabaseAsExtension|True");
-                validationFile.AppendLine("GenerateSchemaAsExtension|True");
-                validationFile.AppendLine("GenerateTypeAsClassification|True");
-
+                validationFile.AppendLine("AddTypeAsClassificationToDataObject|True");
+                validationFile.AppendLine("AddDataItemsToDataObject|True");
+                // Connections
+                validationFile.AppendLine("AddDatabaseAsExtensionToConnection|True");
+                validationFile.AppendLine("AddSchemaAsExtensionToConnection|True");
+                
                 // Data Item group.
-                validationFile.AppendLine("GenerateDataItemDataTypes|True");
-                validationFile.AppendLine("GenerateTargetDataItemTypes|True");
-                validationFile.AppendLine("GenerateParentDataObject|True");
+                validationFile.AppendLine("AddDataTypeToDataItem|True");
+                validationFile.AppendLine("AddParentDataObjectToDataItem|True");
 
                 // Related Data Objects.
-                validationFile.AppendLine("AddMetadataAsRelatedDataObject|True");
-                validationFile.AppendLine("AddUpstreamDataObjectsAsRelatedDataObject|True");
+                validationFile.AppendLine("AddMetadataAsRelatedDataObject|False");
+                validationFile.AppendLine("AddNextUpDataObjectsAsRelatedDataObject|True");
+                validationFile.AppendLine("AddParentDataObjectAsRelatedDataObject|False");
+
+                // Data Vault specific.
+                validationFile.AppendLine("AddDrivingKeyAsBusinessKeyExtension|False");
 
                 validationFile.AppendLine("/* End of file */");
 

@@ -15,6 +15,18 @@ namespace TEAM_Library
 {
     public static class Utility
     {
+        /// <summary>
+        /// Extension method to be able to use StringComparison for non Case Sensitive comparisons using string.Contains.
+        /// </summary>
+        /// <param name="inputString"></param>
+        /// <param name="checkString"></param>
+        /// <param name="stringComparison"></param>
+        /// <returns></returns>
+        public static bool Contains(this string inputString, string checkString, StringComparison stringComparison)
+        {
+            return inputString?.IndexOf(checkString, stringComparison) >= 0;
+        }
+
         public static void DoubleBuffered(this DataGridView dgv, bool setting)
         {
             Type dgvType = dgv.GetType();

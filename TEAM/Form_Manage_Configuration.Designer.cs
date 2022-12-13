@@ -36,6 +36,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -96,7 +97,7 @@
             this.textBoxHubAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
             this.checkBoxAlternativeHubLDTS = new System.Windows.Forms.CheckBox();
             this.textBoxAlternativeRecordSource = new System.Windows.Forms.TextBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.groupBoxSurrogateKeyDefinition = new System.Windows.Forms.GroupBox();
             this.label13 = new System.Windows.Forms.Label();
             this.textBoxKeyIdentifier = new System.Windows.Forms.TextBox();
             this.textBoxKeyPattern = new System.Windows.Forms.TextBox();
@@ -149,7 +150,7 @@
             this.tabPageDataWarehouse.SuspendLayout();
             this.groupBoxDataVaultSpecific.SuspendLayout();
             this.groupBoxAlternativeColumns.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.groupBoxSurrogateKeyDefinition.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabPageConnections.SuspendLayout();
             this.tabControlConnections.SuspendLayout();
@@ -169,7 +170,7 @@
             this.richTextBoxInformation.Location = new System.Drawing.Point(12, 685);
             this.richTextBoxInformation.Name = "richTextBoxInformation";
             this.richTextBoxInformation.ReadOnly = true;
-            this.richTextBoxInformation.Size = new System.Drawing.Size(1009, 100);
+            this.richTextBoxInformation.Size = new System.Drawing.Size(997, 100);
             this.richTextBoxInformation.TabIndex = 2;
             this.richTextBoxInformation.TabStop = false;
             this.richTextBoxInformation.Text = "";
@@ -180,7 +181,7 @@
             this.fileToolStripMenuItem});
             this.menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
             this.menuStripMainMenu.Name = "menuStripMainMenu";
-            this.menuStripMainMenu.Size = new System.Drawing.Size(1148, 24);
+            this.menuStripMainMenu.Size = new System.Drawing.Size(1136, 24);
             this.menuStripMainMenu.TabIndex = 4;
             this.menuStripMainMenu.Text = "menuStrip1";
             // 
@@ -189,6 +190,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openConfigurationFileToolStripMenuItem,
             this.toolStripMenuItem2,
+            this.saveAllToolStripMenuItem,
             this.toolStripSeparator2,
             this.openConfigurationDirectoryToolStripMenuItem,
             this.openMetadataDirectoryToolStripMenuItem,
@@ -216,8 +218,18 @@
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.toolStripMenuItem2.Size = new System.Drawing.Size(271, 22);
-            this.toolStripMenuItem2.Text = "&Save Configuration File";
+            this.toolStripMenuItem2.Text = "&Save Current Tab";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.SaveConfigurationFileToolStripMenuItem_Click);
+            // 
+            // saveAllToolStripMenuItem
+            // 
+            this.saveAllToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
+            this.saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
+            this.saveAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.saveAllToolStripMenuItem.Text = "Save All";
+            this.saveAllToolStripMenuItem.Click += new System.EventHandler(this.saveAllToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -279,7 +291,7 @@
             // 
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Image = global::TEAM.Properties.Resources.RavosLogo;
-            this.pictureBox1.Location = new System.Drawing.Point(1027, 685);
+            this.pictureBox1.Location = new System.Drawing.Point(1015, 685);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(109, 100);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -288,6 +300,7 @@
             // 
             // tabPagePaths
             // 
+            this.tabPagePaths.AutoScroll = true;
             this.tabPagePaths.Controls.Add(this.pictureBox4);
             this.tabPagePaths.Controls.Add(this.textBoxTeamMetadataPath);
             this.tabPagePaths.Controls.Add(this.label2);
@@ -297,15 +310,16 @@
             this.tabPagePaths.Controls.Add(this.label45);
             this.tabPagePaths.Location = new System.Drawing.Point(4, 22);
             this.tabPagePaths.Name = "tabPagePaths";
-            this.tabPagePaths.Size = new System.Drawing.Size(1120, 621);
+            this.tabPagePaths.Size = new System.Drawing.Size(1108, 621);
             this.tabPagePaths.TabIndex = 4;
             this.tabPagePaths.Text = "Paths";
             this.tabPagePaths.UseVisualStyleBackColor = true;
             // 
             // pictureBox4
             // 
+            this.pictureBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox4.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.pictureBox4.Location = new System.Drawing.Point(1094, 56);
+            this.pictureBox4.Location = new System.Drawing.Point(1081, 56);
             this.pictureBox4.Name = "pictureBox4";
             this.pictureBox4.Size = new System.Drawing.Size(19, 20);
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -315,11 +329,14 @@
             // 
             // textBoxTeamMetadataPath
             // 
+            this.textBoxTeamMetadataPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxTeamMetadataPath.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxTeamMetadataPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxTeamMetadataPath.Location = new System.Drawing.Point(110, 56);
+            this.textBoxTeamMetadataPath.Location = new System.Drawing.Point(108, 56);
             this.textBoxTeamMetadataPath.Multiline = true;
             this.textBoxTeamMetadataPath.Name = "textBoxTeamMetadataPath";
-            this.textBoxTeamMetadataPath.Size = new System.Drawing.Size(978, 20);
+            this.textBoxTeamMetadataPath.Size = new System.Drawing.Size(966, 20);
             this.textBoxTeamMetadataPath.TabIndex = 98;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxTeamMetadataPath, "The output path is where TEAM saves any output generated by the application.\r\nFor" +
         " example, where the Json metadata files are placed after succesfull validation a" +
@@ -336,8 +353,9 @@
             // 
             // pictureBox3
             // 
+            this.pictureBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox3.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.pictureBox3.Location = new System.Drawing.Point(1094, 30);
+            this.pictureBox3.Location = new System.Drawing.Point(1081, 30);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(19, 20);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -356,11 +374,14 @@
             // 
             // textBoxConfigurationPath
             // 
+            this.textBoxConfigurationPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxConfigurationPath.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxConfigurationPath.Location = new System.Drawing.Point(110, 30);
+            this.textBoxConfigurationPath.Location = new System.Drawing.Point(108, 30);
             this.textBoxConfigurationPath.Multiline = true;
             this.textBoxConfigurationPath.Name = "textBoxConfigurationPath";
-            this.textBoxConfigurationPath.Size = new System.Drawing.Size(978, 20);
+            this.textBoxConfigurationPath.Size = new System.Drawing.Size(966, 20);
             this.textBoxConfigurationPath.TabIndex = 41;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxConfigurationPath, resources.GetString("textBoxConfigurationPath.ToolTip"));
             // 
@@ -375,6 +396,7 @@
             // 
             // tabPageDataObjectTypes
             // 
+            this.tabPageDataObjectTypes.AutoScroll = true;
             this.tabPageDataObjectTypes.Controls.Add(this.groupBox4);
             this.tabPageDataObjectTypes.Controls.Add(this.groupBoxDataObjectIdentification);
             this.tabPageDataObjectTypes.Controls.Add(this.groupBoxPrefixSuffix);
@@ -382,13 +404,15 @@
             this.tabPageDataObjectTypes.Location = new System.Drawing.Point(4, 22);
             this.tabPageDataObjectTypes.Name = "tabPageDataObjectTypes";
             this.tabPageDataObjectTypes.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageDataObjectTypes.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageDataObjectTypes.Size = new System.Drawing.Size(1108, 621);
             this.tabPageDataObjectTypes.TabIndex = 2;
             this.tabPageDataObjectTypes.Text = "Data Object Types";
             this.tabPageDataObjectTypes.UseVisualStyleBackColor = true;
             // 
             // groupBox4
             // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.label17);
             this.groupBox4.Controls.Add(this.label15);
             this.groupBox4.Controls.Add(this.label16);
@@ -399,7 +423,7 @@
             this.groupBox4.Controls.Add(this.textBoxLinkSatPrefix);
             this.groupBox4.Location = new System.Drawing.Point(3, 143);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(560, 133);
+            this.groupBox4.Size = new System.Drawing.Size(1099, 133);
             this.groupBox4.TabIndex = 82;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Identification of data objects - Data Vault specific";
@@ -442,42 +466,52 @@
             // 
             // textBoxHubTablePrefix
             // 
+            this.textBoxHubTablePrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxHubTablePrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxHubTablePrefix.Location = new System.Drawing.Point(234, 23);
             this.textBoxHubTablePrefix.Name = "textBoxHubTablePrefix";
-            this.textBoxHubTablePrefix.Size = new System.Drawing.Size(314, 20);
+            this.textBoxHubTablePrefix.Size = new System.Drawing.Size(859, 20);
             this.textBoxHubTablePrefix.TabIndex = 27;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxHubTablePrefix, resources.GetString("textBoxHubTablePrefix.ToolTip"));
             // 
             // textBoxSatPrefix
             // 
+            this.textBoxSatPrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxSatPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxSatPrefix.Location = new System.Drawing.Point(234, 49);
             this.textBoxSatPrefix.Name = "textBoxSatPrefix";
-            this.textBoxSatPrefix.Size = new System.Drawing.Size(314, 20);
+            this.textBoxSatPrefix.Size = new System.Drawing.Size(859, 20);
             this.textBoxSatPrefix.TabIndex = 28;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxSatPrefix, resources.GetString("textBoxSatPrefix.ToolTip"));
             // 
             // textBoxLinkTablePrefix
             // 
+            this.textBoxLinkTablePrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxLinkTablePrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxLinkTablePrefix.Location = new System.Drawing.Point(234, 75);
             this.textBoxLinkTablePrefix.Name = "textBoxLinkTablePrefix";
-            this.textBoxLinkTablePrefix.Size = new System.Drawing.Size(314, 20);
+            this.textBoxLinkTablePrefix.Size = new System.Drawing.Size(859, 20);
             this.textBoxLinkTablePrefix.TabIndex = 29;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxLinkTablePrefix, resources.GetString("textBoxLinkTablePrefix.ToolTip"));
             // 
             // textBoxLinkSatPrefix
             // 
+            this.textBoxLinkSatPrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxLinkSatPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxLinkSatPrefix.Location = new System.Drawing.Point(234, 101);
             this.textBoxLinkSatPrefix.Name = "textBoxLinkSatPrefix";
-            this.textBoxLinkSatPrefix.Size = new System.Drawing.Size(314, 20);
+            this.textBoxLinkSatPrefix.Size = new System.Drawing.Size(859, 20);
             this.textBoxLinkSatPrefix.TabIndex = 30;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxLinkSatPrefix, resources.GetString("textBoxLinkSatPrefix.ToolTip"));
             // 
             // groupBoxDataObjectIdentification
             // 
+            this.groupBoxDataObjectIdentification.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxDataObjectIdentification.Controls.Add(this.labelPresentationLayerLabels);
             this.groupBoxDataObjectIdentification.Controls.Add(this.labelStagingAreaLabel);
             this.groupBoxDataObjectIdentification.Controls.Add(this.labelTranformationObjectLabel);
@@ -488,7 +522,7 @@
             this.groupBoxDataObjectIdentification.Controls.Add(this.textBoxPresentationLayerLabels);
             this.groupBoxDataObjectIdentification.Location = new System.Drawing.Point(6, 6);
             this.groupBoxDataObjectIdentification.Name = "groupBoxDataObjectIdentification";
-            this.groupBoxDataObjectIdentification.Size = new System.Drawing.Size(557, 131);
+            this.groupBoxDataObjectIdentification.Size = new System.Drawing.Size(1096, 131);
             this.groupBoxDataObjectIdentification.TabIndex = 81;
             this.groupBoxDataObjectIdentification.TabStop = false;
             this.groupBoxDataObjectIdentification.Text = "Identification of data objects";
@@ -522,29 +556,35 @@
             // 
             // textBoxStagingAreaPrefix
             // 
+            this.textBoxStagingAreaPrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxStagingAreaPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxStagingAreaPrefix.Location = new System.Drawing.Point(233, 19);
             this.textBoxStagingAreaPrefix.Name = "textBoxStagingAreaPrefix";
-            this.textBoxStagingAreaPrefix.Size = new System.Drawing.Size(312, 20);
+            this.textBoxStagingAreaPrefix.Size = new System.Drawing.Size(857, 20);
             this.textBoxStagingAreaPrefix.TabIndex = 22;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxStagingAreaPrefix, resources.GetString("textBoxStagingAreaPrefix.ToolTip"));
             // 
             // textBoxTransformationLabels
             // 
+            this.textBoxTransformationLabels.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxTransformationLabels.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxTransformationLabels.Location = new System.Drawing.Point(233, 71);
             this.textBoxTransformationLabels.Name = "textBoxTransformationLabels";
-            this.textBoxTransformationLabels.Size = new System.Drawing.Size(312, 20);
+            this.textBoxTransformationLabels.Size = new System.Drawing.Size(857, 20);
             this.textBoxTransformationLabels.TabIndex = 78;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxTransformationLabels, "A comma-separated list of prefixes/suffixes that indicate a delivery object (Pres" +
         "entation Layer). For example \'DIM\'_ or \'FACT_\'.");
             // 
             // textBoxPSAPrefix
             // 
+            this.textBoxPSAPrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxPSAPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxPSAPrefix.Location = new System.Drawing.Point(233, 45);
             this.textBoxPSAPrefix.Name = "textBoxPSAPrefix";
-            this.textBoxPSAPrefix.Size = new System.Drawing.Size(312, 20);
+            this.textBoxPSAPrefix.Size = new System.Drawing.Size(857, 20);
             this.textBoxPSAPrefix.TabIndex = 23;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxPSAPrefix, resources.GetString("textBoxPSAPrefix.ToolTip"));
             // 
@@ -559,10 +599,12 @@
             // 
             // textBoxPresentationLayerLabels
             // 
+            this.textBoxPresentationLayerLabels.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxPresentationLayerLabels.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxPresentationLayerLabels.Location = new System.Drawing.Point(233, 97);
             this.textBoxPresentationLayerLabels.Name = "textBoxPresentationLayerLabels";
-            this.textBoxPresentationLayerLabels.Size = new System.Drawing.Size(312, 20);
+            this.textBoxPresentationLayerLabels.Size = new System.Drawing.Size(857, 20);
             this.textBoxPresentationLayerLabels.TabIndex = 76;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxPresentationLayerLabels, "A comma-separated list of prefixes/suffixes that indicate a delivery object (Pres" +
         "entation Layer). For example \'DIM\'_ or \'FACT_\'.");
@@ -602,7 +644,7 @@
             // 
             this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyPK);
             this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyIndex);
-            this.groupBox8.Location = new System.Drawing.Point(3, 357);
+            this.groupBox8.Location = new System.Drawing.Point(190, 282);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(181, 70);
             this.groupBox8.TabIndex = 74;
@@ -632,20 +674,23 @@
             // 
             // tabPageDataWarehouse
             // 
+            this.tabPageDataWarehouse.AutoScroll = true;
             this.tabPageDataWarehouse.Controls.Add(this.groupBoxDataVaultSpecific);
             this.tabPageDataWarehouse.Controls.Add(this.groupBoxAlternativeColumns);
-            this.tabPageDataWarehouse.Controls.Add(this.groupBox3);
+            this.tabPageDataWarehouse.Controls.Add(this.groupBoxSurrogateKeyDefinition);
             this.tabPageDataWarehouse.Controls.Add(this.groupBox2);
             this.tabPageDataWarehouse.Location = new System.Drawing.Point(4, 22);
             this.tabPageDataWarehouse.Name = "tabPageDataWarehouse";
             this.tabPageDataWarehouse.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageDataWarehouse.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageDataWarehouse.Size = new System.Drawing.Size(1108, 621);
             this.tabPageDataWarehouse.TabIndex = 1;
             this.tabPageDataWarehouse.Text = "Data Warehouse";
             this.tabPageDataWarehouse.UseVisualStyleBackColor = true;
             // 
             // groupBoxDataVaultSpecific
             // 
+            this.groupBoxDataVaultSpecific.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxExpiryDateTimeName);
             this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxRecordSource);
             this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxLDST);
@@ -654,17 +699,19 @@
             this.groupBoxDataVaultSpecific.Controls.Add(this.label35);
             this.groupBoxDataVaultSpecific.Location = new System.Drawing.Point(6, 384);
             this.groupBoxDataVaultSpecific.Name = "groupBoxDataVaultSpecific";
-            this.groupBoxDataVaultSpecific.Size = new System.Drawing.Size(1108, 112);
+            this.groupBoxDataVaultSpecific.Size = new System.Drawing.Size(1096, 112);
             this.groupBoxDataVaultSpecific.TabIndex = 73;
             this.groupBoxDataVaultSpecific.TabStop = false;
             this.groupBoxDataVaultSpecific.Text = "Data Vault special columns";
             // 
             // textBoxExpiryDateTimeName
             // 
+            this.textBoxExpiryDateTimeName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxExpiryDateTimeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxExpiryDateTimeName.Location = new System.Drawing.Point(234, 49);
             this.textBoxExpiryDateTimeName.Name = "textBoxExpiryDateTimeName";
-            this.textBoxExpiryDateTimeName.Size = new System.Drawing.Size(421, 20);
+            this.textBoxExpiryDateTimeName.Size = new System.Drawing.Size(856, 20);
             this.textBoxExpiryDateTimeName.TabIndex = 5;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxExpiryDateTimeName, "This attribute label captures the name of the expiry date/time attribute, if used" +
         ". \r\n\r\nIn most deployments a technical expiry/end date is superfluous but if used" +
@@ -672,19 +719,23 @@
             // 
             // textBoxRecordSource
             // 
+            this.textBoxRecordSource.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxRecordSource.Location = new System.Drawing.Point(234, 75);
             this.textBoxRecordSource.Name = "textBoxRecordSource";
-            this.textBoxRecordSource.Size = new System.Drawing.Size(421, 20);
+            this.textBoxRecordSource.Size = new System.Drawing.Size(856, 20);
             this.textBoxRecordSource.TabIndex = 6;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxRecordSource, resources.GetString("textBoxRecordSource.ToolTip"));
             // 
             // textBoxLDST
             // 
+            this.textBoxLDST.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxLDST.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxLDST.Location = new System.Drawing.Point(234, 23);
             this.textBoxLDST.Name = "textBoxLDST";
-            this.textBoxLDST.Size = new System.Drawing.Size(421, 20);
+            this.textBoxLDST.Size = new System.Drawing.Size(856, 20);
             this.textBoxLDST.TabIndex = 4;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxLDST, resources.GetString("textBoxLDST.ToolTip"));
             // 
@@ -717,6 +768,8 @@
             // 
             // groupBoxAlternativeColumns
             // 
+            this.groupBoxAlternativeColumns.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeSatLDTS);
             this.groupBoxAlternativeColumns.Controls.Add(this.label36);
             this.groupBoxAlternativeColumns.Controls.Add(this.label41);
@@ -728,7 +781,7 @@
             this.groupBoxAlternativeColumns.Controls.Add(this.textBoxAlternativeRecordSource);
             this.groupBoxAlternativeColumns.Location = new System.Drawing.Point(6, 502);
             this.groupBoxAlternativeColumns.Name = "groupBoxAlternativeColumns";
-            this.groupBoxAlternativeColumns.Size = new System.Drawing.Size(1108, 113);
+            this.groupBoxAlternativeColumns.Size = new System.Drawing.Size(1096, 113);
             this.groupBoxAlternativeColumns.TabIndex = 72;
             this.groupBoxAlternativeColumns.TabStop = false;
             this.groupBoxAlternativeColumns.Text = "Data Vault alternative columns";
@@ -738,8 +791,9 @@
             // 
             // checkBoxAlternativeSatLDTS
             // 
+            this.checkBoxAlternativeSatLDTS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxAlternativeSatLDTS.AutoSize = true;
-            this.checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(664, 77);
+            this.checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(1021, 77);
             this.checkBoxAlternativeSatLDTS.Name = "checkBoxAlternativeSatLDTS";
             this.checkBoxAlternativeSatLDTS.Size = new System.Drawing.Size(59, 17);
             this.checkBoxAlternativeSatLDTS.TabIndex = 12;
@@ -771,8 +825,9 @@
             // 
             // checkBoxAlternativeRecordSource
             // 
+            this.checkBoxAlternativeRecordSource.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxAlternativeRecordSource.AutoSize = true;
-            this.checkBoxAlternativeRecordSource.Location = new System.Drawing.Point(664, 25);
+            this.checkBoxAlternativeRecordSource.Location = new System.Drawing.Point(1021, 25);
             this.checkBoxAlternativeRecordSource.Name = "checkBoxAlternativeRecordSource";
             this.checkBoxAlternativeRecordSource.Size = new System.Drawing.Size(59, 17);
             this.checkBoxAlternativeRecordSource.TabIndex = 8;
@@ -782,10 +837,12 @@
             // 
             // textBoxSatelliteAlternativeLDTSAttribute
             // 
+            this.textBoxSatelliteAlternativeLDTSAttribute.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxSatelliteAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxSatelliteAlternativeLDTSAttribute.Location = new System.Drawing.Point(235, 75);
             this.textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
-            this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(420, 20);
+            this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(777, 20);
             this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 11;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxSatelliteAlternativeLDTSAttribute, resources.GetString("textBoxSatelliteAlternativeLDTSAttribute.ToolTip"));
             // 
@@ -802,17 +859,20 @@
             // 
             // textBoxHubAlternativeLDTSAttribute
             // 
+            this.textBoxHubAlternativeLDTSAttribute.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxHubAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxHubAlternativeLDTSAttribute.Location = new System.Drawing.Point(235, 49);
             this.textBoxHubAlternativeLDTSAttribute.Name = "textBoxHubAlternativeLDTSAttribute";
-            this.textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(420, 20);
+            this.textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(777, 20);
             this.textBoxHubAlternativeLDTSAttribute.TabIndex = 9;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxHubAlternativeLDTSAttribute, resources.GetString("textBoxHubAlternativeLDTSAttribute.ToolTip"));
             // 
             // checkBoxAlternativeHubLDTS
             // 
+            this.checkBoxAlternativeHubLDTS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxAlternativeHubLDTS.AutoSize = true;
-            this.checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(664, 51);
+            this.checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(1021, 51);
             this.checkBoxAlternativeHubLDTS.Name = "checkBoxAlternativeHubLDTS";
             this.checkBoxAlternativeHubLDTS.Size = new System.Drawing.Size(59, 17);
             this.checkBoxAlternativeHubLDTS.TabIndex = 10;
@@ -822,30 +882,34 @@
             // 
             // textBoxAlternativeRecordSource
             // 
+            this.textBoxAlternativeRecordSource.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxAlternativeRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxAlternativeRecordSource.Location = new System.Drawing.Point(235, 23);
             this.textBoxAlternativeRecordSource.Name = "textBoxAlternativeRecordSource";
-            this.textBoxAlternativeRecordSource.Size = new System.Drawing.Size(420, 20);
+            this.textBoxAlternativeRecordSource.Size = new System.Drawing.Size(777, 20);
             this.textBoxAlternativeRecordSource.TabIndex = 7;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxAlternativeRecordSource, resources.GetString("textBoxAlternativeRecordSource.ToolTip"));
             // 
-            // groupBox3
+            // groupBoxSurrogateKeyDefinition
             // 
-            this.groupBox3.Controls.Add(this.label13);
-            this.groupBox3.Controls.Add(this.textBoxKeyIdentifier);
-            this.groupBox3.Controls.Add(this.textBoxKeyPattern);
-            this.groupBox3.Controls.Add(this.labelSurrogateKeyPattern);
-            this.groupBox3.Location = new System.Drawing.Point(6, 6);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(1108, 88);
-            this.groupBox3.TabIndex = 70;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Surrogate Key definition";
+            this.groupBoxSurrogateKeyDefinition.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxSurrogateKeyDefinition.Controls.Add(this.label13);
+            this.groupBoxSurrogateKeyDefinition.Controls.Add(this.textBoxKeyIdentifier);
+            this.groupBoxSurrogateKeyDefinition.Controls.Add(this.textBoxKeyPattern);
+            this.groupBoxSurrogateKeyDefinition.Controls.Add(this.labelSurrogateKeyPattern);
+            this.groupBoxSurrogateKeyDefinition.Location = new System.Drawing.Point(6, 6);
+            this.groupBoxSurrogateKeyDefinition.Name = "groupBoxSurrogateKeyDefinition";
+            this.groupBoxSurrogateKeyDefinition.Size = new System.Drawing.Size(1096, 88);
+            this.groupBoxSurrogateKeyDefinition.TabIndex = 70;
+            this.groupBoxSurrogateKeyDefinition.TabStop = false;
+            this.groupBoxSurrogateKeyDefinition.Text = "Surrogate Key definition";
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 25);
+            this.label13.Location = new System.Drawing.Point(5, 22);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(191, 13);
             this.label13.TabIndex = 44;
@@ -853,26 +917,30 @@
             // 
             // textBoxKeyIdentifier
             // 
+            this.textBoxKeyIdentifier.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxKeyIdentifier.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxKeyIdentifier.Location = new System.Drawing.Point(234, 22);
+            this.textBoxKeyIdentifier.Location = new System.Drawing.Point(233, 20);
             this.textBoxKeyIdentifier.Name = "textBoxKeyIdentifier";
-            this.textBoxKeyIdentifier.Size = new System.Drawing.Size(421, 20);
+            this.textBoxKeyIdentifier.Size = new System.Drawing.Size(857, 20);
             this.textBoxKeyIdentifier.TabIndex = 13;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxKeyIdentifier, resources.GetString("textBoxKeyIdentifier.ToolTip"));
             // 
             // textBoxKeyPattern
             // 
+            this.textBoxKeyPattern.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxKeyPattern.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxKeyPattern.Location = new System.Drawing.Point(234, 47);
+            this.textBoxKeyPattern.Location = new System.Drawing.Point(233, 46);
             this.textBoxKeyPattern.Name = "textBoxKeyPattern";
-            this.textBoxKeyPattern.Size = new System.Drawing.Size(421, 20);
+            this.textBoxKeyPattern.Size = new System.Drawing.Size(857, 20);
             this.textBoxKeyPattern.TabIndex = 67;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxKeyPattern, resources.GetString("textBoxKeyPattern.ToolTip"));
             // 
             // labelSurrogateKeyPattern
             // 
             this.labelSurrogateKeyPattern.AutoSize = true;
-            this.labelSurrogateKeyPattern.Location = new System.Drawing.Point(6, 50);
+            this.labelSurrogateKeyPattern.Location = new System.Drawing.Point(5, 47);
             this.labelSurrogateKeyPattern.Name = "labelSurrogateKeyPattern";
             this.labelSurrogateKeyPattern.Size = new System.Drawing.Size(182, 13);
             this.labelSurrogateKeyPattern.TabIndex = 68;
@@ -880,6 +948,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.labelOtherExceptionColumns);
             this.groupBox2.Controls.Add(this.textBoxOtherExceptionColumns);
             this.groupBox2.Controls.Add(this.label10);
@@ -900,7 +970,7 @@
             this.groupBox2.Controls.Add(this.textBoxEventDateTime);
             this.groupBox2.Location = new System.Drawing.Point(9, 100);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1108, 278);
+            this.groupBox2.Size = new System.Drawing.Size(1093, 278);
             this.groupBox2.TabIndex = 69;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Data Warehouse special columns";
@@ -916,10 +986,12 @@
             // 
             // textBoxOtherExceptionColumns
             // 
+            this.textBoxOtherExceptionColumns.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxOtherExceptionColumns.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxOtherExceptionColumns.Location = new System.Drawing.Point(233, 231);
+            this.textBoxOtherExceptionColumns.Location = new System.Drawing.Point(230, 232);
             this.textBoxOtherExceptionColumns.Name = "textBoxOtherExceptionColumns";
-            this.textBoxOtherExceptionColumns.Size = new System.Drawing.Size(422, 20);
+            this.textBoxOtherExceptionColumns.Size = new System.Drawing.Size(857, 20);
             this.textBoxOtherExceptionColumns.TabIndex = 67;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxOtherExceptionColumns, resources.GetString("textBoxOtherExceptionColumns.ToolTip"));
             // 
@@ -970,10 +1042,12 @@
             // 
             // textBoxLogicalDeleteAttributeName
             // 
+            this.textBoxLogicalDeleteAttributeName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxLogicalDeleteAttributeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxLogicalDeleteAttributeName.Location = new System.Drawing.Point(233, 204);
+            this.textBoxLogicalDeleteAttributeName.Location = new System.Drawing.Point(230, 205);
             this.textBoxLogicalDeleteAttributeName.Name = "textBoxLogicalDeleteAttributeName";
-            this.textBoxLogicalDeleteAttributeName.Size = new System.Drawing.Size(422, 20);
+            this.textBoxLogicalDeleteAttributeName.Size = new System.Drawing.Size(857, 20);
             this.textBoxLogicalDeleteAttributeName.TabIndex = 21;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxLogicalDeleteAttributeName, "The (optional) name of a logical delete attribute can be provided here. \r\n\r\nThis " +
         "is a flag to label a record as deleted in the originating / feeding sytem.");
@@ -989,10 +1063,12 @@
             // 
             // textBoxETLUpdateProcessID
             // 
+            this.textBoxETLUpdateProcessID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxETLUpdateProcessID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxETLUpdateProcessID.Location = new System.Drawing.Point(233, 74);
+            this.textBoxETLUpdateProcessID.Location = new System.Drawing.Point(230, 75);
             this.textBoxETLUpdateProcessID.Name = "textBoxETLUpdateProcessID";
-            this.textBoxETLUpdateProcessID.Size = new System.Drawing.Size(422, 20);
+            this.textBoxETLUpdateProcessID.Size = new System.Drawing.Size(857, 20);
             this.textBoxETLUpdateProcessID.TabIndex = 16;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxETLUpdateProcessID, "A pointer to the data logistics framework, in case in-place updates are made on r" +
         "ows.");
@@ -1008,10 +1084,12 @@
             // 
             // textBoxCurrentRecordAttributeName
             // 
+            this.textBoxCurrentRecordAttributeName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxCurrentRecordAttributeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxCurrentRecordAttributeName.Location = new System.Drawing.Point(233, 178);
+            this.textBoxCurrentRecordAttributeName.Location = new System.Drawing.Point(230, 179);
             this.textBoxCurrentRecordAttributeName.Name = "textBoxCurrentRecordAttributeName";
-            this.textBoxCurrentRecordAttributeName.Size = new System.Drawing.Size(422, 20);
+            this.textBoxCurrentRecordAttributeName.Size = new System.Drawing.Size(857, 20);
             this.textBoxCurrentRecordAttributeName.TabIndex = 20;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxCurrentRecordAttributeName, "An optional attribute name for the \'current row\', if used.");
             // 
@@ -1026,37 +1104,45 @@
             // 
             // textBoxRecordChecksum
             // 
+            this.textBoxRecordChecksum.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxRecordChecksum.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxRecordChecksum.Location = new System.Drawing.Point(233, 152);
+            this.textBoxRecordChecksum.Location = new System.Drawing.Point(230, 153);
             this.textBoxRecordChecksum.Name = "textBoxRecordChecksum";
-            this.textBoxRecordChecksum.Size = new System.Drawing.Size(422, 20);
+            this.textBoxRecordChecksum.Size = new System.Drawing.Size(857, 20);
             this.textBoxRecordChecksum.TabIndex = 19;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxRecordChecksum, "This is the name of the attribute that holds the full row checksum across all att" +
         "ribute values.");
             // 
             // textBoxChangeDataCaptureIndicator
             // 
+            this.textBoxChangeDataCaptureIndicator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxChangeDataCaptureIndicator.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxChangeDataCaptureIndicator.Location = new System.Drawing.Point(233, 22);
+            this.textBoxChangeDataCaptureIndicator.Location = new System.Drawing.Point(230, 23);
             this.textBoxChangeDataCaptureIndicator.Name = "textBoxChangeDataCaptureIndicator";
-            this.textBoxChangeDataCaptureIndicator.Size = new System.Drawing.Size(422, 20);
+            this.textBoxChangeDataCaptureIndicator.Size = new System.Drawing.Size(857, 20);
             this.textBoxChangeDataCaptureIndicator.TabIndex = 14;
             // 
             // textBoxSourceRowId
             // 
+            this.textBoxSourceRowId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxSourceRowId.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxSourceRowId.Location = new System.Drawing.Point(233, 126);
+            this.textBoxSourceRowId.Location = new System.Drawing.Point(230, 127);
             this.textBoxSourceRowId.Name = "textBoxSourceRowId";
-            this.textBoxSourceRowId.Size = new System.Drawing.Size(422, 20);
+            this.textBoxSourceRowId.Size = new System.Drawing.Size(857, 20);
             this.textBoxSourceRowId.TabIndex = 18;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxSourceRowId, resources.GetString("textBoxSourceRowId.ToolTip"));
             // 
             // textBoxETLProcessID
             // 
+            this.textBoxETLProcessID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxETLProcessID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxETLProcessID.Location = new System.Drawing.Point(233, 48);
+            this.textBoxETLProcessID.Location = new System.Drawing.Point(230, 49);
             this.textBoxETLProcessID.Name = "textBoxETLProcessID";
-            this.textBoxETLProcessID.Size = new System.Drawing.Size(422, 20);
+            this.textBoxETLProcessID.Size = new System.Drawing.Size(857, 20);
             this.textBoxETLProcessID.TabIndex = 15;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxETLProcessID, "This is the audit trail Id / pointer to the data logistics framework (e.g. DIRECT" +
         " or other), so that each row can be uniquely related to the processes that inser" +
@@ -1064,10 +1150,12 @@
             // 
             // textBoxEventDateTime
             // 
+            this.textBoxEventDateTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxEventDateTime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxEventDateTime.Location = new System.Drawing.Point(233, 100);
+            this.textBoxEventDateTime.Location = new System.Drawing.Point(230, 101);
             this.textBoxEventDateTime.Name = "textBoxEventDateTime";
-            this.textBoxEventDateTime.Size = new System.Drawing.Size(422, 20);
+            this.textBoxEventDateTime.Size = new System.Drawing.Size(857, 20);
             this.textBoxEventDateTime.TabIndex = 17;
             this.toolTipConfigurationSettings.SetToolTip(this.textBoxEventDateTime, resources.GetString("textBoxEventDateTime.ToolTip"));
             // 
@@ -1076,7 +1164,7 @@
             this.tabPageConnections.Controls.Add(this.tabControlConnections);
             this.tabPageConnections.Location = new System.Drawing.Point(4, 22);
             this.tabPageConnections.Name = "tabPageConnections";
-            this.tabPageConnections.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageConnections.Size = new System.Drawing.Size(1108, 621);
             this.tabPageConnections.TabIndex = 7;
             this.tabPageConnections.Text = "Connections";
             this.tabPageConnections.UseVisualStyleBackColor = true;
@@ -1092,20 +1180,21 @@
             this.tabControlConnections.Multiline = true;
             this.tabControlConnections.Name = "tabControlConnections";
             this.tabControlConnections.SelectedIndex = 0;
-            this.tabControlConnections.Size = new System.Drawing.Size(1114, 608);
+            this.tabControlConnections.Size = new System.Drawing.Size(1102, 608);
             this.tabControlConnections.TabIndex = 0;
             this.tabControlConnections.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControlConnections_Selecting);
             this.tabControlConnections.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControlConnections_MouseDown);
             // 
             // tabPageConnectionMain
             // 
+            this.tabPageConnectionMain.AutoScroll = true;
             this.tabPageConnectionMain.Controls.Add(this.labelMetadataConnectionKey);
             this.tabPageConnectionMain.Controls.Add(this.comboBoxMetadataConnection);
             this.tabPageConnectionMain.Controls.Add(this.richTextBoxConnectionMain);
             this.tabPageConnectionMain.Location = new System.Drawing.Point(4, 22);
             this.tabPageConnectionMain.Name = "tabPageConnectionMain";
             this.tabPageConnectionMain.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageConnectionMain.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageConnectionMain.Size = new System.Drawing.Size(1094, 582);
             this.tabPageConnectionMain.TabIndex = 0;
             this.tabPageConnectionMain.Text = "Overview of data connections";
             this.toolTipConfigurationSettings.SetToolTip(this.tabPageConnectionMain, resources.GetString("tabPageConnectionMain.ToolTip"));
@@ -1114,28 +1203,30 @@
             // labelMetadataConnectionKey
             // 
             this.labelMetadataConnectionKey.AutoSize = true;
-            this.labelMetadataConnectionKey.Location = new System.Drawing.Point(3, 85);
+            this.labelMetadataConnectionKey.Location = new System.Drawing.Point(4, 85);
             this.labelMetadataConnectionKey.Name = "labelMetadataConnectionKey";
-            this.labelMetadataConnectionKey.Size = new System.Drawing.Size(131, 13);
+            this.labelMetadataConnectionKey.Size = new System.Drawing.Size(111, 13);
             this.labelMetadataConnectionKey.TabIndex = 78;
-            this.labelMetadataConnectionKey.Text = "Metadata connection key:";
+            this.labelMetadataConnectionKey.Text = "Metadata connection:";
             // 
             // comboBoxMetadataConnection
             // 
             this.comboBoxMetadataConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxMetadataConnection.FormattingEnabled = true;
-            this.comboBoxMetadataConnection.Location = new System.Drawing.Point(140, 82);
+            this.comboBoxMetadataConnection.Location = new System.Drawing.Point(6, 101);
             this.comboBoxMetadataConnection.Name = "comboBoxMetadataConnection";
-            this.comboBoxMetadataConnection.Size = new System.Drawing.Size(292, 21);
+            this.comboBoxMetadataConnection.Size = new System.Drawing.Size(284, 21);
             this.comboBoxMetadataConnection.TabIndex = 76;
             // 
             // richTextBoxConnectionMain
             // 
+            this.richTextBoxConnectionMain.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBoxConnectionMain.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBoxConnectionMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxConnectionMain.Location = new System.Drawing.Point(6, 6);
             this.richTextBoxConnectionMain.Name = "richTextBoxConnectionMain";
-            this.richTextBoxConnectionMain.Size = new System.Drawing.Size(1094, 61);
+            this.richTextBoxConnectionMain.Size = new System.Drawing.Size(1082, 61);
             this.richTextBoxConnectionMain.TabIndex = 73;
             this.richTextBoxConnectionMain.Text = resources.GetString("richTextBoxConnectionMain.Text");
             // 
@@ -1144,7 +1235,7 @@
             this.tabPageConnectionNewTab.Location = new System.Drawing.Point(4, 22);
             this.tabPageConnectionNewTab.Name = "tabPageConnectionNewTab";
             this.tabPageConnectionNewTab.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageConnectionNewTab.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageConnectionNewTab.Size = new System.Drawing.Size(1094, 582);
             this.tabPageConnectionNewTab.TabIndex = 1;
             this.tabPageConnectionNewTab.UseVisualStyleBackColor = true;
             // 
@@ -1153,7 +1244,7 @@
             this.tabPageEnvironments.Controls.Add(this.tabControlEnvironments);
             this.tabPageEnvironments.Location = new System.Drawing.Point(4, 22);
             this.tabPageEnvironments.Name = "tabPageEnvironments";
-            this.tabPageEnvironments.Size = new System.Drawing.Size(1120, 621);
+            this.tabPageEnvironments.Size = new System.Drawing.Size(1108, 621);
             this.tabPageEnvironments.TabIndex = 5;
             this.tabPageEnvironments.Text = "Environments";
             this.tabPageEnvironments.UseVisualStyleBackColor = true;
@@ -1169,20 +1260,21 @@
             this.tabControlEnvironments.Multiline = true;
             this.tabControlEnvironments.Name = "tabControlEnvironments";
             this.tabControlEnvironments.SelectedIndex = 0;
-            this.tabControlEnvironments.Size = new System.Drawing.Size(1114, 608);
+            this.tabControlEnvironments.Size = new System.Drawing.Size(1102, 608);
             this.tabControlEnvironments.TabIndex = 1;
             this.tabControlEnvironments.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControlEnvironments_Selecting);
             this.tabControlEnvironments.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControlEnvironments_MouseDown);
             // 
             // tabPageEnvironmentMain
             // 
+            this.tabPageEnvironmentMain.AutoScroll = true;
             this.tabPageEnvironmentMain.Controls.Add(this.labelEnvironmentKey);
             this.tabPageEnvironmentMain.Controls.Add(this.comboBoxEnvironments);
             this.tabPageEnvironmentMain.Controls.Add(this.richTextBoxEnvironmentsInformation);
             this.tabPageEnvironmentMain.Location = new System.Drawing.Point(4, 22);
             this.tabPageEnvironmentMain.Name = "tabPageEnvironmentMain";
             this.tabPageEnvironmentMain.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageEnvironmentMain.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageEnvironmentMain.Size = new System.Drawing.Size(1094, 582);
             this.tabPageEnvironmentMain.TabIndex = 0;
             this.tabPageEnvironmentMain.Text = "Overview of working environments";
             this.toolTipConfigurationSettings.SetToolTip(this.tabPageEnvironmentMain, resources.GetString("tabPageEnvironmentMain.ToolTip"));
@@ -1191,7 +1283,7 @@
             // labelEnvironmentKey
             // 
             this.labelEnvironmentKey.AutoSize = true;
-            this.labelEnvironmentKey.Location = new System.Drawing.Point(3, 85);
+            this.labelEnvironmentKey.Location = new System.Drawing.Point(4, 85);
             this.labelEnvironmentKey.Name = "labelEnvironmentKey";
             this.labelEnvironmentKey.Size = new System.Drawing.Size(101, 13);
             this.labelEnvironmentKey.TabIndex = 76;
@@ -1201,19 +1293,21 @@
             // 
             this.comboBoxEnvironments.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxEnvironments.FormattingEnabled = true;
-            this.comboBoxEnvironments.Location = new System.Drawing.Point(140, 82);
+            this.comboBoxEnvironments.Location = new System.Drawing.Point(6, 101);
             this.comboBoxEnvironments.Name = "comboBoxEnvironments";
-            this.comboBoxEnvironments.Size = new System.Drawing.Size(302, 21);
+            this.comboBoxEnvironments.Size = new System.Drawing.Size(284, 21);
             this.comboBoxEnvironments.TabIndex = 1;
             this.comboBoxEnvironments.SelectedIndexChanged += new System.EventHandler(this.comboBoxEnvironments_SelectedIndexChanged);
             // 
             // richTextBoxEnvironmentsInformation
             // 
+            this.richTextBoxEnvironmentsInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBoxEnvironmentsInformation.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBoxEnvironmentsInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxEnvironmentsInformation.Location = new System.Drawing.Point(6, 6);
             this.richTextBoxEnvironmentsInformation.Name = "richTextBoxEnvironmentsInformation";
-            this.richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(1094, 70);
+            this.richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(1082, 70);
             this.richTextBoxEnvironmentsInformation.TabIndex = 73;
             this.richTextBoxEnvironmentsInformation.Text = resources.GetString("richTextBoxEnvironmentsInformation.Text");
             // 
@@ -1222,7 +1316,7 @@
             this.tabPageEnvironmentNewTab.Location = new System.Drawing.Point(4, 22);
             this.tabPageEnvironmentNewTab.Name = "tabPageEnvironmentNewTab";
             this.tabPageEnvironmentNewTab.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageEnvironmentNewTab.Size = new System.Drawing.Size(1106, 582);
+            this.tabPageEnvironmentNewTab.Size = new System.Drawing.Size(1094, 582);
             this.tabPageEnvironmentNewTab.TabIndex = 1;
             this.tabPageEnvironmentNewTab.UseVisualStyleBackColor = true;
             // 
@@ -1240,7 +1334,7 @@
             this.tabControlDefaultDetails.Multiline = true;
             this.tabControlDefaultDetails.Name = "tabControlDefaultDetails";
             this.tabControlDefaultDetails.SelectedIndex = 0;
-            this.tabControlDefaultDetails.Size = new System.Drawing.Size(1128, 647);
+            this.tabControlDefaultDetails.Size = new System.Drawing.Size(1116, 647);
             this.tabControlDefaultDetails.TabIndex = 0;
             // 
             // toolTipConfigurationSettings
@@ -1253,16 +1347,16 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1148, 797);
+            this.ClientSize = new System.Drawing.Size(1136, 797);
             this.Controls.Add(this.tabControlDefaultDetails);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.richTextBoxInformation);
             this.Controls.Add(this.menuStripMainMenu);
+            this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripMainMenu;
-            this.MinimumSize = new System.Drawing.Size(1164, 835);
             this.Name = "FormManageConfiguration";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Manage the configuration settings";
@@ -1288,8 +1382,8 @@
             this.groupBoxDataVaultSpecific.PerformLayout();
             this.groupBoxAlternativeColumns.ResumeLayout(false);
             this.groupBoxAlternativeColumns.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.groupBoxSurrogateKeyDefinition.ResumeLayout(false);
+            this.groupBoxSurrogateKeyDefinition.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.tabPageConnections.ResumeLayout(false);
@@ -1380,7 +1474,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.Label labelMetadataConnectionKey;
         private System.Windows.Forms.Label labelEnvironmentKey;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox groupBoxSurrogateKeyDefinition;
         internal System.Windows.Forms.TextBox textBoxKeyPattern;
         private System.Windows.Forms.Label labelSurrogateKeyPattern;
         private System.Windows.Forms.GroupBox groupBox2;
@@ -1412,6 +1506,7 @@
         internal System.Windows.Forms.TextBox textBoxAlternativeRecordSource;
         private System.Windows.Forms.Label labelOtherExceptionColumns;
         internal System.Windows.Forms.TextBox textBoxOtherExceptionColumns;
+        private System.Windows.Forms.ToolStripMenuItem saveAllToolStripMenuItem;
     }
 }
 

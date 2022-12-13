@@ -13,6 +13,8 @@ namespace TEAM_Library
         public string SchemaPath { get; } = Application.StartupPath + @"\" + @"Schema\";
 
         public string BackupPath { get; } = Application.StartupPath + @"\" + @"Backup\";
+
+        public string ModelLayerPath { get; } = Application.StartupPath + @"\" + @"ModelLayers\";
         public string ScriptPath { get; set; } = Application.StartupPath + @"\" + @"Scripts\";
         public string FilesPath { get; set; } = Application.StartupPath + @"\" + @"Files\";
         public string ConfigFileName { get; set; } = "TEAM_configuration";

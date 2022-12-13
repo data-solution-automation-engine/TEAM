@@ -73,6 +73,7 @@ namespace TEAM
             Size = new Size(1330, 601);
             AutoSizeMode = AutoSizeMode.GrowOnly;
             AutoSize = true;
+            AutoScroll = true;
             
             // Add Panel to facilitate docking
             var localPanel = new Panel();
@@ -329,9 +330,9 @@ namespace TEAM
             // Add GroupBox for Custom Query content
             _groupBoxDatabaseCustom = new GroupBox();
             localPanel.Controls.Add(_groupBoxDatabaseCustom);
-            _groupBoxDatabaseCustom.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _groupBoxDatabaseCustom.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
             _groupBoxDatabaseCustom.Location = new Point(6, (_textBoxConnectionString.Location.Y+18));
-            _groupBoxDatabaseCustom.Size = new Size(1090, 260);
+            _groupBoxDatabaseCustom.Size = new Size(1313, 285);
             _groupBoxDatabaseCustom.Name = "groupBoxCustomQueryConnection";
             _groupBoxDatabaseCustom.Text = @"Custom Query";
             _groupBoxDatabaseCustom.TabStop = false;
@@ -339,8 +340,9 @@ namespace TEAM
             // Add Custom Query Panel
             var panelCustomQuery = new Panel();
             _groupBoxDatabaseCustom.Controls.Add(panelCustomQuery);
+            panelCustomQuery.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
             panelCustomQuery.Location = new Point(8, 16);
-            panelCustomQuery.Size = new Size(1073, 235);
+            panelCustomQuery.Size = new Size(1296, 260);
             panelCustomQuery.Name = "panelCustomQuery";
             panelCustomQuery.BorderStyle = BorderStyle.FixedSingle;
 
@@ -362,7 +364,7 @@ namespace TEAM
             var groupBoxConnection = new GroupBox();
             localPanel.Controls.Add(groupBoxConnection);
             groupBoxConnection.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            groupBoxConnection.Location = new Point(562, 6);
+            groupBoxConnection.Location = new Point(550, 6);
             groupBoxConnection.Size = new Size(535, 223);
             groupBoxConnection.Name = "groupBoxConnection";
             groupBoxConnection.Text = @"Connection";
@@ -470,7 +472,7 @@ namespace TEAM
             Button saveButton = new Button();
             localPanel.Controls.Add(saveButton);
             saveButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
-            saveButton.Location = new Point(6, 555);
+            saveButton.Location = new Point(5, 555);
             saveButton.Size = new Size(120, 40);
             saveButton.Name = "saveButton";
             saveButton.Text = @"Save Connection";
@@ -481,7 +483,7 @@ namespace TEAM
             Button deleteButton = new Button();
             localPanel.Controls.Add(deleteButton);
             deleteButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
-            deleteButton.Location = new Point(132, 555);
+            deleteButton.Location = new Point(131, 555);
             deleteButton.Size = new Size(120, 40);
             deleteButton.Name = "deleteButton";
             deleteButton.Text = @"Delete Connection";
@@ -492,7 +494,7 @@ namespace TEAM
             Button testButton = new Button();
             localPanel.Controls.Add(testButton);
             testButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
-            testButton.Location = new Point(258, 555);
+            testButton.Location = new Point(257, 555);
             testButton.Size = new Size(120, 40);
             testButton.Name = "testButton";
             testButton.Text = @"Test Connection";
