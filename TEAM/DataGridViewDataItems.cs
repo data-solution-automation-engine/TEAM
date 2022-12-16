@@ -529,12 +529,12 @@ namespace TEAM
                     // Current cell
                     DataGridViewCell cell = Rows[e.RowIndex].Cells[e.ColumnIndex];
 
-                    string targetdataObjectName = e.Value.ToString();
-                    string sourceDataObjectName = Rows[e.RowIndex].Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString();
-
                     // Check what the 'parent' is in the data object mapping, for further evaluation. Return if nothing is found (this should be picked up by validation later on).
                     try
                     {
+                        string targetdataObjectName = e.Value.ToString();
+                        string sourceDataObjectName = Rows[e.RowIndex].Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString();
+
                         var dataObjectGridViewRow = _dataGridViewDataObjects.Rows
                             .Cast<DataGridViewRow>()
                             .Where(r => !r.IsNewRow)

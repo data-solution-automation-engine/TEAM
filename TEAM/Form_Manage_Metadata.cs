@@ -1316,7 +1316,7 @@ namespace TEAM
 
                             var jsonHash = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
 
-                            if (jsonHash.attributeMappingHash == "")
+                            if (jsonHash == null || jsonHash.attributeMappingHash == "")
                             {
                                 richTextBoxInformation.Text += $"The correct segment in the JSON file was not found.\r\n";
                             }
@@ -1657,7 +1657,17 @@ namespace TEAM
 
                     if (!dataObjectMappingGridViewRow.IsNewRow)
                     {
-                        var targetDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
+                        var targetDataObjectName = "";
+
+                        if (!string.IsNullOrEmpty(dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString()))
+                        {
+                            targetDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
+                        }
+                        else
+                        {
+                            DataObject targetDataObject = (DataObject)dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
+                            targetDataObjectName = targetDataObject.name;
+                        }
 
                         if (!targetNameList.Contains(targetDataObjectName))
                         {
@@ -1716,8 +1726,8 @@ namespace TEAM
             {
                 filteredRowSet = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>()
                     .Where(row => !row.IsNewRow &&
-                                  (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(textBoxFilterCriterion.Text) ||
-                                   row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(textBoxFilterCriterion.Text)))
+                                  (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(textBoxFilterCriterion.Text, StringComparison.OrdinalIgnoreCase) ||
+                                   row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(textBoxFilterCriterion.Text, StringComparison.OrdinalIgnoreCase)))
                     .ToList();
             }
             else
@@ -1736,8 +1746,8 @@ namespace TEAM
             {
                 filteredRowSet = _dataGridViewDataItems.Rows.Cast<DataGridViewRow>()
                     .Where(row => !row.IsNewRow &&
-                                  (row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(textBoxFilterCriterion.Text) ||
-                                   row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(textBoxFilterCriterion.Text)))
+                                  (row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(textBoxFilterCriterion.Text, StringComparison.OrdinalIgnoreCase) ||
+                                   row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(textBoxFilterCriterion.Text, StringComparison.OrdinalIgnoreCase)))
                     .ToList();
             }
             else
@@ -1756,8 +1766,8 @@ namespace TEAM
 
             if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
             {
-                filteredRowSet = dataTable.AsEnumerable().Where(row => row[(int)DataObjectMappingGridColumns.TargetDataObjectName].ToString().Contains(textBoxFilterCriterion.Text) ||
-                                                                       row[(int)DataObjectMappingGridColumns.SourceDataObjectName].ToString().Contains(textBoxFilterCriterion.Text))
+                filteredRowSet = dataTable.AsEnumerable().Where(row => row[(int)DataObjectMappingGridColumns.TargetDataObjectName].ToString().Contains(textBoxFilterCriterion.Text, StringComparison.OrdinalIgnoreCase) ||
+                                                                       row[(int)DataObjectMappingGridColumns.SourceDataObjectName].ToString().Contains(textBoxFilterCriterion.Text, StringComparison.OrdinalIgnoreCase))
                     .ToList();
             }
             else
@@ -1776,8 +1786,8 @@ namespace TEAM
 
             if (!string.IsNullOrEmpty(textBoxFilterCriterion.Text))
             {
-                filteredRowSet = dataTable.AsEnumerable().Where(row => row[(int)DataItemMappingGridColumns.TargetDataObject].ToString().Contains(textBoxFilterCriterion.Text) ||
-                                                                       row[(int)DataItemMappingGridColumns.SourceDataObject].ToString().Contains(textBoxFilterCriterion.Text))
+                filteredRowSet = dataTable.AsEnumerable().Where(row => row[(int)DataItemMappingGridColumns.TargetDataObject].ToString().Contains(textBoxFilterCriterion.Text, StringComparison.OrdinalIgnoreCase) ||
+                                                                       row[(int)DataItemMappingGridColumns.SourceDataObject].ToString().Contains(textBoxFilterCriterion.Text, StringComparison.OrdinalIgnoreCase))
                     .ToList();
             }
             else
