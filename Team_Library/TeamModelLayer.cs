@@ -14,6 +14,11 @@ namespace TEAM_Library
 
         public string Description { get; set; }
 
+        /// <summary>
+        /// When true, the layer is automatically added to a new object.
+        /// </summary>
+        public bool IsDefault { get; set; }
+
         [JsonIgnore]
         public string DefaultName => "MyNewLayer";
 
