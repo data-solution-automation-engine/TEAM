@@ -261,14 +261,6 @@ namespace TEAM
             checkedListBoxReverseEngineeringAreas.ValueMember = "Key";
             checkedListBoxReverseEngineeringAreas.DisplayMember = "Value";
 
-            //var sourceConnections = _dataGridViewDataObjects.Rows
-            //    .Cast<DataGridViewRow>()
-            //    .Where(r => !r.IsNewRow)
-            //    .Where(r => MetadataHandling.GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", TeamConfiguration) == MetadataHandling.DataObjectTypes.StagingArea)
-            //    .Select(row => row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString())
-            //    .Distinct()
-            //    .ToList();
-
             // Load the checkboxes for the reverse-engineering tab.
             foreach (var connection in TeamConfiguration.ConnectionDictionary)
             {
@@ -967,7 +959,7 @@ namespace TEAM
 
                 var jsonArray = JsonConvert.DeserializeObject<PhysicalModelMetadataJson[]>(File.ReadAllText(physicalModelFileName)).ToList();
 
-                foreach (DataRow row in dataTableChanges.Rows) //Loop through the detected changes
+                foreach (DataRow row in dataTableChanges.Rows) //Loop through the detected changes.
                 {
                     #region Changed rows
 
@@ -1049,7 +1041,7 @@ namespace TEAM
                             var tableNameOld = (string)row[PhysicalModelMappingMetadataColumns.tableName.ToString(), DataRowVersion.Original];
                             var columnNameOld = (string)row[PhysicalModelMappingMetadataColumns.columnName.ToString(), DataRowVersion.Original];
 
-                            //Checks if a matching 'old' JSON segment already exists.
+                            // Checks if a matching 'old' JSON segment already exists.
                             var jsonSegmentForDelete = jsonArray.FirstOrDefault(obj => obj.databaseName == databaseNameOld && obj.schemaName == schemaNameOld && obj.tableName == tableNameOld && obj.columnName == columnNameOld);
 
                             if (jsonSegmentForDelete != null && !string.IsNullOrEmpty(jsonSegmentForDelete.columnName))
@@ -1256,6 +1248,10 @@ namespace TEAM
             {
                 string dataItemMappingFileName = TeamJsonHandling.JsonFileConfiguration.AttributeMappingJsonFileName();
 
+                var jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(dataItemMappingFileName)).ToList();
+
+                List<string> processesDataObjects = new List<string>();
+
                 // Loop through the changes captured in the data table.
                 foreach (DataRow row in dataTableChanges.Rows)
                 {
@@ -1263,9 +1259,6 @@ namespace TEAM
 
                     if ((row.RowState & DataRowState.Modified) != 0)
                     {
-                        //Grab the attributes into local variables
-                        //var hashKey = "";
-                        
                         var sourceDataObject = "";
                         var sourceDataItem = "";
                         var targetDataObject = "";
@@ -1299,8 +1292,6 @@ namespace TEAM
 
                         try
                         {
-                            DataItemMappingJson[] jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(dataItemMappingFileName));
-
                             //Retrieves the json segment in the file.
                             string hashKey = "";
 
@@ -1328,13 +1319,13 @@ namespace TEAM
                                 jsonHash.targetTable = targetDataObject;
                                 jsonHash.targetAttribute = targetDataItem;
                                 jsonHash.notes = notes;
+
+                                // Add the change to the list of data object mappings to be refreshed at the end of the process.
+                                if (!processesDataObjects.Contains(targetDataObject))
+                                {
+                                    processesDataObjects.Add(targetDataObject);
+                                }
                             }
-
-                            string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                            File.WriteAllText(dataItemMappingFileName, output);
-
-                            // Update the data object mapping.
-                            WriteDataObjectMappingsToFile(targetDataObject);
                         }
                         catch (JsonReaderException ex)
                         {
@@ -1382,37 +1373,27 @@ namespace TEAM
 
                         try
                         {
-                            var jsonAttributeMappingFull = new JArray();
-
-                            // Load the file, if existing information needs to be merged.
-
-                            DataItemMappingJson[] jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(dataItemMappingFileName));
-
-                            // Convert it into a JArray so segments can be added easily.
-                            if (jsonArray != null)
-                            {
-                                jsonAttributeMappingFull = JArray.FromObject(jsonArray);
-                            }
-
                             string[] inputHashValue = new[] { sourceTable, sourceColumn, targetTable, targetColumn, notes };
                             var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
 
-                            JObject newJsonSegment = new JObject(
-                                new JProperty("attributeMappingHash", hashKey),
-                                new JProperty("sourceTable", sourceTable),
-                                new JProperty("sourceAttribute", sourceColumn),
-                                new JProperty("targetTable", targetTable),
-                                new JProperty("targetAttribute", targetColumn),
-                                new JProperty("notes", notes)
-                            );
+                            // Add the values in the JSON segment
+                            var jsonSegment = new DataItemMappingJson()
+                            {
+                                attributeMappingHash = hashKey,
+                                sourceTable = sourceTable,
+                                sourceAttribute = sourceColumn,
+                                targetTable = targetTable,
+                                targetAttribute = targetColumn,
+                                notes = notes
+                            };
 
-                            jsonAttributeMappingFull.Add(newJsonSegment);
+                            jsonArray.Add(jsonSegment);
 
-                            string output = JsonConvert.SerializeObject(jsonAttributeMappingFull, Formatting.Indented);
-                            File.WriteAllText(dataItemMappingFileName, output);
-
-                            // Update the data object mapping.
-                            WriteDataObjectMappingsToFile(targetTable);
+                            // Add the change to the list of data object mappings to be refreshed at the end of the process.
+                            if (!processesDataObjects.Contains(targetTable))
+                            {
+                                processesDataObjects.Add(targetTable);
+                            }
 
                             //Making sure the hash key value is added to the data table as well
                             row[(int)DataItemMappingGridColumns.HashKey] = hashKey;
@@ -1435,8 +1416,6 @@ namespace TEAM
 
                         try
                         {
-                            var jsonArray = JsonConvert.DeserializeObject<DataItemMappingJson[]>(File.ReadAllText(dataItemMappingFileName)).ToList();
-
                             //Retrieves the json segment in the file for the given hash returns value or NULL
                             var jsonSegment = jsonArray.FirstOrDefault(obj => obj.attributeMappingHash == hashKey);
 
@@ -1455,11 +1434,11 @@ namespace TEAM
                                 }
                             }
 
-                            string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-                            File.WriteAllText(dataItemMappingFileName, output);
-
-                            // Update the data object mapping.
-                            WriteDataObjectMappingsToFile(targetDataObject);
+                            // Add the change to the list of data object mappings to be refreshed at the end of the process.
+                            if (!processesDataObjects.Contains(targetDataObject))
+                            {
+                                processesDataObjects.Add(targetDataObject);
+                            }
 
                         }
                         catch (JsonReaderException ex)
@@ -1472,6 +1451,15 @@ namespace TEAM
                 }
 
                 #region Statement execution
+
+                string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
+                File.WriteAllText(dataItemMappingFileName, output);
+
+                // Update the impacted data object mappings.
+                foreach (var dataObject in processesDataObjects)
+                {
+                    WriteDataObjectMappingsToFile(dataObject);
+                }
 
                 //Committing the changes to the data table
                 dataTableChanges.AcceptChanges();

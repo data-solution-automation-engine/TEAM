@@ -190,6 +190,10 @@ namespace TEAM_Library
 
             foreach (DataRow row in filteredDataItemMappingRows)
             {
+                // Skip deleted rows.
+                if (row.RowState == DataRowState.Deleted)
+                    continue;
+
                 var localSource = (string)row[DataItemMappingGridColumns.SourceDataObject.ToString()];
                 var localTarget = (string)row[DataItemMappingGridColumns.TargetDataObject.ToString()];
 
@@ -1110,7 +1114,7 @@ namespace TEAM_Library
                 if (row.RowState == DataRowState.Deleted)
                     continue;
 
-                if ((string)row[(int)DataObjectMappingGridColumns.Enabled] == "True")
+                if (row[(int)DataObjectMappingGridColumns.Enabled] != DBNull.Value && (string)row[(int)DataObjectMappingGridColumns.Enabled] == "True")
                 {
                     // Sources
                     var validationObjectSource = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();

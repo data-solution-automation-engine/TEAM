@@ -533,7 +533,16 @@ namespace TEAM
                     try
                     {
                         string targetdataObjectName = e.Value.ToString();
-                        string sourceDataObjectName = Rows[e.RowIndex].Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString();
+                        string sourceDataObjectName = "";
+
+                        try
+                        {
+                            sourceDataObjectName = Rows[e.RowIndex].Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString();
+                        }
+                        catch
+                        {
+                            sourceDataObjectName = "";
+                        }
 
                         var dataObjectGridViewRow = _dataGridViewDataObjects.Rows
                             .Cast<DataGridViewRow>()
