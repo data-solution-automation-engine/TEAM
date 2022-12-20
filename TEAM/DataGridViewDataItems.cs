@@ -790,6 +790,15 @@ namespace TEAM
                             break;
                     }
                 }
+
+                if (e.KeyCode == Keys.End)
+                {
+                    BeginEdit(true);
+
+                    // Move to the end of the cell value
+                    var selectedCell = CurrentCell;
+                    ((TextBox)EditingControl).SelectionStart = CurrentCell.Value.ToString().Length;
+                }
             }
             catch (Exception exception)
             {
