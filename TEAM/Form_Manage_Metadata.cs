@@ -778,7 +778,16 @@ namespace TEAM
                     if ((row.RowState & DataRowState.Modified) != 0)
                     {
                         // Figure out the current / previous file name based on the previous target data object name (pre-change).
-                        var previousDataObjectName = (string)row[DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString()];
+                        var previousDataObjectName = "";
+                        
+                        if (row[DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString()] != DBNull.Value)
+                        {
+                            previousDataObjectName = (string)row[DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString()];
+                        }
+                        else
+                        {
+                            previousDataObjectName = (string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()];
+                        }
 
                         // Figure out the current / new file name based on the available data (post-change).
                         var newDataObject = (DataObject)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
