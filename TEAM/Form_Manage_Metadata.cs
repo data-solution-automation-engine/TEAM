@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -1301,7 +1302,7 @@ namespace TEAM
                             }
                             else
                             {
-                                string[] inputHashValue = new[] { sourceDataObject, sourceDataItem, targetDataObject, targetDataItem, notes };
+                                string[] inputHashValue = new[] { sourceDataObject, sourceDataItem, targetDataObject, targetDataItem, notes, DateTime.Now.ToString(), Utility.KeyGenerator.GetUniqueKey()};
                                 hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
                             }
 
@@ -1373,7 +1374,7 @@ namespace TEAM
 
                         try
                         {
-                            string[] inputHashValue = new[] { sourceTable, sourceColumn, targetTable, targetColumn, notes };
+                            string[] inputHashValue = { sourceTable, sourceColumn, targetTable, targetColumn, notes, DateTime.Now.ToString(), Utility.KeyGenerator.GetUniqueKey() };
                             var hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
 
                             // Add the values in the JSON segment

@@ -56,9 +56,10 @@ namespace TEAM_Library
                     if (browserKey == null)
                     {
                         browserKey =
-                        Registry.CurrentUser.OpenSubKey(
-                        urlAssociation, false);
+                            Registry.CurrentUser.OpenSubKey(
+                                urlAssociation, false);
                     }
+
                     var path = CleanBrowserPath(browserKey.GetValue(null) as string);
                     browserKey.Close();
                     return path;
@@ -100,6 +101,7 @@ namespace TEAM_Library
                 PropertyDescriptor prop = props[i];
                 table.Columns.Add(prop.Name, prop.PropertyType);
             }
+
             object[] values = new object[props.Count];
             foreach (T item in data)
             {
@@ -107,8 +109,10 @@ namespace TEAM_Library
                 {
                     values[i] = props[i].GetValue(item);
                 }
+
                 table.Rows.Add(values);
             }
+
             return table;
         }
 
@@ -224,7 +228,7 @@ namespace TEAM_Library
             // Make sure the values in the string array are appropriately sanded
             foreach (string inputElement in input)
             {
-                hashingString = hashingString + inputElement+ sandingElement;
+                hashingString = hashingString + inputElement + sandingElement;
             }
 
             // Use input string to calculate MD5 hash
@@ -239,10 +243,11 @@ namespace TEAM_Library
                 {
                     sb.Append(hashBytes[i].ToString("X2"));
                 }
+
                 return sb.ToString();
             }
         }
-        
+
         /// <summary>
         /// Generate a random number value.
         /// </summary>
@@ -283,13 +288,38 @@ namespace TEAM_Library
         {
             var array = new[]
             {
-                "0","2","3","4","5","6","8","9",
-                "a","b","c","d","e","f","g","h","j","k","m","n","p","q","r","s","t","u","v","w","x","y","z",
-                "A","B","C","D","E","F","G","H","J","K","L","M","N","P","R","S","T","U","V","W","X","Y","Z"
+                "0", "2", "3", "4", "5", "6", "8", "9",
+                "a", "b", "c", "d", "e", "f", "g", "h", "j", "k", "m", "n", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+                "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
             };
             var sb = new StringBuilder();
             for (var i = 0; i < length; i++) sb.Append(array[GetRandomNumber(53)]);
             return sb.ToString();
+        }
+
+        public class KeyGenerator
+        {
+            internal static readonly char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
+
+            public static string GetUniqueKey(int size = 10)
+            {
+                byte[] data = new byte[4 * size];
+                using (var crypto = RandomNumberGenerator.Create())
+                {
+                    crypto.GetBytes(data);
+                }
+
+                StringBuilder result = new StringBuilder(size);
+                for (int i = 0; i < size; i++)
+                {
+                    var rnd = BitConverter.ToUInt32(data, i * 4);
+                    var idx = rnd % chars.Length;
+
+                    result.Append(chars[idx]);
+                }
+
+                return result.ToString();
+            }
         }
 
         /// <summary>
@@ -317,6 +347,7 @@ namespace TEAM_Library
                 //  MessageBox.Show(@"SQL error: " + exception.Message + "\r\n\r\n The executed query was: " + sql + "\r\n\r\n The connection used was " + sqlConnection.ConnectionString, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
+
             return dataTable;
 
         }
@@ -348,6 +379,7 @@ namespace TEAM_Library
             {
                 // IGNORE
             }
+
             return table;
         }
 
