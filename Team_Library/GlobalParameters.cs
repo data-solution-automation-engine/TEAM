@@ -8,6 +8,8 @@ namespace TEAM_Library
         public string RootPath { get; } = Application.StartupPath + @"\";
         public string ConfigurationPath { get; set; } = Application.StartupPath + @"\" + @"Configuration\";
         public string MetadataPath { get; set; } = Application.StartupPath + @"\" + @"Metadata\";
+
+        public string PhysicalModelDirectory { get; set; } = @"PhysicalModel\";
         public string CorePath { get; } = Application.StartupPath + @"\" + @"Core\";
 
         public string SchemaPath { get; } = Application.StartupPath + @"\" + @"Schema\";
