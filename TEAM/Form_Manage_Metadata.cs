@@ -186,7 +186,7 @@ namespace TEAM
         /// </summary>
         private void SetPhysicalModelGridView()
         {
-            _dataGridViewPhysicalModel = new DataGridViewPhysicalModel();
+            _dataGridViewPhysicalModel = new DataGridViewPhysicalModel(this);
             ((ISupportInitialize)(_dataGridViewPhysicalModel)).BeginInit();
             _dataGridViewPhysicalModel.DoubleBuffered(true);
 
@@ -411,16 +411,18 @@ namespace TEAM
         /// </summary>
         private void PopulatePhysicalModelGrid()
         {
-            var physicalModelFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+            //var physicalModelFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
+            var physicalModelDirectory = globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory;
 
-            if (!File.Exists(physicalModelFileName))
+            if (!Directory.Exists(physicalModelDirectory))
             {
-                richTextBoxInformation.AppendText("\r\nA new physical model file is created, because it did not exist yet.");
-                TeamDataItemMapping.CreateEmptyDataItemMappingJson(physicalModelFileName, TeamEventLog);
+                richTextBoxInformation.AppendText("\r\nA new physical model directory is created, because it did not exist yet.");
+                //TeamDataItemMapping.CreateEmptyDataItemMappingJson(physicalModelFileName, TeamEventLog);
+                Directory.CreateDirectory(physicalModelDirectory);
             }
 
             // Load the file into memory (data table and json list)
-            PhysicalModel.GetMetadata(physicalModelFileName);
+            PhysicalModel.GetMetadata(physicalModelDirectory);
 
             //Make sure the changes are seen as committed, so that changes can be detected later on.
             PhysicalModel.DataTable.AcceptChanges();
@@ -678,12 +680,12 @@ namespace TEAM
         {
             bool validationIssue = false;
 
-            if (backgroundWorkerReverseEngineering.IsBusy)
-            {
-                MessageBox.Show(@"The reverse engineer process is running, please wait for this to be completed before saving metadata.", @"Process is running", MessageBoxButtons.OK);
-            }
-            else
-            {
+            //if (backgroundWorkerReverseEngineering.IsBusy)
+            //{
+            //    MessageBox.Show(@"The reverse engineer process is running, please wait for this to be completed before saving metadata.", @"Process is running", MessageBoxButtons.OK);
+            //}
+            //else
+            //{
                 foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
                 {
                     if (!string.IsNullOrEmpty(row.ErrorText))
@@ -758,7 +760,7 @@ namespace TEAM
                 {
                     MessageBox.Show(@"There are unresolved validation issues, please check the information pane below.", @"Validation issues", MessageBoxButtons.OK);
                 }
-            }
+           //}
         }
 
         /// <summary>
@@ -962,30 +964,20 @@ namespace TEAM
             //Grabbing the generic settings from the main forms
             if (dataTableChanges != null && dataTableChanges.Rows.Count > 0) //Check if there are any changes made at all
             {
-                // Retrieve the physical model snapshot file.
-                var physicalModelFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
-
-                var jsonArray = JsonConvert.DeserializeObject<PhysicalModelGridRow[]>(File.ReadAllText(physicalModelFileName)).ToList();
+                // Create a table exception list to avoid processing the same object multiple times.
+                List<string> exceptionList = new List<string>();
 
                 foreach (DataRow row in dataTableChanges.Rows) //Loop through the detected changes.
                 {
-                    #region Changed rows
+                    #region Changes and Inserted rows
 
                     //Changed rows
-                    if ((row.RowState & DataRowState.Modified) != 0)
+                    if ((row.RowState & DataRowState.Modified) != 0 || (row.RowState & DataRowState.Added) != 0)
                     {
                         //Grab the attributes into local variables
                         var databaseName = "";
                         var schemaName = "";
                         var tableName = "";
-                        var columnName = "";
-                        var dataType = "";
-                        var characterLength = "";
-                        var numericPrecision = "";
-                        var numericScale = "";
-                        int ordinalPosition = 0;
-                        var primaryKeyIndicator = "";
-                        var multiActiveIndicator = "";
 
                         if (row[PhysicalModelMappingMetadataColumns.databaseName.ToString()] != DBNull.Value)
                         {
@@ -1002,195 +994,11 @@ namespace TEAM
                             tableName = (string) row[PhysicalModelMappingMetadataColumns.tableName.ToString()];
                         }
 
-                        if (row[PhysicalModelMappingMetadataColumns.columnName.ToString()] != DBNull.Value)
+                        // Save the file. 
+                        if (!exceptionList.Contains(tableName))
                         {
-                            columnName = (string) row[PhysicalModelMappingMetadataColumns.columnName.ToString()];
-                        }
-
-                        if (row[PhysicalModelMappingMetadataColumns.dataType.ToString()] != DBNull.Value)
-                        {
-                            dataType = (string) row[PhysicalModelMappingMetadataColumns.dataType.ToString()];
-                        }
-
-                        if (row[PhysicalModelMappingMetadataColumns.characterLength.ToString()] != DBNull.Value)
-                        {
-                            characterLength = (string) row[PhysicalModelMappingMetadataColumns.characterLength.ToString()];
-                        }
-
-                        if (row[PhysicalModelMappingMetadataColumns.numericPrecision.ToString()] != DBNull.Value)
-                        {
-                            numericPrecision = (string) row[PhysicalModelMappingMetadataColumns.numericPrecision.ToString()];
-                        }
-
-                        if (row[PhysicalModelMappingMetadataColumns.numericScale.ToString()] != DBNull.Value)
-                        {
-                            numericScale = (string) row[PhysicalModelMappingMetadataColumns.numericScale.ToString()];
-                        }
-
-                        if (row[PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()] != DBNull.Value)
-                        {
-                            ordinalPosition = (Int32) row[PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()];
-                        }
-
-                        if (row[PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString()] != DBNull.Value)
-                        {
-                            primaryKeyIndicator = (string) row[PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString()];
-                        }
-
-                        if (row[PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString()] != DBNull.Value)
-                        {
-                            multiActiveIndicator = (string) row[PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString()];
-                        }
-
-                        try
-                        {
-                            var databaseNameOld = (string)row[PhysicalModelMappingMetadataColumns.databaseName.ToString(), DataRowVersion.Original];
-                            var schemaNameOld = (string)row[PhysicalModelMappingMetadataColumns.schemaName.ToString(), DataRowVersion.Original];
-                            var tableNameOld = (string)row[PhysicalModelMappingMetadataColumns.tableName.ToString(), DataRowVersion.Original];
-                            var columnNameOld = (string)row[PhysicalModelMappingMetadataColumns.columnName.ToString(), DataRowVersion.Original];
-
-                            // Checks if a matching 'old' JSON segment already exists.
-                            var jsonSegmentForDelete = jsonArray.FirstOrDefault(obj => obj.databaseName == databaseNameOld && obj.schemaName == schemaNameOld && obj.tableName == tableNameOld && obj.columnName == columnNameOld);
-
-                            if (jsonSegmentForDelete != null && !string.IsNullOrEmpty(jsonSegmentForDelete.columnName))
-                            {
-                                // Delete it first.
-                                jsonArray.Remove(jsonSegmentForDelete);
-                            }
-
-                            // Add the values in the JSON segment
-                            var jsonSegment = new PhysicalModelGridRow
-                            {
-                                databaseName = databaseName,
-                                schemaName = schemaName,
-                                tableName = tableName,
-                                columnName = columnName,
-                                dataType = dataType,
-                                characterLength = characterLength,
-                                numericPrecision = numericPrecision,
-                                numericScale = numericScale,
-                                ordinalPosition = ordinalPosition,
-                                primaryKeyIndicator = primaryKeyIndicator,
-                                multiActiveIndicator = multiActiveIndicator
-                            };
-
-                            jsonArray.Add(jsonSegment);
-                        }
-                        catch (JsonReaderException ex)
-                        {
-                            richTextBoxInformation.Text += $"There were issues applying the JSON update.\r\n{ex.Message}";
-                        }
-                    }
-
-                    #endregion
-
-                    #region Inserted rows
-
-                    // Insert new rows
-                    if ((row.RowState & DataRowState.Added) != 0)
-                    {
-                        string databaseName = "";
-                        string schemaName = "";
-                        string tableName = "";
-                        string columnName = "";
-                        string dataType = "";
-                        string characterLength= "0";
-                        string numericPrecision = "0";
-                        string numericScale = "0";
-                        int ordinalPosition = 0;
-                        string primaryKeyIndicator = "";
-                        string multiActiveIndicator = "";
-
-                        if (row[(int) PhysicalModelMappingMetadataColumns.databaseName] != DBNull.Value)
-                        {
-                            databaseName = (string) row[(int) PhysicalModelMappingMetadataColumns.databaseName];
-                        }
-
-                        if (row[(int) PhysicalModelMappingMetadataColumns.schemaName] != DBNull.Value)
-                        {
-                            schemaName = (string) row[(int) PhysicalModelMappingMetadataColumns.schemaName];
-                        }
-
-                        if (row[(int) PhysicalModelMappingMetadataColumns.tableName] != DBNull.Value)
-                        {
-                            tableName = (string) row[(int) PhysicalModelMappingMetadataColumns.tableName];
-                        }
-
-                        if (row[(int) PhysicalModelMappingMetadataColumns.columnName] != DBNull.Value)
-                        {
-                            columnName = (string) row[(int) PhysicalModelMappingMetadataColumns.columnName];
-                        }
-
-                        if (row[(int) PhysicalModelMappingMetadataColumns.dataType] != DBNull.Value)
-                        {
-                            dataType = (string) row[(int) PhysicalModelMappingMetadataColumns.dataType];
-                        }
-
-                        if (row[(int) PhysicalModelMappingMetadataColumns.characterLength] != DBNull.Value)
-                        {
-                            characterLength = (string) row[(int) PhysicalModelMappingMetadataColumns.characterLength];
-                        }
-
-                        if (row[(int) PhysicalModelMappingMetadataColumns.numericPrecision] != DBNull.Value)
-                        {
-                            numericPrecision = (string) row[(int) PhysicalModelMappingMetadataColumns.numericPrecision];
-                        }
-
-                        if (row[(int) PhysicalModelMappingMetadataColumns.numericScale] != DBNull.Value)
-                        {
-                            numericScale = (string) row[(int) PhysicalModelMappingMetadataColumns.numericScale];
-                        }
-
-                        if (row[(int) PhysicalModelMappingMetadataColumns.ordinalPosition] != DBNull.Value)
-                        {
-                            ordinalPosition = (Int32) row[(int) PhysicalModelMappingMetadataColumns.ordinalPosition];
-                        }
-
-                        if (row[(int) PhysicalModelMappingMetadataColumns.primaryKeyIndicator] != DBNull.Value)
-                        {
-                            primaryKeyIndicator = (string) row[(int) PhysicalModelMappingMetadataColumns.primaryKeyIndicator];
-                        }
-
-                        if (row[(int) PhysicalModelMappingMetadataColumns.multiActiveIndicator] != DBNull.Value)
-                        {
-                            multiActiveIndicator = (string) row[(int) PhysicalModelMappingMetadataColumns.multiActiveIndicator];
-                        }
-
-                        try
-                        {
-                            //Checks if a matching JSON segment already exists.
-                            var jsonSegmentListForDelete = jsonArray.Where(obj => obj.databaseName == databaseName && obj.schemaName == schemaName && obj.tableName == tableName && obj.columnName == columnName).ToList();
-
-                            if (jsonSegmentListForDelete != null && jsonSegmentListForDelete.Any())
-                            {
-                                foreach (var jsonSegmentForDelete in jsonSegmentListForDelete)
-                                {
-                                    // Delete it first.
-                                    jsonArray.Remove(jsonSegmentForDelete);
-                                }
-                            }
-
-                            // Add the values in the JSON segment
-                            var jsonSegment = new PhysicalModelGridRow
-                            {
-                                databaseName = databaseName,
-                                schemaName = schemaName,
-                                tableName = tableName,
-                                columnName = columnName,
-                                dataType = dataType,
-                                characterLength = characterLength,
-                                numericPrecision = numericPrecision,
-                                numericScale = numericScale,
-                                ordinalPosition = ordinalPosition,
-                                primaryKeyIndicator = primaryKeyIndicator,
-                                multiActiveIndicator = multiActiveIndicator
-                            };
-
-                            jsonArray.Add(jsonSegment);
-                        }
-                        catch (JsonReaderException ex)
-                        {
-                            richTextBoxInformation.Text += "There were issues inserting the JSON segment / record.\r\n" + ex.Message;
+                            WritePhysicalModelToFile(databaseName, schemaName, tableName);
+                            exceptionList.Add(tableName);
                         }
                     }
 
@@ -1204,29 +1012,8 @@ namespace TEAM
                         var databaseName = row[PhysicalModelMappingMetadataColumns.databaseName.ToString(), DataRowVersion.Original].ToString();
                         var schemaName = row[PhysicalModelMappingMetadataColumns.schemaName.ToString(), DataRowVersion.Original].ToString();
                         var tableName = row[PhysicalModelMappingMetadataColumns.tableName.ToString(), DataRowVersion.Original].ToString();
-                        var columnName = row[PhysicalModelMappingMetadataColumns.columnName.ToString(), DataRowVersion.Original].ToString();
 
-                        try
-                        {
-                            //Retrieves the json segment in the file.
-                            var jsonSegment = jsonArray.FirstOrDefault(obj => obj.databaseName == databaseName && obj.schemaName == schemaName && obj.tableName == tableName && obj.columnName == columnName);
-
-                            jsonArray.Remove(jsonSegment);
-
-                            if (jsonSegment.columnName == "")
-                            {
-                                richTextBoxInformation.Text += "The correct segment in the JSON file was not found.\r\n";
-                            }
-                            else
-                            {
-                                //Remove the segment from the JSON
-                                jsonArray.Remove(jsonSegment);
-                            }
-                        }
-                        catch (JsonReaderException ex)
-                        {
-                            richTextBoxInformation.Text += "There were issues applying the JSON update.\r\n" + ex.Message;
-                        }
+                        WritePhysicalModelToFile(databaseName, schemaName, tableName);
                     }
                     #endregion
                 }
@@ -1234,14 +1021,12 @@ namespace TEAM
 
                 #region Statement execution
 
-                // Write the result.
-                string output = JsonConvert.SerializeObject(jsonArray, Formatting.Indented);
-
-                File.WriteAllText(physicalModelFileName, output);
-
                 //Committing the changes to the data table
                 dataTableChanges.AcceptChanges();
                 ((DataTable) BindingSourcePhysicalModel.DataSource).AcceptChanges();
+
+                // Reset all data bound items etc. etc.
+                PopulatePhysicalModelGrid();
 
                 richTextBoxInformation.AppendText("The (physical) model metadata snapshot has been saved.\r\n");
 
@@ -1483,12 +1268,12 @@ namespace TEAM
 
         private void ButtonParse_Click(object sender, EventArgs e)
         {
-            if (backgroundWorkerReverseEngineering.IsBusy)
-            {
-                MessageBox.Show(@"The reverse engineer process is running, please wait for this to be completed before starting a parse process.", @"Process is running", MessageBoxButtons.OK);
-            }
-            else
-            {
+            //if (backgroundWorkerReverseEngineering.IsBusy)
+            //{
+            //    MessageBox.Show(@"The reverse engineer process is running, please wait for this to be completed before starting a parse process.", @"Process is running", MessageBoxButtons.OK);
+            //}
+            //else
+            //{
                 richTextBoxInformation.Clear();
 
                 #region Preparation
@@ -1577,7 +1362,7 @@ namespace TEAM
                 }
 
                 #endregion
-            }
+           // }
         }
 
         /// <summary>
@@ -2234,34 +2019,178 @@ namespace TEAM
         /// <param name="e"></param>
         private void ButtonReverseEngineerMetadataClick(object sender, EventArgs e)
         {
-            if (backgroundWorkerReverseEngineering.IsBusy)
+            // Select the physical model grid view.
+            tabControlDataMappings.SelectedTab = tabPagePhysicalModel;
+
+            richTextBoxInformation.Clear();
+            richTextBoxInformation.Text = @"Commencing reverse-engineering the model metadata from the database. This may take a few minutes depending on the complexity of the database.";
+            richTextBoxInformation.Text += $"\r\nThe process has started at {DateTime.Now:HH:mm:ss tt}, and the screen may become unresponsive in the meantime.";
+
+            checkedListBoxReverseEngineeringAreas.Enabled = false;
+
+            if (backgroundWorkerValidationOnly.IsBusy)
             {
-                MessageBox.Show(@"The reverse engineer process is running, please wait for this to be completed before starting a new reverse engineering process.", @"Process is running", MessageBoxButtons.OK);
+                MessageBox.Show(@"A validation process is still running, please wait for this to complete and try again.", @"Validation in progress", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var changesDataTable = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
+
+            if (changesDataTable != null && changesDataTable.Rows.Count > 0)
+            {
+                MessageBox.Show(@"There are unsaved changes in the physical model, please save your changes first before reverse-engineering.", @"Please save changes", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // The temporary merge data table.
+            var interimDataTable = new DataTable();
+
+            // The full data table, to start with.
+            DataTable completeDataTable = (DataTable)BindingSourcePhysicalModel.DataSource;
+            var existingFilter = completeDataTable.DefaultView.RowFilter;
+
+            try
+            {
+                foreach (var checkedItem in checkedListBoxReverseEngineeringAreas.CheckedItems)
+                {
+                    if (checkedItem != null)
+                    {
+                        var localConnectionObject = (KeyValuePair<TeamConnection, string>)checkedItem;
+
+                        var updateMessage = $"Reverse-engineering is now attempted for connection '{localConnectionObject.Value}'";
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, updateMessage));
+                        ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n{updateMessage}");
+
+                        try
+                        {
+                            var filteredRows = GetFilteredDataObjectMappingDataTableRows();
+
+                            var reverseEngineerResults = ReverseEngineerModelMetadata(localConnectionObject.Key, filteredRows);
+
+                            if (reverseEngineerResults == null || reverseEngineerResults.Rows.Count == 0)
+                            {
+                                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"Reverse-engineering against connection '{localConnectionObject.Value}' did not return any results."));
+                            }
+
+                            if (reverseEngineerResults != null)
+                            {
+                                interimDataTable.Merge(reverseEngineerResults);
+                            }
+
+                            Thread.CurrentThread.Join(0);
+
+                            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - Completed '{localConnectionObject.Key.ConnectionKey}' reverse-engineering at {DateTime.Now:HH:mm:ss tt}.");
+                        }
+                        catch (Exception exception)
+                        {
+                            ThreadHelper.SetText(this, richTextBoxInformation,
+                                $"\r\n - There was an issue reverse engineering '{localConnectionObject.Key.ConnectionKey}'. The error is {exception.Message}.");
+                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
+                                $"Reverse-engineering failed for connection '{localConnectionObject.Value}'. The error message is {exception.Message}"));
+                        }
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - There was an issue reverse engineering. The error is {exception.Message}.");
+            }
+
+            // Merge the results with the full table.
+            if (interimDataTable.Rows.Count > 0)
+            {
+                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\nAdded new records completed at {DateTime.Now:HH:mm:ss tt}.");
+                completeDataTable.Merge(interimDataTable);
+            }
+
+            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\nMerge of data tables completed at {DateTime.Now:HH:mm:ss tt}.");
+
+            // De-duplication.
+            // Unfortunately, CopyToDataTable does not preserve the rowstate, so this has to be evaluated later again row by row.
+            // https://learn.microsoft.com/en-us/dotnet/api/system.data.datatableextensions.copytodatatable?view=net-7.0
+            DataTable distinctTable = null;
+            try
+            {
+                if (completeDataTable.Rows.Count > 0)
+                {
+                    distinctTable = completeDataTable.AsEnumerable()
+                        .GroupBy(row => new
+                        {
+                            databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.databaseName.ToString()),
+                            schemaName = row.Field<string>(PhysicalModelMappingMetadataColumns.schemaName.ToString()),
+                            tableName = row.Field<string>(PhysicalModelMappingMetadataColumns.tableName.ToString()),
+                            columnName = row.Field<string>(PhysicalModelMappingMetadataColumns.columnName.ToString()),
+                        })
+                        .Select(y => y.First())
+                        .CopyToDataTable();
+                }
+                else
+                {
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"Reverse-engineering does not have any rows to deduplicate."));
+                }
+
+                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\nDeduplication completed completed at {DateTime.Now:HH:mm:ss tt}.");
+            }
+            catch (Exception exception)
+            {
+                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - There was an issue deduplicating the result set. The error is {exception.Message}.");
+            }
+
+            // Sort and display the results on the data grid.
+            if (distinctTable != null)
+            {
+                distinctTable.DefaultView.Sort = $"[{PhysicalModelMappingMetadataColumns.databaseName}] ASC, [{PhysicalModelMappingMetadataColumns.schemaName}] ASC, [{PhysicalModelMappingMetadataColumns.tableName}] ASC, [{PhysicalModelMappingMetadataColumns.ordinalPosition}] ASC";
+
+                // Inherit the filter. Can't apply to the binding source yet because changes will need to be saved first.
+                distinctTable.DefaultView.RowFilter = existingFilter;
+
+                BindingSourcePhysicalModel.DataSource = distinctTable;
             }
             else
             {
-                // Select the physical model grid view.
-                tabControlDataMappings.SelectedTab = tabPagePhysicalModel;
+                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\nThere was nothing to process, and nothing to show.");
+            }
 
-                richTextBoxInformation.Clear();
-                richTextBoxInformation.Text = @"Commencing reverse-engineering the model metadata from the database. This may take a few minutes depending on the complexity of the database.";
+            labelResult.Text = @"Done!";
 
-                checkedListBoxReverseEngineeringAreas.Enabled = false;
+            richTextBoxInformation.Text += "\r\n\r\nCommencing the steps to display the results in the grid.\r\n";
 
-                if (backgroundWorkerValidationOnly.IsBusy)
-                    return;
+            // And then we have to re-set the changes in the full data table, so that they can be seen as saved.
+            if (interimDataTable != null && interimDataTable.Rows != null && interimDataTable.Rows.Count > 0)
+            {
+                // Update the binding source. This can't be invoked unfortunately, hence this workaround.
+                //BindingSourcePhysicalModel.DataSource = _dataGridViewPhysicalModel.DataSource;
 
-                var changesDataTable = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
-
-                if (changesDataTable != null && changesDataTable.Rows.Count > 0)
+                foreach (DataRow changeRow in interimDataTable.Rows)
                 {
-                    MessageBox.Show(@"There are unsaved changes in the physical model, please save your changes first before reverse-engineering.", @"Please save changes", MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    return;
+                    var databaseName = changeRow[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString();
+                    var schemaName = changeRow[(int)PhysicalModelMappingMetadataColumns.schemaName].ToString();
+                    var tableName = changeRow[(int)PhysicalModelMappingMetadataColumns.tableName].ToString();
+                    var columnName = changeRow[(int)PhysicalModelMappingMetadataColumns.columnName].ToString();
+
+                    var sourceColumnsDataTable = ((DataTable)BindingSourcePhysicalModel.DataSource).AsEnumerable()
+                        .Where(row => row[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString() == databaseName &&
+                                      row[(int)PhysicalModelMappingMetadataColumns.schemaName].ToString() == schemaName &&
+                                      row[(int)PhysicalModelMappingMetadataColumns.tableName].ToString() == tableName &&
+                                      row[(int)PhysicalModelMappingMetadataColumns.columnName].ToString() == columnName)
+                        .FirstOrDefault();
+
+                    if (sourceColumnsDataTable != null && sourceColumnsDataTable.RowState == DataRowState.Unchanged)
+                    {
+                        sourceColumnsDataTable.SetAdded();
+                    }
                 }
 
-                backgroundWorkerReverseEngineering.RunWorkerAsync();
+                richTextBoxInformation.Text += "The changes have been added to the grid.\r\n";
             }
+
+            // Re-enable the checked list box.
+            checkedListBoxReverseEngineeringAreas.Enabled = true;
+
+            richTextBoxInformation.Text += "\r\n\r\nDon't forget to save your changes if these records should be retained.\r\n";
+
+            // Apply filtering.
+            ApplyDataGridViewFiltering();
         }
 
         /// <summary>
@@ -3363,174 +3292,6 @@ namespace TEAM
             }
         }
 
-        private void backgroundWorkerReverseEngineering_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // The temporary merge data table.
-            var interimDataTable = new DataTable();
-
-            // The full data table.
-            DataTable completeDataTable = (DataTable)BindingSourcePhysicalModel.DataSource;
-            var existingFilter = completeDataTable.DefaultView.RowFilter;
-
-            try
-            {
-                foreach (var checkedItem in checkedListBoxReverseEngineeringAreas.CheckedItems)
-                {
-                    var localConnectionObject = (KeyValuePair<TeamConnection, string>)checkedItem;
-
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Reverse-engineering is attempted for connection '{localConnectionObject.Value}'"));
-
-                    try
-                    {
-                        var filteredRows = GetFilteredDataObjectMappingDataTableRows();
-
-                        var reverseEngineerResults = ReverseEngineerModelMetadata(localConnectionObject.Key, filteredRows);
-
-                        if (reverseEngineerResults == null || (reverseEngineerResults != null && reverseEngineerResults.Rows.Count == 0))
-                        {
-                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"Reverse-engineering against connection '{localConnectionObject.Value}' did not return any results."));
-                        }
-
-                        if (reverseEngineerResults != null)
-                        {
-                            interimDataTable.Merge(reverseEngineerResults);
-                        }
-
-                        ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - Completed {localConnectionObject.Key.ConnectionKey} at {DateTime.Now:HH:mm:ss tt}.");
-                    }
-                    catch (Exception exception)
-                    {
-                        ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - There was an issue reverse engineering '{localConnectionObject.Key.ConnectionKey}'. The error is {exception.Message}.");
-                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"Reverse-engineering failed for connection '{localConnectionObject.Value}'. The error message is {exception.Message}"));
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - There was an issue reverse engineering. The error is {exception.Message}.");
-            }
-
-            // Flag as new row so it's detected by the save button.
-            if (interimDataTable.Rows.Count > 0)
-            {
-                foreach (DataRow row in interimDataTable.Rows)
-                {
-                    row.SetAdded();
-                }
-
-                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Added new records completed at {DateTime.Now:HH:mm:ss tt}.");
-
-                completeDataTable.Merge(interimDataTable);
-            }
-
-            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Merge of data tables completed at {DateTime.Now:HH:mm:ss tt}.");
-
-            // De-duplication.
-            DataTable distinctTable = null;
-            try
-            {
-                if (completeDataTable.Rows.Count > 0)
-                {
-                    distinctTable = completeDataTable.AsEnumerable()
-                        .GroupBy(row => new
-                        {
-                            databaseName = row.Field<string>(PhysicalModelMappingMetadataColumns.databaseName.ToString()),
-                            schemaName = row.Field<string>(PhysicalModelMappingMetadataColumns.schemaName.ToString()),
-                            tableName = row.Field<string>(PhysicalModelMappingMetadataColumns.tableName.ToString()),
-                            columnName = row.Field<string>(PhysicalModelMappingMetadataColumns.columnName.ToString()),
-                        })
-                        .Select(y => y.First())
-                        .CopyToDataTable();
-                }
-                else
-                {
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"Reverse-engineering does not have any rows to deduplicate."));
-                }
-
-                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Deduplication completed completed at {DateTime.Now:HH:mm:ss tt}.");
-            }
-            catch (Exception exception)
-            {
-                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - There was an issue deduplicating the result set. The error is {exception.Message}.");
-            }
-
-            // Sort and display the results on the data grid.
-            if (distinctTable != null)
-            {
-                distinctTable.DefaultView.Sort = $"[{PhysicalModelMappingMetadataColumns.databaseName}] ASC, [{PhysicalModelMappingMetadataColumns.schemaName}] ASC, [{PhysicalModelMappingMetadataColumns.tableName}] ASC, [{PhysicalModelMappingMetadataColumns.ordinalPosition}] ASC";
-
-                // Inherit the filter. Can't apply to the binding source yet because changes will need to be saved first.
-                distinctTable.DefaultView.RowFilter = existingFilter;
-
-                _dataGridViewPhysicalModel.Invoke((Action)(() => _dataGridViewPhysicalModel.DataSource = distinctTable));
-            }
-            else
-            {
-                ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n There was nothing to process, and nothing to show.");
-            }
-
-            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n Reverse-engineering step completed at {DateTime.Now:HH:mm:ss tt}.");
-        }
-
-        private void backgroundWorkerReverseEngineering_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Cancelled)
-            {
-                richTextBoxInformation.Text = @"Cancelled!";
-            }
-            else if (e.Error != null)
-            {
-                richTextBoxInformation.Text = $@"There was an error detected while reverse-engineering. The error is {e.Error.Message}";
-            }
-            else
-            {
-                labelResult.Text = @"Done!";
-
-                // Re-enable the checked list box.
-                checkedListBoxReverseEngineeringAreas.Enabled = true;
-
-                // At this stage, the changes can be identified.
-                var tempChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
-
-                richTextBoxInformation.Text += "\r\nCommencing the steps to display the results in the grid.\r\n";
-
-                // And then we have to re-set the changes in the full data table, so that they can be seen as saved.
-                if (tempChanges != null && tempChanges.Rows != null && tempChanges.Rows.Count > 0)
-                {
-                    // Update the binding source. This can't be invoked unfortunately, hence this workaround.
-                    BindingSourcePhysicalModel.DataSource = _dataGridViewPhysicalModel.DataSource;
-
-                    foreach (DataRow changeRow in tempChanges.Rows)
-                    {
-                        var databaseName = changeRow[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString();
-                        var schemaName = changeRow[(int)PhysicalModelMappingMetadataColumns.schemaName].ToString();
-                        var tableName = changeRow[(int)PhysicalModelMappingMetadataColumns.tableName].ToString();
-                        var columnName = changeRow[(int)PhysicalModelMappingMetadataColumns.columnName].ToString();
-
-                        var sourceColumnsDataTable = ((DataTable)BindingSourcePhysicalModel.DataSource).AsEnumerable()
-                            .Where(row => row[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString() == databaseName &&
-                                          row[(int)PhysicalModelMappingMetadataColumns.schemaName].ToString() == schemaName &&
-                                          row[(int)PhysicalModelMappingMetadataColumns.tableName].ToString() == tableName &&
-                                          row[(int)PhysicalModelMappingMetadataColumns.columnName].ToString() == columnName)
-                            .FirstOrDefault();
-
-                        if (sourceColumnsDataTable != null && sourceColumnsDataTable.RowState == DataRowState.Unchanged)
-                        {
-                            sourceColumnsDataTable.SetAdded();
-                        }
-                    }
-
-                    richTextBoxInformation.Text += "The changes have been added to the grid.\r\n";
-
-                }
-
-                richTextBoxInformation.Text += "The physical model was reverse-engineered into the data grid. Don't forget to save your changes if these records should be retained.\r\n";
-
-                // Apply filtering.
-                ApplyDataGridViewFiltering();
-            }
-        }
-
         private void FormManageMetadata_ResizeEnd(object sender, EventArgs e)
         {
             if (Size != formSize)
@@ -3580,14 +3341,6 @@ namespace TEAM
             }
         }
 
-        private void checkedListBoxReverseEngineeringAreas_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (backgroundWorkerReverseEngineering.IsBusy)
-            {
-                MessageBox.Show(@"The reverse engineer process is running, please wait for this to be completed before changing any settings.", @"Process is running", MessageBoxButtons.OK);
-            }
-        }
-
         private void richTextBoxInformation_TextChanged(object sender, EventArgs e)
         {
             richTextBoxInformation.SelectionStart = richTextBoxInformation.Text.Length;
@@ -3596,6 +3349,8 @@ namespace TEAM
 
         private void importPhysicalModelGridFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            tabControlDataMappings.SelectedIndex = 2;
+
             var dialog = new OpenFileDialog
             {
                 Title = @"Open Physical Model File",
@@ -3659,10 +3414,10 @@ namespace TEAM
 
                     #endregion
 
-                    /*
                     #region Update the data table
 
                     // Clear out the existing data from the grid
+                    BindingSourcePhysicalModel.Sort = string.Empty;
                     BindingSourcePhysicalModel.DataSource = null;
                     BindingSourcePhysicalModel.Clear();
 
@@ -3677,13 +3432,8 @@ namespace TEAM
                     richTextBoxInformation.AppendText($"The file '{dialog.FileName}' was loaded.\r\n");
 
                     #endregion
-                    */
 
                     #region Generate the JSON files
-
-                    // Get a distinct list of tables.
-                    //DataView view = new DataView(localDataTable);
-                    //DataTable distinctTables = view.ToTable(true, $"{PhysicalModelMappingMetadataColumns.tableName}");
 
                     List<string> tableExceptionList = new List<string>();
 
@@ -3708,6 +3458,7 @@ namespace TEAM
                             }
                         }
                     }
+
                     #endregion
 
                     #region Reload the full Data Grid
@@ -3734,12 +3485,14 @@ namespace TEAM
         }
 
         /// <summary>
-        /// Convenience method to wrap the creation of the data object mappings and addition of VDW specific context as well as writing to disk in one call.
+        /// Convenience method to wrap the creation and deletion of physical model objects in one pass.
         /// </summary>
+        /// <param name="database"></param>
+        /// <param name="schema"></param>
+        /// <param name="table"></param>
         private void WritePhysicalModelToFile(string database, string schema, string table)
         {
             // Create a list of grid rows based on the database, schema and table names.
-
             var physicalModelRows = _dataGridViewPhysicalModel.Rows.Cast<DataGridViewRow>()
                 .Where(row => !row.IsNewRow &&
                               (row.Cells[(int)PhysicalModelMappingMetadataColumns.databaseName].Value.ToString() == database &&
@@ -3747,45 +3500,54 @@ namespace TEAM
                                row.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString() == table))
                 .ToList();
 
+            // If there are rows to process, a file can be constructed. Otherwise the file must be deleted as there are no columns.
             if (physicalModelRows.Count > 0)
             {
-                var physicalModelTable = new PhysicalModelTable();
-                physicalModelTable.database = database;
-                physicalModelTable.name = table;
-                physicalModelTable.schema = schema;
-
-                // Construct a save file for the physical model.
-                foreach (var row in physicalModelRows)
+                string output = "";
+                try
                 {
-                    var physicalModelColumn = new PhysicalModelColumn();
+                    var physicalModelTable = new PhysicalModelTable();
+                    physicalModelTable.database = database;
+                    physicalModelTable.name = table;
+                    physicalModelTable.schema = schema;
 
-                    physicalModelColumn.name = row.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString();
-                    physicalModelColumn.dataType = row.Cells[(int)PhysicalModelMappingMetadataColumns.dataType].Value.ToString();
-                    physicalModelColumn.ordinalPosition = (int)row.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value;
-                    physicalModelColumn.characterLength = row.Cells[(int)PhysicalModelMappingMetadataColumns.characterLength].Value.ToString();
-                    physicalModelColumn.numericScale = row.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString();
-                    physicalModelColumn.numericPrecision = row.Cells[(int)PhysicalModelMappingMetadataColumns.numericPrecision].Value.ToString();
-                    physicalModelColumn.multiActiveIndicator = row.Cells[(int)PhysicalModelMappingMetadataColumns.multiActiveIndicator].Value.ToString();
-                    physicalModelColumn.primaryKeyIndicator = row.Cells[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Value.ToString();
-                    physicalModelTable.columns.Add(physicalModelColumn);
+                    // Construct a save file for the physical model.
+                    foreach (var row in physicalModelRows)
+                    {
+                        var physicalModelColumn = new PhysicalModelColumn();
+
+                        physicalModelColumn.name = row.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString();
+                        physicalModelColumn.dataType = row.Cells[(int)PhysicalModelMappingMetadataColumns.dataType].Value.ToString();
+                        physicalModelColumn.ordinalPosition = (int)int.Parse(row.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value.ToString());
+                        physicalModelColumn.characterLength = row.Cells[(int)PhysicalModelMappingMetadataColumns.characterLength].Value.ToString();
+                        physicalModelColumn.numericScale = row.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString();
+                        physicalModelColumn.numericPrecision = row.Cells[(int)PhysicalModelMappingMetadataColumns.numericPrecision].Value.ToString();
+                        physicalModelColumn.multiActiveIndicator = row.Cells[(int)PhysicalModelMappingMetadataColumns.multiActiveIndicator].Value.ToString();
+                        physicalModelColumn.primaryKeyIndicator = row.Cells[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Value.ToString();
+                        physicalModelTable.columns.Add(physicalModelColumn);
+                    }
+
+                    output = JsonConvert.SerializeObject(physicalModelTable, Formatting.Indented);
+
+                    // Create the paths, if not existing already.
+                    FileHandling.InitialisePath(globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory, TeamPathTypes.OtherPath, TeamEventLog);
+                    FileHandling.InitialisePath(globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory + database + @"\", TeamPathTypes.OtherPath, TeamEventLog);
+                    FileHandling.InitialisePath(globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory + database + @"\" + schema + @"\", TeamPathTypes.OtherPath, TeamEventLog);
                 }
-
-                string output = JsonConvert.SerializeObject(physicalModelTable, Formatting.Indented);
-
-                // Create the paths, if not existing already.
-                FileHandling.InitialisePath(globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory, TeamPathTypes.OtherPath, TeamEventLog);
-                FileHandling.InitialisePath(globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory +  database + @"\", TeamPathTypes.OtherPath, TeamEventLog);
-                FileHandling.InitialisePath(globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory +  database + @"\" + schema + @"\", TeamPathTypes.OtherPath, TeamEventLog);
+                catch (Exception exception)
+                {
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"The Physical Model object '{table}' could not be created. The exception message is {exception.Message}.\r\n");
+                }
 
                 string outputFilePath = globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory + database + @"\" + schema + @"\" + table +".json";
 
                 try
                 {
-                    File.WriteAllText(outputFilePath, output);
-
-                    //((DataTable)BindingSourcePhysicalModel.DataSource).AcceptChanges();
-
-                    ThreadHelper.SetText(this, richTextBoxInformation, $"The Physical Model object '{table}' has been saved.\r\n");
+                    if (!string.IsNullOrEmpty(output))
+                    {
+                        File.WriteAllText(outputFilePath, output);
+                        ThreadHelper.SetText(this, richTextBoxInformation, $"The Physical Model object '{table}' has been saved in '{outputFilePath}'.\r\n");
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -3799,8 +3561,11 @@ namespace TEAM
                 {
                     var fileToDelete = globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory + database + @"\" + schema + @"\" + table + ".json";
 
-                    File.Delete(fileToDelete);
-                    ThreadHelper.SetText(this, richTextBoxInformation, $"The Physical Model object '{table}' has been removed.\r\n");
+                    if (File.Exists(fileToDelete))
+                    {
+                        File.Delete(fileToDelete);
+                        ThreadHelper.SetText(this, richTextBoxInformation, $"The Physical Model object '{table}' has been removed.\r\n");
+                    }
                 }
                 catch (Exception exception)
                 {

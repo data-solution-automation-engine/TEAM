@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Windows.Forms;
 using Newtonsoft.Json;
 
 namespace TEAM_Library
@@ -146,38 +148,60 @@ namespace TEAM_Library
         /// Creates a  object (Json List and DataTable) from a Json file.
         /// </summary>
         /// <returns></returns>
-        public void GetMetadata(string fileName)
+        public void GetMetadata(string directoryName)
         {
-            EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Retrieving metadata from {fileName}."));
+            EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Retrieving physical model metadata from {directoryName}."));
 
-            // Check if the file exists
-            if (!File.Exists(fileName))
+            DataTable.Clear();
+
+            string[] allFiles = Directory.GetFiles(directoryName, "*.json", SearchOption.AllDirectories);
+
+            List<PhysicalModelGridRow> jsonList = new List<PhysicalModelGridRow>();
+
+            try
             {
-                EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, "No Json Table Mapping file was found."));
-                DataTable.Clear();
+                foreach (var file in allFiles)
+                {
+                    // Deserialize the file.
+                    PhysicalModelTable physicalModelTable = JsonConvert.DeserializeObject<PhysicalModelTable>(File.ReadAllText(file));
+
+                    // And convert it to a flat structure fit for the data table.
+                    foreach (var column in physicalModelTable.columns)
+                    {
+                        PhysicalModelGridRow physicalModelGridRow = new PhysicalModelGridRow();
+                        physicalModelGridRow.databaseName = physicalModelTable.database;
+                        physicalModelGridRow.schemaName = physicalModelTable.schema;
+                        physicalModelGridRow.tableName = physicalModelTable.name;
+                        physicalModelGridRow.columnName = column.name;
+                        physicalModelGridRow.ordinalPosition = column.ordinalPosition;
+                        physicalModelGridRow.characterLength = column.characterLength;
+                        physicalModelGridRow.numericPrecision = column.numericPrecision;
+                        physicalModelGridRow.numericScale = column.numericScale;
+                        physicalModelGridRow.dataType = column.dataType;
+                        physicalModelGridRow.multiActiveIndicator = column.multiActiveIndicator;
+                        physicalModelGridRow.primaryKeyIndicator = column.primaryKeyIndicator;
+
+                        jsonList.Add(physicalModelGridRow);
+                    }
+                }
             }
-            else
+            catch (Exception exception)
             {
-                EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Reading file {fileName}"));
-                // Load the file, convert it to a DataTable and bind it to the source
-                List<PhysicalModelGridRow> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelGridRow>>(File.ReadAllText(fileName));
-
-                // Commit to the object
-                JsonList = jsonArray;
-                var dataTable = Utility.ConvertToDataTable(jsonArray);
-
-                //Make sure the changes are seen as committed, so that changes can be detected later on.
-                dataTable.AcceptChanges();
-
-                // Commit it to the object itself
-                DataTable = dataTable;
-
-                // Set the column names.
-                SetDataTableColumnNames(DataTable);
-
-                // Set the sort order.
-                //SetDataTableSorting();
+                MessageBox.Show($"A serious error occurred when loading the physical model. The reported error is {exception.Message}");
             }
+
+            // Convert the json list to a DataTable and bind it to the source.
+            JsonList = jsonList;
+            var dataTable = Utility.ConvertToDataTable(jsonList);
+
+            //Make sure the changes are seen as committed, so that changes can be detected later on.
+            dataTable.AcceptChanges();
+
+            // Commit it to the object itself
+            DataTable = dataTable;
+
+            // Set the column names.
+            SetDataTableColumnNames(DataTable);
         }
     }
 }
