@@ -2158,9 +2158,6 @@ namespace TEAM
             // And then we have to re-set the changes in the full data table, so that they can be seen as saved.
             if (interimDataTable != null && interimDataTable.Rows != null && interimDataTable.Rows.Count > 0)
             {
-                // Update the binding source. This can't be invoked unfortunately, hence this workaround.
-                //BindingSourcePhysicalModel.DataSource = _dataGridViewPhysicalModel.DataSource;
-
                 foreach (DataRow changeRow in interimDataTable.Rows)
                 {
                     var databaseName = changeRow[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString();
@@ -2625,6 +2622,9 @@ namespace TEAM
                     _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateBasicDataVaultAttributeExistence(filteredDataObjectMappingDataRows, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
                 worker?.ReportProgress(90);
+
+                // Check for duplicate data item mappings
+                _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateDuplicateDataItemMappings(filteredDataItemDataRows, ref metadataValidations));
 
                 // Check for duplicate data object mappings.
                 if (ValidationSetting.DuplicateDataObjectMappings == "True")
