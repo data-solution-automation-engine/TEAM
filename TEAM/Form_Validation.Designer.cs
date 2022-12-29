@@ -290,9 +290,11 @@
             this.checkBoxDuplicateDataObjectMappings.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxDuplicateDataObjectMappings.Location = new System.Drawing.Point(6, 19);
             this.checkBoxDuplicateDataObjectMappings.Name = "checkBoxDuplicateDataObjectMappings";
-            this.checkBoxDuplicateDataObjectMappings.Size = new System.Drawing.Size(180, 17);
+            this.checkBoxDuplicateDataObjectMappings.Size = new System.Drawing.Size(120, 17);
             this.checkBoxDuplicateDataObjectMappings.TabIndex = 9;
-            this.checkBoxDuplicateDataObjectMappings.Text = "Duplicate Data Object Mappings";
+            this.checkBoxDuplicateDataObjectMappings.Text = "Duplicate Mappings";
+            this.toolTipValidation.SetToolTip(this.checkBoxDuplicateDataObjectMappings, "This validator checks for any full row duplicates for the data object and data it" +
+        "em mappings.\r\n");
             this.checkBoxDuplicateDataObjectMappings.UseVisualStyleBackColor = true;
             // 
             // FormManageValidation

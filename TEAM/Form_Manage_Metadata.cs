@@ -2622,7 +2622,11 @@ namespace TEAM
                 worker?.ReportProgress(90);
 
                 // Check for duplicate data item mappings
-                _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateDuplicateDataItemMappings(filteredDataItemDataRows, ref metadataValidations));
+                if (ValidationSetting.DuplicateDataObjectMappings == "True")
+                {
+                    _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateDuplicateDataItemMappings(filteredDataItemDataRows, ref metadataValidations));
+                }
+                worker?.ReportProgress(95);
 
                 // Check for duplicate data object mappings.
                 if (ValidationSetting.DuplicateDataObjectMappings == "True")
