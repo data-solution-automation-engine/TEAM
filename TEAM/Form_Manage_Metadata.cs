@@ -2083,10 +2083,8 @@ namespace TEAM
                         }
                         catch (Exception exception)
                         {
-                            ThreadHelper.SetText(this, richTextBoxInformation,
-                                $"\r\n - There was an issue reverse engineering '{localConnectionObject.Key.ConnectionKey}'. The error is {exception.Message}.");
-                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error,
-                                $"Reverse-engineering failed for connection '{localConnectionObject.Value}'. The error message is {exception.Message}"));
+                            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - There was an issue reverse engineering '{localConnectionObject.Key.ConnectionKey}'. The error is {exception.Message}.");
+                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"Reverse-engineering failed for connection '{localConnectionObject.Value}'. The error message is {exception.Message}"));
                         }
                     }
                 }
@@ -2106,7 +2104,7 @@ namespace TEAM
             ThreadHelper.SetText(this, richTextBoxInformation, $"\r\nMerge of data tables completed at {DateTime.Now:HH:mm:ss tt}.");
 
             // De-duplication.
-            // Unfortunately, CopyToDataTable does not preserve the rowstate, so this has to be evaluated later again row by row.
+            // Unfortunately, CopyToDataTable does not preserve the row state, so this has to be evaluated later again row by row.
             // https://learn.microsoft.com/en-us/dotnet/api/system.data.datatableextensions.copytodatatable?view=net-7.0
             DataTable distinctTable = null;
             try
@@ -3493,12 +3491,17 @@ namespace TEAM
         private void WritePhysicalModelToFile(string database, string schema, string table)
         {
             // Create a list of grid rows based on the database, schema and table names.
-            var physicalModelRows = _dataGridViewPhysicalModel.Rows.Cast<DataGridViewRow>()
-                .Where(row => !row.IsNewRow &&
-                              (row.Cells[(int)PhysicalModelMappingMetadataColumns.databaseName].Value.ToString() == database &&
-                               row.Cells[(int)PhysicalModelMappingMetadataColumns.schemaName].Value.ToString() == schema &&
-                               row.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString() == table))
-                .ToList();
+            //var physicalModelRows = _dataGridViewPhysicalModel.Rows.Cast<DataGridViewRow>()
+            //    .Where(row => !row.IsNewRow &&
+            //                  (row.Cells[(int)PhysicalModelMappingMetadataColumns.databaseName].Value.ToString() == database &&
+            //                   row.Cells[(int)PhysicalModelMappingMetadataColumns.schemaName].Value.ToString() == schema &&
+            //                   row.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString() == table))
+            //    .ToList();
+
+            var physicalModelRows = ((DataTable)BindingSourcePhysicalModel.DataSource).AsEnumerable()
+                .Where(row => row[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString() == database &&
+                              row[(int)PhysicalModelMappingMetadataColumns.schemaName].ToString() == schema &&
+                              row[(int)PhysicalModelMappingMetadataColumns.tableName].ToString() == table).AsDataView();
 
             // If there are rows to process, a file can be constructed. Otherwise the file must be deleted as there are no columns.
             if (physicalModelRows.Count > 0)
@@ -3512,18 +3515,18 @@ namespace TEAM
                     physicalModelTable.schema = schema;
 
                     // Construct a save file for the physical model.
-                    foreach (var row in physicalModelRows)
+                    foreach (DataRowView row in physicalModelRows)
                     {
                         var physicalModelColumn = new PhysicalModelColumn();
 
-                        physicalModelColumn.name = row.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString();
-                        physicalModelColumn.dataType = row.Cells[(int)PhysicalModelMappingMetadataColumns.dataType].Value.ToString();
-                        physicalModelColumn.ordinalPosition = (int)int.Parse(row.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value.ToString());
-                        physicalModelColumn.characterLength = row.Cells[(int)PhysicalModelMappingMetadataColumns.characterLength].Value.ToString();
-                        physicalModelColumn.numericScale = row.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString();
-                        physicalModelColumn.numericPrecision = row.Cells[(int)PhysicalModelMappingMetadataColumns.numericPrecision].Value.ToString();
-                        physicalModelColumn.multiActiveIndicator = row.Cells[(int)PhysicalModelMappingMetadataColumns.multiActiveIndicator].Value.ToString();
-                        physicalModelColumn.primaryKeyIndicator = row.Cells[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Value.ToString();
+                        physicalModelColumn.name = row[(int)PhysicalModelMappingMetadataColumns.columnName].ToString();
+                        physicalModelColumn.dataType = row[(int)PhysicalModelMappingMetadataColumns.dataType].ToString();
+                        physicalModelColumn.ordinalPosition = (int)int.Parse(row[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].ToString());
+                        physicalModelColumn.characterLength = row[(int)PhysicalModelMappingMetadataColumns.characterLength].ToString();
+                        physicalModelColumn.numericScale = row[(int)PhysicalModelMappingMetadataColumns.numericScale].ToString();
+                        physicalModelColumn.numericPrecision = row[(int)PhysicalModelMappingMetadataColumns.numericPrecision].ToString();
+                        physicalModelColumn.multiActiveIndicator = row[(int)PhysicalModelMappingMetadataColumns.multiActiveIndicator].ToString();
+                        physicalModelColumn.primaryKeyIndicator = row[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].ToString();
                         physicalModelTable.columns.Add(physicalModelColumn);
                     }
 
@@ -3590,7 +3593,7 @@ namespace TEAM
                 var databaseDirectory = globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory + database + @"\";
                 try
                 {
-                    if (Directory.Exists(databaseDirectory) && Directory.GetFiles(databaseDirectory).Length == 0)
+                    if (Directory.Exists(databaseDirectory) && Directory.GetFiles(databaseDirectory, "*.*", SearchOption.AllDirectories).Length == 0)
                     {
                         Directory.Delete(databaseDirectory, true);
                     }
