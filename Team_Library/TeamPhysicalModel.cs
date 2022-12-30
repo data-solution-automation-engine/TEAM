@@ -1,19 +1,72 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Windows.Forms;
 using Newtonsoft.Json;
 
 namespace TEAM_Library
 {
     /// <summary>
-    /// JSON representation of the physical model metadata.
+    /// JSON representation of (a row in) the physical model metadata.
     /// </summary>
-    public class PhysicalModelMetadataJson
+    public class PhysicalModelGridRow
     {
         public string databaseName { get; set; }
         public string schemaName { get; set; }
         public string tableName { get; set; }
         public string columnName { get; set; }
+        public string dataType { get; set; }
+        public string characterLength { get; set; }
+        public string numericPrecision { get; set; }
+        public string numericScale { get; set; }
+        public int ordinalPosition { get; set; }
+        public string primaryKeyIndicator { get; set; }
+        public string multiActiveIndicator { get; set; }
+    }
+
+    /// <summary>
+    /// An object in a database or file system, uniquely identified by database/instance and folder/schema.
+    /// </summary>
+    public class PhysicalModelObject
+    {
+
+    }
+
+    public class PhysicalModelDatabase
+    {
+        public string name { get; set; }
+        
+        public List<PhysicalModelSchema> schemas { get; set; }
+    }
+
+    public class PhysicalModelSchema
+    {
+        public string name { get; set; }
+
+        public List<PhysicalModelTable> tables { get; set; }
+
+    }
+
+    public class PhysicalModelTable
+    {
+        public string name { get; set; }
+
+        public string database { get; set; }
+
+        public string schema { get; set; }
+
+        public List<PhysicalModelColumn> columns { get; set; }
+
+        public PhysicalModelTable()
+        {
+            columns = new List<PhysicalModelColumn>();
+        }
+    }
+
+    public class PhysicalModelColumn
+    {
+        public string name { get; set; }
         public string dataType { get; set; }
         public string characterLength { get; set; }
         public string numericPrecision { get; set; }
@@ -48,7 +101,7 @@ namespace TEAM_Library
     {
         public EventLog EventLog { get; set; }
 
-        public List<PhysicalModelMetadataJson> JsonList { get; set; }
+        public List<PhysicalModelGridRow> JsonList { get; set; }
 
         public DataTable DataTable { get; set; }
 
@@ -56,7 +109,7 @@ namespace TEAM_Library
         {
             EventLog = new EventLog();
             DataTable = new DataTable();
-            JsonList = new List<PhysicalModelMetadataJson>();
+            JsonList = new List<PhysicalModelGridRow>();
         }
 
         public static void CreateEmptyPhysicalModelJson(string fileName, EventLog eventLog)
@@ -76,57 +129,79 @@ namespace TEAM_Library
         /// <summary>
         /// Set the column names for the data table.
         /// </summary>
-        public void SetDataTableColumns()
+        public static void SetDataTableColumnNames(DataTable dataTable)
         {
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.databaseName].ColumnName = PhysicalModelMappingMetadataColumns.databaseName.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.schemaName].ColumnName = PhysicalModelMappingMetadataColumns.schemaName.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.tableName].ColumnName = PhysicalModelMappingMetadataColumns.tableName.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.columnName].ColumnName = PhysicalModelMappingMetadataColumns.columnName.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.dataType].ColumnName = PhysicalModelMappingMetadataColumns.dataType.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.characterLength].ColumnName = PhysicalModelMappingMetadataColumns.characterLength.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.numericPrecision].ColumnName = PhysicalModelMappingMetadataColumns.numericPrecision.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.numericScale].ColumnName = PhysicalModelMappingMetadataColumns.numericScale.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].ColumnName = PhysicalModelMappingMetadataColumns.ordinalPosition.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].ColumnName = PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString();
-            DataTable.Columns[(int)PhysicalModelMappingMetadataColumns.multiActiveIndicator].ColumnName = PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString();
+            dataTable.Columns[(int)PhysicalModelMappingMetadataColumns.databaseName].ColumnName = PhysicalModelMappingMetadataColumns.databaseName.ToString();
+            dataTable.Columns[(int)PhysicalModelMappingMetadataColumns.schemaName].ColumnName = PhysicalModelMappingMetadataColumns.schemaName.ToString();
+            dataTable.Columns[(int)PhysicalModelMappingMetadataColumns.tableName].ColumnName = PhysicalModelMappingMetadataColumns.tableName.ToString();
+            dataTable.Columns[(int)PhysicalModelMappingMetadataColumns.columnName].ColumnName = PhysicalModelMappingMetadataColumns.columnName.ToString();
+            dataTable.Columns[(int)PhysicalModelMappingMetadataColumns.dataType].ColumnName = PhysicalModelMappingMetadataColumns.dataType.ToString();
+            dataTable.Columns[(int)PhysicalModelMappingMetadataColumns.characterLength].ColumnName = PhysicalModelMappingMetadataColumns.characterLength.ToString();
+            dataTable.Columns[(int)PhysicalModelMappingMetadataColumns.numericPrecision].ColumnName = PhysicalModelMappingMetadataColumns.numericPrecision.ToString();
+            dataTable.Columns[(int)PhysicalModelMappingMetadataColumns.numericScale].ColumnName = PhysicalModelMappingMetadataColumns.numericScale.ToString();
+            dataTable.Columns[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].ColumnName = PhysicalModelMappingMetadataColumns.ordinalPosition.ToString();
+            dataTable.Columns[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].ColumnName = PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString();
+            dataTable.Columns[(int)PhysicalModelMappingMetadataColumns.multiActiveIndicator].ColumnName = PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString();
         }
 
         /// <summary>
         /// Creates a  object (Json List and DataTable) from a Json file.
         /// </summary>
         /// <returns></returns>
-        public void GetMetadata(string fileName)
+        public void GetMetadata(string directoryName)
         {
-            EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Retrieving metadata from {fileName}."));
+            EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Retrieving physical model metadata from {directoryName}."));
 
-            // Check if the file exists
-            if (!File.Exists(fileName))
+            DataTable.Clear();
+
+            string[] allFiles = Directory.GetFiles(directoryName, "*.json", SearchOption.AllDirectories);
+
+            List<PhysicalModelGridRow> jsonList = new List<PhysicalModelGridRow>();
+
+            try
             {
-                EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, "No Json Table Mapping file was found."));
-                DataTable.Clear();
+                foreach (var file in allFiles)
+                {
+                    // Deserialize the file.
+                    PhysicalModelTable physicalModelTable = JsonConvert.DeserializeObject<PhysicalModelTable>(File.ReadAllText(file));
+
+                    // And convert it to a flat structure fit for the data table.
+                    foreach (var column in physicalModelTable.columns)
+                    {
+                        PhysicalModelGridRow physicalModelGridRow = new PhysicalModelGridRow();
+                        physicalModelGridRow.databaseName = physicalModelTable.database;
+                        physicalModelGridRow.schemaName = physicalModelTable.schema;
+                        physicalModelGridRow.tableName = physicalModelTable.name;
+                        physicalModelGridRow.columnName = column.name;
+                        physicalModelGridRow.ordinalPosition = column.ordinalPosition;
+                        physicalModelGridRow.characterLength = column.characterLength;
+                        physicalModelGridRow.numericPrecision = column.numericPrecision;
+                        physicalModelGridRow.numericScale = column.numericScale;
+                        physicalModelGridRow.dataType = column.dataType;
+                        physicalModelGridRow.multiActiveIndicator = column.multiActiveIndicator;
+                        physicalModelGridRow.primaryKeyIndicator = column.primaryKeyIndicator;
+
+                        jsonList.Add(physicalModelGridRow);
+                    }
+                }
             }
-            else
+            catch (Exception exception)
             {
-                EventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Reading file {fileName}"));
-                // Load the file, convert it to a DataTable and bind it to the source
-                List<PhysicalModelMetadataJson> jsonArray = JsonConvert.DeserializeObject<List<PhysicalModelMetadataJson>>(File.ReadAllText(fileName));
-
-                // Commit to the object
-                JsonList = jsonArray;
-                var dataTable = Utility.ConvertToDataTable(jsonArray);
-
-                //Make sure the changes are seen as committed, so that changes can be detected later on.
-                dataTable.AcceptChanges();
-
-                // Commit it to the object itself
-                DataTable = dataTable;
-
-                // Set the column names.
-                SetDataTableColumns();
-
-                // Set the sort order.
-                //SetDataTableSorting();
+                MessageBox.Show($"A serious error occurred when loading the physical model. The reported error is {exception.Message}");
             }
+
+            // Convert the json list to a DataTable and bind it to the source.
+            JsonList = jsonList;
+            var dataTable = Utility.ConvertToDataTable(jsonList);
+
+            //Make sure the changes are seen as committed, so that changes can be detected later on.
+            dataTable.AcceptChanges();
+
+            // Commit it to the object itself
+            DataTable = dataTable;
+
+            // Set the column names.
+            SetDataTableColumnNames(DataTable);
         }
     }
 }

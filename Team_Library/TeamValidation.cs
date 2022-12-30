@@ -14,14 +14,50 @@ namespace TEAM_Library
 
     public static class TeamValidation
     {
+        public static List<string> ValidateDuplicateDataItemMappings(List<DataRow> rowList, ref MetadataValidations metadataValidations)
+        {
+            List<string> resultList = new List<string>();
+
+            // Informing the user.
+            resultList.Add("\r\n--> Commencing the validation to check if any duplicate data item mappings are present.\r\n");
+
+            var duplicateRows = rowList.GroupBy(r =>
+                    new {
+                        sourceDataObjectName = r.ItemArray[(int)DataItemMappingGridColumns.SourceDataObject].ToString(),
+                        sourceDataItemName = r.ItemArray[(int)DataItemMappingGridColumns.SourceDataItem].ToString(),
+                        TargetDataObjectName = r.ItemArray[(int)DataItemMappingGridColumns.TargetDataObject].ToString(),
+                        TargetDataItemName = r.ItemArray[(int)DataItemMappingGridColumns.TargetDataItem].ToString()
+                    })
+                .Where(g => g.Count() > 1);
+
+            var distinctDeduplicatedRows = duplicateRows.Distinct().ToList();
+
+            // Evaluate the results.
+            int localValidationIssues = 0;
+
+            foreach (var result in distinctDeduplicatedRows)
+            {
+                resultList.Add($"     The data item mapping from '{result.Key.sourceDataObjectName}' to '{result.Key.TargetDataObjectName}' with the data item mapping '{result.Key.sourceDataItemName}' to '{result.Key.TargetDataItemName}' is duplicate.\r\n");
+
+                localValidationIssues++;
+                metadataValidations.ValidationIssues++;
+            }
+
+            if (localValidationIssues == 0)
+            {
+                resultList.Add("     There were no full row duplicates found in the data item mapping.\r\n");
+            }
+
+            return resultList;
+        }
+
+
         public static List<string> ValidateDuplicateDataObjectMappings(List<DataGridViewRow> rowList, ref MetadataValidations metadataValidations)
         {
             List<string> resultList = new List<string>();
 
             // Informing the user.
             resultList.Add("\r\n--> Commencing the validation to check if any duplicate data object mappings are present.\r\n");
-
-            //var rows = _dataGridViewDataObjects.Rows.OfType<DataGridViewRow>().Reverse().Skip(1);
 
             var duplicateRows = rowList.GroupBy(r =>
                     new {
@@ -190,6 +226,10 @@ namespace TEAM_Library
 
             foreach (DataRow row in filteredDataItemMappingRows)
             {
+                // Skip deleted rows.
+                if (row.RowState == DataRowState.Deleted)
+                    continue;
+
                 var localSource = (string)row[DataItemMappingGridColumns.SourceDataObject.ToString()];
                 var localTarget = (string)row[DataItemMappingGridColumns.TargetDataObject.ToString()];
 
@@ -1110,7 +1150,7 @@ namespace TEAM_Library
                 if (row.RowState == DataRowState.Deleted)
                     continue;
 
-                if ((string)row[(int)DataObjectMappingGridColumns.Enabled] == "True")
+                if (row[(int)DataObjectMappingGridColumns.Enabled] != DBNull.Value && (string)row[(int)DataObjectMappingGridColumns.Enabled] == "True")
                 {
                     // Sources
                     var validationObjectSource = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();

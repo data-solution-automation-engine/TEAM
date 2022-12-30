@@ -533,7 +533,16 @@ namespace TEAM
                     try
                     {
                         string targetdataObjectName = e.Value.ToString();
-                        string sourceDataObjectName = Rows[e.RowIndex].Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString();
+                        string sourceDataObjectName = "";
+
+                        try
+                        {
+                            sourceDataObjectName = Rows[e.RowIndex].Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString();
+                        }
+                        catch
+                        {
+                            sourceDataObjectName = "";
+                        }
 
                         var dataObjectGridViewRow = _dataGridViewDataObjects.Rows
                             .Cast<DataGridViewRow>()
@@ -780,6 +789,15 @@ namespace TEAM
                             PasteClipboard();
                             break;
                     }
+                }
+
+                if (e.KeyCode == Keys.End)
+                {
+                    BeginEdit(true);
+
+                    // Move to the end of the cell value
+                    var selectedCell = CurrentCell;
+                    ((TextBox)EditingControl).SelectionStart = CurrentCell.Value.ToString().Length;
                 }
             }
             catch (Exception exception)

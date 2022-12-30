@@ -28,7 +28,9 @@ namespace TEAM_Library
         [Display(Name = "Schema Path")]
         SchemaPath,
         [Display(Name = "Layer Path")]
-        ModelLayerPath
+        ModelLayerPath,
+        [Display(Name = "Other Path")]
+        OtherPath
     }
     /// <summary>
     /// The FileHandling class concerns the basic IO operations required to create directories and configuration files (without any specific content).
