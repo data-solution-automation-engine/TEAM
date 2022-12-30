@@ -5,6 +5,8 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Windows.Forms;
 using TEAM_Library;
+using Windows.UI.Xaml.Shapes;
+using Path = System.IO.Path;
 
 namespace TEAM
 {
@@ -404,14 +406,16 @@ namespace TEAM
             }
             else
             {
-                // Create the sample data
-                _alertSampleJsonMetadata.SetTextLogging("Commencing sample source-to-target metadata creation.\r\n\r\n");
-
                 try
                 {
                     Dictionary<string, string> fileDictionary = new Dictionary<string, string>();
 
-                    // First, figure out which files to process
+                    #region Metadata files
+
+                    // Create the sample data
+                    _alertSampleJsonMetadata.SetTextLogging("Commencing sample source-to-target metadata creation.\r\n\r\n");
+
+                    // First, figure out which files to process.
                     foreach (var filePath in Directory.EnumerateFiles(globalParameters.FilesPath, "*.json"))
                     {
                         var fileName = Path.GetFileName(filePath);
@@ -434,6 +438,36 @@ namespace TEAM
 
                     _alertSampleJsonMetadata.SetTextLogging("\r\nThis metadata will populate the data grids in the 'metadata mapping' screen, but not create any data structures in a database.");
                     _alertSampleJsonMetadata.SetTextLogging("\r\nIn other words, this is just the source-target mapping metadata (dataObjectsMappings and dataItemMappings).");
+                    #endregion
+
+                    #region Physical Model files
+
+                    fileDictionary.Clear();
+
+                    _alertSampleJsonMetadata.SetTextLogging("\r\nCommencing sample physical model metadata creation.\r\n\r\n");
+
+
+                    foreach (var filePath in Directory.EnumerateFiles(globalParameters.FilesPath+@"\PhysicalModel\", "*.json", SearchOption.AllDirectories))
+                    {
+                        var fileName = Path.GetFileName(filePath);
+                        var connectionName = Directory.GetParent(filePath).Parent;
+
+                        if (!Directory.Exists(globalParameters.MetadataPath + $@"PhysicalModel\{connectionName}\dbo\"))
+                        {
+                            Directory.CreateDirectory(globalParameters.MetadataPath + $@"PhysicalModel\{connectionName}\dbo\");
+                        }
+
+                        var destinationPath = globalParameters.MetadataPath + $@"PhysicalModel\{connectionName}\dbo\" + fileName;
+
+                        File.Copy(filePath, destinationPath, true);
+                        _alertSampleJsonMetadata.SetTextLogging($"Created sample physical model Json file '{fileName}' in {destinationPath}.");
+                        _alertSampleJsonMetadata.SetTextLogging("\r\n");
+                    }
+
+                    _alertSampleJsonMetadata.SetTextLogging("\r\nThis metadata provide a physical model snapshot. Alternatively, this can be reverse-engineered from the database.");
+
+                    #endregion
+
 
                     #region Configuration Settings
 

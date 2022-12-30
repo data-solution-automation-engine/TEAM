@@ -1,0 +1,27 @@
+{
+  "name": "OFFER",
+  "database": "000_Source",
+  "schema": "dbo",
+  "columns": [
+    {
+      "name": "OfferID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 1,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
+    },
+    {
+      "name": "Offer_Long_Description",
+      "dataType": "varchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    }
+  ]
+}

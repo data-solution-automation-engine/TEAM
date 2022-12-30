@@ -1,0 +1,37 @@
+{
+  "name": "ESTIMATED_WORTH",
+  "database": "000_Source",
+  "schema": "dbo",
+  "columns": [
+    {
+      "name": "Plan_Code",
+      "dataType": "varchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 1,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
+    },
+    {
+      "name": "Date_effective",
+      "dataType": "datetime",
+      "characterLength": "8",
+      "numericPrecision": "23",
+      "numericScale": "3",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
+    },
+    {
+      "name": "Value_Amount",
+      "dataType": "numeric",
+      "characterLength": "9",
+      "numericPrecision": "18",
+      "numericScale": "0",
+      "ordinalPosition": 3,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    }
+  ]
+}

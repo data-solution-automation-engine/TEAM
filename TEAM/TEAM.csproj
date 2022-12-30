@@ -346,6 +346,129 @@
     <Content Include="Files\STG_PROFILER_PLAN.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Files\PhysicalModel\000_Source\dbo\CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\000_Source\dbo\CUSTOMER_PERSONAL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\000_Source\dbo\CUST_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\000_Source\dbo\ESTIMATED_WORTH.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\000_Source\dbo\OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\000_Source\dbo\PERSONALISED_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\000_Source\dbo\PLAN.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\100_Staging_Area\dbo\STG_PROFILER_CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\100_Staging_Area\dbo\STG_PROFILER_CUSTOMER_PERSONAL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\100_Staging_Area\dbo\STG_PROFILER_CUST_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\100_Staging_Area\dbo\STG_PROFILER_ESTIMATED_WORTH.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\100_Staging_Area\dbo\STG_PROFILER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\100_Staging_Area\dbo\STG_PROFILER_PERSONALISED_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\100_Staging_Area\dbo\STG_PROFILER_PLAN.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\100_Staging_Area\dbo\STG_USERMANAGED_SEGMENT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\150_Persistent_Staging_Area\dbo\PSA_PROFILER_CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\150_Persistent_Staging_Area\dbo\PSA_PROFILER_CUSTOMER_PERSONAL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\150_Persistent_Staging_Area\dbo\PSA_PROFILER_CUST_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\150_Persistent_Staging_Area\dbo\PSA_PROFILER_ESTIMATED_WORTH.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\150_Persistent_Staging_Area\dbo\PSA_PROFILER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\150_Persistent_Staging_Area\dbo\PSA_PROFILER_PERSONALISED_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\150_Persistent_Staging_Area\dbo\PSA_PROFILER_PLAN.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\150_Persistent_Staging_Area\dbo\PSA_USERMANAGED_SEGMENT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\HUB_CUSTOMER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\HUB_INCENTIVE_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\HUB_MEMBERSHIP_PLAN.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\HUB_SEGMENT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\LNK_CUSTOMER_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\LNK_CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\LNK_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\LNK_RENEWAL_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\LSAT_CUSTOMER_COSTING.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\LSAT_CUSTOMER_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\LSAT_MEMBERSHIP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER_ADDITIONAL_DETAILS.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_INCENTIVE_OFFER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_MEMBERSHIP_PLAN_DETAIL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_MEMBERSHIP_PLAN_VALUATION.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_SEGMENT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\300_Presentation_Layer\dbo\DIM_CUSTOMER.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Libraries\Microsoft.Data.SqlClient.dll" />
     <None Include="Libraries\Microsoft.Data.SqlClient.SNI.x64.dll" />
     <None Include="Libraries\Microsoft.Data.SqlClient.SNI.x86.dll" />

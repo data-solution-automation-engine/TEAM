@@ -134,7 +134,7 @@ namespace TEAM_Library
                                 {
                                     var dataObjectMappings = JsonConvert.DeserializeObject<DataObjectMappings>(jsonInput);
 
-                                    if (dataObjectMappings == null || dataObjectMappings.dataObjectMappings.Count == 0)
+                                    if (dataObjectMappings == null || dataObjectMappings.dataObjectMappings  == null || dataObjectMappings.dataObjectMappings.Count == 0)
                                     {
                                         EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The file {fileName} could not be loaded."));
                                     }

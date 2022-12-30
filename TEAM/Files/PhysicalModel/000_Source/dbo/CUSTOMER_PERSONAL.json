@@ -1,0 +1,117 @@
+{
+  "name": "CUSTOMER_PERSONAL",
+  "database": "000_Source",
+  "schema": "dbo",
+  "columns": [
+    {
+      "name": "CustomerID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 1,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
+    },
+    {
+      "name": "Given",
+      "dataType": "varchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Surname",
+      "dataType": "varchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 3,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Suburb",
+      "dataType": "varchar",
+      "characterLength": "50",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 4,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "State",
+      "dataType": "varchar",
+      "characterLength": "3",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 5,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Postcode",
+      "dataType": "varchar",
+      "characterLength": "6",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 6,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Country",
+      "dataType": "varchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 7,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Gender",
+      "dataType": "varchar",
+      "characterLength": "1",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 8,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "DOB",
+      "dataType": "date",
+      "characterLength": "3",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 9,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Contact_Number",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 10,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Referee_Offer_Made",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 11,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    }
+  ]
+}

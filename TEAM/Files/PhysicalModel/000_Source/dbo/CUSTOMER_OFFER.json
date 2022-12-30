@@ -1,0 +1,27 @@
+{
+  "name": "CUSTOMER_OFFER",
+  "database": "000_Source",
+  "schema": "dbo",
+  "columns": [
+    {
+      "name": "CustomerID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 1,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
+    },
+    {
+      "name": "OfferID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
+    }
+  ]
+}
