@@ -342,9 +342,9 @@ namespace TEAM_Library
                 sqlDataAdapter.Fill(dataTable);
             }
 
-            catch (Exception)
+            catch (Exception exception)
             {
-                //  MessageBox.Show(@"SQL error: " + exception.Message + "\r\n\r\n The executed query was: " + sql + "\r\n\r\n The connection used was " + sqlConnection.ConnectionString, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"SQL error: " + exception.Message + "\r\n\r\n The executed query was: " + sqlQuery + "\r\n\r\n The connection used was " + sqlConnection.ConnectionString, "An issue has been encountered", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
 
