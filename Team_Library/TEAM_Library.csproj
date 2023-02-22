@@ -6,10 +6,10 @@
 
   <ItemGroup>
     <PackageReference Include="DataWarehouseAutomation" Version="1.2.3" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.1" />
-    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="170.8.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.0" />
+    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="170.13.0" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
