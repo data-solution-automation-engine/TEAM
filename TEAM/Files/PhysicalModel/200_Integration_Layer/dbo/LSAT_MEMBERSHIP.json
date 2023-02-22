@@ -64,7 +64,7 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "HASH_FULL_RECORD",
+      "name": "RECORD_CHECKSUM",
       "dataType": "binary",
       "characterLength": "16",
       "numericPrecision": "0",

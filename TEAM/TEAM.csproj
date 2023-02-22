@@ -244,9 +244,6 @@
     <Content Include="Files\sample_TEAM_Attribute_Mapping.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Files\sample_TEAM_Model_Metadata.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Files\DIM_CUSTOMER.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -469,12 +466,10 @@
     <Content Include="Files\PhysicalModel\300_Presentation_Layer\dbo\DIM_CUSTOMER.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Files\SAT_CUSTOMER_DERIVED.json" />
     <None Include="Libraries\Microsoft.Data.SqlClient.dll" />
     <None Include="Libraries\Microsoft.Data.SqlClient.SNI.x64.dll" />
     <None Include="Libraries\Microsoft.Data.SqlClient.SNI.x86.dll" />
-    <Content Include="Files\sample_TEAM_Table_Mapping.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="Properties\app.manifest" />
     <Content Include="Schema\interfaceDataWarehouseAutomationMetadata.json" />
   </ItemGroup>
@@ -502,9 +497,6 @@
     <None Include="Resources\log-file.png" />
     <Content Include="Resources\Ravos-logo-small.ico" />
     <Content Include="Scripts\generateSampleIntegrationSchema.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\generateSampleMappingMetadata.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\generateSamplePersistentStagingSchema.sql">
