@@ -199,6 +199,20 @@ namespace TEAM_Library
         }
 
         /// <summary>
+        /// Assert if a given Team Data Object is a STG / LND entity.
+        /// </summary>
+        /// <param name="dataObjectName"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <returns></returns>
+        public static Boolean IsStg(this string dataObjectName, TeamConfiguration teamConfiguration)
+        {
+            bool isDataVaultHub = (teamConfiguration.TableNamingLocation == "Prefix" && dataObjectName.StartsWith(teamConfiguration.StgTablePrefixValue)) ||
+                                  (teamConfiguration.TableNamingLocation == "Suffix" && dataObjectName.EndsWith(teamConfiguration.StgTablePrefixValue));
+
+            return isDataVaultHub;
+        }
+
+        /// <summary>
         /// Receives a comma-separated string and turns it into an array without spaces.
         /// </summary>
         /// <param name="labels"></param>

@@ -359,9 +359,9 @@ namespace TEAM
 
                         Application.Run(_myMetadataForm);
                     }
-                    catch
+                    catch (Exception exception)
                     {
-                        //MessageBox.Show($@"Cannot close the form that is open. The reported reason is: {ex.Message}");
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, exception.Message));
                     }
                 }
             }

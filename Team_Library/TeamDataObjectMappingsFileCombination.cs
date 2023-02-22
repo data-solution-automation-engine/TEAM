@@ -167,7 +167,6 @@ namespace TEAM_Library
                 else
                 {
                     EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"No files were found in directory {MetadataPath}."));
-
                 }
 
             }

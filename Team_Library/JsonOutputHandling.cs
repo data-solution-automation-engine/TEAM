@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using DataWarehouseAutomation;
-using Microsoft.SqlServer.Management.Smo;
 using static TEAM_Library.MetadataHandling;
 using DataObject = DataWarehouseAutomation.DataObject;
 using Extension = DataWarehouseAutomation.Extension;
