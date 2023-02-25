@@ -294,6 +294,8 @@ namespace TEAM
             // Merge events
             TeamEventLog.AddRange(teamDataObjectMappingFileCombinations.EventLog);
 
+
+
             teamDataObjectMappings.SetDataTable(TeamConfiguration);
 
             #region Assert combo box values
@@ -797,7 +799,7 @@ namespace TEAM
                         // If there is a change, the values must be written to a new or other file and an existing segment must be removed.
 
                         // Note that case is ignored here, because this will cause issues on the file system (which is not case-sensitive by default).
-                        if (string.Equals(previousDataObjectName, newDataObject.name, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(previousDataObjectName, newDataObject.Name, StringComparison.OrdinalIgnoreCase))
                         {
                             // A file already exists, and must only be updated.
                             try
@@ -887,7 +889,7 @@ namespace TEAM
                 var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                string outputFilePath = globalParameters.GetMetadataFilePath(targetDataObject.name);
+                string outputFilePath = globalParameters.GetMetadataFilePath(targetDataObject.Name);
 
                 try
                 {
@@ -895,11 +897,11 @@ namespace TEAM
 
                     ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
-                    ThreadHelper.SetText(this, richTextBoxInformation, $"The Data Object Mapping for '{targetDataObject.name}' has been saved.\r\n");
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"The Data Object Mapping for '{targetDataObject.Name}' has been saved.\r\n");
                 }
                 catch (Exception exception)
                 {
-                    ThreadHelper.SetText(this, richTextBoxInformation, $"There was an issue saving the Data Object Mapping for '{targetDataObject.name}', the reported exception is {exception.Message}\r\n");
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"There was an issue saving the Data Object Mapping for '{targetDataObject.Name}', the reported exception is {exception.Message}\r\n");
                 }
             }
             else
@@ -907,13 +909,13 @@ namespace TEAM
                 // Deleting a file that has been renamed, removed or otherwise emptied.
                 try
                 {
-                    var fileToDelete = globalParameters.GetMetadataFilePath(targetDataObject.name);
+                    var fileToDelete = globalParameters.GetMetadataFilePath(targetDataObject.Name);
                     File.Delete(fileToDelete);
-                    ThreadHelper.SetText(this, richTextBoxInformation, $"Data Object Mapping for '{targetDataObject.name}' has been removed.\r\n");
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"Data Object Mapping for '{targetDataObject.Name}' has been removed.\r\n");
                 }
                 catch (Exception exception)
                 {
-                    ThreadHelper.SetText(this, richTextBoxInformation, $"There was an issue deleting the Data Object Mapping for '{targetDataObject.name}', the reported exception is {exception.Message}\r\n");
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"There was an issue deleting the Data Object Mapping for '{targetDataObject.Name}', the reported exception is {exception.Message}\r\n");
                 }
             }
         }
@@ -928,15 +930,15 @@ namespace TEAM
 
             if (dataObjectMappings.Count > 0)
             {
-                var targetDataObject = dataObjectMappings[0].targetDataObject;
+                var targetDataObject = dataObjectMappings[0].TargetDataObject;
                 var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.name), output);
+                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.Name), output);
 
                 ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
-                richTextBoxInformation.Text += $"The Data Object Mapping for '{targetDataObject.name}' has been saved.\r\n";
+                richTextBoxInformation.Text += $"The Data Object Mapping for '{targetDataObject.Name}' has been saved.\r\n";
             }
             else
             {
@@ -953,7 +955,7 @@ namespace TEAM
 
             VDW_DataObjectMappingList sourceTargetMappingList = new VDW_DataObjectMappingList
             {
-                dataObjectMappings = dataObjectMappings,
+                DataObjectMappings = dataObjectMappings,
                 generationSpecificMetadata = vdwMetadata,
                 metadataConfiguration = metadataConfiguration
             };
@@ -1455,7 +1457,7 @@ namespace TEAM
                         else
                         {
                             DataObject targetDataObject = (DataObject)dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
-                            targetDataObjectName = targetDataObject.name;
+                            targetDataObjectName = targetDataObject.Name;
                         }
 
                         if (!targetNameList.Contains(targetDataObjectName))
@@ -1468,7 +1470,7 @@ namespace TEAM
 
                                 WriteDataObjectMappingsToFile(targetDataObject);
 
-                                LogMetadataEvent($"  --> Saved as '{globalParameters.GetMetadataFilePath(targetDataObject.name)}'.", EventTypes.Information);
+                                LogMetadataEvent($"  --> Saved as '{globalParameters.GetMetadataFilePath(targetDataObject.Name)}'.", EventTypes.Information);
 
                                 targetNameList.Add(targetDataObjectName);
                             }
@@ -1651,25 +1653,25 @@ namespace TEAM
                 // Create all the nodes and edges.
                 foreach (var fileCombination in teamDataObjectMappingFileCombinations.DataObjectMappingsFileCombinations)
                 {
-                    List<DataObjectMapping> dataObjectMappings = fileCombination.DataObjectMappings.dataObjectMappings;
+                    List<DataObjectMapping> dataObjectMappings = fileCombination.DataObjectMappings.DataObjectMappings;
 
                     foreach (var dataObjectMapping in dataObjectMappings)
                     {
-                        Classification classification = dataObjectMapping.mappingClassifications.FirstOrDefault();
+                        DataClassification classification = dataObjectMapping.MappingClassifications.FirstOrDefault();
 
-                        if (skipPsa && classification.classification == "PersistentStagingArea")
+                        if (skipPsa && classification.Classification == "PersistentStagingArea")
                             continue;
 
-                        if (skipSource && classification.classification == "StagingArea")
+                        if (skipSource && classification.Classification == "StagingArea")
                             continue;
 
                         #region Target node (data object)
 
                         // The target is set once for the mapping.
-                        DataObject targetDataObject = dataObjectMapping.targetDataObject;
-                        var targetConnectionId = targetDataObject.dataObjectConnection.dataConnectionString;
+                        DataObject targetDataObject = dataObjectMapping.TargetDataObject;
+                        var targetConnectionId = targetDataObject.DataObjectConnection.DataConnectionString;
                         var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
-                        KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.name, targetConnection).FirstOrDefault();
+                        KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.Name, targetConnection).FirstOrDefault();
 
                         var targetNodeName = fullyQualifiedObjectTarget.Key + '.' + fullyQualifiedObjectTarget.Value;
 
@@ -1704,7 +1706,7 @@ namespace TEAM
 
                         try
                         {
-                            foreach (var sourceDataObjectDynamic in dataObjectMapping.sourceDataObjects)
+                            foreach (var sourceDataObjectDynamic in dataObjectMapping.SourceDataObjects)
                             {
                                 var intermediateJson = JsonConvert.SerializeObject(sourceDataObjectDynamic);
 
@@ -1713,10 +1715,10 @@ namespace TEAM
                                     // If the source is a query.
                                     DataQuery tempDataItem = JsonConvert.DeserializeObject<DataQuery>(intermediateJson);
 
-                                    if (tempDataItem.dataQueryConnection != null)
+                                    if (tempDataItem.DataQueryConnection != null)
                                     {
-                                        var sourceNodeNameDataQuery = tempDataItem.dataQueryConnection.dataConnectionString + '.' + tempDataItem.dataQueryCode;
-                                        var connectionNameDataQuery = tempDataItem.dataQueryConnection.dataConnectionString;
+                                        var sourceNodeNameDataQuery = tempDataItem.DataQueryConnection.DataConnectionString + '.' + tempDataItem.DataQueryCode;
+                                        var connectionNameDataQuery = tempDataItem.DataQueryConnection.DataConnectionString;
 
                                         // Add the source node, if not existing already.
                                         var localSourceNode = "     <Node Id=\"" + sourceNodeNameDataQuery + "\" Category=\"" + "" + "" + "\" Group=\"Collapsed\" Label=\"" + sourceNodeNameDataQuery + "\" />";
@@ -1802,16 +1804,16 @@ namespace TEAM
                         {
                             #region RelatedDataObjects
 
-                            if (dataObjectMapping.relatedDataObjects != null)
+                            if (dataObjectMapping.RelatedDataObjects != null)
                             {
-                                foreach (var relatedDataObject in dataObjectMapping.relatedDataObjects)
+                                foreach (var relatedDataObject in dataObjectMapping.RelatedDataObjects)
                                 {
-                                    if (relatedDataObject.dataObjectConnection != null && relatedDataObject.name != "Metadata")
+                                    if (relatedDataObject.DataObjectConnection != null && relatedDataObject.Name != "Metadata")
                                     {
-                                        var relatedDataObjectConnectionId = relatedDataObject.dataObjectConnection.dataConnectionString;
+                                        var relatedDataObjectConnectionId = relatedDataObject.DataObjectConnection.DataConnectionString;
                                         var relatedDataObjectConnection = TeamConnection.GetTeamConnectionByConnectionId(relatedDataObjectConnectionId, TeamConfiguration, TeamEventLog);
                                         KeyValuePair<string, string> fullyQualifiedRelatedDataObjectName =
-                                            MetadataHandling.GetFullyQualifiedDataObjectName(relatedDataObject.name, relatedDataObjectConnection).FirstOrDefault();
+                                            MetadataHandling.GetFullyQualifiedDataObjectName(relatedDataObject.Name, relatedDataObjectConnection).FirstOrDefault();
 
                                         var fullyQualifiedRelatedDataObjectNodeName = fullyQualifiedRelatedDataObjectName.Key + '.' + fullyQualifiedRelatedDataObjectName.Value;
 
@@ -1830,11 +1832,11 @@ namespace TEAM
 
                         #region Data Item mappings
 
-                        if (dataObjectMapping.dataItemMappings != null)
+                        if (dataObjectMapping.DataItemMappings != null)
                         {
-                            foreach (var dataItemMapping in dataObjectMapping.dataItemMappings)
+                            foreach (var dataItemMapping in dataObjectMapping.DataItemMappings)
                             {
-                                var sourceDataObject = dataObjectMapping.sourceDataObjects.FirstOrDefault();
+                                var sourceDataObject = dataObjectMapping.SourceDataObjects.FirstOrDefault();
 
                                 var sourceDataObjectName = "";
                                 var sourceDataObjectFullyQualified = "";
@@ -1857,10 +1859,10 @@ namespace TEAM
                                     sourceDataObjectFullyQualified = sourceDataObject.dataQueryCode;
                                 }
 
-                                var sourceDataItemName = dataItemMapping.sourceDataItems.FirstOrDefault();
+                                var sourceDataItemName = dataItemMapping.SourceDataItems.FirstOrDefault();
                                 var sourceDataItemNameFullyQualified = sourceDataObjectFullyQualified + "." + sourceDataItemName.name;
 
-                                var targetDataItemName = dataItemMapping.targetDataItem.name;
+                                var targetDataItemName = dataItemMapping.TargetDataItem.Name;
                                 var targetDataItemNameFullyQualified = targetNodeName + "." + targetDataItemName;
 
                                 // Add the source node, if not existing already.
@@ -2753,7 +2755,8 @@ namespace TEAM
             {
                 if (globalParameters.ConfigurationPath != "")
                 {
-                    Process.Start(globalParameters.ConfigurationPath);
+                    var psi = new ProcessStartInfo() { FileName = globalParameters.ConfigurationPath, UseShellExecute = true };
+                    Process.Start(psi);
                 }
                 else
                 {
@@ -2879,12 +2882,12 @@ namespace TEAM
                         {
                             var localSourceDataObject = new DataObject
                             {
-                                name = tableMappingJson.sourceTable
+                                Name = tableMappingJson.sourceTable
                             };
 
                             var localTargetDataObject = new DataObject
                             {
-                                name = tableMappingJson.targetTable
+                                Name = tableMappingJson.targetTable
                             };
 
                             var newRow = localDataTable.NewRow();
@@ -2898,9 +2901,9 @@ namespace TEAM
                             newRow[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = tableMappingJson.businessKeyDefinition;
                             newRow[(int)DataObjectMappingGridColumns.DrivingKeyDefinition] = tableMappingJson.drivingKeyDefinition;
                             newRow[(int)DataObjectMappingGridColumns.FilterCriterion] = tableMappingJson.filterCriteria;
-                            newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = localSourceDataObject.name;
-                            newRow[(int)DataObjectMappingGridColumns.TargetDataObjectName] = localTargetDataObject.name;
-                            newRow[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName] = localTargetDataObject.name;
+                            newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = localSourceDataObject.Name;
+                            newRow[(int)DataObjectMappingGridColumns.TargetDataObjectName] = localTargetDataObject.Name;
+                            newRow[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName] = localTargetDataObject.Name;
                             newRow[(int)DataObjectMappingGridColumns.SurrogateKey] = "";
 
                             localDataTable.Rows.Add(newRow);
@@ -3119,7 +3122,7 @@ namespace TEAM
                     TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionId, TeamConfiguration, TeamEventLog);
 
                     DataObject sourceDataObject = (DataObject)dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value;
-                    var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObject.name, sourceConnection).FirstOrDefault();
+                    var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObject.Name, sourceConnection).FirstOrDefault();
 
                     var sourceColumnsDataTable = physicalModelDataTable.AsEnumerable()
                         .Where(row => row[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString() == sourceConnection.DatabaseServer.DatabaseName &&
@@ -3143,7 +3146,7 @@ namespace TEAM
                     var targetConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
                     TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
 
-                    var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.name, targetConnection).FirstOrDefault();
+                    var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.Name, targetConnection).FirstOrDefault();
 
                     var targetColumnDataTable = physicalModelDataTable.AsEnumerable()
                         .Where(row => row[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString() == targetConnection.DatabaseServer.DatabaseName &&
@@ -3196,10 +3199,10 @@ namespace TEAM
                             {
                                 var localMapping = new TeamDataItemMappingRow
                                 {
-                                    sourceDataObjectName = sourceDataObject.name,
+                                    sourceDataObjectName = sourceDataObject.Name,
                                     sourceDataObjectConnectionId = sourceConnectionId,
                                     sourceDataItemName = sourceDataObjectRow[PhysicalModelMappingMetadataColumns.columnName.ToString()].ToString(),
-                                    targetDataObjectName = targetDataObject.name,
+                                    targetDataObjectName = targetDataObject.Name,
                                     targetDataObjectConnectionId = targetConnectionId,
                                     targetDataItemName = sourceDataObjectRow[PhysicalModelMappingMetadataColumns.columnName.ToString()].ToString() // Same as source, as it's a direct match on this value.
                                 };
@@ -3250,7 +3253,8 @@ namespace TEAM
             {
                 try
                 {
-                    Process.Start(globalParameters.MetadataPath);
+                    var psi = new ProcessStartInfo() { FileName = globalParameters.MetadataPath, UseShellExecute = true };
+                    Process.Start(psi);
                 }
                 catch (Exception ex)
                 {

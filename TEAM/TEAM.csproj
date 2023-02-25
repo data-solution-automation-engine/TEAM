@@ -1,24 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{73971441-2782-43CF-862C-1F636528858A}</ProjectGuid>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TEAM</RootNamespace>
-    <AssemblyName>TEAM</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
     <PublishUrl>C:\Files\TEAM_deployment\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -39,27 +27,12 @@
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>86471007867548B4217BF863EF3699F23772C765</ManifestCertificateThumbprint>
@@ -77,9 +50,6 @@
     <ApplicationIcon>Resources\Ravos-logo-small.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <PropertyGroup>
@@ -93,153 +63,23 @@
     <StartupObject>TEAM.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="DataGridViewDataObjects.cs">
+    <Compile Update="DataGridViewDataObjects.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Form_Edit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Edit.Designer.cs">
-      <DependentUpon>Form_Edit.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TabPageEnvironments.cs">
+    <Compile Update="TabPageEnvironments.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="TabPageConnections.cs">
+    <Compile Update="TabPageConnections.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="DataGridViewDataItems.cs">
+    <Compile Update="DataGridViewDataItems.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="TeamJsonHandling.cs" />
-    <Compile Include="DataGridViewPhysicalModel.cs">
+    <Compile Update="DataGridViewPhysicalModel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ThreadHelper.cs" />
-    <Compile Include="TimedTextBox.cs">
+    <Compile Update="TimedTextBox.cs">
       <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="LocalTeamEnvironmentConfiguration.cs" />
-    <Compile Include="Form_Base.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Base.Designer.cs">
-      <DependentUpon>Form_Base.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form_About.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_About.Designer.cs">
-      <DependentUpon>Form_About.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form_Alert.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Alert.Designer.cs">
-      <DependentUpon>Form_Alert.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form_Manage_Configuration.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Manage_Configuration.Designer.cs">
-      <DependentUpon>Form_Manage_Configuration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form_Manage_Metadata.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Manage_Metadata.Designer.cs">
-      <DependentUpon>Form_Manage_Metadata.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form_Main.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Main.Designer.cs">
-      <DependentUpon>Form_Main.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form_Repository.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Repository.Designer.cs">
-      <DependentUpon>Form_Repository.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form_Json_Configuration.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Json_Configuration.Designer.cs">
-      <DependentUpon>Form_Json_Configuration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form_Validation.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form_Validation.Designer.cs">
-      <DependentUpon>Form_Validation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="ValidationSetting.cs" />
-    <EmbeddedResource Include="Form_About.resx">
-      <DependentUpon>Form_About.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_Edit.resx">
-      <DependentUpon>Form_Edit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_Alert.resx">
-      <DependentUpon>Form_Alert.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_Base.resx">
-      <DependentUpon>Form_Base.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_Manage_Configuration.resx">
-      <DependentUpon>Form_Manage_Configuration.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_Main.resx">
-      <DependentUpon>Form_Main.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_Manage_Metadata.resx">
-      <DependentUpon>Form_Manage_Metadata.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_Repository.resx">
-      <DependentUpon>Form_Repository.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_Json_Configuration.resx">
-      <DependentUpon>Form_Json_Configuration.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form_Validation.resx">
-      <DependentUpon>Form_Validation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Content Include="Files\sample_TEAM_Attribute_Mapping.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -466,15 +306,12 @@
     <Content Include="Files\PhysicalModel\300_Presentation_Layer\dbo\DIM_CUSTOMER.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Files\SAT_CUSTOMER_DERIVED.json" />
-    <None Include="Libraries\Microsoft.Data.SqlClient.dll" />
-    <None Include="Libraries\Microsoft.Data.SqlClient.SNI.x64.dll" />
-    <None Include="Libraries\Microsoft.Data.SqlClient.SNI.x86.dll" />
-    <None Include="Properties\app.manifest" />
-    <Content Include="Schema\interfaceDataWarehouseAutomationMetadata.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
+    <Content Include="Files\SAT_CUSTOMER_DERIVED.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Schema\interfaceDataWarehouseAutomationMetadata.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -494,7 +331,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\log-file.png" />
     <Content Include="Resources\Ravos-logo-small.ico" />
     <Content Include="Scripts\generateSampleIntegrationSchema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -511,27 +347,7 @@
     <Content Include="Scripts\generateSampleStagingSchema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Resources\Time.png" />
-    <None Include="Resources\ghost-icon.png" />
-    <None Include="Resources\database_icon.png" />
-    <None Include="Resources\fit-16.png" />
-    <None Include="Resources\plus-16.png" />
     <Content Include="Resources\transparent-green-checkmark-hi.png" />
-    <None Include="Resources\DocumentationIcon.ico" />
-    <None Include="Resources\CubeIcon.ico" />
-    <None Include="Resources\SaveFile.ico" />
-    <None Include="Resources\LinkIcon.ico" />
-    <None Include="Resources\Ravos-logo-small_transparant.ico" />
-    <None Include="Resources\CogIcon.ico" />
-    <None Include="Resources\ETLIcon.ico" />
-    <None Include="Resources\HelpIconSmall.ico" />
-    <None Include="Resources\ExitApplication.ico" />
-    <None Include="Resources\OpenDirectoryIcon.ico" />
-    <None Include="Resources\OpenFileIcon.ico" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -559,10 +375,7 @@
     </PublishFile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Team_Library\TEAM_Library.csproj">
-      <Project>{ce615a6f-d85d-47c6-b829-0679bee1c593}</Project>
-      <Name>TEAM_Library</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Team_Library\TEAM_Library.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Costura.Fody">
@@ -570,34 +383,25 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="DataWarehouseAutomation">
-      <Version>1.2.3</Version>
+      <Version>1.2.4</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Data.SqlClient">
       <Version>5.1.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Identity.Client">
       <Version>4.50.0</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.22621.755</Version>
-    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.410601">
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <PropertyGroup />
 </Project>

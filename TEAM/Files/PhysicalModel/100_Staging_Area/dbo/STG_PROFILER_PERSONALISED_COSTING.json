@@ -54,7 +54,7 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "CDC_OPERATION",
+      "name": "CHANGE_DATA_INDICATOR",
       "dataType": "100",
       "characterLength": "varchar",
       "numericPrecision": "0",

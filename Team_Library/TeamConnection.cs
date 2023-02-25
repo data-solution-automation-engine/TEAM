@@ -398,7 +398,7 @@ namespace TEAM_Library
             var newTeamConnectionProfileIntegrationDerived = new TeamConnection
             {
                 ConnectionInternalId = "IntegrationConnectionInternalDerivedId",
-                ConnectionKey = "IntegrationDerived",
+                ConnectionKey = "Derived",
                 ConnectionName = "Integration Derived",
                 ConnectionType = ConnectionTypes.Catalog,
                 ConnectionNotes = ""
@@ -408,7 +408,7 @@ namespace TEAM_Library
             {
                 authenticationType = ServerAuthenticationTypes.SSPI,
                 DatabaseName = "200_Integration_Layer",
-                SchemaName = "dbo",
+                SchemaName = "bdv",
                 NamedUserName = "sa",
                 NamedUserPassword = "",
                 ServerName = "localhost"

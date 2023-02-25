@@ -427,12 +427,12 @@ namespace TEAM
         {
             DataObject sourceDataObject = new DataObject
             {
-                name = "MyNewSourceDataObject"
+                Name = "MyNewSourceDataObject"
             };
 
             DataObject targetDataObject = new DataObject
             {
-                name = "MyNewTargetDataObject"
+                Name = "MyNewTargetDataObject"
             };
 
             e.Row.Cells[DataObjectMappingGridColumns.Enabled.ToString()].Value = true;
@@ -441,8 +441,8 @@ namespace TEAM
             e.Row.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value = sourceDataObject;
             e.Row.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value = targetDataObject;
             e.Row.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value = "<business key definition>";
-            e.Row.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value = sourceDataObject.name;
-            e.Row.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value = targetDataObject.name;
+            e.Row.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value = sourceDataObject.Name;
+            e.Row.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value = targetDataObject.Name;
         }
 
         /// <summary>
@@ -521,13 +521,13 @@ namespace TEAM
             if (e.CurrentCell.ColumnIndex == (int)DataObjectMappingGridColumns.SourceDataObject && dataObject != null)
             {
                 DataGridViewCell updateCell = this[(int)DataObjectMappingGridColumns.SourceDataObjectName, CurrentCell.RowIndex];
-                updateCell.Value = dataObject.name;
+                updateCell.Value = dataObject.Name;
             }
 
             if (e.CurrentCell.ColumnIndex == (int)DataObjectMappingGridColumns.TargetDataObject && dataObject != null)
             {
                 DataGridViewCell updateCell = this[(int)DataObjectMappingGridColumns.TargetDataObjectName, CurrentCell.RowIndex];
-                updateCell.Value = dataObject.name;
+                updateCell.Value = dataObject.Name;
             }
 
             // Hack to quickly unselect and re-select the cell to apply parsing and formatting.
@@ -552,10 +552,10 @@ namespace TEAM
             var vdwDataObjectMappingList = FormManageMetadata.GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
             string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-            File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.name), output);
+            File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.Name), output);
 
             // Update the original form through the delegate/event handler.
-            DataObjectsParse($"A parse action has been called from the context menu. The Data Object Mapping for '{targetDataObject.name}' has been saved.\r\n");
+            DataObjectsParse($"A parse action has been called from the context menu. The Data Object Mapping for '{targetDataObject.Name}' has been saved.\r\n");
         }
 
         /// <summary>
@@ -1085,7 +1085,7 @@ namespace TEAM
                     }
 
                     // Update the data object name.
-                    dataObject.name = e.Value.ToString();
+                    dataObject.Name = e.Value.ToString();
 
                     // Set the updated value.
                     e.Value = dataObject;
@@ -1093,12 +1093,12 @@ namespace TEAM
                     // Also update the hidden name column for sorting and validation purposes.
                     if (selectedColumn.Index.Equals((int)DataObjectMappingGridColumns.SourceDataObject))
                     {
-                        Rows[e.RowIndex].Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value = dataObject.name;
+                        Rows[e.RowIndex].Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value = dataObject.Name;
                     }
                     else if (selectedColumn.Index.Equals((int)DataObjectMappingGridColumns.TargetDataObject))
                     {
                         // Update the hidden string target object name for filtering purposes.
-                        Rows[e.RowIndex].Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value = dataObject.name;
+                        Rows[e.RowIndex].Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value = dataObject.Name;
                     }
 
                     e.ParsingApplied = true;
@@ -1122,7 +1122,7 @@ namespace TEAM
                 {
                     var dataObject = (DataObject)formatting.Value;
 
-                    formatting.Value = dataObject.name;
+                    formatting.Value = dataObject.Name;
                     formatting.FormattingApplied = true;
                 }
                 catch (FormatException)
@@ -1146,7 +1146,7 @@ namespace TEAM
             {
                 if (!row.IsNewRow)
                 {
-                    if (row.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()]?.Value.ToString() == targetDataObject.name)
+                    if (row.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()]?.Value.ToString() == targetDataObject.Name)
                     {
                         var dataObjectMapping = GetDataObjectMapping(row);
                         dataObjectMappings.Add(dataObjectMapping);
@@ -1193,7 +1193,7 @@ namespace TEAM
             // Initial setting of the new object. Details will likely be overwritten by copying the full object.
             DataObjectMapping dataObjectMapping = new DataObjectMapping
             {
-                mappingName = targetDataObjectName
+                MappingName = targetDataObjectName
             };
 
             #region Enabled
@@ -1214,7 +1214,7 @@ namespace TEAM
                     enabled = true;
                 }
 
-                dataObjectMapping.enabled = enabled;
+                dataObjectMapping.Enabled = enabled;
             }
             catch (Exception exception) 
             {
@@ -1229,7 +1229,7 @@ namespace TEAM
             var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionInternalId, TeamConfiguration, TeamEventLog);
 
             var targetDataObject = (DataObject)dataObjectMappingGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
-            dataObjectMapping.targetDataObject = targetDataObject;
+            dataObjectMapping.TargetDataObject = targetDataObject;
 
             // Grab the data objects grid.
             var dataGridViewRowsDataObjects = _dataGridViewDataObjects.Rows.Cast<DataGridViewRow>().Where(row => !row.IsNewRow).ToList();
@@ -1259,7 +1259,7 @@ namespace TEAM
                 var drivingKeyValue = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value.ToString();
 
                 var mappingClassifications = JsonOutputHandling.SetMappingClassifications(targetDataObjectName, JsonExportSetting, TeamConfiguration, drivingKeyValue);
-                dataObjectMapping.mappingClassifications = mappingClassifications;
+                dataObjectMapping.MappingClassifications = mappingClassifications;
             }
             catch (Exception exception)
             {
@@ -1280,7 +1280,7 @@ namespace TEAM
                 {
                     // Create a data query
                     DataQuery sourceDataQuery = new DataQuery();
-                    sourceDataQuery.dataQueryCode = sourceDataObjectName.Replace("`", "");
+                    sourceDataQuery.DataQueryCode = sourceDataObjectName.Replace("`", "");
 
                     // Manage connections
                     var sourceConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
@@ -1318,7 +1318,7 @@ namespace TEAM
                     sourceDataObjects.Add(sourceDataObject);
                 }
 
-                dataObjectMapping.sourceDataObjects = sourceDataObjects;
+                dataObjectMapping.SourceDataObjects = sourceDataObjects;
             }
             catch (Exception exception)
             {
@@ -1336,7 +1336,7 @@ namespace TEAM
             {
                 var metadataRelatedDataObject = JsonOutputHandling.SetMetadataAsRelatedDataObject(JsonExportSetting, TeamConfiguration, dataGridViewRowsPhysicalModel);
 
-                if (metadataRelatedDataObject != null && metadataRelatedDataObject.name != null)
+                if (metadataRelatedDataObject != null && metadataRelatedDataObject.Name != "NewDataObject")
                 {
                     relatedDataObjects.Add(metadataRelatedDataObject);
                 }
@@ -1359,7 +1359,7 @@ namespace TEAM
             // Parent data objects.
             try
             {
-                var parentRelatedDataObjects = JsonOutputHandling.GetParentRelatedDataObjectList(targetDataObjectName, dataObjectMapping.sourceDataObjects[0].name, dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString(), dataGridViewRowsDataObjects, JsonExportSetting, TeamConfiguration);
+                var parentRelatedDataObjects = JsonOutputHandling.GetParentRelatedDataObjectList(targetDataObjectName, dataObjectMapping.SourceDataObjects[0].Name, dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString(), dataGridViewRowsDataObjects, JsonExportSetting, TeamConfiguration);
 
                 if (parentRelatedDataObjects != null && parentRelatedDataObjects.Count > 0)
                 {
@@ -1373,7 +1373,7 @@ namespace TEAM
 
             if (relatedDataObjects.Count > 0)
             {
-                dataObjectMapping.relatedDataObjects = relatedDataObjects;
+                dataObjectMapping.RelatedDataObjects = relatedDataObjects;
             }
 
             #endregion
@@ -1398,7 +1398,7 @@ namespace TEAM
                         var localSourceDataObjectName = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataObject.ToString()].Value.ToString();
                         var localTargetDataObjectName = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataObject.ToString()].Value.ToString();
 
-                        if (localSourceDataObjectName == sourceDataObject.name && localTargetDataObjectName == targetDataObject.name)
+                        if (localSourceDataObjectName == sourceDataObject.Name && localTargetDataObjectName == targetDataObject.Name)
                         {
                             var localSourceDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataItem.ToString()].Value.ToString();
                             var localTargetDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataItem.ToString()].Value.ToString();
@@ -1410,7 +1410,7 @@ namespace TEAM
 
                             var targetDataItem = new DataItem
                             {
-                                name = localTargetDataItem
+                                Name = localTargetDataItem
                             };
 
                             #region Multi-Active Key
@@ -1425,7 +1425,7 @@ namespace TEAM
                             JsonOutputHandling.SetDataItemMappingDataType(targetDataItem, targetDataObject, targetDataItemConnection, JsonExportSetting, dataGridViewRowsPhysicalModel);
 
                             // Add parent Data Object to the Data Item.
-                            JsonOutputHandling.SetParentDataObjectToDataItem(targetDataItem, dataObjectMapping.targetDataObject, JsonExportSetting);
+                            JsonOutputHandling.SetParentDataObjectToDataItem(targetDataItem, dataObjectMapping.TargetDataObject, JsonExportSetting);
 
                             #endregion
 
@@ -1434,14 +1434,14 @@ namespace TEAM
                             if (localSourceDataItem.IsDataQuery())
                             {
                                 var sourceDataItem = new DataQuery();
-                                sourceDataItem.dataQueryCode = localSourceDataItem.Replace("`", "");
+                                sourceDataItem.DataQueryCode = localSourceDataItem.Replace("`", "");
 
                                 sourceDataItems.Add(sourceDataItem);
                             }
                             else
                             {
                                 var sourceDataItem = new DataItem();
-                                sourceDataItem.name = localSourceDataItem;
+                                sourceDataItem.Name = localSourceDataItem;
 
                                 // Add data types to Data Item that are part of a data item mapping.
                                 var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
@@ -1460,12 +1460,12 @@ namespace TEAM
                             // Create a Data Item Mapping.
                             DataItemMapping dataItemMapping = new DataItemMapping
                             {
-                                sourceDataItems = sourceDataItems,
-                                targetDataItem = targetDataItem
+                                SourceDataItems = sourceDataItems,
+                                TargetDataItem = targetDataItem
                             };
 
                             // Add to a list that is more easily searched.
-                            targetDataItemNames.Add(targetDataItem.name);
+                            targetDataItemNames.Add(targetDataItem.Name);
 
                             // Add the Data Items Mapping to the list of mappings.
                             dataItemMappings.Add(dataItemMapping);
@@ -1478,15 +1478,15 @@ namespace TEAM
                 #region Auto map
 
                 // For presentation layer, Hubs and Links, only manual mappings are supported.
-                if (dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.Presentation.ToString() && 
-                    dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.CoreBusinessConcept.ToString() && 
-                    dataObjectMapping.mappingClassifications[0].classification != DataObjectTypes.NaturalBusinessRelationship.ToString())
+                if (dataObjectMapping.MappingClassifications[0].Classification != DataObjectTypes.Presentation.ToString() && 
+                    dataObjectMapping.MappingClassifications[0].Classification != DataObjectTypes.CoreBusinessConcept.ToString() && 
+                    dataObjectMapping.MappingClassifications[0].Classification != DataObjectTypes.NaturalBusinessRelationship.ToString())
                 {
                     // Auto-map any data items that are not yet manually mapped, but exist in source and target.
                     var physicalModelTargetDataGridViewRows = _dataGridViewPhysicalModel.Rows
                     .Cast<DataGridViewRow>()
                     .Where(r => !r.IsNewRow)
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(targetDataObject.name))
+                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(targetDataObject.Name))
                     .ToList();
 
                     foreach (var row in physicalModelTargetDataGridViewRows)
@@ -1505,7 +1505,7 @@ namespace TEAM
                             var physicalModelSourceDataItemLookup = _dataGridViewPhysicalModel.Rows
                                 .Cast<DataGridViewRow>()
                                 .Where(r => !r.IsNewRow)
-                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(sourceDataObject.name))
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(sourceDataObject.Name))
                                 .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(autoMappedTargetDataItemName))
                                 .FirstOrDefault();
 
@@ -1519,9 +1519,9 @@ namespace TEAM
                             var targetDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
                             var targetDataItemConnection = TeamConnection.GetTeamConnectionByConnectionId(targetDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
 
-                            var dataObjectType = GetDataObjectType(targetDataObject.name, "", FormBase.TeamConfiguration);
+                            var dataObjectType = GetDataObjectType(targetDataObject.Name, "", FormBase.TeamConfiguration);
 
-                            var surrogateKey = JsonOutputHandling.DeriveSurrogateKey(targetDataObject.name, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration, dataGridViewRowsDataObjects);
+                            var surrogateKey = JsonOutputHandling.DeriveSurrogateKey(targetDataObject.Name, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration, dataGridViewRowsDataObjects);
 
                             if (!autoMappedTargetDataItemName.IsIncludedDataItem(dataObjectType, surrogateKey, targetDataItemConnection, TeamConfiguration))
                                 continue;
@@ -1535,8 +1535,8 @@ namespace TEAM
                             var autoMappedTargetDataItem = new DataItem();
 
                             // One to one mapping.
-                            autoMappedSourceDataItem.name = autoMappedTargetDataItemName;
-                            autoMappedTargetDataItem.name = autoMappedTargetDataItemName;
+                            autoMappedSourceDataItem.Name = autoMappedTargetDataItemName;
+                            autoMappedTargetDataItem.Name = autoMappedTargetDataItemName;
 
                             // Add data types to Data Item that are part of a data item mapping.
                             var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
@@ -1547,23 +1547,23 @@ namespace TEAM
 
                             // Add parent Data Object to the Data Item.
                             JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedSourceDataItem, sourceDataObject, JsonExportSetting);
-                            JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedTargetDataItem, dataObjectMapping.targetDataObject, JsonExportSetting);
+                            JsonOutputHandling.SetParentDataObjectToDataItem(autoMappedTargetDataItem, dataObjectMapping.TargetDataObject, JsonExportSetting);
 
                             #region Multi-Active Key
 
-                            JsonOutputHandling.AddMultiActiveKeyClassificationToDataItem(autoMappedTargetDataItem, targetDataObject.name,  _dataGridViewPhysicalModel);
+                            JsonOutputHandling.AddMultiActiveKeyClassificationToDataItem(autoMappedTargetDataItem, targetDataObject.Name,  _dataGridViewPhysicalModel);
 
                             #endregion
 
                             // Create a Data Item Mapping.
                             DataItemMapping dataItemMapping = new DataItemMapping
                             {
-                                sourceDataItems = sourceDataItems,
-                                targetDataItem = autoMappedTargetDataItem
+                                SourceDataItems = sourceDataItems,
+                                TargetDataItem = autoMappedTargetDataItem
                             };
 
                             // Add to a list that is more easily searched.
-                            targetDataItemNames.Add(autoMappedTargetDataItem.name);
+                            targetDataItemNames.Add(autoMappedTargetDataItem.Name);
 
                             // Add the Data Items Mapping to the list of mappings.
                             dataItemMappings.Add(dataItemMapping);
@@ -1581,13 +1581,13 @@ namespace TEAM
                 // Add the data item mappings to the data object mapping.
                 if (dataItemMappings.Count > 0)
                 {
-                    dataObjectMapping.dataItemMappings = dataItemMappings;
+                    dataObjectMapping.DataItemMappings = dataItemMappings;
                 }
 
             }
-            catch
+            catch (Exception exception)
             {
-                //
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered processing the data item mapping: {exception.Message}."));
             }
 
             #endregion
@@ -1596,7 +1596,7 @@ namespace TEAM
 
             var filterCriterion = dataObjectMappingGridViewRow.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value.ToString();
 
-            dataObjectMapping.filterCriterion = filterCriterion;
+            dataObjectMapping.FilterCriterion = filterCriterion;
 
             #endregion
 

@@ -5,7 +5,6 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Windows.Forms;
 using TEAM_Library;
-using Windows.UI.Xaml.Shapes;
 using Path = System.IO.Path;
 
 namespace TEAM
@@ -320,18 +319,18 @@ namespace TEAM
                 var keyIdentifier = "SK";
                 var keyPattern = "{dataObject.baseName}_{keyIdentifier}";
 
-                var sourceRowId = "SOURCE_ROW_ID";
-                var eventDateTime = "EVENT_DATETIME";
-                var loadDateTime = "LOAD_DATETIME";
-                var expiryDateTime = "LOAD_END_DATETIME";
-                var changeDataIndicator = "CDC_OPERATION";
+                var sourceRowId = "INSCRIPTION_RECORD_ID";
+                var eventDateTime = "SOURCE_TIMESTAMP";
+                var loadDateTime = "INSCRIPTION_TIMESTAMP";
+                var expiryDateTime = "INSCRIPTION_END_TIMESTAMP";
+                var changeDataIndicator = "CHANGE_DATA_INDICATOR";
                 var recordSource = "RECORD_SOURCE";
-                var etlProcessId = "MODULE_INSTANCE_ID";
-                var etlUpdateProcessId = "MODULE_UPDATE_INSTANCE_ID";
+                var etlProcessId = "AUDIT_TRAIL_ID";
+                var etlUpdateProcessId = "AUDIT_TRAIL_UPDATE_ID";
                 var logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";
                 var otherExceptionColumns = "";
                 var tableNamingLocation = "Prefix";
-                var recordChecksum = "HASH_FULL_RECORD";
+                var recordChecksum = "CHECKSUM";
                 var currentRecordIndicator = "CURRENT_RECORD_INDICATOR";
                 var alternativeRecordSource = "N/A";
                 var alternativeHubLoadDateTime = "N/A";
@@ -452,12 +451,14 @@ namespace TEAM
                         var fileName = Path.GetFileName(filePath);
                         var connectionName = Directory.GetParent(filePath).Parent;
 
-                        if (!Directory.Exists(globalParameters.MetadataPath + $@"PhysicalModel\{connectionName}\dbo\"))
+                        var physicalModelFileLocation = $@"{globalParameters.MetadataPath}PhysicalModel\{connectionName.Name}\dbo\";
+
+                        if (!Directory.Exists(physicalModelFileLocation))
                         {
-                            Directory.CreateDirectory(globalParameters.MetadataPath + $@"PhysicalModel\{connectionName}\dbo\");
+                            Directory.CreateDirectory(physicalModelFileLocation);
                         }
 
-                        var destinationPath = globalParameters.MetadataPath + $@"PhysicalModel\{connectionName}\dbo\" + fileName;
+                        var destinationPath = physicalModelFileLocation + fileName;
 
                         File.Copy(filePath, destinationPath, true);
                         _alertSampleJsonMetadata.SetTextLogging($"Created sample physical model Json file '{fileName}' in {destinationPath}.");
@@ -467,7 +468,6 @@ namespace TEAM
                     _alertSampleJsonMetadata.SetTextLogging("\r\nThis metadata provide a physical model snapshot. Alternatively, this can be reverse-engineered from the database.");
 
                     #endregion
-
 
                     #region Configuration Settings
 
@@ -503,6 +503,11 @@ namespace TEAM
             // Pass the progress to AlertForm label and progressbar
             _alertSampleDataCreationInDatabase.Message = "In progress, please wait... " + e.ProgressPercentage + "%";
             _alertSampleDataCreationInDatabase.ProgressValue = e.ProgressPercentage;
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

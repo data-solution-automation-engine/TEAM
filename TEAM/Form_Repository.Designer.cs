@@ -64,17 +64,19 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 74);
+            this.label2.Location = new System.Drawing.Point(4, 85);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(0, 13);
+            this.label2.Size = new System.Drawing.Size(0, 15);
             this.label2.TabIndex = 23;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 76);
+            this.label4.Location = new System.Drawing.Point(14, 88);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(0, 13);
+            this.label4.Size = new System.Drawing.Size(0, 15);
             this.label4.TabIndex = 25;
             // 
             // backgroundWorkerSampleData
@@ -89,9 +91,10 @@
             this.checkBoxConfigurationSettings.AutoSize = true;
             this.checkBoxConfigurationSettings.Checked = true;
             this.checkBoxConfigurationSettings.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxConfigurationSettings.Location = new System.Drawing.Point(9, 19);
+            this.checkBoxConfigurationSettings.Location = new System.Drawing.Point(10, 22);
+            this.checkBoxConfigurationSettings.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxConfigurationSettings.Name = "checkBoxConfigurationSettings";
-            this.checkBoxConfigurationSettings.Size = new System.Drawing.Size(284, 17);
+            this.checkBoxConfigurationSettings.Size = new System.Drawing.Size(311, 19);
             this.checkBoxConfigurationSettings.TabIndex = 10;
             this.checkBoxConfigurationSettings.Text = "Update and save default TEAM configurations settings";
             this.toolTipRepository.SetToolTip(this.checkBoxConfigurationSettings, resources.GetString("checkBoxConfigurationSettings.ToolTip"));
@@ -100,9 +103,10 @@
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(6, 42);
+            this.button2.Location = new System.Drawing.Point(7, 48);
+            this.button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(139, 42);
+            this.button2.Size = new System.Drawing.Size(162, 48);
             this.button2.TabIndex = 12;
             this.button2.Text = "Reset standard Configuration Settings";
             this.toolTipRepository.SetToolTip(this.button2, resources.GetString("button2.ToolTip"));
@@ -112,9 +116,10 @@
             // buttonGenerateSampleMapping
             // 
             this.buttonGenerateSampleMapping.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonGenerateSampleMapping.Location = new System.Drawing.Point(9, 19);
+            this.buttonGenerateSampleMapping.Location = new System.Drawing.Point(10, 22);
+            this.buttonGenerateSampleMapping.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.buttonGenerateSampleMapping.Name = "buttonGenerateSampleMapping";
-            this.buttonGenerateSampleMapping.Size = new System.Drawing.Size(139, 42);
+            this.buttonGenerateSampleMapping.Size = new System.Drawing.Size(162, 48);
             this.buttonGenerateSampleMapping.TabIndex = 2;
             this.buttonGenerateSampleMapping.Text = "Generate Sample Mapping Metadata";
             this.toolTipRepository.SetToolTip(this.buttonGenerateSampleMapping, "Generate sample source-to-target mapping metadata (table mapping, attribute mappi" +
@@ -127,9 +132,11 @@
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.buttonGenerateSampleMapping);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Location = new System.Drawing.Point(14, 14);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(860, 180);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBox1.Size = new System.Drawing.Size(1003, 208);
             this.groupBox1.TabIndex = 72;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Mapping Metadata";
@@ -137,13 +144,14 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(9, 64);
+            this.label7.Location = new System.Drawing.Point(10, 74);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(340, 52);
+            this.label7.Size = new System.Drawing.Size(517, 15);
             this.label7.TabIndex = 88;
-            this.label7.Text = "Generates the sample mapping metadata.\r\n\r\nIn virtual mode, only this metadata is " +
-    "required to prepare the metadata. \r\nFor physical mode, the database need to exis" +
-    "ts as well (see below).";
+            this.label7.Text = "Copies sample JSON mapping metadata for data object, data item and physical model" +
+    " metadata.";
+            this.label7.Click += new System.EventHandler(this.label7_Click);
             // 
             // groupBox2
             // 
@@ -161,9 +169,11 @@
             this.groupBox2.Controls.Add(this.checkBoxCreateSampleStaging);
             this.groupBox2.Controls.Add(this.checkBoxCreateSampleSource);
             this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Location = new System.Drawing.Point(12, 198);
+            this.groupBox2.Location = new System.Drawing.Point(14, 228);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(860, 186);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBox2.Size = new System.Drawing.Size(1003, 215);
             this.groupBox2.TabIndex = 9999;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Sample Database";
@@ -172,53 +182,59 @@
             // 
             this.comboBoxPresentationConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxPresentationConnection.FormattingEnabled = true;
-            this.comboBoxPresentationConnection.Location = new System.Drawing.Point(490, 109);
+            this.comboBoxPresentationConnection.Location = new System.Drawing.Point(572, 126);
+            this.comboBoxPresentationConnection.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboBoxPresentationConnection.Name = "comboBoxPresentationConnection";
-            this.comboBoxPresentationConnection.Size = new System.Drawing.Size(204, 21);
+            this.comboBoxPresentationConnection.Size = new System.Drawing.Size(237, 23);
             this.comboBoxPresentationConnection.TabIndex = 90;
             // 
             // comboBoxIntegrationConnection
             // 
             this.comboBoxIntegrationConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxIntegrationConnection.FormattingEnabled = true;
-            this.comboBoxIntegrationConnection.Location = new System.Drawing.Point(490, 86);
+            this.comboBoxIntegrationConnection.Location = new System.Drawing.Point(572, 99);
+            this.comboBoxIntegrationConnection.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboBoxIntegrationConnection.Name = "comboBoxIntegrationConnection";
-            this.comboBoxIntegrationConnection.Size = new System.Drawing.Size(204, 21);
+            this.comboBoxIntegrationConnection.Size = new System.Drawing.Size(237, 23);
             this.comboBoxIntegrationConnection.TabIndex = 89;
             // 
             // comboBoxPsaConnection
             // 
             this.comboBoxPsaConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxPsaConnection.FormattingEnabled = true;
-            this.comboBoxPsaConnection.Location = new System.Drawing.Point(490, 63);
+            this.comboBoxPsaConnection.Location = new System.Drawing.Point(572, 73);
+            this.comboBoxPsaConnection.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboBoxPsaConnection.Name = "comboBoxPsaConnection";
-            this.comboBoxPsaConnection.Size = new System.Drawing.Size(204, 21);
+            this.comboBoxPsaConnection.Size = new System.Drawing.Size(237, 23);
             this.comboBoxPsaConnection.TabIndex = 88;
             // 
             // comboBoxStagingConnection
             // 
             this.comboBoxStagingConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxStagingConnection.FormattingEnabled = true;
-            this.comboBoxStagingConnection.Location = new System.Drawing.Point(490, 40);
+            this.comboBoxStagingConnection.Location = new System.Drawing.Point(572, 46);
+            this.comboBoxStagingConnection.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboBoxStagingConnection.Name = "comboBoxStagingConnection";
-            this.comboBoxStagingConnection.Size = new System.Drawing.Size(204, 21);
+            this.comboBoxStagingConnection.Size = new System.Drawing.Size(237, 23);
             this.comboBoxStagingConnection.TabIndex = 87;
             // 
             // comboBoxSourceConnection
             // 
             this.comboBoxSourceConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxSourceConnection.FormattingEnabled = true;
-            this.comboBoxSourceConnection.Location = new System.Drawing.Point(490, 17);
+            this.comboBoxSourceConnection.Location = new System.Drawing.Point(572, 20);
+            this.comboBoxSourceConnection.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboBoxSourceConnection.Name = "comboBoxSourceConnection";
-            this.comboBoxSourceConnection.Size = new System.Drawing.Size(204, 21);
+            this.comboBoxSourceConnection.Size = new System.Drawing.Size(237, 23);
             this.comboBoxSourceConnection.TabIndex = 86;
             // 
             // button3
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(9, 21);
+            this.button3.Location = new System.Drawing.Point(10, 24);
+            this.button3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(139, 42);
+            this.button3.Size = new System.Drawing.Size(162, 48);
             this.button3.TabIndex = 4;
             this.button3.Text = "Generate Sample Database content";
             this.button3.UseVisualStyleBackColor = true;
@@ -227,9 +243,10 @@
             // linkLabelSource
             // 
             this.linkLabelSource.AutoSize = true;
-            this.linkLabelSource.Location = new System.Drawing.Point(757, 165);
+            this.linkLabelSource.Location = new System.Drawing.Point(883, 190);
+            this.linkLabelSource.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabelSource.Name = "linkLabelSource";
-            this.linkLabelSource.Size = new System.Drawing.Size(99, 13);
+            this.linkLabelSource.Size = new System.Drawing.Size(111, 15);
             this.linkLabelSource.TabIndex = 82;
             this.linkLabelSource.TabStop = true;
             this.linkLabelSource.Text = "Link to data models";
@@ -240,9 +257,10 @@
             this.checkBoxCreateSamplePresentation.AutoSize = true;
             this.checkBoxCreateSamplePresentation.Checked = true;
             this.checkBoxCreateSamplePresentation.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCreateSamplePresentation.Location = new System.Drawing.Point(234, 111);
+            this.checkBoxCreateSamplePresentation.Location = new System.Drawing.Point(273, 128);
+            this.checkBoxCreateSamplePresentation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxCreateSamplePresentation.Name = "checkBoxCreateSamplePresentation";
-            this.checkBoxCreateSamplePresentation.Size = new System.Drawing.Size(225, 17);
+            this.checkBoxCreateSamplePresentation.Size = new System.Drawing.Size(246, 19);
             this.checkBoxCreateSamplePresentation.TabIndex = 9;
             this.checkBoxCreateSamplePresentation.Text = "Create Sample Presentation Layer content\r\n";
             this.checkBoxCreateSamplePresentation.UseVisualStyleBackColor = true;
@@ -252,9 +270,10 @@
             this.checkBoxCreateSamplePSA.AutoSize = true;
             this.checkBoxCreateSamplePSA.Checked = true;
             this.checkBoxCreateSamplePSA.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCreateSamplePSA.Location = new System.Drawing.Point(234, 65);
+            this.checkBoxCreateSamplePSA.Location = new System.Drawing.Point(273, 75);
+            this.checkBoxCreateSamplePSA.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxCreateSamplePSA.Name = "checkBoxCreateSamplePSA";
-            this.checkBoxCreateSamplePSA.Size = new System.Drawing.Size(247, 17);
+            this.checkBoxCreateSamplePSA.Size = new System.Drawing.Size(270, 19);
             this.checkBoxCreateSamplePSA.TabIndex = 7;
             this.checkBoxCreateSamplePSA.Text = "Create Sample Persistent Staging Area content";
             this.checkBoxCreateSamplePSA.UseVisualStyleBackColor = true;
@@ -262,9 +281,10 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 92);
+            this.label6.Location = new System.Drawing.Point(4, 106);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(0, 13);
+            this.label6.Size = new System.Drawing.Size(0, 15);
             this.label6.TabIndex = 77;
             // 
             // checkBoxCreateSampleIntegration
@@ -272,9 +292,10 @@
             this.checkBoxCreateSampleIntegration.AutoSize = true;
             this.checkBoxCreateSampleIntegration.Checked = true;
             this.checkBoxCreateSampleIntegration.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCreateSampleIntegration.Location = new System.Drawing.Point(234, 88);
+            this.checkBoxCreateSampleIntegration.Location = new System.Drawing.Point(273, 102);
+            this.checkBoxCreateSampleIntegration.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxCreateSampleIntegration.Name = "checkBoxCreateSampleIntegration";
-            this.checkBoxCreateSampleIntegration.Size = new System.Drawing.Size(216, 17);
+            this.checkBoxCreateSampleIntegration.Size = new System.Drawing.Size(238, 19);
             this.checkBoxCreateSampleIntegration.TabIndex = 8;
             this.checkBoxCreateSampleIntegration.Text = "Create Sample Integration Layer content";
             this.checkBoxCreateSampleIntegration.UseVisualStyleBackColor = true;
@@ -284,9 +305,10 @@
             this.checkBoxCreateSampleStaging.AutoSize = true;
             this.checkBoxCreateSampleStaging.Checked = true;
             this.checkBoxCreateSampleStaging.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCreateSampleStaging.Location = new System.Drawing.Point(234, 42);
+            this.checkBoxCreateSampleStaging.Location = new System.Drawing.Point(273, 48);
+            this.checkBoxCreateSampleStaging.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxCreateSampleStaging.Name = "checkBoxCreateSampleStaging";
-            this.checkBoxCreateSampleStaging.Size = new System.Drawing.Size(222, 17);
+            this.checkBoxCreateSampleStaging.Size = new System.Drawing.Size(243, 19);
             this.checkBoxCreateSampleStaging.TabIndex = 6;
             this.checkBoxCreateSampleStaging.Text = "Create Sample Staging / Landing content";
             this.checkBoxCreateSampleStaging.UseVisualStyleBackColor = true;
@@ -296,9 +318,10 @@
             this.checkBoxCreateSampleSource.AutoSize = true;
             this.checkBoxCreateSampleSource.Checked = true;
             this.checkBoxCreateSampleSource.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCreateSampleSource.Location = new System.Drawing.Point(234, 19);
+            this.checkBoxCreateSampleSource.Location = new System.Drawing.Point(273, 22);
+            this.checkBoxCreateSampleSource.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxCreateSampleSource.Name = "checkBoxCreateSampleSource";
-            this.checkBoxCreateSampleSource.Size = new System.Drawing.Size(169, 17);
+            this.checkBoxCreateSampleSource.Size = new System.Drawing.Size(184, 19);
             this.checkBoxCreateSampleSource.TabIndex = 5;
             this.checkBoxCreateSampleSource.Text = "Create sample Source content";
             this.checkBoxCreateSampleSource.UseVisualStyleBackColor = true;
@@ -306,9 +329,10 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 157);
+            this.label3.Location = new System.Drawing.Point(7, 181);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(399, 26);
+            this.label3.Size = new System.Drawing.Size(437, 30);
             this.label3.TabIndex = 73;
             this.label3.Text = "WARNING - the databases associated with the selected connections must already \r\ne" +
     "xist and existing information will be removed.";
@@ -317,9 +341,11 @@
             // 
             this.groupBox4.Controls.Add(this.button2);
             this.groupBox4.Controls.Add(this.checkBoxConfigurationSettings);
-            this.groupBox4.Location = new System.Drawing.Point(12, 390);
+            this.groupBox4.Location = new System.Drawing.Point(14, 450);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(860, 160);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBox4.Size = new System.Drawing.Size(1003, 185);
             this.groupBox4.TabIndex = 88;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Generic options";
@@ -332,16 +358,17 @@
             // 
             // FormManageRepository
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 711);
+            this.ClientSize = new System.Drawing.Size(1031, 820);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label4);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(900, 750);
-            this.MinimumSize = new System.Drawing.Size(900, 750);
+            this.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this.MaximumSize = new System.Drawing.Size(1047, 859);
+            this.MinimumSize = new System.Drawing.Size(1047, 859);
             this.Name = "FormManageRepository";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Create / Rebuild Repository";

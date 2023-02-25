@@ -15,7 +15,7 @@ namespace TEAM_Library
         /// The file name is based on the target data object, a file contains one or more data object mappings.
         /// </summary>
         public string FileName { get; set; }
-        public DataObjectMappings DataObjectMappings { get; set; }
+        public DataObjectMappingList DataObjectMappings { get; set; }
 
         /// <summary>
         /// Get only the file name from the full path.
@@ -132,9 +132,9 @@ namespace TEAM_Library
 
                                 try
                                 {
-                                    var dataObjectMappings = JsonConvert.DeserializeObject<DataObjectMappings>(jsonInput);
+                                    var dataObjectMappings = JsonConvert.DeserializeObject<DataObjectMappingList>(jsonInput);
 
-                                    if (dataObjectMappings == null || dataObjectMappings.dataObjectMappings  == null || dataObjectMappings.dataObjectMappings.Count == 0)
+                                    if (dataObjectMappings == null || dataObjectMappings.DataObjectMappings  == null || dataObjectMappings.DataObjectMappings.Count == 0)
                                     {
                                         EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The file {fileName} could not be loaded."));
                                     }
