@@ -266,7 +266,7 @@ namespace TEAM_Library
             {
                 var metaDataObject = GetMetadataDataObject(teamConfiguration, jsonExportSetting, dataGridViewRowsPhysicalModel);
 
-                if (metaDataObject.Name != null)
+                if (metaDataObject.Name != null && metaDataObject.Name != "NewDataObject")
                 {
                     returnDataObject = metaDataObject;
                 }
@@ -295,7 +295,7 @@ namespace TEAM_Library
                 var parentDataObject = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataObjectDataGridViewRows);
 
                 // Create the parent data object.
-                if (parentDataObject != null && parentDataObject.Name != null)
+                if (parentDataObject != null && parentDataObject.Name != null && parentDataObject.Name != "NewDataObject")
                 {
                     // Set the name and further settings.
                     relatedDataObjectList.Add(parentDataObject);
@@ -331,7 +331,13 @@ namespace TEAM_Library
                     TeamConnection localConnection = TeamConnection.GetTeamConnectionByConnectionId(localDataObjectConnectionInternalId, teamConfiguration, eventLog);
 
                     // Set the name and further settings.
-                    dataObjectList.Add(CreateDataObject(localDataObjectName, localConnection, jsonExportSetting, teamConfiguration, dataGridViewRowsPhysicalModel));
+
+                    var localRelatedDataObject = CreateDataObject(localDataObjectName, localConnection, jsonExportSetting, teamConfiguration, dataGridViewRowsPhysicalModel);
+
+                    if (localRelatedDataObject.Name != "NewDataObject")
+                    {
+                        dataObjectList.Add(localRelatedDataObject);
+                    }
                 }
             }
 
