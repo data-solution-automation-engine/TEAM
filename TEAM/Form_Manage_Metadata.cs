@@ -138,7 +138,7 @@ namespace TEAM
             tabPageDataObjectMapping.TabIndex = 0;
             tabPageDataObjectMapping.Text = @"Data Object (Table) Mappings";
             tabPageDataObjectMapping.UseVisualStyleBackColor = true;
-            
+
             tabPageDataObjectMapping.ResumeLayout(false);
             ((ISupportInitialize)(_dataGridViewDataObjects)).EndInit();
         }
@@ -150,7 +150,7 @@ namespace TEAM
                 ApplyDataGridViewFiltering();
             }
         }
-        
+
         /// <summary>
         /// Definition of the Data Item grid view.
         /// </summary>
@@ -306,8 +306,8 @@ namespace TEAM
 
             foreach (DataRow row in teamDataObjectMappings.DataTable.Rows)
             {
-                var comboBoxValueSource = row[(int) DataObjectMappingGridColumns.SourceConnection].ToString();
-                var comboBoxValueTarget = row[(int) DataObjectMappingGridColumns.TargetConnection].ToString();
+                var comboBoxValueSource = row[(int)DataObjectMappingGridColumns.SourceConnection].ToString();
+                var comboBoxValueTarget = row[(int)DataObjectMappingGridColumns.TargetConnection].ToString();
 
                 if (!localConnectionKeyList.Contains(comboBoxValueSource))
                 {
@@ -316,7 +316,7 @@ namespace TEAM
                         userFeedbackList.Add(comboBoxValueSource);
                     }
 
-                    row[(int) DataObjectMappingGridColumns.SourceConnection] = DBNull.Value;
+                    row[(int)DataObjectMappingGridColumns.SourceConnection] = DBNull.Value;
                 }
 
                 if (!localConnectionKeyList.Contains(comboBoxValueTarget))
@@ -326,7 +326,7 @@ namespace TEAM
                         userFeedbackList.Add(comboBoxValueTarget);
                     }
 
-                    row[(int) DataObjectMappingGridColumns.TargetConnection] = DBNull.Value;
+                    row[(int)DataObjectMappingGridColumns.TargetConnection] = DBNull.Value;
                 }
             }
 
@@ -466,7 +466,7 @@ namespace TEAM
 
         private DialogResult STAShowDialog(FileDialog dialog)
         {
-            var state = new DialogState {FileDialog = dialog};
+            var state = new DialogState { FileDialog = dialog };
             var t = new Thread(state.ThreadProcShowDialog);
             t.SetApartmentState(ApartmentState.STA);
 
@@ -539,7 +539,7 @@ namespace TEAM
 
                 if (gridViewRows != counter + 1 && targetDataObject.Length > 3)
                 {
-                    if (targetDataObjectType==MetadataHandling.DataObjectTypes.CoreBusinessConcept)
+                    if (targetDataObjectType == MetadataHandling.DataObjectTypes.CoreBusinessConcept)
                     {
                         if (!hubSet.Contains(targetDataObject))
                         {
@@ -553,7 +553,7 @@ namespace TEAM
                             satSet.Add(targetDataObject);
                         }
                     }
-                    else if (targetDataObjectType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext|| targetDataObjectType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
+                    else if (targetDataObjectType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext || targetDataObjectType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
                     {
                         if (!lsatSet.Contains(targetDataObject))
                         {
@@ -618,7 +618,7 @@ namespace TEAM
                 if (_myValidationForm.InvokeRequired)
                 {
                     // Thread Error
-                    _myValidationForm.Invoke((MethodInvoker) delegate { _myValidationForm.Close(); });
+                    _myValidationForm.Invoke((MethodInvoker)delegate { _myValidationForm.Close(); });
                     _myValidationForm.FormClosed += CloseValidationForm;
 
                     _myValidationForm = new FormManageValidation();
@@ -655,7 +655,7 @@ namespace TEAM
                 if (_myJsonForm.InvokeRequired)
                 {
                     // Thread Error
-                    _myJsonForm.Invoke((MethodInvoker) delegate { _myJsonForm.Close(); });
+                    _myJsonForm.Invoke((MethodInvoker)delegate { _myJsonForm.Close(); });
                     _myJsonForm.FormClosed += CloseJsonForm;
 
                     _myJsonForm = new FormJsonConfiguration();
@@ -689,81 +689,81 @@ namespace TEAM
             //}
             //else
             //{
-                foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
+            foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
+            {
+                if (!string.IsNullOrEmpty(row.ErrorText))
                 {
-                    if (!string.IsNullOrEmpty(row.ErrorText))
-                    {
-                        richTextBoxInformation.AppendText($"The Data Object Mapping from '{row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value}' to '{row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value}' has an unresolved validation warning.");
+                    richTextBoxInformation.AppendText($"The Data Object Mapping from '{row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value}' to '{row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value}' has an unresolved validation warning.");
 
-                        validationIssue = true;
-                    }
+                    validationIssue = true;
                 }
+            }
 
-                if (validationIssue == false)
+            if (validationIssue == false)
+            {
+                richTextBoxInformation.Clear();
+
+                // Create a data table containing the changes, to check if there are changes made to begin with
+                var dataTableTableMappingChanges = ((DataTable)BindingSourceDataObjectMappings.DataSource).GetChanges();
+                var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
+                var dataTablePhysicalModelChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
+
+                // Check if there are any rows available in the grid view, and if changes have been detected at all.
+                if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 ||
+                    _dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 ||
+                    _dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
                 {
-                    richTextBoxInformation.Clear();
 
-                    // Create a data table containing the changes, to check if there are changes made to begin with
-                    var dataTableTableMappingChanges = ((DataTable)BindingSourceDataObjectMappings.DataSource).GetChanges();
-                    var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
-                    var dataTablePhysicalModelChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
-
-                    // Check if there are any rows available in the grid view, and if changes have been detected at all.
-                    if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 ||
-                        _dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 ||
-                        _dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+                    // Perform the saving of the metadata, one for each grid.
+                    if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0)
                     {
-
-                        // Perform the saving of the metadata, one for each grid.
-                        if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0)
+                        try
                         {
-                            try
-                            {
-                                SaveDataObjectMappingJson(dataTableTableMappingChanges);
-                            }
-                            catch (Exception exception)
-                            {
-                                richTextBoxInformation.Text += $@"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
-                            }
+                            SaveDataObjectMappingJson(dataTableTableMappingChanges);
                         }
-
-                        if (_dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
+                        catch (Exception exception)
                         {
-                            try
-                            {
-                                SaveDataItemMappingMetadata(dataTableAttributeMappingChanges);
-                            }
-                            catch (Exception exception)
-                            {
-                                richTextBoxInformation.Text += $@"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
-                            }
+                            richTextBoxInformation.Text += $@"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
                         }
-
-                        if (_dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
-                        {
-                            try
-                            {
-                                SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
-                            }
-                            catch (Exception exception)
-                            {
-                                richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
-                            }
-                        }
-
-                        // Re-apply any filtering, if required.
-                        ApplyDataGridViewFiltering();
                     }
-                    else
+
+                    if (_dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
                     {
-                        richTextBoxInformation.Text += @"There is no metadata to save!";
+                        try
+                        {
+                            SaveDataItemMappingMetadata(dataTableAttributeMappingChanges);
+                        }
+                        catch (Exception exception)
+                        {
+                            richTextBoxInformation.Text += $@"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                        }
                     }
+
+                    if (_dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+                    {
+                        try
+                        {
+                            SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
+                        }
+                        catch (Exception exception)
+                        {
+                            richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
+                        }
+                    }
+
+                    // Re-apply any filtering, if required.
+                    ApplyDataGridViewFiltering();
                 }
                 else
                 {
-                    MessageBox.Show(@"There are unresolved validation issues, please check the information pane below.", @"Validation issues", MessageBoxButtons.OK);
+                    richTextBoxInformation.Text += @"There is no metadata to save!";
                 }
-           //}
+            }
+            else
+            {
+                MessageBox.Show(@"There are unresolved validation issues, please check the information pane below.", @"Validation issues", MessageBoxButtons.OK);
+            }
+            //}
         }
 
         /// <summary>
@@ -782,7 +782,7 @@ namespace TEAM
                     {
                         // Figure out the current / previous file name based on the previous target data object name (pre-change).
                         var previousDataObjectName = "";
-                        
+
                         if (row[DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString()] != DBNull.Value)
                         {
                             previousDataObjectName = (string)row[DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString()];
@@ -984,17 +984,17 @@ namespace TEAM
 
                         if (row[PhysicalModelMappingMetadataColumns.databaseName.ToString()] != DBNull.Value)
                         {
-                            databaseName = (string) row[PhysicalModelMappingMetadataColumns.databaseName.ToString()];
+                            databaseName = (string)row[PhysicalModelMappingMetadataColumns.databaseName.ToString()];
                         }
 
                         if (row[PhysicalModelMappingMetadataColumns.schemaName.ToString()] != DBNull.Value)
                         {
-                            schemaName = (string) row[PhysicalModelMappingMetadataColumns.schemaName.ToString()];
+                            schemaName = (string)row[PhysicalModelMappingMetadataColumns.schemaName.ToString()];
                         }
 
                         if (row[PhysicalModelMappingMetadataColumns.tableName.ToString()] != DBNull.Value)
                         {
-                            tableName = (string) row[PhysicalModelMappingMetadataColumns.tableName.ToString()];
+                            tableName = (string)row[PhysicalModelMappingMetadataColumns.tableName.ToString()];
                         }
 
                         // Save the file. 
@@ -1026,7 +1026,7 @@ namespace TEAM
 
                 //Committing the changes to the data table
                 dataTableChanges.AcceptChanges();
-                ((DataTable) BindingSourcePhysicalModel.DataSource).AcceptChanges();
+                ((DataTable)BindingSourcePhysicalModel.DataSource).AcceptChanges();
 
                 // Reset all data bound items etc. etc.
                 PopulatePhysicalModelGrid();
@@ -1097,7 +1097,7 @@ namespace TEAM
                             }
                             else
                             {
-                                string[] inputHashValue = new[] { sourceDataObject, sourceDataItem, targetDataObject, targetDataItem, notes, DateTime.Now.ToString(), Utility.KeyGenerator.GetUniqueKey()};
+                                string[] inputHashValue = new[] { sourceDataObject, sourceDataItem, targetDataObject, targetDataItem, notes, DateTime.Now.ToString(), Utility.KeyGenerator.GetUniqueKey() };
                                 hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
                             }
 
@@ -1266,8 +1266,8 @@ namespace TEAM
                 #endregion
             }
         }
-        
-        # region Parse process
+
+        #region Parse process
 
         private void ButtonParse_Click(object sender, EventArgs e)
         {
@@ -1277,95 +1277,95 @@ namespace TEAM
             //}
             //else
             //{
-                richTextBoxInformation.Clear();
+            richTextBoxInformation.Clear();
 
-                #region Preparation
+            #region Preparation
 
-                // Local boolean to manage whether activation is OK to go ahead.
-                bool activationContinue = true;
+            // Local boolean to manage whether activation is OK to go ahead.
+            bool activationContinue = true;
 
-                // Check if there are any outstanding saves / commits in the data grid
-                var dataTableTableMappingChanges = ((DataTable)BindingSourceDataObjectMappings.DataSource).GetChanges();
-                var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
-                var dataTablePhysicalModelChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
+            // Check if there are any outstanding saves / commits in the data grid
+            var dataTableTableMappingChanges = ((DataTable)BindingSourceDataObjectMappings.DataSource).GetChanges();
+            var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
+            var dataTablePhysicalModelChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
 
-                if (
-                    (dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0) ||
-                    (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0) ||
-                    (dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
-                )
+            if (
+                (dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0) ||
+                (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0) ||
+                (dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+            )
+            {
+                string localMessage = "You have unsaved edits, please save your work before running the end-to-end update.";
+                MessageBox.Show(localMessage);
+                richTextBoxInformation.AppendText(localMessage);
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, localMessage));
+                activationContinue = false;
+            }
+
+            #endregion
+
+            #region Validation
+
+            // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes).
+            if (checkBoxValidation.Checked && activationContinue)
+            {
+                if (BindingSourcePhysicalModel.Count == 0)
                 {
-                    string localMessage = "You have unsaved edits, please save your work before running the end-to-end update.";
-                    MessageBox.Show(localMessage);
-                    richTextBoxInformation.AppendText(localMessage);
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, localMessage));
+                    richTextBoxInformation.Text = @"There is no physical model metadata available, please make sure the physical model grid contains data.";
                     activationContinue = false;
-                }
-
-                #endregion
-
-                #region Validation
-
-                // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes).
-                if (checkBoxValidation.Checked && activationContinue)
-                {
-                    if (BindingSourcePhysicalModel.Count == 0)
-                    {
-                        richTextBoxInformation.Text = @"There is no physical model metadata available, please make sure the physical model grid contains data.";
-                        activationContinue = false;
-                    }
-                    else
-                    {
-                        if (backgroundWorkerValidationOnly.IsBusy) return;
-                        // create a new instance of the alert form
-                        _alertValidation = new Form_Alert();
-                        _alertValidation.SetFormName("Validating the metadata");
-                        _alertValidation.ShowLogButton(false);
-                        _alertValidation.ShowCancelButton(true);
-                        _alertValidation.Canceled += buttonCancelParse_Click;
-                        _alertValidation.Show();
-
-                        // Start the asynchronous operation.
-                        backgroundWorkerValidationOnly.RunWorkerAsync();
-
-                        while (backgroundWorkerValidationOnly.IsBusy)
-                        {
-                            Application.DoEvents();
-                        }
-                    }
-                }
-
-                #endregion
-
-                // After validation finishes, the parse thread / process should start.
-                // Only if the validation is enabled AND there are no issues identified in earlier validation checks.
-
-                #region Parse Thread
-
-                if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && metadataValidations.ValidationIssues == 0) && activationContinue)
-                {
-                    if (backgroundWorkerParse.IsBusy) return;
-                    // create a new instance of the alert form
-                    _alertParse = new Form_Alert();
-                    _alertParse.SetFormName("Parsing the data object mappings");
-                    _alertParse.Canceled += buttonCancelParse_Click;
-                    _alertParse.ShowLogButton(false);
-                    _alertParse.ShowCancelButton(true);
-                    _alertParse.Show();
-
-                    // Temporarily disable event handling on binding source to avoid cross-thread issues.
-                    BindingSourceDataObjectMappings.SuspendBinding();
-
-                    // Start the asynchronous operation.
-                    backgroundWorkerParse.RunWorkerAsync();
                 }
                 else
                 {
-                    richTextBoxInformation.AppendText("Validation found issues which should be investigated.");
-                }
+                    if (backgroundWorkerValidationOnly.IsBusy) return;
+                    // create a new instance of the alert form
+                    _alertValidation = new Form_Alert();
+                    _alertValidation.SetFormName("Validating the metadata");
+                    _alertValidation.ShowLogButton(false);
+                    _alertValidation.ShowCancelButton(true);
+                    _alertValidation.Canceled += buttonCancelParse_Click;
+                    _alertValidation.Show();
 
-                #endregion
-           // }
+                    // Start the asynchronous operation.
+                    backgroundWorkerValidationOnly.RunWorkerAsync();
+
+                    while (backgroundWorkerValidationOnly.IsBusy)
+                    {
+                        Application.DoEvents();
+                    }
+                }
+            }
+
+            #endregion
+
+            // After validation finishes, the parse thread / process should start.
+            // Only if the validation is enabled AND there are no issues identified in earlier validation checks.
+
+            #region Parse Thread
+
+            if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && metadataValidations.ValidationIssues == 0) && activationContinue)
+            {
+                if (backgroundWorkerParse.IsBusy) return;
+                // create a new instance of the alert form
+                _alertParse = new Form_Alert();
+                _alertParse.SetFormName("Parsing the data object mappings");
+                _alertParse.Canceled += buttonCancelParse_Click;
+                _alertParse.ShowLogButton(false);
+                _alertParse.ShowCancelButton(true);
+                _alertParse.Show();
+
+                // Temporarily disable event handling on binding source to avoid cross-thread issues.
+                BindingSourceDataObjectMappings.SuspendBinding();
+
+                // Start the asynchronous operation.
+                backgroundWorkerParse.RunWorkerAsync();
+            }
+            else
+            {
+                richTextBoxInformation.AppendText("Validation found issues which should be investigated.");
+            }
+
+            #endregion
+            // }
         }
 
         /// <summary>
@@ -2256,7 +2256,7 @@ namespace TEAM
             string ordinalPositionColumnName = PhysicalModelMappingMetadataColumns.ordinalPosition.ToString();
             string primaryKeyColumnName = PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString();
             string multiActiveKeyColumnName = PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString();
-            
+
             // Prepare the query, depending on the type.
             // Create the attribute selection statement for the array.
             var sqlStatementForDataItems = new StringBuilder();
@@ -2267,7 +2267,7 @@ namespace TEAM
                 if (teamConnection.ConnectionType == ConnectionTypes.Catalog)
                 {
                     var databaseName = teamConnection.DatabaseServer.DatabaseName;
-                    
+
                     sqlStatementForDataItems.AppendLine($"-- Physical Model Snapshot query for {teamConnection.ConnectionKey}.");
                     sqlStatementForDataItems.AppendLine("SELECT * FROM");
                     sqlStatementForDataItems.AppendLine("(");
@@ -2584,7 +2584,7 @@ namespace TEAM
                     _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateDataItemExistence(filteredDataItemDataRows, dataObjectMappingDataTable, physicalModelDataTable, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
                 worker?.ReportProgress(30);
-                
+
                 if (ValidationSetting.LogicalGroup == "True")
                 {
                     _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateLogicalGroup(filteredDataObjectMappingDataRows, dataObjectMappingDataTable, TeamConfiguration, TeamEventLog, ref metadataValidations));
@@ -2638,7 +2638,7 @@ namespace TEAM
                 _alertValidation.SetTextLogging("\r\n\r\nIn total " + metadataValidations.ValidationIssues + " validation issues have been found.");
             }
         }
-     
+
         private void backgroundWorkerValidationOnly_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             // Show the progress in main form (GUI)
@@ -2665,13 +2665,13 @@ namespace TEAM
                 richTextBoxInformation.Text += "\r\nThe metadata was validated successfully!\r\n";
             }
         }
-        
+
         private void displayTableScriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Retrieve the index of the selected row
             Int32 selectedRow = _dataGridViewPhysicalModel.Rows.GetFirstRow(DataGridViewElementStates.Selected);
 
-            DataTable gridDataTable = (DataTable) BindingSourcePhysicalModel.DataSource;
+            DataTable gridDataTable = (DataTable)BindingSourcePhysicalModel.DataSource;
             DataTable dt2 = gridDataTable.Clone();
             dt2.Columns[PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()].DataType = Type.GetType("System.Int32");
 
@@ -2723,7 +2723,7 @@ namespace TEAM
                 }
 
                 counter++;
-                results.AppendLine(commaSnippet + row[PhysicalModelMappingMetadataColumns.columnName.ToString()] +" -- with ordinal position of " +row[PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()]);
+                results.AppendLine(commaSnippet + row[PhysicalModelMappingMetadataColumns.columnName.ToString()] + " -- with ordinal position of " + row[PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()]);
             }
 
             results.AppendLine(")");
@@ -2784,7 +2784,7 @@ namespace TEAM
                 try
                 {
                     var chosenFile = theDialog.FileName;
-                    
+
                     // Load the file, convert it to a DataTable and bind it to the source
                     List<DataItemMappingJson> jsonArray = JsonConvert.DeserializeObject<List<DataItemMappingJson>>(File.ReadAllText(chosenFile));
 
@@ -2795,7 +2795,7 @@ namespace TEAM
                             // Check if the row does not already exist.
                             var lookupRow = _dataGridViewDataItems.Rows
                                 .Cast<DataGridViewRow>()
-                                .FirstOrDefault(row => !row.IsNewRow && row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString() == dataItemMappingJson.sourceTable && 
+                                .FirstOrDefault(row => !row.IsNewRow && row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString() == dataItemMappingJson.sourceTable &&
                                                        row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString() == dataItemMappingJson.targetTable &&
                                                        row.Cells[(int)DataItemMappingGridColumns.SourceDataItem].Value.ToString() == dataItemMappingJson.sourceAttribute &&
                                                        row.Cells[(int)DataItemMappingGridColumns.TargetDataItem].Value.ToString() == dataItemMappingJson.targetAttribute);
@@ -2999,7 +2999,7 @@ namespace TEAM
                 {
                     foreach (var individualEvent in localEventLog)
                     {
-                        _alertEventLog.SetTextLogging($"{individualEvent.eventTime} - {(EventTypes) individualEvent.eventCode}: {individualEvent.eventDescription}\r\n");
+                        _alertEventLog.SetTextLogging($"{individualEvent.eventTime} - {(EventTypes)individualEvent.eventCode}: {individualEvent.eventDescription}\r\n");
                     }
                 }
                 catch (Exception ex)
@@ -3087,8 +3087,8 @@ namespace TEAM
         private void AutoMapDataItemsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             tabControlDataMappings.SelectedTab = tabPageDataItemMapping;
-            
-            var dataTableAttributeMappingChanges = ((DataTable) BindingSourceDataItemMappings.DataSource).GetChanges();
+
+            var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
 
             if (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
             {
@@ -3169,8 +3169,8 @@ namespace TEAM
                     {
                         // Do the lookup in the target data table
                         var results = from localRow in targetColumnDataTable.AsEnumerable()
-                            where localRow.Field<string>(PhysicalModelMappingMetadataColumns.columnName.ToString()) == sourceDataObjectRow[PhysicalModelMappingMetadataColumns.columnName.ToString()].ToString()
-                            select localRow;
+                                      where localRow.Field<string>(PhysicalModelMappingMetadataColumns.columnName.ToString()) == sourceDataObjectRow[PhysicalModelMappingMetadataColumns.columnName.ToString()].ToString()
+                                      select localRow;
 
                         if (results.FirstOrDefault() != null)
                         {
@@ -3213,7 +3213,7 @@ namespace TEAM
                     }
 
                     // Now, for each item in the matched list check if there is a corresponding Data Item Mapping in the grid already.
-                    DataTable localDataItemDataTable = (DataTable) BindingSourceDataItemMappings.DataSource;
+                    DataTable localDataItemDataTable = (DataTable)BindingSourceDataItemMappings.DataSource;
 
                     foreach (var matchedDataItemMappingFromDatabase in localDataItemMappings)
                     {
@@ -3234,7 +3234,7 @@ namespace TEAM
 
                             DataRow newRow = localDataItemDataTable.NewRow();
 
-                            newRow[DataItemMappingGridColumns.HashKey.ToString()] = Utility.CreateMd5(new[] {Utility.GetRandomString(100)}, "#");
+                            newRow[DataItemMappingGridColumns.HashKey.ToString()] = Utility.CreateMd5(new[] { Utility.GetRandomString(100) }, "#");
                             newRow[DataItemMappingGridColumns.SourceDataObject.ToString()] = matchedDataItemMappingFromDatabase.sourceDataObjectName;
                             newRow[DataItemMappingGridColumns.SourceDataItem.ToString()] = matchedDataItemMappingFromDatabase.sourceDataItemName;
                             newRow[DataItemMappingGridColumns.TargetDataObject.ToString()] = matchedDataItemMappingFromDatabase.targetDataObjectName;
@@ -3443,7 +3443,7 @@ namespace TEAM
                     foreach (DataRow row in localDataTable.Rows)
                     {
                         var database = row[PhysicalModelMappingMetadataColumns.databaseName.ToString()].ToString();
-                        var schema = row[PhysicalModelMappingMetadataColumns.schemaName .ToString()].ToString();
+                        var schema = row[PhysicalModelMappingMetadataColumns.schemaName.ToString()].ToString();
                         var table = row[PhysicalModelMappingMetadataColumns.tableName.ToString()].ToString();
 
                         // Process all columns only once per table.
@@ -3547,7 +3547,7 @@ namespace TEAM
                     ThreadHelper.SetText(this, richTextBoxInformation, $"The Physical Model object '{table}' could not be created. The exception message is {exception.Message}.\r\n");
                 }
 
-                string outputFilePath = globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory + database + @"\" + schema + @"\" + table +".json";
+                string outputFilePath = globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory + database + @"\" + schema + @"\" + table + ".json";
 
                 try
                 {
@@ -3606,6 +3606,21 @@ namespace TEAM
                 catch (Exception exception)
                 {
                     ThreadHelper.SetText(this, richTextBoxInformation, $"There was an issue deleting the physical model '{databaseDirectory}' directory, the reported exception is {exception.Message}\r\n");
+                }
+            }
+        }
+
+        private void openCoreDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            {
+                try
+                {
+                    var psi = new ProcessStartInfo() { FileName = globalParameters.CorePath, UseShellExecute = true };
+                    Process.Start(psi);
+                }
+                catch (Exception ex)
+                {
+                    richTextBoxInformation.Text = $@"An error has occurred while attempting to open the directory. The error message is: {ex.Message}.";
                 }
             }
         }

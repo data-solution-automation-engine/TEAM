@@ -30,552 +30,560 @@ namespace TEAM
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormManageMetadata));
-            this.backgroundWorkerParse = new System.ComponentModel.BackgroundWorker();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.checkBoxShowStaging = new System.Windows.Forms.CheckBox();
-            this.textBoxFilterCriterion = new TEAM.TimedTextBox();
-            this.labelResult = new System.Windows.Forms.Label();
-            this.buttonStart = new System.Windows.Forms.Button();
-            this.buttonSaveMetadata = new System.Windows.Forms.Button();
-            this.groupBoxMetadataCounts = new System.Windows.Forms.GroupBox();
-            this.labelLsatCount = new System.Windows.Forms.Label();
-            this.labelLnkCount = new System.Windows.Forms.Label();
-            this.labelSatCount = new System.Windows.Forms.Label();
-            this.labelHubCount = new System.Windows.Forms.Label();
-            this.tabControlDataMappings = new System.Windows.Forms.TabControl();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.checkedListBoxReverseEngineeringAreas = new System.Windows.Forms.CheckedListBox();
-            this.buttonReverseEngineer = new System.Windows.Forms.Button();
-            this.contextMenuStripModel = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.displayTableScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MetadataGenerationGroupBox = new System.Windows.Forms.GroupBox();
-            this.checkBoxValidation = new System.Windows.Forms.CheckBox();
-            this.labelInformation = new System.Windows.Forms.Label();
-            this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
-            this.menuStripMetadata = new System.Windows.Forms.MenuStrip();
-            this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.businessKeyMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openMetadataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openAttributeMappingFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importPhysicalModelGridFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.automapDataItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.generatePhysicalModelGridQueryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.validationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.manageValidationRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.validateMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.jsonExportConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.manageJsonExportRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.displayEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolTipMetadata = new System.Windows.Forms.ToolTip(this.components);
-            this.backgroundWorkerValidationOnly = new System.ComponentModel.BackgroundWorker();
-            this.backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
-            this.groupBoxPhysicalModel = new System.Windows.Forms.GroupBox();
-            this.labelConnections = new System.Windows.Forms.Label();
-            this.groupBox2.SuspendLayout();
-            this.groupBoxMetadataCounts.SuspendLayout();
-            this.MetadataGenerationGroupBox.SuspendLayout();
-            this.menuStripMetadata.SuspendLayout();
-            this.groupBoxPhysicalModel.SuspendLayout();
-            this.SuspendLayout();
+            components = new Container();
+            ComponentResourceManager resources = new ComponentResourceManager(typeof(FormManageMetadata));
+            backgroundWorkerParse = new BackgroundWorker();
+            groupBox2 = new System.Windows.Forms.GroupBox();
+            checkBoxShowStaging = new System.Windows.Forms.CheckBox();
+            textBoxFilterCriterion = new TimedTextBox();
+            labelResult = new System.Windows.Forms.Label();
+            buttonStart = new System.Windows.Forms.Button();
+            buttonSaveMetadata = new System.Windows.Forms.Button();
+            groupBoxMetadataCounts = new System.Windows.Forms.GroupBox();
+            labelLsatCount = new System.Windows.Forms.Label();
+            labelLnkCount = new System.Windows.Forms.Label();
+            labelSatCount = new System.Windows.Forms.Label();
+            labelHubCount = new System.Windows.Forms.Label();
+            tabControlDataMappings = new System.Windows.Forms.TabControl();
+            groupBox4 = new System.Windows.Forms.GroupBox();
+            checkedListBoxReverseEngineeringAreas = new System.Windows.Forms.CheckedListBox();
+            buttonReverseEngineer = new System.Windows.Forms.Button();
+            contextMenuStripModel = new System.Windows.Forms.ContextMenuStrip(components);
+            displayTableScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            MetadataGenerationGroupBox = new System.Windows.Forms.GroupBox();
+            checkBoxValidation = new System.Windows.Forms.CheckBox();
+            labelInformation = new System.Windows.Forms.Label();
+            richTextBoxInformation = new System.Windows.Forms.RichTextBox();
+            menuStripMetadata = new System.Windows.Forms.MenuStrip();
+            metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            businessKeyMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openMetadataFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openAttributeMappingFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            importPhysicalModelGridFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            automapDataItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            generatePhysicalModelGridQueryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            validationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            manageValidationRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            validateMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            jsonExportConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            manageJsonExportRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            displayEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolTipMetadata = new System.Windows.Forms.ToolTip(components);
+            backgroundWorkerValidationOnly = new BackgroundWorker();
+            backgroundWorkerEventLog = new BackgroundWorker();
+            groupBoxPhysicalModel = new System.Windows.Forms.GroupBox();
+            labelConnections = new System.Windows.Forms.Label();
+            openCoreDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            groupBox2.SuspendLayout();
+            groupBoxMetadataCounts.SuspendLayout();
+            MetadataGenerationGroupBox.SuspendLayout();
+            menuStripMetadata.SuspendLayout();
+            groupBoxPhysicalModel.SuspendLayout();
+            SuspendLayout();
             // 
             // backgroundWorkerParse
             // 
-            this.backgroundWorkerParse.WorkerReportsProgress = true;
-            this.backgroundWorkerParse.WorkerSupportsCancellation = true;
-            this.backgroundWorkerParse.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerParse_DoWork);
-            this.backgroundWorkerParse.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerParse_ProgressChanged);
-            this.backgroundWorkerParse.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerParse_RunWorkerCompleted);
+            backgroundWorkerParse.WorkerReportsProgress = true;
+            backgroundWorkerParse.WorkerSupportsCancellation = true;
+            backgroundWorkerParse.DoWork += backgroundWorkerParse_DoWork;
+            backgroundWorkerParse.ProgressChanged += backgroundWorkerParse_ProgressChanged;
+            backgroundWorkerParse.RunWorkerCompleted += backgroundWorkerParse_RunWorkerCompleted;
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox2.Controls.Add(this.checkBoxShowStaging);
-            this.groupBox2.Controls.Add(this.textBoxFilterCriterion);
-            this.groupBox2.Location = new System.Drawing.Point(16, 739);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(225, 85);
-            this.groupBox2.TabIndex = 25;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Filter Criterion";
+            groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            groupBox2.Controls.Add(checkBoxShowStaging);
+            groupBox2.Controls.Add(textBoxFilterCriterion);
+            groupBox2.Location = new System.Drawing.Point(19, 853);
+            groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBox2.Size = new System.Drawing.Size(262, 98);
+            groupBox2.TabIndex = 25;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Filter Criterion";
             // 
             // checkBoxShowStaging
             // 
-            this.checkBoxShowStaging.AutoSize = true;
-            this.checkBoxShowStaging.Checked = true;
-            this.checkBoxShowStaging.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxShowStaging.Location = new System.Drawing.Point(6, 45);
-            this.checkBoxShowStaging.Name = "checkBoxShowStaging";
-            this.checkBoxShowStaging.Size = new System.Drawing.Size(154, 17);
-            this.checkBoxShowStaging.TabIndex = 24;
-            this.checkBoxShowStaging.Text = "Show Staging Layer details";
-            this.toolTipMetadata.SetToolTip(this.checkBoxShowStaging, "Show (or hide) Staging Layer mappings is a broad filter that hides all source-to-" +
-        "staging and staging-to-persistent-staging data object mappings.");
-            this.checkBoxShowStaging.UseVisualStyleBackColor = true;
-            this.checkBoxShowStaging.CheckedChanged += new System.EventHandler(this.checkBoxShowStaging_CheckedChanged);
+            checkBoxShowStaging.AutoSize = true;
+            checkBoxShowStaging.Checked = true;
+            checkBoxShowStaging.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxShowStaging.Location = new System.Drawing.Point(7, 52);
+            checkBoxShowStaging.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkBoxShowStaging.Name = "checkBoxShowStaging";
+            checkBoxShowStaging.Size = new System.Drawing.Size(166, 19);
+            checkBoxShowStaging.TabIndex = 24;
+            checkBoxShowStaging.Text = "Show Staging Layer details";
+            toolTipMetadata.SetToolTip(checkBoxShowStaging, "Show (or hide) Staging Layer mappings is a broad filter that hides all source-to-staging and staging-to-persistent-staging data object mappings.");
+            checkBoxShowStaging.UseVisualStyleBackColor = true;
+            checkBoxShowStaging.CheckedChanged += checkBoxShowStaging_CheckedChanged;
             // 
             // textBoxFilterCriterion
             // 
-            this.textBoxFilterCriterion.DelayedTextChangedTimeout = 1000;
-            this.textBoxFilterCriterion.Location = new System.Drawing.Point(6, 16);
-            this.textBoxFilterCriterion.Name = "textBoxFilterCriterion";
-            this.textBoxFilterCriterion.Size = new System.Drawing.Size(213, 20);
-            this.textBoxFilterCriterion.TabIndex = 23;
-            this.textBoxFilterCriterion.DelayedTextChanged += new System.EventHandler(this.TextBoxFilterCriterion_OnDelayedTextChanged);
+            textBoxFilterCriterion.DelayedTextChangedTimeout = 1000;
+            textBoxFilterCriterion.Location = new System.Drawing.Point(7, 18);
+            textBoxFilterCriterion.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBoxFilterCriterion.Name = "textBoxFilterCriterion";
+            textBoxFilterCriterion.Size = new System.Drawing.Size(248, 23);
+            textBoxFilterCriterion.TabIndex = 23;
+            textBoxFilterCriterion.DelayedTextChanged += TextBoxFilterCriterion_OnDelayedTextChanged;
             // 
             // labelResult
             // 
-            this.labelResult.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelResult.AutoSize = true;
-            this.labelResult.Location = new System.Drawing.Point(6, 134);
-            this.labelResult.Name = "labelResult";
-            this.labelResult.Size = new System.Drawing.Size(38, 13);
-            this.labelResult.TabIndex = 23;
-            this.labelResult.Text = "Ready";
+            labelResult.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            labelResult.AutoSize = true;
+            labelResult.Location = new System.Drawing.Point(7, 155);
+            labelResult.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelResult.Name = "labelResult";
+            labelResult.Size = new System.Drawing.Size(39, 15);
+            labelResult.TabIndex = 23;
+            labelResult.Text = "Ready";
             // 
             // buttonStart
             // 
-            this.buttonStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonStart.Location = new System.Drawing.Point(7, 91);
-            this.buttonStart.Name = "buttonStart";
-            this.buttonStart.Size = new System.Drawing.Size(120, 40);
-            this.buttonStart.TabIndex = 22;
-            this.buttonStart.Text = "&Parse Metadata";
-            this.toolTipMetadata.SetToolTip(this.buttonStart, resources.GetString("buttonStart.ToolTip"));
-            this.buttonStart.UseVisualStyleBackColor = true;
-            this.buttonStart.Click += new System.EventHandler(this.ButtonParse_Click);
+            buttonStart.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            buttonStart.Location = new System.Drawing.Point(8, 105);
+            buttonStart.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonStart.Name = "buttonStart";
+            buttonStart.Size = new System.Drawing.Size(140, 46);
+            buttonStart.TabIndex = 22;
+            buttonStart.Text = "&Parse Metadata";
+            toolTipMetadata.SetToolTip(buttonStart, resources.GetString("buttonStart.ToolTip"));
+            buttonStart.UseVisualStyleBackColor = true;
+            buttonStart.Click += ButtonParse_Click;
             // 
             // buttonSaveMetadata
             // 
-            this.buttonSaveMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonSaveMetadata.Location = new System.Drawing.Point(6, 45);
-            this.buttonSaveMetadata.Name = "buttonSaveMetadata";
-            this.buttonSaveMetadata.Size = new System.Drawing.Size(120, 40);
-            this.buttonSaveMetadata.TabIndex = 1;
-            this.buttonSaveMetadata.Text = "&Save Metadata";
-            this.toolTipMetadata.SetToolTip(this.buttonSaveMetadata, "Save the metadata changes to file. This will directly \r\nupdate the JSON files in " +
-        "the metadata directory.");
-            this.buttonSaveMetadata.UseVisualStyleBackColor = true;
-            this.buttonSaveMetadata.Click += new System.EventHandler(this.ButtonSaveMetadata_Click);
+            buttonSaveMetadata.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            buttonSaveMetadata.Location = new System.Drawing.Point(7, 52);
+            buttonSaveMetadata.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonSaveMetadata.Name = "buttonSaveMetadata";
+            buttonSaveMetadata.Size = new System.Drawing.Size(140, 46);
+            buttonSaveMetadata.TabIndex = 1;
+            buttonSaveMetadata.Text = "&Save Metadata";
+            toolTipMetadata.SetToolTip(buttonSaveMetadata, "Save the metadata changes to file. This will directly \r\nupdate the JSON files in the metadata directory.");
+            buttonSaveMetadata.UseVisualStyleBackColor = true;
+            buttonSaveMetadata.Click += ButtonSaveMetadata_Click;
             // 
             // groupBoxMetadataCounts
             // 
-            this.groupBoxMetadataCounts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxMetadataCounts.Controls.Add(this.labelLsatCount);
-            this.groupBoxMetadataCounts.Controls.Add(this.labelLnkCount);
-            this.groupBoxMetadataCounts.Controls.Add(this.labelSatCount);
-            this.groupBoxMetadataCounts.Controls.Add(this.labelHubCount);
-            this.groupBoxMetadataCounts.Location = new System.Drawing.Point(1383, 739);
-            this.groupBoxMetadataCounts.Name = "groupBoxMetadataCounts";
-            this.groupBoxMetadataCounts.Size = new System.Drawing.Size(140, 85);
-            this.groupBoxMetadataCounts.TabIndex = 16;
-            this.groupBoxMetadataCounts.TabStop = false;
-            this.groupBoxMetadataCounts.Text = "This metadata contains:";
+            groupBoxMetadataCounts.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            groupBoxMetadataCounts.Controls.Add(labelLsatCount);
+            groupBoxMetadataCounts.Controls.Add(labelLnkCount);
+            groupBoxMetadataCounts.Controls.Add(labelSatCount);
+            groupBoxMetadataCounts.Controls.Add(labelHubCount);
+            groupBoxMetadataCounts.Location = new System.Drawing.Point(1614, 853);
+            groupBoxMetadataCounts.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBoxMetadataCounts.Name = "groupBoxMetadataCounts";
+            groupBoxMetadataCounts.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBoxMetadataCounts.Size = new System.Drawing.Size(163, 98);
+            groupBoxMetadataCounts.TabIndex = 16;
+            groupBoxMetadataCounts.TabStop = false;
+            groupBoxMetadataCounts.Text = "This metadata contains:";
             // 
             // labelLsatCount
             // 
-            this.labelLsatCount.AutoSize = true;
-            this.labelLsatCount.Location = new System.Drawing.Point(6, 59);
-            this.labelLsatCount.Name = "labelLsatCount";
-            this.labelLsatCount.Size = new System.Drawing.Size(77, 13);
-            this.labelLsatCount.TabIndex = 3;
-            this.labelLsatCount.Text = "labelLsatCount";
+            labelLsatCount.AutoSize = true;
+            labelLsatCount.Location = new System.Drawing.Point(7, 68);
+            labelLsatCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelLsatCount.Name = "labelLsatCount";
+            labelLsatCount.Size = new System.Drawing.Size(86, 15);
+            labelLsatCount.TabIndex = 3;
+            labelLsatCount.Text = "labelLsatCount";
             // 
             // labelLnkCount
             // 
-            this.labelLnkCount.AutoSize = true;
-            this.labelLnkCount.Location = new System.Drawing.Point(6, 46);
-            this.labelLnkCount.Name = "labelLnkCount";
-            this.labelLnkCount.Size = new System.Drawing.Size(75, 13);
-            this.labelLnkCount.TabIndex = 2;
-            this.labelLnkCount.Text = "labelLnkCount";
+            labelLnkCount.AutoSize = true;
+            labelLnkCount.Location = new System.Drawing.Point(7, 53);
+            labelLnkCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelLnkCount.Name = "labelLnkCount";
+            labelLnkCount.Size = new System.Drawing.Size(84, 15);
+            labelLnkCount.TabIndex = 2;
+            labelLnkCount.Text = "labelLnkCount";
             // 
             // labelSatCount
             // 
-            this.labelSatCount.AutoSize = true;
-            this.labelSatCount.Location = new System.Drawing.Point(6, 33);
-            this.labelSatCount.Name = "labelSatCount";
-            this.labelSatCount.Size = new System.Drawing.Size(73, 13);
-            this.labelSatCount.TabIndex = 1;
-            this.labelSatCount.Text = "labelSatCount";
+            labelSatCount.AutoSize = true;
+            labelSatCount.Location = new System.Drawing.Point(7, 38);
+            labelSatCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelSatCount.Name = "labelSatCount";
+            labelSatCount.Size = new System.Drawing.Size(81, 15);
+            labelSatCount.TabIndex = 1;
+            labelSatCount.Text = "labelSatCount";
             // 
             // labelHubCount
             // 
-            this.labelHubCount.AutoSize = true;
-            this.labelHubCount.Location = new System.Drawing.Point(6, 20);
-            this.labelHubCount.Name = "labelHubCount";
-            this.labelHubCount.Size = new System.Drawing.Size(77, 13);
-            this.labelHubCount.TabIndex = 0;
-            this.labelHubCount.Text = "labelHubCount";
+            labelHubCount.AutoSize = true;
+            labelHubCount.Location = new System.Drawing.Point(7, 23);
+            labelHubCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelHubCount.Name = "labelHubCount";
+            labelHubCount.Size = new System.Drawing.Size(88, 15);
+            labelHubCount.TabIndex = 0;
+            labelHubCount.Text = "labelHubCount";
             // 
             // tabControlDataMappings
             // 
-            this.tabControlDataMappings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControlDataMappings.Location = new System.Drawing.Point(12, 27);
-            this.tabControlDataMappings.Name = "tabControlDataMappings";
-            this.tabControlDataMappings.SelectedIndex = 4;
-            this.tabControlDataMappings.Size = new System.Drawing.Size(1364, 706);
-            this.tabControlDataMappings.TabIndex = 15;
-            this.tabControlDataMappings.SelectedIndexChanged += new System.EventHandler(this.tabControlDataMappings_SelectedIndexChanged);
+            tabControlDataMappings.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            tabControlDataMappings.Location = new System.Drawing.Point(14, 31);
+            tabControlDataMappings.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabControlDataMappings.Name = "tabControlDataMappings";
+            tabControlDataMappings.SelectedIndex = 4;
+            tabControlDataMappings.Size = new System.Drawing.Size(1591, 815);
+            tabControlDataMappings.TabIndex = 15;
+            tabControlDataMappings.SelectedIndexChanged += tabControlDataMappings_SelectedIndexChanged;
             // 
             // groupBox4
             // 
-            this.groupBox4.Location = new System.Drawing.Point(0, 0);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(200, 100);
-            this.groupBox4.TabIndex = 0;
-            this.groupBox4.TabStop = false;
+            groupBox4.Location = new System.Drawing.Point(0, 0);
+            groupBox4.Name = "groupBox4";
+            groupBox4.Size = new System.Drawing.Size(200, 100);
+            groupBox4.TabIndex = 0;
+            groupBox4.TabStop = false;
             // 
             // checkedListBoxReverseEngineeringAreas
             // 
-            this.checkedListBoxReverseEngineeringAreas.BackColor = System.Drawing.SystemColors.Control;
-            this.checkedListBoxReverseEngineeringAreas.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.checkedListBoxReverseEngineeringAreas.FormattingEnabled = true;
-            this.checkedListBoxReverseEngineeringAreas.Location = new System.Drawing.Point(8, 85);
-            this.checkedListBoxReverseEngineeringAreas.Name = "checkedListBoxReverseEngineeringAreas";
-            this.checkedListBoxReverseEngineeringAreas.Size = new System.Drawing.Size(120, 420);
-            this.checkedListBoxReverseEngineeringAreas.TabIndex = 0;
-            //this.checkedListBoxReverseEngineeringAreas.SelectedIndexChanged += new System.EventHandler(this.checkedListBoxReverseEngineeringAreas_SelectedIndexChanged);
+            checkedListBoxReverseEngineeringAreas.BackColor = System.Drawing.SystemColors.Control;
+            checkedListBoxReverseEngineeringAreas.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            checkedListBoxReverseEngineeringAreas.FormattingEnabled = true;
+            checkedListBoxReverseEngineeringAreas.Location = new System.Drawing.Point(9, 98);
+            checkedListBoxReverseEngineeringAreas.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkedListBoxReverseEngineeringAreas.Name = "checkedListBoxReverseEngineeringAreas";
+            checkedListBoxReverseEngineeringAreas.Size = new System.Drawing.Size(140, 468);
+            checkedListBoxReverseEngineeringAreas.TabIndex = 0;
             // 
             // buttonReverseEngineer
             // 
-            this.buttonReverseEngineer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonReverseEngineer.Location = new System.Drawing.Point(7, 19);
-            this.buttonReverseEngineer.Name = "buttonReverseEngineer";
-            this.buttonReverseEngineer.Size = new System.Drawing.Size(120, 40);
-            this.buttonReverseEngineer.TabIndex = 20;
-            this.buttonReverseEngineer.Text = "&Reverse Engineer";
-            this.toolTipMetadata.SetToolTip(this.buttonReverseEngineer, resources.GetString("buttonReverseEngineer.ToolTip"));
-            this.buttonReverseEngineer.UseVisualStyleBackColor = true;
-            this.buttonReverseEngineer.Click += new System.EventHandler(this.ButtonReverseEngineerMetadataClick);
+            buttonReverseEngineer.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            buttonReverseEngineer.Location = new System.Drawing.Point(8, 22);
+            buttonReverseEngineer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonReverseEngineer.Name = "buttonReverseEngineer";
+            buttonReverseEngineer.Size = new System.Drawing.Size(140, 46);
+            buttonReverseEngineer.TabIndex = 20;
+            buttonReverseEngineer.Text = "&Reverse Engineer";
+            toolTipMetadata.SetToolTip(buttonReverseEngineer, resources.GetString("buttonReverseEngineer.ToolTip"));
+            buttonReverseEngineer.UseVisualStyleBackColor = true;
+            buttonReverseEngineer.Click += ButtonReverseEngineerMetadataClick;
             // 
             // contextMenuStripModel
             // 
-            this.contextMenuStripModel.Name = "contextMenuStripModel";
-            this.contextMenuStripModel.Size = new System.Drawing.Size(61, 4);
+            contextMenuStripModel.Name = "contextMenuStripModel";
+            contextMenuStripModel.Size = new System.Drawing.Size(61, 4);
             // 
             // displayTableScriptToolStripMenuItem
             // 
-            this.displayTableScriptToolStripMenuItem.Name = "displayTableScriptToolStripMenuItem";
-            this.displayTableScriptToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-            this.displayTableScriptToolStripMenuItem.Text = "Display table script";
-            this.displayTableScriptToolStripMenuItem.Click += new System.EventHandler(this.displayTableScriptToolStripMenuItem_Click);
+            displayTableScriptToolStripMenuItem.Name = "displayTableScriptToolStripMenuItem";
+            displayTableScriptToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            displayTableScriptToolStripMenuItem.Text = "Display table script";
+            displayTableScriptToolStripMenuItem.Click += displayTableScriptToolStripMenuItem_Click;
             // 
             // MetadataGenerationGroupBox
             // 
-            this.MetadataGenerationGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.MetadataGenerationGroupBox.Controls.Add(this.checkBoxValidation);
-            this.MetadataGenerationGroupBox.Controls.Add(this.buttonSaveMetadata);
-            this.MetadataGenerationGroupBox.Controls.Add(this.buttonStart);
-            this.MetadataGenerationGroupBox.Controls.Add(this.labelResult);
-            this.MetadataGenerationGroupBox.Location = new System.Drawing.Point(1383, 49);
-            this.MetadataGenerationGroupBox.Name = "MetadataGenerationGroupBox";
-            this.MetadataGenerationGroupBox.Size = new System.Drawing.Size(140, 158);
-            this.MetadataGenerationGroupBox.TabIndex = 3;
-            this.MetadataGenerationGroupBox.TabStop = false;
-            this.MetadataGenerationGroupBox.Text = "Processing";
+            MetadataGenerationGroupBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            MetadataGenerationGroupBox.Controls.Add(checkBoxValidation);
+            MetadataGenerationGroupBox.Controls.Add(buttonSaveMetadata);
+            MetadataGenerationGroupBox.Controls.Add(buttonStart);
+            MetadataGenerationGroupBox.Controls.Add(labelResult);
+            MetadataGenerationGroupBox.Location = new System.Drawing.Point(1614, 57);
+            MetadataGenerationGroupBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MetadataGenerationGroupBox.Name = "MetadataGenerationGroupBox";
+            MetadataGenerationGroupBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MetadataGenerationGroupBox.Size = new System.Drawing.Size(163, 182);
+            MetadataGenerationGroupBox.TabIndex = 3;
+            MetadataGenerationGroupBox.TabStop = false;
+            MetadataGenerationGroupBox.Text = "Processing";
             // 
             // checkBoxValidation
             // 
-            this.checkBoxValidation.AutoSize = true;
-            this.checkBoxValidation.Checked = true;
-            this.checkBoxValidation.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxValidation.Location = new System.Drawing.Point(8, 22);
-            this.checkBoxValidation.Name = "checkBoxValidation";
-            this.checkBoxValidation.Size = new System.Drawing.Size(111, 17);
-            this.checkBoxValidation.TabIndex = 10;
-            this.checkBoxValidation.Text = "Validate metadata";
-            this.checkBoxValidation.UseVisualStyleBackColor = true;
+            checkBoxValidation.AutoSize = true;
+            checkBoxValidation.Checked = true;
+            checkBoxValidation.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxValidation.Location = new System.Drawing.Point(9, 25);
+            checkBoxValidation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkBoxValidation.Name = "checkBoxValidation";
+            checkBoxValidation.Size = new System.Drawing.Size(120, 19);
+            checkBoxValidation.TabIndex = 10;
+            checkBoxValidation.Text = "Validate metadata";
+            checkBoxValidation.UseVisualStyleBackColor = true;
             // 
             // labelInformation
             // 
-            this.labelInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelInformation.AutoSize = true;
-            this.labelInformation.Location = new System.Drawing.Point(247, 739);
-            this.labelInformation.Name = "labelInformation";
-            this.labelInformation.Size = new System.Drawing.Size(59, 13);
-            this.labelInformation.TabIndex = 5;
-            this.labelInformation.Text = "Information";
+            labelInformation.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            labelInformation.AutoSize = true;
+            labelInformation.Location = new System.Drawing.Point(288, 853);
+            labelInformation.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelInformation.Name = "labelInformation";
+            labelInformation.Size = new System.Drawing.Size(70, 15);
+            labelInformation.TabIndex = 5;
+            labelInformation.Text = "Information";
             // 
             // richTextBoxInformation
             // 
-            this.richTextBoxInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBoxInformation.BackColor = System.Drawing.SystemColors.Control;
-            this.richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxInformation.Location = new System.Drawing.Point(247, 755);
-            this.richTextBoxInformation.Name = "richTextBoxInformation";
-            this.richTextBoxInformation.Size = new System.Drawing.Size(1122, 69);
-            this.richTextBoxInformation.TabIndex = 2;
-            this.richTextBoxInformation.Text = "";
-            this.richTextBoxInformation.TextChanged += new System.EventHandler(this.richTextBoxInformation_TextChanged);
+            richTextBoxInformation.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            richTextBoxInformation.BackColor = System.Drawing.SystemColors.Control;
+            richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            richTextBoxInformation.Location = new System.Drawing.Point(288, 871);
+            richTextBoxInformation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            richTextBoxInformation.Name = "richTextBoxInformation";
+            richTextBoxInformation.Size = new System.Drawing.Size(1309, 80);
+            richTextBoxInformation.TabIndex = 2;
+            richTextBoxInformation.Text = "";
+            richTextBoxInformation.TextChanged += richTextBoxInformation_TextChanged;
             // 
             // menuStripMetadata
             // 
-            this.menuStripMetadata.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.menuStripMetadata.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.metadataToolStripMenuItem,
-            this.businessKeyMetadataToolStripMenuItem,
-            this.validationToolStripMenuItem,
-            this.jsonExportConfigurationToolStripMenuItem,
-            this.helpToolStripMenuItem});
-            this.menuStripMetadata.Location = new System.Drawing.Point(0, 0);
-            this.menuStripMetadata.Name = "menuStripMetadata";
-            this.menuStripMetadata.Size = new System.Drawing.Size(1534, 24);
-            this.menuStripMetadata.TabIndex = 3;
-            this.menuStripMetadata.Text = "menuStrip1";
+            menuStripMetadata.ImageScalingSize = new System.Drawing.Size(24, 24);
+            menuStripMetadata.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { metadataToolStripMenuItem, businessKeyMetadataToolStripMenuItem, validationToolStripMenuItem, jsonExportConfigurationToolStripMenuItem, helpToolStripMenuItem });
+            menuStripMetadata.Location = new System.Drawing.Point(0, 0);
+            menuStripMetadata.Name = "menuStripMetadata";
+            menuStripMetadata.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+            menuStripMetadata.Size = new System.Drawing.Size(1790, 24);
+            menuStripMetadata.TabIndex = 3;
+            menuStripMetadata.Text = "menuStrip1";
             // 
             // metadataToolStripMenuItem
             // 
-            this.metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openMetadataDirectoryToolStripMenuItem,
-            this.openConfigurationDirectoryToolStripMenuItem,
-            this.toolStripSeparator5,
-            this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem,
-            this.closeToolStripMenuItem});
-            this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
-            this.metadataToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.metadataToolStripMenuItem.Text = "&File";
+            metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openMetadataDirectoryToolStripMenuItem, openConfigurationDirectoryToolStripMenuItem, openCoreDirectoryToolStripMenuItem, toolStripSeparator5, saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem, closeToolStripMenuItem });
+            metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
+            metadataToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            metadataToolStripMenuItem.Text = "&File";
             // 
             // openMetadataDirectoryToolStripMenuItem
             // 
-            this.openMetadataDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
-            this.openMetadataDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
-            this.openMetadataDirectoryToolStripMenuItem.Text = "Open Metadata Directory";
-            this.openMetadataDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openMetadataDirectoryToolStripMenuItem_Click);
+            openMetadataDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
+            openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
+            openMetadataDirectoryToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
+            openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            openMetadataDirectoryToolStripMenuItem.Text = "Open Metadata Directory";
+            openMetadataDirectoryToolStripMenuItem.Click += openMetadataDirectoryToolStripMenuItem_Click;
             // 
             // openConfigurationDirectoryToolStripMenuItem
             // 
-            this.openConfigurationDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
-            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
-            this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
-            this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
+            openConfigurationDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
+            openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
+            openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
+            openConfigurationDirectoryToolStripMenuItem.Click += openConfigurationDirectoryToolStripMenuItem_Click;
             // 
             // toolStripSeparator5
             // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(347, 6);
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new System.Drawing.Size(355, 6);
             // 
             // saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem
             // 
-            this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
-            this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Name = "saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem";
-            this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
-            this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Text = "&Save as Directional Graph Markup Language (DGML)";
-            this.saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Click += new System.EventHandler(this.saveAsDirectionalGraphMarkupLanguageDgmlToolStripMenuItem_Click);
+            saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Image = Properties.Resources.SaveFile;
+            saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Name = "saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem";
+            saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Text = "&Save as Directional Graph Markup Language (DGML)";
+            saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Click += saveAsDirectionalGraphMarkupLanguageDgmlToolStripMenuItem_Click;
             // 
             // closeToolStripMenuItem
             // 
-            this.closeToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
-            this.closeToolStripMenuItem.Text = "&Close Window";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            closeToolStripMenuItem.Image = Properties.Resources.ExitApplication;
+            closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            closeToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            closeToolStripMenuItem.Text = "&Close Window";
+            closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
             // businessKeyMetadataToolStripMenuItem
             // 
-            this.businessKeyMetadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openMetadataFileToolStripMenuItem,
-            this.openAttributeMappingFileToolStripMenuItem,
-            this.importPhysicalModelGridFileToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.automapDataItemsToolStripMenuItem,
-            this.generatePhysicalModelGridQueryToolStripMenuItem});
-            this.businessKeyMetadataToolStripMenuItem.Name = "businessKeyMetadataToolStripMenuItem";
-            this.businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
-            this.businessKeyMetadataToolStripMenuItem.Text = "Metadata";
+            businessKeyMetadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openMetadataFileToolStripMenuItem, openAttributeMappingFileToolStripMenuItem, importPhysicalModelGridFileToolStripMenuItem, toolStripSeparator1, automapDataItemsToolStripMenuItem, generatePhysicalModelGridQueryToolStripMenuItem });
+            businessKeyMetadataToolStripMenuItem.Name = "businessKeyMetadataToolStripMenuItem";
+            businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
+            businessKeyMetadataToolStripMenuItem.Text = "Metadata";
             // 
             // openMetadataFileToolStripMenuItem
             // 
-            this.openMetadataFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
-            this.openMetadataFileToolStripMenuItem.Name = "openMetadataFileToolStripMenuItem";
-            this.openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
-            this.openMetadataFileToolStripMenuItem.Text = "Import Data Object Mapping Grid File";
-            this.openMetadataFileToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFileToolStripMenuItem_Click_1);
+            openMetadataFileToolStripMenuItem.Image = Properties.Resources.OpenFileIcon;
+            openMetadataFileToolStripMenuItem.Name = "openMetadataFileToolStripMenuItem";
+            openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
+            openMetadataFileToolStripMenuItem.Text = "Import Data Object Mapping Grid File";
+            openMetadataFileToolStripMenuItem.Click += openMetadataFileToolStripMenuItem_Click_1;
             // 
             // openAttributeMappingFileToolStripMenuItem
             // 
-            this.openAttributeMappingFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
-            this.openAttributeMappingFileToolStripMenuItem.Name = "openAttributeMappingFileToolStripMenuItem";
-            this.openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
-            this.openAttributeMappingFileToolStripMenuItem.Text = "Import Data Item Mapping Grid File";
-            this.openAttributeMappingFileToolStripMenuItem.Click += new System.EventHandler(this.openDataItemMappingFileToolStripMenuItem_Click);
+            openAttributeMappingFileToolStripMenuItem.Image = Properties.Resources.OpenFileIcon;
+            openAttributeMappingFileToolStripMenuItem.Name = "openAttributeMappingFileToolStripMenuItem";
+            openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
+            openAttributeMappingFileToolStripMenuItem.Text = "Import Data Item Mapping Grid File";
+            openAttributeMappingFileToolStripMenuItem.Click += openDataItemMappingFileToolStripMenuItem_Click;
             // 
             // importPhysicalModelGridFileToolStripMenuItem
             // 
-            this.importPhysicalModelGridFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
-            this.importPhysicalModelGridFileToolStripMenuItem.Name = "importPhysicalModelGridFileToolStripMenuItem";
-            this.importPhysicalModelGridFileToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
-            this.importPhysicalModelGridFileToolStripMenuItem.Text = "Import Physical Model Grid File";
-            this.importPhysicalModelGridFileToolStripMenuItem.Click += new System.EventHandler(this.importPhysicalModelGridFileToolStripMenuItem_Click);
+            importPhysicalModelGridFileToolStripMenuItem.Image = Properties.Resources.OpenFileIcon;
+            importPhysicalModelGridFileToolStripMenuItem.Name = "importPhysicalModelGridFileToolStripMenuItem";
+            importPhysicalModelGridFileToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
+            importPhysicalModelGridFileToolStripMenuItem.Text = "Import Physical Model Grid File";
+            importPhysicalModelGridFileToolStripMenuItem.Click += importPhysicalModelGridFileToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(303, 6);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new System.Drawing.Size(303, 6);
             // 
             // automapDataItemsToolStripMenuItem
             // 
-            this.automapDataItemsToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
-            this.automapDataItemsToolStripMenuItem.Name = "automapDataItemsToolStripMenuItem";
-            this.automapDataItemsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
-            this.automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
-            this.automapDataItemsToolStripMenuItem.Text = "Automap Data Items";
-            this.automapDataItemsToolStripMenuItem.Click += new System.EventHandler(this.AutoMapDataItemsToolStripMenuItem_Click);
+            automapDataItemsToolStripMenuItem.Image = Properties.Resources.CogIcon;
+            automapDataItemsToolStripMenuItem.Name = "automapDataItemsToolStripMenuItem";
+            automapDataItemsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M;
+            automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
+            automapDataItemsToolStripMenuItem.Text = "Automap Data Items";
+            automapDataItemsToolStripMenuItem.Click += AutoMapDataItemsToolStripMenuItem_Click;
             // 
             // generatePhysicalModelGridQueryToolStripMenuItem
             // 
-            this.generatePhysicalModelGridQueryToolStripMenuItem.Image = global::TEAM.Properties.Resources.ETLIcon;
-            this.generatePhysicalModelGridQueryToolStripMenuItem.Name = "generatePhysicalModelGridQueryToolStripMenuItem";
-            this.generatePhysicalModelGridQueryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
-            this.generatePhysicalModelGridQueryToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
-            this.generatePhysicalModelGridQueryToolStripMenuItem.Text = "&Generate Physical Model Grid Query";
-            this.generatePhysicalModelGridQueryToolStripMenuItem.Click += new System.EventHandler(this.generatePhysicalModelGridQueryToolStripMenuItem_Click);
+            generatePhysicalModelGridQueryToolStripMenuItem.Image = Properties.Resources.ETLIcon;
+            generatePhysicalModelGridQueryToolStripMenuItem.Name = "generatePhysicalModelGridQueryToolStripMenuItem";
+            generatePhysicalModelGridQueryToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G;
+            generatePhysicalModelGridQueryToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
+            generatePhysicalModelGridQueryToolStripMenuItem.Text = "&Generate Physical Model Grid Query";
+            generatePhysicalModelGridQueryToolStripMenuItem.Click += generatePhysicalModelGridQueryToolStripMenuItem_Click;
             // 
             // validationToolStripMenuItem
             // 
-            this.validationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.manageValidationRulesToolStripMenuItem,
-            this.validateMetadataToolStripMenuItem});
-            this.validationToolStripMenuItem.Name = "validationToolStripMenuItem";
-            this.validationToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
-            this.validationToolStripMenuItem.Text = "&Validation";
+            validationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { manageValidationRulesToolStripMenuItem, validateMetadataToolStripMenuItem });
+            validationToolStripMenuItem.Name = "validationToolStripMenuItem";
+            validationToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
+            validationToolStripMenuItem.Text = "&Validation";
             // 
             // manageValidationRulesToolStripMenuItem
             // 
-            this.manageValidationRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
-            this.manageValidationRulesToolStripMenuItem.Name = "manageValidationRulesToolStripMenuItem";
-            this.manageValidationRulesToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.manageValidationRulesToolStripMenuItem.Text = "Manage Validation Rules";
-            this.manageValidationRulesToolStripMenuItem.Click += new System.EventHandler(this.manageValidationRulesToolStripMenuItem_Click);
+            manageValidationRulesToolStripMenuItem.Image = Properties.Resources.DocumentationIcon;
+            manageValidationRulesToolStripMenuItem.Name = "manageValidationRulesToolStripMenuItem";
+            manageValidationRulesToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            manageValidationRulesToolStripMenuItem.Text = "Manage Validation Rules";
+            manageValidationRulesToolStripMenuItem.Click += manageValidationRulesToolStripMenuItem_Click;
             // 
             // validateMetadataToolStripMenuItem
             // 
-            this.validateMetadataToolStripMenuItem.Image = global::TEAM.Properties.Resources.CogIcon;
-            this.validateMetadataToolStripMenuItem.Name = "validateMetadataToolStripMenuItem";
-            this.validateMetadataToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-            this.validateMetadataToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.validateMetadataToolStripMenuItem.Text = "&Validate Metadata";
-            this.validateMetadataToolStripMenuItem.Click += new System.EventHandler(this.validateMetadataToolStripMenuItem_Click);
+            validateMetadataToolStripMenuItem.Image = Properties.Resources.CogIcon;
+            validateMetadataToolStripMenuItem.Name = "validateMetadataToolStripMenuItem";
+            validateMetadataToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q;
+            validateMetadataToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            validateMetadataToolStripMenuItem.Text = "&Validate Metadata";
+            validateMetadataToolStripMenuItem.Click += validateMetadataToolStripMenuItem_Click;
             // 
             // jsonExportConfigurationToolStripMenuItem
             // 
-            this.jsonExportConfigurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.manageJsonExportRulesToolStripMenuItem});
-            this.jsonExportConfigurationToolStripMenuItem.Name = "jsonExportConfigurationToolStripMenuItem";
-            this.jsonExportConfigurationToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
-            this.jsonExportConfigurationToolStripMenuItem.Text = "&JSON";
+            jsonExportConfigurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { manageJsonExportRulesToolStripMenuItem });
+            jsonExportConfigurationToolStripMenuItem.Name = "jsonExportConfigurationToolStripMenuItem";
+            jsonExportConfigurationToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            jsonExportConfigurationToolStripMenuItem.Text = "&JSON";
             // 
             // manageJsonExportRulesToolStripMenuItem
             // 
-            this.manageJsonExportRulesToolStripMenuItem.Image = global::TEAM.Properties.Resources.DocumentationIcon;
-            this.manageJsonExportRulesToolStripMenuItem.Name = "manageJsonExportRulesToolStripMenuItem";
-            this.manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
-            this.manageJsonExportRulesToolStripMenuItem.Text = "Manage JSON Export Rules";
-            this.manageJsonExportRulesToolStripMenuItem.Click += new System.EventHandler(this.manageJsonExportRulesToolStripMenuItem_Click);
+            manageJsonExportRulesToolStripMenuItem.Image = Properties.Resources.DocumentationIcon;
+            manageJsonExportRulesToolStripMenuItem.Name = "manageJsonExportRulesToolStripMenuItem";
+            manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            manageJsonExportRulesToolStripMenuItem.Text = "Manage JSON Export Rules";
+            manageJsonExportRulesToolStripMenuItem.Click += manageJsonExportRulesToolStripMenuItem_Click;
             // 
             // helpToolStripMenuItem
             // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.displayEventLogToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "&Help";
+            helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { displayEventLogToolStripMenuItem });
+            helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            helpToolStripMenuItem.Text = "&Help";
             // 
             // displayEventLogToolStripMenuItem
             // 
-            this.displayEventLogToolStripMenuItem.Image = global::TEAM.Properties.Resources.log_file;
-            this.displayEventLogToolStripMenuItem.Name = "displayEventLogToolStripMenuItem";
-            this.displayEventLogToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.displayEventLogToolStripMenuItem.Text = "Display &Event Log";
-            this.displayEventLogToolStripMenuItem.Click += new System.EventHandler(this.displayEventLogToolStripMenuItem_Click);
+            displayEventLogToolStripMenuItem.Image = Properties.Resources.log_file;
+            displayEventLogToolStripMenuItem.Name = "displayEventLogToolStripMenuItem";
+            displayEventLogToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E;
+            displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            displayEventLogToolStripMenuItem.Text = "Display &Event Log";
+            displayEventLogToolStripMenuItem.Click += displayEventLogToolStripMenuItem_Click;
             // 
             // backgroundWorkerValidationOnly
             // 
-            this.backgroundWorkerValidationOnly.WorkerReportsProgress = true;
-            this.backgroundWorkerValidationOnly.WorkerSupportsCancellation = true;
-            this.backgroundWorkerValidationOnly.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BackgroundWorkerValidation_DoWork);
-            this.backgroundWorkerValidationOnly.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerValidationOnly_ProgressChanged);
-            this.backgroundWorkerValidationOnly.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerValidationOnly_RunWorkerCompleted);
+            backgroundWorkerValidationOnly.WorkerReportsProgress = true;
+            backgroundWorkerValidationOnly.WorkerSupportsCancellation = true;
+            backgroundWorkerValidationOnly.DoWork += BackgroundWorkerValidation_DoWork;
+            backgroundWorkerValidationOnly.ProgressChanged += backgroundWorkerValidationOnly_ProgressChanged;
+            backgroundWorkerValidationOnly.RunWorkerCompleted += backgroundWorkerValidationOnly_RunWorkerCompleted;
             // 
             // backgroundWorkerEventLog
             // 
-            this.backgroundWorkerEventLog.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerEventLog_DoWork);
-            this.backgroundWorkerEventLog.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerEventLog_ProgressChanged);
-            this.backgroundWorkerEventLog.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerEventLog_RunWorkerCompleted);
+            backgroundWorkerEventLog.DoWork += backgroundWorkerEventLog_DoWork;
+            backgroundWorkerEventLog.ProgressChanged += backgroundWorkerEventLog_ProgressChanged;
+            backgroundWorkerEventLog.RunWorkerCompleted += backgroundWorkerEventLog_RunWorkerCompleted;
             // 
             // groupBoxPhysicalModel
             // 
-            this.groupBoxPhysicalModel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxPhysicalModel.Controls.Add(this.labelConnections);
-            this.groupBoxPhysicalModel.Controls.Add(this.checkedListBoxReverseEngineeringAreas);
-            this.groupBoxPhysicalModel.Controls.Add(this.buttonReverseEngineer);
-            this.groupBoxPhysicalModel.Location = new System.Drawing.Point(1383, 213);
-            this.groupBoxPhysicalModel.Name = "groupBoxPhysicalModel";
-            this.groupBoxPhysicalModel.Size = new System.Drawing.Size(140, 520);
-            this.groupBoxPhysicalModel.TabIndex = 1;
-            this.groupBoxPhysicalModel.TabStop = false;
-            this.groupBoxPhysicalModel.Text = "Physical Model";
+            groupBoxPhysicalModel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            groupBoxPhysicalModel.Controls.Add(labelConnections);
+            groupBoxPhysicalModel.Controls.Add(checkedListBoxReverseEngineeringAreas);
+            groupBoxPhysicalModel.Controls.Add(buttonReverseEngineer);
+            groupBoxPhysicalModel.Location = new System.Drawing.Point(1614, 246);
+            groupBoxPhysicalModel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBoxPhysicalModel.Name = "groupBoxPhysicalModel";
+            groupBoxPhysicalModel.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBoxPhysicalModel.Size = new System.Drawing.Size(163, 600);
+            groupBoxPhysicalModel.TabIndex = 1;
+            groupBoxPhysicalModel.TabStop = false;
+            groupBoxPhysicalModel.Text = "Physical Model";
             // 
             // labelConnections
             // 
-            this.labelConnections.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelConnections.AutoSize = true;
-            this.labelConnections.Location = new System.Drawing.Point(8, 64);
-            this.labelConnections.Name = "labelConnections";
-            this.labelConnections.Size = new System.Drawing.Size(66, 13);
-            this.labelConnections.TabIndex = 24;
-            this.labelConnections.Text = "Connections";
+            labelConnections.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            labelConnections.AutoSize = true;
+            labelConnections.Location = new System.Drawing.Point(9, 74);
+            labelConnections.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelConnections.Name = "labelConnections";
+            labelConnections.Size = new System.Drawing.Size(74, 15);
+            labelConnections.TabIndex = 24;
+            labelConnections.Text = "Connections";
+            // 
+            // openCoreDirectoryToolStripMenuItem
+            // 
+            openCoreDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
+            openCoreDirectoryToolStripMenuItem.Name = "openCoreDirectoryToolStripMenuItem";
+            openCoreDirectoryToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            openCoreDirectoryToolStripMenuItem.Text = "Open Core Directory";
+            openCoreDirectoryToolStripMenuItem.Click += openCoreDirectoryToolStripMenuItem_Click;
             // 
             // FormManageMetadata
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1534, 836);
-            this.Controls.Add(this.groupBoxPhysicalModel);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBoxMetadataCounts);
-            this.Controls.Add(this.tabControlDataMappings);
-            this.Controls.Add(this.MetadataGenerationGroupBox);
-            this.Controls.Add(this.labelInformation);
-            this.Controls.Add(this.richTextBoxInformation);
-            this.Controls.Add(this.menuStripMetadata);
-            this.HelpButton = true;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.menuStripMetadata;
-            this.MinimumSize = new System.Drawing.Size(1550, 875);
-            this.Name = "FormManageMetadata";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Manage the automation metadata";
-            this.ResizeBegin += new System.EventHandler(this.FormManageMetadata_ResizeBegin);
-            this.ResizeEnd += new System.EventHandler(this.FormManageMetadata_ResizeEnd);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBoxMetadataCounts.ResumeLayout(false);
-            this.groupBoxMetadataCounts.PerformLayout();
-            this.MetadataGenerationGroupBox.ResumeLayout(false);
-            this.MetadataGenerationGroupBox.PerformLayout();
-            this.menuStripMetadata.ResumeLayout(false);
-            this.menuStripMetadata.PerformLayout();
-            this.groupBoxPhysicalModel.ResumeLayout(false);
-            this.groupBoxPhysicalModel.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1790, 965);
+            Controls.Add(groupBoxPhysicalModel);
+            Controls.Add(groupBox2);
+            Controls.Add(groupBoxMetadataCounts);
+            Controls.Add(tabControlDataMappings);
+            Controls.Add(MetadataGenerationGroupBox);
+            Controls.Add(labelInformation);
+            Controls.Add(richTextBoxInformation);
+            Controls.Add(menuStripMetadata);
+            HelpButton = true;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            MainMenuStrip = menuStripMetadata;
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            MinimumSize = new System.Drawing.Size(1806, 1004);
+            Name = "FormManageMetadata";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            Text = "Manage the automation metadata";
+            ResizeBegin += FormManageMetadata_ResizeBegin;
+            ResizeEnd += FormManageMetadata_ResizeEnd;
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            groupBoxMetadataCounts.ResumeLayout(false);
+            groupBoxMetadataCounts.PerformLayout();
+            MetadataGenerationGroupBox.ResumeLayout(false);
+            MetadataGenerationGroupBox.PerformLayout();
+            menuStripMetadata.ResumeLayout(false);
+            menuStripMetadata.PerformLayout();
+            groupBoxPhysicalModel.ResumeLayout(false);
+            groupBoxPhysicalModel.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -610,7 +618,7 @@ namespace TEAM
 
         private System.Windows.Forms.Button buttonReverseEngineer;
 
-        
+
         private System.Windows.Forms.ToolTip toolTipMetadata;
         private System.ComponentModel.BackgroundWorker backgroundWorkerValidationOnly;
 
@@ -621,7 +629,7 @@ namespace TEAM
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.CheckedListBox checkedListBoxReverseEngineeringAreas;
         private System.Windows.Forms.ToolStripMenuItem openAttributeMappingFileToolStripMenuItem;
-   
+
 
         private System.Windows.Forms.ToolStripMenuItem jsonExportConfigurationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem manageJsonExportRulesToolStripMenuItem;
@@ -640,5 +648,6 @@ namespace TEAM
         private System.Windows.Forms.ToolStripMenuItem generatePhysicalModelGridQueryToolStripMenuItem;
         private System.Windows.Forms.CheckBox checkBoxShowStaging;
         private System.Windows.Forms.ToolStripMenuItem importPhysicalModelGridFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openCoreDirectoryToolStripMenuItem;
     }
 }

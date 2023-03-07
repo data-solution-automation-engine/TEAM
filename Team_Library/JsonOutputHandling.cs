@@ -704,8 +704,7 @@ namespace TEAM_Library
 
             return dataQuery;
         }
-
-
+        
         /// <summary>
         /// Updates an input DataObject with a classification based on its type, evaluated by its name against defined conventions.
         /// </summary>
