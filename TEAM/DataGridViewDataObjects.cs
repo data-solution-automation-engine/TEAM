@@ -1333,7 +1333,7 @@ namespace TEAM
             {
                 var drivingKeyValue = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value.ToString();
 
-                var mappingClassification = JsonOutputHandling.MappingClassification(targetDataObjectName, JsonExportSetting, TeamConfiguration, drivingKeyValue);
+                var mappingClassification = JsonOutputHandling.MappingClassification(targetDataObjectName, JsonExportSetting, TeamConfiguration, targetConnection, drivingKeyValue);
                 dataObjectMapping.MappingClassifications = mappingClassification;
             }
             catch (Exception exception)

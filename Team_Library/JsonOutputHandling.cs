@@ -229,20 +229,34 @@ namespace TEAM_Library
         /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        public static List<DataClassification> MappingClassification(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, string drivingKeyValue)
+        public static List<DataClassification> MappingClassification(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration,TeamConnection connection, string drivingKeyValue)
         {
-            var tableType = GetDataObjectType(dataObjectName, "", teamConfiguration);
+            var dataObjectType = GetDataObjectType(dataObjectName, "", teamConfiguration);
 
             // Override for driving key.
             if (drivingKeyValue != null && !string.IsNullOrEmpty(drivingKeyValue))
             {
-                tableType = DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey;
+                dataObjectType = DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey;
             }
+
+            var stringDataObjectType = "Unknown";
+
+            if (dataObjectType == DataObjectTypes.Source || dataObjectType == DataObjectTypes.Unknown)
+            {
+                stringDataObjectType = connection.ConnectionKey;
+            }
+            else
+            {
+                stringDataObjectType = dataObjectType.ToString();
+            }
+
+
+            // Work around for unknowns - replace with connection information.
 
             List<DataClassification> dataObjectsMappingClassifications = new List<DataClassification>();
             var dataObjectMappingClassification = new DataClassification
             {
-                Classification = tableType.ToString()
+                Classification = stringDataObjectType
             };
 
             dataObjectsMappingClassifications.Add(dataObjectMappingClassification);
