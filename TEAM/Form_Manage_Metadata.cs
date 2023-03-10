@@ -11,7 +11,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using System.Xml.Linq;
 using TEAM_Library;
 using static TEAM.DataGridViewDataObjects;
 using DataObject = DataWarehouseAutomation.DataObject;
@@ -2206,12 +2205,16 @@ namespace TEAM
             try
             {
                 conn.Open();
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Connection {teamConnection.ConnectionKey} was opened using '{conn.ConnectionString}'."));
 
-                var sqlStatementForDataItems = SqlStatementForDataItems(GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), teamConnection);
+                var filteredObjects = GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows);
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The list of filtered objects has been prepared."));
 
+                var sqlStatementForDataItems = SqlStatementForDataItems(filteredObjects, teamConnection);
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The reverse-engineering query run for connection '{teamConnection.ConnectionKey}' is \r\n {sqlStatementForDataItems}"));
 
                 reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems);
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The data table containing the reverse engineering results has been created."));
             }
             catch (Exception exception)
             {
@@ -2222,6 +2225,7 @@ namespace TEAM
             {
                 conn.Close();
                 conn.Dispose();
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Connection '{teamConnection.ConnectionKey}' has been closed."));
             }
 
             return reverseEngineerResults;
