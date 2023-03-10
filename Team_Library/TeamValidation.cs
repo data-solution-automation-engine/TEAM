@@ -64,6 +64,7 @@ namespace TEAM_Library
                         sourceDataObjectName = r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString(),
                         TargetDataObjectName = r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(),
                         BusinessKeyDefinition = r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString(),
+                        FilterCriterion = r.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value.ToString(),
                     })
                 .Where(g => g.Count() > 1);
 

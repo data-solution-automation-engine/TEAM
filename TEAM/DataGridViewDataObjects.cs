@@ -22,7 +22,8 @@ namespace TEAM
         private TeamConfiguration TeamConfiguration { get; }
         private JsonExportSetting JsonExportSetting { get; }
 
-        private Form_Edit _modifyJson;
+        private Form_Edit_DataObject _modifyDataObjectJson;
+        private Form_Edit_DataObjectMapping _modifyDataObjectMappingJson;
 
         private readonly ContextMenuStrip contextMenuStripFullRow;
         private readonly ContextMenuStrip contextMenuStripMultipleRows;
@@ -165,6 +166,14 @@ namespace TEAM
             filterCriterion.MinimumWidth = 100;
             Columns.Add(filterCriterion);
 
+            // Hidden columns.
+            DataGridViewTextBoxColumn dataObjectMappingExtension = new DataGridViewTextBoxColumn();
+            dataObjectMappingExtension.Name = DataObjectMappingGridColumns.DataObjectMappingExtension.ToString();
+            dataObjectMappingExtension.HeaderText = @"DataObjectMappingExtension";
+            dataObjectMappingExtension.DataPropertyName = DataObjectMappingGridColumns.DataObjectMappingExtension.ToString();
+            dataObjectMappingExtension.Visible = false;
+            Columns.Add(dataObjectMappingExtension);
+
             // Filtering and back-end management only.
             DataGridViewTextBoxColumn sourceDataObjectName = new DataGridViewTextBoxColumn();
             sourceDataObjectName.Name = DataObjectMappingGridColumns.SourceDataObjectName.ToString();
@@ -225,13 +234,21 @@ namespace TEAM
             deleteThisRowFromTheGridToolStripMenuItem.Text = @"Delete this row from the grid";
             deleteThisRowFromTheGridToolStripMenuItem.Click += DeleteThisRowFromTableDataGridToolStripMenuItem_Click;
 
+            // Delete row menu item
+            var modifyDataObjectMappingJsonToolStripMenuItem = new ToolStripMenuItem();
+            modifyDataObjectMappingJsonToolStripMenuItem.Name = "modifyDataObjectMappingJsonToolStripMenuItem";
+            modifyDataObjectMappingJsonToolStripMenuItem.Size = new Size(225, 22);
+            modifyDataObjectMappingJsonToolStripMenuItem.Text = @"Modify the Data Object Mapping Json";
+            modifyDataObjectMappingJsonToolStripMenuItem.Click += ModifyDataObjectMappingJson_Click;
+
             contextMenuStripFullRow.ImageScalingSize = new Size(24, 24);
             contextMenuStripFullRow.Items.AddRange(new ToolStripItem[] {
                 parseThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem,
                 exportThisRowAsSingleDataObjectMappingJsonToolStripMenuItem,
                 exportThisRowAsSourceToTargetInterfaceJsonToolStripMenuItem,
+                modifyDataObjectMappingJsonToolStripMenuItem,
                 deleteThisRowFromTheGridToolStripMenuItem
-             });
+            });
 
             contextMenuStripFullRow.Name = "contextMenuStripTableMapping";
             contextMenuStripFullRow.Size = new Size(340, 48);
@@ -272,7 +289,7 @@ namespace TEAM
             toolStripMenuItemModifyJson.Name = "toolStripMenuItemModifyJson";
             toolStripMenuItemModifyJson.Size = new Size(143, 22);
             toolStripMenuItemModifyJson.Text = @"Modify JSON";
-            toolStripMenuItemModifyJson.Click += toolStripMenuItemModifyJson_Click;
+            toolStripMenuItemModifyJson.Click += toolStripMenuItemModifyDataObjectJson_Click;
 
             contextMenuStripSingleCell.Items.AddRange(new ToolStripItem[] {
                 toolStripMenuItemModifyJson
@@ -284,6 +301,18 @@ namespace TEAM
             #endregion
 
             #endregion
+        }
+
+        private void ModifyDataObjectMappingJson_Click(object sender, EventArgs e)
+        {
+            // Get the current mapping for the selected row.
+            var row = _dataGridViewDataObjects.SelectedRows[0];
+            var dataObjectMapping = GetDataObjectMapping(row);
+
+            _modifyDataObjectMappingJson = new Form_Edit_DataObjectMapping(row, dataObjectMapping);
+            _modifyDataObjectMappingJson.SetFormName("Modify Data Object Mapping JSON");
+            _modifyDataObjectMappingJson.Show();
+            _modifyDataObjectMappingJson.OnSave += CommitDataObjectMappingJsonChanges;
         }
 
         private void OnRowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
@@ -499,12 +528,12 @@ namespace TEAM
             HeaderSort();
         }
         
-        private void toolStripMenuItemModifyJson_Click(object sender, EventArgs e)
+        private void toolStripMenuItemModifyDataObjectJson_Click(object sender, EventArgs e)
         {
-            _modifyJson = new Form_Edit(CurrentCell);
-            _modifyJson.SetFormName("Modify JSON");
-            _modifyJson.Show();
-            _modifyJson.OnSave += CommitJsonChanges;
+            _modifyDataObjectJson = new Form_Edit_DataObject(CurrentCell);
+            _modifyDataObjectJson.SetFormName("Modify JSON");
+            _modifyDataObjectJson.Show();
+            _modifyDataObjectJson.OnSave += CommitDataObjectJsonChanges;
         }
 
         /// <summary>
@@ -512,7 +541,7 @@ namespace TEAM
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CommitJsonChanges(object sender, Form_Edit.OnSaveEventArgs e)
+        private void CommitDataObjectJsonChanges(object sender, Form_Edit_DataObject.OnSaveEventArgs e)
         {
             DataObject dataObject = JsonConvert.DeserializeObject<DataObject>(e.RichTextBoxContents);
             e.CurrentCell.Value = dataObject;
@@ -535,6 +564,27 @@ namespace TEAM
             DataGridViewCell dummyCell = this[CurrentCell.ColumnIndex, CurrentCell.RowIndex + 1];
             CurrentCell = dummyCell;
             CurrentCell = cell;
+        }
+
+        /// <summary>
+        /// Get the value changes / content from the Edit form, and commit back into the data object mapping grid.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CommitDataObjectMappingJsonChanges(object sender, Form_Edit_DataObjectMapping.OnSaveEventArgs e)
+        {
+            DataObjectMapping dataObjectMapping = JsonConvert.DeserializeObject<DataObjectMapping>(e.RichTextBoxContents);
+
+            var currentRow = e.CurrentRow;
+
+            // TODO really needs to store the full object in memory, perhaps in a separate column.
+            // TODO for now, adding individual components to separate columns
+
+            // Extensions
+            currentRow.Cells[(int)DataObjectMappingGridColumns.DataObjectMappingExtension].Value = JsonConvert.SerializeObject(dataObjectMapping.Extensions);
+
+            // Filter
+            currentRow.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value = dataObjectMapping.FilterCriterion;
         }
 
         /// <summary>
@@ -1252,18 +1302,43 @@ namespace TEAM
 
             #endregion
 
-            #region Mapping Level Classification
+            #region Mapping Extensions
+
+            List<Extension> dataObjectsMappingExtensions = new List<Extension>();
+
+            try
+            {
+                var availableMappingExtensions = JsonConvert.DeserializeObject<List<Extension>>(dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DataObjectMappingExtension.ToString()].Value.ToString());
+
+                if (availableMappingExtensions != null)
+                {
+                    dataObjectsMappingExtensions = availableMappingExtensions;
+                }
+            }
+            catch (Exception exception)
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The data object extension at data object mapping level could not be set. The message is: {exception.Message}."));
+            }
+
+            if (dataObjectsMappingExtensions.Count > 0)
+            {
+                dataObjectMapping.Extensions = dataObjectsMappingExtensions;
+            }
+
+            #endregion
+
+            #region Mapping Classifications
 
             try
             {
                 var drivingKeyValue = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value.ToString();
 
-                var mappingClassifications = JsonOutputHandling.SetMappingClassifications(targetDataObjectName, JsonExportSetting, TeamConfiguration, drivingKeyValue);
-                dataObjectMapping.MappingClassifications = mappingClassifications;
+                var mappingClassification = JsonOutputHandling.MappingClassification(targetDataObjectName, JsonExportSetting, TeamConfiguration, drivingKeyValue);
+                dataObjectMapping.MappingClassifications = mappingClassification;
             }
             catch (Exception exception)
             {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The data object classification could not be correctly defined. The message is: {exception.Message}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The data object classification for a Driving Key could not be correctly defined. The message is: {exception.Message}."));
             }
 
             #endregion

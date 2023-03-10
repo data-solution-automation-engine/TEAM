@@ -5,17 +5,17 @@ using System.Windows.Forms;
 
 namespace TEAM
 {
-    public partial class Form_Edit : FormBase
+    public partial class Form_Edit_DataObject : FormBase
     {
         public DataGridViewCell EditedCell { get; set; }
         public DataWarehouseAutomation.DataObject EditedDataObject { get; set; }
 
-        public Form_Edit()
+        public Form_Edit_DataObject()
         {
             InitializeComponent();
         }
 
-        public Form_Edit(DataGridViewCell cell)
+        public Form_Edit_DataObject(DataGridViewCell cell)
         {
             InitializeComponent();
             EditedCell = cell;

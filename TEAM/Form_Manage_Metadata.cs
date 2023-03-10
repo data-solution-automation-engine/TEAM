@@ -294,8 +294,6 @@ namespace TEAM
             // Merge events
             TeamEventLog.AddRange(teamDataObjectMappingFileCombinations.EventLog);
 
-
-
             teamDataObjectMappings.SetDataTable(TeamConfiguration);
 
             #region Assert combo box values
@@ -494,7 +492,6 @@ namespace TEAM
             GridAutoLayout(_dataGridViewDataItems);
             GridAutoLayout(_dataGridViewPhysicalModel);
         }
-
 
         private void GridAutoLayout(DataGridView dataGridView)
         {

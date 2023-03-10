@@ -229,7 +229,7 @@ namespace TEAM_Library
         /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        public static List<DataClassification> SetMappingClassifications(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, string drivingKeyValue)
+        public static List<DataClassification> MappingClassification(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, string drivingKeyValue)
         {
             var tableType = GetDataObjectType(dataObjectName, "", teamConfiguration);
 

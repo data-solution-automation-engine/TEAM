@@ -8,6 +8,29 @@ using DataObject = DataWarehouseAutomation.DataObject;
 
 namespace TEAM_Library
 {
+    /// <summary>
+    /// Enumerator to hold the column index for the columns (headers) in the Table Metadata data grid view.
+    /// </summary>
+    public enum DataObjectMappingGridColumns
+    {
+        Enabled = 0,
+        HashKey = 1,
+        SourceConnection = 2,
+        SourceDataObject = 3,
+        TargetConnection = 4,
+        TargetDataObject = 5,
+        BusinessKeyDefinition = 6,
+        DrivingKeyDefinition = 7,
+        FilterCriterion = 8,
+        // The below are hidden in the main table, but can be set via the JSON editor
+        DataObjectMappingExtension = 9,
+        // The below are hidden, for sorting and back-end management only.
+        SourceDataObjectName = 10,
+        TargetDataObjectName = 11,
+        PreviousTargetDataObjectName = 12,
+        SurrogateKey = 13
+    }
+
     public class TeamDataObjectMappings
     {
         public SortableBindingList<DataObjectMappingsFileCombination> DataObjectMappingsFileCombinations { get; set; }
@@ -34,6 +57,9 @@ namespace TEAM_Library
             DataTable.Columns.Add(DataObjectMappingGridColumns.DrivingKeyDefinition.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.FilterCriterion.ToString());
 
+            // Hidden, but editable.
+            DataTable.Columns.Add(DataObjectMappingGridColumns.DataObjectMappingExtension.ToString());
+
             // For sorting purposes only.
             DataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObjectName.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObjectName.ToString());
@@ -50,6 +76,17 @@ namespace TEAM_Library
             {
                 foreach (var dataObjectMapping in dataObjectMappingFileCombination.DataObjectMappings.DataObjectMappings)
                 {
+                    #region Data Object Mapping level extensions
+
+                    string dataObjectMappingExtension = "";
+
+                    if (dataObjectMapping.Extensions != null)
+                    {
+                        dataObjectMappingExtension = JsonConvert.SerializeObject(dataObjectMapping.Extensions, Formatting.Indented);
+                    }
+
+                    #endregion
+
                     #region region Target Data Object
 
                     var targetDataObject = dataObjectMapping.TargetDataObject;
@@ -150,7 +187,7 @@ namespace TEAM_Library
                     }
 
                     #endregion
-                    
+
                     foreach (var sourceDataObject in dataObjectMapping.SourceDataObjects)
                     {
                         // The new data object.
@@ -212,6 +249,9 @@ namespace TEAM_Library
                         newRow[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = businessKeyDefinitionString;
                         newRow[(int)DataObjectMappingGridColumns.DrivingKeyDefinition] = drivingKeyDefinition;
                         newRow[(int)DataObjectMappingGridColumns.FilterCriterion] = filterCriterion;
+                        // Hidden columns.
+                        newRow[(int)DataObjectMappingGridColumns.DataObjectMappingExtension] = dataObjectMappingExtension;
+                        // Sorting only.
                         newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = singleSourceDataObject.Name;
                         newRow[(int)DataObjectMappingGridColumns.TargetDataObjectName] = targetDataObject.Name;
                         newRow[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName] = targetDataObject.Name;
@@ -450,26 +490,5 @@ namespace TEAM_Library
         public string filterCriteria { get; set; }
 
         public List<TableMappingJson> JsonList { get; set; }
-    }
-    
-    /// <summary>
-    /// Enumerator to hold the column index for the columns (headers) in the Table Metadata data grid view.
-    /// </summary>
-    public enum DataObjectMappingGridColumns
-    {
-        Enabled = 0,
-        HashKey = 1,
-        SourceConnection = 2,
-        SourceDataObject = 3,
-        TargetConnection = 4,
-        TargetDataObject = 5,
-        BusinessKeyDefinition = 6,
-        DrivingKeyDefinition = 7,
-        FilterCriterion = 8,
-        // The below are hidden, for sorting and back-end management only.
-        SourceDataObjectName = 9,
-        TargetDataObjectName = 10,
-        PreviousTargetDataObjectName = 11,
-        SurrogateKey = 12
     }
 }

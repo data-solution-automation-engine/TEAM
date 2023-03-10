@@ -66,6 +66,9 @@
     <Compile Update="DataGridViewDataObjects.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Form_Edit_DataObjectMapping.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="TabPageEnvironments.cs">
       <SubType>Component</SubType>
     </Compile>
