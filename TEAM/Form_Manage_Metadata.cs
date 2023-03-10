@@ -824,6 +824,8 @@ namespace TEAM
                                 richTextBoxInformation.Text += $@"There were issues updating the JSON. The error message is {ex.Message}.";
                             }
                         }
+
+                        ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
                     }
 
                     #endregion
@@ -845,6 +847,8 @@ namespace TEAM
                         {
                             richTextBoxInformation.Text += $@"There were issues updating the JSON. The error message is {ex.Message}.";
                         }
+
+                        ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
                     }
 
                     #endregion
@@ -871,6 +875,8 @@ namespace TEAM
                     #endregion
                 }
             }
+
+            ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
         }
 
         /// <summary>
@@ -892,7 +898,7 @@ namespace TEAM
                 {
                     File.WriteAllText(outputFilePath, output);
 
-                    ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
+                    //((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
                     ThreadHelper.SetText(this, richTextBoxInformation, $"The Data Object Mapping for '{targetDataObject.Name}' has been saved.\r\n");
                 }
@@ -1488,6 +1494,8 @@ namespace TEAM
                     LogMetadataEvent($"A row in the grid could not be parsed. The reported exception is {exception.Message}.", EventTypes.Error);
                 }
             }
+
+            ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
             // Manage cancellation.
             if (worker != null && worker.CancellationPending)
@@ -2931,6 +2939,7 @@ namespace TEAM
                     #endregion
 
                     #region Generate the JSON files
+
                     foreach (DataRow row in localDataTable.Rows)
                     {
                         var newDataObject = (DataObject)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
@@ -2945,6 +2954,9 @@ namespace TEAM
                             richTextBoxInformation.Text += $@"There were issues updating the JSON. The error message is {ex.Message}.";
                         }
                     }
+
+                    ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
+
                     #endregion
 
                     #region Reload the full Data Grid
