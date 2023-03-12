@@ -386,7 +386,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="DataWarehouseAutomation">
-      <Version>1.2.4</Version>
+      <Version>1.2.5</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Data.SqlClient">

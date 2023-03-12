@@ -3,7 +3,7 @@
     <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DataWarehouseAutomation" Version="1.2.4" />
+    <PackageReference Include="DataWarehouseAutomation" Version="1.2.5" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.0" />
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="170.13.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

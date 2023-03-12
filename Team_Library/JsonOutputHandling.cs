@@ -306,13 +306,13 @@ namespace TEAM_Library
             if (jsonExportSetting.AddParentDataObjectAsRelatedDataObject == "True")
             {
                 // Find the parent data object.
-                var parentDataObject = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataObjectDataGridViewRows);
+                var parentDataObjects = GetParentDataObjects(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataObjectDataGridViewRows);
 
                 // Create the parent data object.
-                if (parentDataObject != null && parentDataObject.Name != null && parentDataObject.Name != "NewDataObject")
+                if (parentDataObjects != null)
                 {
                     // Set the name and further settings.
-                    relatedDataObjectList.Add(parentDataObject);
+                    relatedDataObjectList.AddRange(parentDataObjects);
                 }
             }
 
@@ -1325,10 +1325,11 @@ namespace TEAM_Library
         /// <param name="teamConfiguration"></param>
         /// <param name="dataGridViewRowsDataObjects"></param>
         /// <returns></returns>
-        public static DataObject GetParentDataObject(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConfiguration teamConfiguration, List<DataGridViewRow>dataGridViewRowsDataObjects)
+        public static List<DataObject> GetParentDataObjects(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConfiguration teamConfiguration, List<DataGridViewRow>dataGridViewRowsDataObjects)
         {
-            DataObject returnValue = new DataObject();
+            var returnValue = new List<DataObject>();
 
+            // Finding the parent for a Satellite or Link Satellite, because this the business key definition is the same for the source- and target.
             var dataObjectGridViewRow = dataGridViewRowsDataObjects
                 .Where(r => !r.IsNewRow)
                 .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyDefinition))
@@ -1341,7 +1342,30 @@ namespace TEAM_Library
 
             if (dataObjectGridViewRow != null)
             {
-                returnValue = (DataObject)dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
+                returnValue.Add((DataObject)dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value);
+            }
+            else
+            {
+                // If the value is null for the initial lookup, it can be tried with a key part. This supports finding the parent Hub for a Link because it matches on a part of the business key.
+                var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition, "");
+
+                foreach (var businessKeyComponent in businessKeyComponentElements)
+                {
+                    var dataObjectGridViewRowKeyComponent = dataGridViewRowsDataObjects
+                        .Where(r => !r.IsNewRow)
+                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyComponent.businessKeyComponentElement)) // Match on business key definition
+                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName)) // Using same source
+                        .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName)) // Note the target
+                        .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.Context)
+                        .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContext)
+                        .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
+                        .FirstOrDefault();
+
+                    if (dataObjectGridViewRowKeyComponent != null)
+                    {
+                        returnValue.Add((DataObject)dataObjectGridViewRowKeyComponent.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value);
+                    }
+                }
             }
 
             return returnValue;
@@ -1365,7 +1389,7 @@ namespace TEAM_Library
             // If a data object has been evaluated to be a Satellite (or Link-Satellite), replace the data object to query with the parent Hub or Link.
             if (new [] { DataObjectTypes.Context, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey}.Contains(dataObjectType))
             {
-                targetDataObjectName = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects).Name;
+                targetDataObjectName = GetParentDataObjects(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects).FirstOrDefault().Name;
             }
 
             var surrogateKey = GetSurrogateKey(targetDataObjectName, teamConfiguration, teamConnection);
