@@ -559,10 +559,19 @@ namespace TEAM
                 updateCell.Value = dataObject.Name;
             }
 
-            // Hack to quickly unselect and re-select the cell to apply parsing and formatting.
+            // Hack to quickly unselect and re-select the cell to apply parsing and formatting. This needs to go to a different row.
             DataGridViewCell cell = CurrentCell;
-            DataGridViewCell dummyCell = this[CurrentCell.ColumnIndex, CurrentCell.RowIndex + 1];
-            CurrentCell = dummyCell;
+
+            // If the next cell is visible.
+            if (this[CurrentCell.ColumnIndex, CurrentCell.RowIndex + 1].Visible)
+            {
+                DataGridViewCell dummyCell = this[CurrentCell.ColumnIndex, CurrentCell.RowIndex + 1];
+
+                // Switch to the next cell down.
+                CurrentCell = dummyCell;
+            }
+
+            // Switch back to the original cell to apply parsing and formatting.
             CurrentCell = cell;
         }
 
