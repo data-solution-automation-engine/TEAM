@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace TEAM_Library
@@ -49,12 +51,12 @@ namespace TEAM_Library
         /// <param name="teamConfiguration"></param>
         /// <param name="eventLog"></param>
         /// <returns></returns>
-        public static TeamConnection GetTeamConnectionByConnectionId(string connectionId, TeamConfiguration teamConfiguration, EventLog eventLog)
+        public static TeamConnection GetTeamConnectionByConnectionInternalId(string connectionId, TeamConfiguration teamConfiguration, EventLog eventLog)
         {
             if (!teamConfiguration.ConnectionDictionary.TryGetValue(connectionId, out var teamConnection))
             {
                 // The key isn't in the dictionary.
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Id {connectionId}."));
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Id '{connectionId}'."));
             }
 
             return teamConnection;
@@ -114,7 +116,7 @@ namespace TEAM_Library
             return outputConnectionString;
         }
 
-        public static TeamConnection GetTeamConnectionByConnectionKey(string connectionKey, TeamConfiguration teamConfiguration)
+        public static TeamConnection GetTeamConnectionByConnectionKey(string connectionKey, TeamConfiguration teamConfiguration, EventLog eventLog)
         {
             TeamConnection returnTeamConnection = new TeamConnection();
 
@@ -124,6 +126,12 @@ namespace TEAM_Library
                 {
                     returnTeamConnection = teamConnection.Value;
                 }
+            }
+
+            if (returnTeamConnection.ConnectionInternalId.IsNullOrEmpty())
+            {
+                // The key isn't in the dictionary.
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Key '{connectionKey}'."));
             }
 
             return returnTeamConnection;

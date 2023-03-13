@@ -342,7 +342,7 @@ namespace TEAM_Library
                     var localDataObjectName = row.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
                     var localDataObjectConnectionInternalId = row.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
 
-                    TeamConnection localConnection = TeamConnection.GetTeamConnectionByConnectionId(localDataObjectConnectionInternalId, teamConfiguration, eventLog);
+                    TeamConnection localConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(localDataObjectConnectionInternalId, teamConfiguration, eventLog);
 
                     // Set the name and further settings.
 

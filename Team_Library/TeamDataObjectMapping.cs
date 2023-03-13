@@ -95,7 +95,7 @@ namespace TEAM_Library
 
                     if (dataObjectMapping.TargetDataObject.DataObjectConnection != null)
                     {
-                        targetConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(dataObjectMapping.TargetDataObject.DataObjectConnection.DataConnectionString, teamConfiguration).ConnectionInternalId;
+                        targetConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(dataObjectMapping.TargetDataObject.DataObjectConnection.DataConnectionString, teamConfiguration, EventLog).ConnectionInternalId;
                     }
 
                     #endregion
@@ -210,7 +210,7 @@ namespace TEAM_Library
                                 singleSourceDataObject.DataObjectConnection = tempDataItem.DataQueryConnection;
 
                                 string sourceConnectionString = tempDataItem.DataQueryConnection.DataConnectionString;
-                                sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, teamConfiguration).ConnectionInternalId;
+                                sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, teamConfiguration, EventLog).ConnectionInternalId;
                             }
                         }
                         else
@@ -220,7 +220,7 @@ namespace TEAM_Library
                             if (sourceDataObject.dataObjectConnection != null)
                             {
                                 string sourceConnectionString = sourceDataObject.dataObjectConnection.dataConnectionString;
-                                sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, teamConfiguration).ConnectionInternalId;
+                                sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, teamConfiguration, EventLog).ConnectionInternalId;
                             }
                         }
 

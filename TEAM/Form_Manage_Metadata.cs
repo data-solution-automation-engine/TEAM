@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using TEAM_Library;
 using static TEAM.DataGridViewDataObjects;
 using DataObject = DataWarehouseAutomation.DataObject;
+using EventLog = TEAM_Library.EventLog;
 using SqlConnection = Microsoft.Data.SqlClient.SqlConnection;
 
 namespace TEAM
@@ -96,7 +97,7 @@ namespace TEAM
 
             if (errors > 0)
             {
-                richTextBoxInformation.AppendText($"{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
+                richTextBoxInformation.AppendText($"\r\n{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
             }
         }
 
@@ -1661,6 +1662,9 @@ namespace TEAM
 
                     foreach (var dataObjectMapping in dataObjectMappings)
                     {
+                        if (dataObjectMapping.Enabled==false)
+                            continue;
+
                         DataClassification classification = dataObjectMapping.MappingClassifications.FirstOrDefault();
 
                         if (skipPsa && classification.Classification == "PersistentStagingArea")
@@ -1673,8 +1677,8 @@ namespace TEAM
 
                         // The target is set once for the mapping.
                         DataObject targetDataObject = dataObjectMapping.TargetDataObject;
-                        var targetConnectionId = targetDataObject.DataObjectConnection.DataConnectionString;
-                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
+                        var targetConnectionKey = targetDataObject.DataObjectConnection.DataConnectionString;
+                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionKey(targetConnectionKey, TeamConfiguration, TeamEventLog);
                         KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.Name, targetConnection).FirstOrDefault();
 
                         var targetNodeName = fullyQualifiedObjectTarget.Key + '.' + fullyQualifiedObjectTarget.Value;
@@ -1688,7 +1692,7 @@ namespace TEAM
                             nodeBuilder.Add(localTargetNode);
                         }
 
-                        var targetConnectionName = targetConnectionId;
+                        var targetConnectionName = targetConnectionKey;
 
                         // Add the connection node, if not existing already.
                         var localTargetConnectionNode = "     <Node Id=\"" + targetConnectionName + "\" Group=\"Collapsed\" Label=\"" + targetConnectionName + "\" />";
@@ -1748,17 +1752,17 @@ namespace TEAM
                                 }
                                 else
                                 {
-                                    // The source is an object
-                                    var singleSourceDataObject = JsonConvert.DeserializeObject<DataObject>(intermediateJson);
+                                    // The source is an object.
+                                    var singleSourceDataObject = (DataObject)JsonConvert.DeserializeObject<DataObject>(intermediateJson);
 
-                                    if (singleSourceDataObject.dataObjectConnection != null)
+                                    if (singleSourceDataObject.DataObjectConnection != null)
                                     {
-                                        string sourceConnectionString = singleSourceDataObject.dataObjectConnection.dataConnectionString;
-                                        var sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, TeamConfiguration).ConnectionInternalId;
+                                        string sourceConnectionString = singleSourceDataObject.DataObjectConnection.DataConnectionString;
+                                        var sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, TeamConfiguration, TeamEventLog).ConnectionInternalId;
 
-                                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
+                                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
 
-                                        Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(singleSourceDataObject.name, sourceConnection);
+                                        Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(singleSourceDataObject.Name, sourceConnection);
 
                                         var uniqueValue = fullyQualifiedObjectSource.FirstOrDefault();
                                         var sourceNodeNameFullyQualified = uniqueValue.Key + '.' + uniqueValue.Value;
@@ -1789,6 +1793,7 @@ namespace TEAM
 
                                         // Build the source-target relationship between the data objects.
                                         var dataObjectMappingEdge = "     <Link Source=\"" + sourceNodeNameFullyQualified + "\" Target=\"" + targetNodeName + "\" />";
+                                        //var dataObjectMappingEdge = "     <Link Source=\"" + sourceNodeNameFullyQualified + "\" Target=\"" + targetNodeName + "\" BusinessKeyDefinition=\"@" + JsonConvert.SerializeObject(dataObjectMapping.BusinessKeys) + "\" />";
                                         if (!edgeBuilder.Contains(dataObjectMappingEdge))
                                         {
                                             edgeBuilder.Add(dataObjectMappingEdge);
@@ -1799,7 +1804,7 @@ namespace TEAM
                         }
                         catch (Exception exception)
                         {
-                            //
+                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered generating the DGML file, when building the nodes: {exception.Message}"));
                         }
 
                         #endregion
@@ -1808,27 +1813,34 @@ namespace TEAM
                         {
                             #region RelatedDataObjects
 
-                            if (dataObjectMapping.RelatedDataObjects != null)
+                            try
                             {
-                                foreach (var relatedDataObject in dataObjectMapping.RelatedDataObjects)
+                                if (dataObjectMapping.RelatedDataObjects != null)
                                 {
-                                    if (relatedDataObject.DataObjectConnection != null && relatedDataObject.Name != "Metadata")
+                                    foreach (var relatedDataObject in dataObjectMapping.RelatedDataObjects)
                                     {
-                                        var relatedDataObjectConnectionId = relatedDataObject.DataObjectConnection.DataConnectionString;
-                                        var relatedDataObjectConnection = TeamConnection.GetTeamConnectionByConnectionId(relatedDataObjectConnectionId, TeamConfiguration, TeamEventLog);
-                                        KeyValuePair<string, string> fullyQualifiedRelatedDataObjectName =
-                                            MetadataHandling.GetFullyQualifiedDataObjectName(relatedDataObject.Name, relatedDataObjectConnection).FirstOrDefault();
-
-                                        var fullyQualifiedRelatedDataObjectNodeName = fullyQualifiedRelatedDataObjectName.Key + '.' + fullyQualifiedRelatedDataObjectName.Value;
-
-                                        var relatedDataObjectEdge = "     <Link Source=\"" + targetNodeName + "\" Target=\"" + fullyQualifiedRelatedDataObjectNodeName + "\" RelatedDataObject=\"" +
-                                                                    targetNodeName + "\" />";
-                                        if (!edgeBuilder.Contains(relatedDataObjectEdge))
+                                        if (relatedDataObject.DataObjectConnection != null && relatedDataObject.Name != "Metadata")
                                         {
-                                            edgeBuilder.Add(relatedDataObjectEdge);
+                                            var relatedDataObjectConnectionKey = relatedDataObject.DataObjectConnection.DataConnectionString;
+                                            var relatedDataObjectConnection = TeamConnection.GetTeamConnectionByConnectionKey(relatedDataObjectConnectionKey, TeamConfiguration, TeamEventLog);
+                                            KeyValuePair<string, string> fullyQualifiedRelatedDataObjectName =
+                                                MetadataHandling.GetFullyQualifiedDataObjectName(relatedDataObject.Name, relatedDataObjectConnection).FirstOrDefault();
+
+                                            var fullyQualifiedRelatedDataObjectNodeName = fullyQualifiedRelatedDataObjectName.Key + '.' + fullyQualifiedRelatedDataObjectName.Value;
+
+                                            var relatedDataObjectEdge = "     <Link Source=\"" + targetNodeName + "\" Target=\"" + fullyQualifiedRelatedDataObjectNodeName + "\" RelatedDataObject=\"" +
+                                                                        targetNodeName + "\" />";
+                                            if (!edgeBuilder.Contains(relatedDataObjectEdge))
+                                            {
+                                                edgeBuilder.Add(relatedDataObjectEdge);
+                                            }
                                         }
                                     }
                                 }
+                            }
+                            catch (Exception exception)
+                            {
+                                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered generating the DGML file, when building the related data objects: {exception.Message}"));
                             }
 
                             #endregion
@@ -1836,22 +1848,132 @@ namespace TEAM
 
                         #region Data Item mappings
 
-                        if (dataObjectMapping.DataItemMappings != null)
+                        try
                         {
-                            foreach (var dataItemMapping in dataObjectMapping.DataItemMappings)
+                            if (dataObjectMapping.DataItemMappings != null)
+                            {
+                                foreach (var dataItemMapping in dataObjectMapping.DataItemMappings)
+                                {
+                                    var sourceDataObject = dataObjectMapping.SourceDataObjects.FirstOrDefault();
+
+                                    var sourceDataObjectName = "";
+                                    var sourceDataObjectFullyQualified = "";
+
+                                    // Check if the source data object is a query, or a data object.
+                                    var intermediateJson = JsonConvert.SerializeObject(sourceDataObject);
+
+                                    if (!JsonConvert.DeserializeObject(intermediateJson).ContainsKey("dataQueryCode"))
+                                    {
+                                        // It's an object.
+                                        var singleSourceDataObject = (DataObject)JsonConvert.DeserializeObject<DataObject>(intermediateJson);
+
+                                        sourceDataObjectName = singleSourceDataObject.Name;
+                                        string sourceConnectionString = singleSourceDataObject.DataObjectConnection.DataConnectionString;
+                                        var sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, TeamConfiguration, TeamEventLog).ConnectionInternalId;
+                                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
+
+                                        Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection);
+                                        var uniqueValue = fullyQualifiedObjectSource.FirstOrDefault();
+                                        sourceDataObjectFullyQualified = uniqueValue.Key + '.' + uniqueValue.Value;
+                                    }
+                                    else
+                                    {
+                                        // It's a query.
+                                        var singleSourceDataObject = (DataQuery)JsonConvert.DeserializeObject<DataQuery>(intermediateJson);
+                                        sourceDataObjectFullyQualified = singleSourceDataObject.DataQueryCode;
+                                    }
+
+                                    //* Data Items **/
+
+                                    var sourceDataItemNameFullyQualified = "";
+
+                                    // Check if the source data item is a query, or a data object.
+                                    var sourceDataItem = dataItemMapping.SourceDataItems.FirstOrDefault();
+                                    var intermediateDataItemJson = JsonConvert.SerializeObject(sourceDataItem);
+
+                                    if (!JsonConvert.DeserializeObject(intermediateDataItemJson).ContainsKey("dataQueryCode"))
+                                    {
+                                        // It's an object.
+                                        sourceDataItem = (DataItem)JsonConvert.DeserializeObject<DataItem>(intermediateDataItemJson);
+                                        sourceDataItemNameFullyQualified = sourceDataObjectFullyQualified + "." + sourceDataItem.Name;
+                                    }
+                                    else
+                                    {
+                                        // It's a query.
+                                        sourceDataItem = (DataQuery)JsonConvert.DeserializeObject<DataQuery>(intermediateDataItemJson);
+                                        sourceDataItemNameFullyQualified = sourceDataObjectFullyQualified + "." + sourceDataItem.DataQueryCode;
+                                    }
+
+                                    var targetDataItemName = dataItemMapping.TargetDataItem.Name;
+                                    var targetDataItemNameFullyQualified = targetNodeName + "." + targetDataItemName;
+
+                                    // Add the source node, if not existing already.
+                                    var localSourceDataItemNode = "     <Node Id=\"" + sourceDataItemNameFullyQualified + "\" Label=\"" + sourceDataItem.Name + "\" />";
+                                    if (!nodeBuilder.Contains(localSourceDataItemNode))
+                                    {
+                                        nodeBuilder.Add(localSourceDataItemNode);
+                                    }
+
+                                    // Add the target node, if not existing already.
+                                    var localTargetDataItemNode = "     <Node Id=\"" + targetDataItemNameFullyQualified + "\" Label=\"" + targetDataItemName + "\" />";
+                                    if (!nodeBuilder.Contains(localTargetDataItemNode))
+                                    {
+                                        nodeBuilder.Add(localTargetDataItemNode);
+                                    }
+
+                                    // Build the source-target relationship between the data items.
+                                    var dataItemMappingEdge = "     <Link Source=\"" + sourceDataItemNameFullyQualified + "\" Target=\"" + targetDataItemNameFullyQualified + "\" />";
+                                    if (!edgeBuilder.Contains(dataItemMappingEdge))
+                                    {
+                                        edgeBuilder.Add(dataItemMappingEdge);
+                                    }
+
+                                    // Add the source data item to the data object, if this hasn't been done already.
+                                    var sourceDataItemDataObjectEdge = "     <Link Source=\"" + sourceDataObjectFullyQualified + "\" Target=\"" + sourceDataItemNameFullyQualified + "\" Category=\"Contains\"/>";
+                                    if (!edgeBuilder.Contains(sourceDataItemDataObjectEdge))
+                                    {
+                                        edgeBuilder.Add(sourceDataItemDataObjectEdge);
+                                    }
+
+                                    // Add the target data item to the data object, if this hasn't been done already.
+                                    var targetDataItemDataObjectEdge = "     <Link Source=\"" + targetNodeName + "\" Target=\"" + targetDataItemNameFullyQualified + "\" Category=\"Contains\"/>";
+                                    if (!edgeBuilder.Contains(targetDataItemDataObjectEdge))
+                                    {
+                                        edgeBuilder.Add(targetDataItemDataObjectEdge);
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered generating the DGML file, when adding data item mappings: {exception.Message}"));
+                        }
+
+                        #endregion
+
+                        #region Business Keys
+
+                        try
+                        {
+                            if (dataObjectMapping.BusinessKeys != null)
                             {
                                 var sourceDataObject = dataObjectMapping.SourceDataObjects.FirstOrDefault();
 
                                 var sourceDataObjectName = "";
                                 var sourceDataObjectFullyQualified = "";
 
+                                // Check if the source data object is a query, or a data object.
                                 var intermediateJson = JsonConvert.SerializeObject(sourceDataObject);
+
                                 if (!JsonConvert.DeserializeObject(intermediateJson).ContainsKey("dataQueryCode"))
                                 {
-                                    sourceDataObjectName = sourceDataObject.name;
-                                    string sourceConnectionString = sourceDataObject.dataObjectConnection.dataConnectionString;
-                                    var sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, TeamConfiguration).ConnectionInternalId;
-                                    var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
+                                    // It's an object.
+                                    var singleSourceDataObject = (DataObject)JsonConvert.DeserializeObject<DataObject>(intermediateJson);
+
+                                    sourceDataObjectName = singleSourceDataObject.Name;
+                                    string sourceConnectionString = singleSourceDataObject.DataObjectConnection.DataConnectionString;
+                                    var sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, TeamConfiguration, TeamEventLog).ConnectionInternalId;
+                                    var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
 
                                     Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection);
                                     var uniqueValue = fullyQualifiedObjectSource.FirstOrDefault();
@@ -1859,52 +1981,108 @@ namespace TEAM
                                 }
                                 else
                                 {
-                                    sourceDataObjectName = sourceDataObject.dataQueryCode;
-                                    sourceDataObjectFullyQualified = sourceDataObject.dataQueryCode;
+                                    // It's a query.
+                                    var singleSourceDataObject = (DataQuery)JsonConvert.DeserializeObject<DataQuery>(intermediateJson);
+                                    sourceDataObjectFullyQualified = singleSourceDataObject.DataQueryCode;
                                 }
 
-                                var sourceDataItemName = dataItemMapping.SourceDataItems.FirstOrDefault();
-                                var sourceDataItemNameFullyQualified = sourceDataObjectFullyQualified + "." + sourceDataItemName.name;
+                                //** Business Key **/
 
-                                var targetDataItemName = dataItemMapping.TargetDataItem.Name;
-                                var targetDataItemNameFullyQualified = targetNodeName + "." + targetDataItemName;
-
-                                // Add the source node, if not existing already.
-                                var localSourceDataItemNode = "     <Node Id=\"" + sourceDataItemNameFullyQualified + "\" Label=\"" + sourceDataItemName.name + "\" />";
-                                if (!nodeBuilder.Contains(localSourceDataItemNode))
+                                foreach (var businessKey in dataObjectMapping.BusinessKeys)
                                 {
-                                    nodeBuilder.Add(localSourceDataItemNode);
-                                }
+                                    var surrogateKeyFullyQualified = targetNodeName + "." + businessKey.SurrogateKey;
 
-                                // Add the target node, if not existing already.
-                                var localTargetDataItemNode = "     <Node Id=\"" + targetDataItemNameFullyQualified + "\" Label=\"" + targetDataItemName + "\" />";
-                                if (!nodeBuilder.Contains(localTargetDataItemNode))
-                                {
-                                    nodeBuilder.Add(localTargetDataItemNode);
-                                }
+                                    // Add the surrogate key node, if not existing already.
+                                    var localSurrogateKeyNode = "     <Node Id=\"" + surrogateKeyFullyQualified + "\" Label=\"" + businessKey.SurrogateKey + "\" />";
+                                    if (!nodeBuilder.Contains(localSurrogateKeyNode))
+                                    {
+                                        nodeBuilder.Add(localSurrogateKeyNode);
+                                    }
 
-                                // Build the source-target relationship between the data items.
-                                var dataItemMappingEdge = "     <Link Source=\"" + sourceDataItemNameFullyQualified + "\" Target=\"" + targetDataItemNameFullyQualified + "\" />";
-                                if (!edgeBuilder.Contains(dataItemMappingEdge))
-                                {
-                                    edgeBuilder.Add(dataItemMappingEdge);
-                                }
+                                    // Add the surrogate to the data object, if this hasn't been done already.
+                                    var targetSurrogateKeyDataObjectEdge = "     <Link Source=\"" + targetNodeName + "\" Target=\"" + surrogateKeyFullyQualified + "\" Category=\"Contains\"/>";
+                                    if (!edgeBuilder.Contains(targetSurrogateKeyDataObjectEdge))
+                                    {
+                                        edgeBuilder.Add(targetSurrogateKeyDataObjectEdge);
+                                    }
 
-                                // Add the source data item to the data object, if this hasn't been done already.
-                                var sourceDataItemDataObjectEdge = "     <Link Source=\"" + sourceDataObjectFullyQualified + "\" Target=\"" + sourceDataItemNameFullyQualified +
-                                                                   "\" Category=\"Contains\"/>";
-                                if (!edgeBuilder.Contains(sourceDataItemDataObjectEdge))
-                                {
-                                    edgeBuilder.Add(sourceDataItemDataObjectEdge);
-                                }
+                                    // For each of the business key components, create the source and target items as well as a mapping to the surrogate key.
+                                    foreach (var businessKeyComponentMapping in businessKey.BusinessKeyComponentMapping)
+                                    {
+                                        var sourceBusinessKeyDataItemNameFullyQualified = "";
 
-                                // Add the target data item to the data object, if this hasn't been done already.
-                                var targetDataItemDataObjectEdge = "     <Link Source=\"" + targetNodeName + "\" Target=\"" + targetDataItemNameFullyQualified + "\" Category=\"Contains\"/>";
-                                if (!edgeBuilder.Contains(targetDataItemDataObjectEdge))
-                                {
-                                    edgeBuilder.Add(targetDataItemDataObjectEdge);
+                                        // Check if the source data item is a query, or a data object.
+                                        var sourceBusinessKeyDataItem = businessKeyComponentMapping.SourceDataItems.FirstOrDefault();
+                                        var intermediateDataItemJson = JsonConvert.SerializeObject(sourceBusinessKeyDataItem);
+
+                                        if (!JsonConvert.DeserializeObject(intermediateDataItemJson).ContainsKey("dataQueryCode"))
+                                        {
+                                            // It's an object.
+                                            sourceBusinessKeyDataItem = (DataItem)JsonConvert.DeserializeObject<DataItem>(intermediateDataItemJson);
+                                            sourceBusinessKeyDataItemNameFullyQualified = sourceDataObjectFullyQualified + "." + sourceBusinessKeyDataItem.Name;
+                                        }
+                                        else
+                                        {
+                                            // It's a query.
+                                            sourceBusinessKeyDataItem = (DataQuery)JsonConvert.DeserializeObject<DataQuery>(intermediateDataItemJson);
+                                            sourceBusinessKeyDataItemNameFullyQualified = sourceDataObjectFullyQualified + "." + sourceBusinessKeyDataItem.DataQueryCode;
+                                        }
+
+                                        var targetBusinessKeyDataItemName = businessKeyComponentMapping.TargetDataItem.Name;
+                                        var targetBusinessKeyDataItemNameFullyQualified = targetNodeName + "." + targetBusinessKeyDataItemName;
+                                        
+                                        // Add the source node, if not existing already.
+                                        var localSourceDataItemNode = "     <Node Id=\"" + sourceBusinessKeyDataItemNameFullyQualified + "\" Label=\"" + sourceBusinessKeyDataItem.Name + "\" />";
+                                        if (!nodeBuilder.Contains(localSourceDataItemNode))
+                                        {
+                                            nodeBuilder.Add(localSourceDataItemNode);
+                                        }
+
+                                        // Add the source data item to the data object, if this hasn't been done already.
+                                        var sourceDataItemDataObjectEdge = "     <Link Source=\"" + sourceDataObjectFullyQualified + "\" Target=\"" + sourceBusinessKeyDataItemNameFullyQualified + "\" Category=\"Contains\"/>";
+                                        if (!edgeBuilder.Contains(sourceDataItemDataObjectEdge))
+                                        {
+                                            edgeBuilder.Add(sourceDataItemDataObjectEdge);
+                                        }
+
+                                        if (!dataObjectMapping.TargetDataObject.Name.IsDataVaultLink(TeamConfiguration))
+                                        {
+                                            // Add the target node, if not existing already.
+                                            var localTargetDataItemNode = "     <Node Id=\"" + targetBusinessKeyDataItemNameFullyQualified + "\" Label=\"" + targetBusinessKeyDataItemName + "\" />";
+                                            if (!nodeBuilder.Contains(localTargetDataItemNode))
+                                            {
+                                                nodeBuilder.Add(localTargetDataItemNode);
+                                            }
+
+                                            // Add the target data item to the data object, if this hasn't been done already.
+                                            var targetDataItemDataObjectEdge = "     <Link Source=\"" + targetNodeName + "\" Target=\"" + targetBusinessKeyDataItemNameFullyQualified +
+                                                                               "\" Category=\"Contains\"/>";
+                                            if (!edgeBuilder.Contains(targetDataItemDataObjectEdge))
+                                            {
+                                                edgeBuilder.Add(targetDataItemDataObjectEdge);
+                                            }
+
+                                            // Build the source-target relationship between the data items.
+                                            var dataItemMappingEdge = "     <Link Source=\"" + sourceBusinessKeyDataItemNameFullyQualified + "\" Target=\"" + targetBusinessKeyDataItemNameFullyQualified + "\" />";
+                                            if (!edgeBuilder.Contains(dataItemMappingEdge))
+                                            {
+                                                edgeBuilder.Add(dataItemMappingEdge);
+                                            }
+                                        }
+
+                                        // Build the source-target relationship between the source data item and the surrogate key.
+                                        var surrogateKeyEdge = "     <Link Source=\"" + sourceBusinessKeyDataItemNameFullyQualified + "\" Target=\"" + surrogateKeyFullyQualified + "\" />";
+                                        if (!edgeBuilder.Contains(surrogateKeyEdge))
+                                        {
+                                            edgeBuilder.Add(surrogateKeyEdge);
+                                        }
+                                    }
                                 }
                             }
+                        }
+                        catch (Exception exception)
+                        {
+                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered generating the DGML file, when adding data item mappings: {exception.Message}"));
                         }
 
                         #endregion
@@ -2378,10 +2556,10 @@ namespace TEAM
                         continue;
 
                     string localInternalConnectionIdSource = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    TeamConnection localConnectionSource = TeamConnection.GetTeamConnectionByConnectionId(localInternalConnectionIdSource, TeamConfiguration, TeamEventLog);
+                    TeamConnection localConnectionSource = TeamConnection.GetTeamConnectionByConnectionInternalId(localInternalConnectionIdSource, TeamConfiguration, TeamEventLog);
 
                     string localInternalConnectionIdTarget = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    TeamConnection localConnectionTarget = TeamConnection.GetTeamConnectionByConnectionId(localInternalConnectionIdTarget, TeamConfiguration, TeamEventLog);
+                    TeamConnection localConnectionTarget = TeamConnection.GetTeamConnectionByConnectionInternalId(localInternalConnectionIdTarget, TeamConfiguration, TeamEventLog);
 
                     var localTupleSource = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], localConnectionSource);
 
@@ -2973,7 +3151,7 @@ namespace TEAM
 
                     if (errors > 0)
                     {
-                        richTextBoxInformation.AppendText($"{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
+                        richTextBoxInformation.AppendText($"\r\n{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
                     }
 
                     #endregion
@@ -3132,7 +3310,7 @@ namespace TEAM
                     #region Source Data Object
 
                     var sourceConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
-                    TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionId, TeamConfiguration, TeamEventLog);
+                    TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionId, TeamConfiguration, TeamEventLog);
 
                     DataObject sourceDataObject = (DataObject)dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value;
                     var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObject.Name, sourceConnection).FirstOrDefault();
@@ -3157,7 +3335,7 @@ namespace TEAM
                     DataObject targetDataObject = (DataObject)dataObjectRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
 
                     var targetConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
+                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionId, TeamConfiguration, TeamEventLog);
 
                     var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.Name, targetConnection).FirstOrDefault();
 
@@ -3487,7 +3665,7 @@ namespace TEAM
 
                     if (errors > 0)
                     {
-                        richTextBoxInformation.AppendText($"{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
+                        richTextBoxInformation.AppendText($"\r\n{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
                     }
 
                     #endregion

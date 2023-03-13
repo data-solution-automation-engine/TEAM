@@ -417,7 +417,7 @@ namespace TEAM
             {
                 // The connection.
                 var sourceConnectionInternalId = selectedRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
-                var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
+                var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
 
                 // The data object, to be updated
                 var dataObject = new DataObject();
@@ -433,7 +433,7 @@ namespace TEAM
             {
                 // The connection.
                 var targetConnectionInternalId = selectedRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
-                var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionInternalId, TeamConfiguration, TeamEventLog);
+                var targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionInternalId, TeamConfiguration, TeamEventLog);
 
                 // The data object, to be updated
                 var dataObject = new DataObject();
@@ -996,7 +996,7 @@ namespace TEAM
                     string dataObjectName = e.Value.ToString();
 
                     var targetConnectionId = selectedRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
+                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionId, TeamConfiguration, TeamEventLog);
                     KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectName, targetConnection).FirstOrDefault();
 
                     // Only the name (e.g. without the schema) should be evaluated.
@@ -1276,7 +1276,7 @@ namespace TEAM
             #region Target Data Object
 
             string targetConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
-            var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionInternalId, TeamConfiguration, TeamEventLog);
+            var targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionInternalId, TeamConfiguration, TeamEventLog);
 
             var targetDataObject = (DataObject)dataObjectMappingGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
             dataObjectMapping.TargetDataObject = targetDataObject;
@@ -1359,7 +1359,7 @@ namespace TEAM
 
                     // Manage connections
                     var sourceConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
-                    var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
+                    var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
 
                     JsonOutputHandling.SetDataQueryConnection(sourceDataQuery, sourceConnection, JsonExportSetting);
 
@@ -1382,7 +1382,7 @@ namespace TEAM
 
                     // Manage connections
                     var sourceConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
-                    var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
+                    var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
 
                     JsonOutputHandling.SetDataObjectConnection(sourceDataObject, sourceConnection, JsonExportSetting);
 
@@ -1496,7 +1496,7 @@ namespace TEAM
 
                             // Add data types to Data Item that are part of a data item mapping.
                             var targetDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
-                            var targetDataItemConnection = TeamConnection.GetTeamConnectionByConnectionId(targetDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
+                            var targetDataItemConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
                             JsonOutputHandling.SetDataItemMappingDataType(targetDataItem, targetDataObject, targetDataItemConnection, JsonExportSetting, dataGridViewRowsPhysicalModel);
 
                             // Add parent Data Object to the Data Item.
@@ -1520,7 +1520,7 @@ namespace TEAM
 
                                 // Add data types to Data Item that are part of a data item mapping.
                                 var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
-                                var sourceDataItemConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
+                                var sourceDataItemConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
                                 JsonOutputHandling.SetDataItemMappingDataType(sourceDataItem, sourceDataObject, sourceDataItemConnection, JsonExportSetting, dataGridViewRowsPhysicalModel);
 
                                 // Add parent Data Object to the Data Item.
@@ -1592,7 +1592,7 @@ namespace TEAM
                             var sourceDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value.ToString();
 
                             var targetDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
-                            var targetDataItemConnection = TeamConnection.GetTeamConnectionByConnectionId(targetDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
+                            var targetDataItemConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
 
                             var dataObjectType = GetDataObjectType(targetDataObject.Name, "", FormBase.TeamConfiguration);
 
@@ -1615,7 +1615,7 @@ namespace TEAM
 
                             // Add data types to Data Item that are part of a data item mapping.
                             var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
-                            var sourceDataItemConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
+                            var sourceDataItemConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
 
                             JsonOutputHandling.SetDataItemMappingDataType(autoMappedSourceDataItem, sourceDataObject, sourceDataItemConnection, JsonExportSetting, dataGridViewRowsPhysicalModel);
                             JsonOutputHandling.SetDataItemMappingDataType(autoMappedTargetDataItem, targetDataObject, targetDataItemConnection, JsonExportSetting, dataGridViewRowsPhysicalModel);

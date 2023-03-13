@@ -147,7 +147,7 @@ namespace TEAM
             }
         }
         #endregion
-        
+
         public int ProgressValue
         {
             set { progressBarFormAlert.Value = value; }
@@ -211,7 +211,7 @@ namespace TEAM
                 {
                     // ignored
                 }
-            }           
+            }
         }
 
         delegate void SetTextCallBackLoggingMultiple(List<string> text);
