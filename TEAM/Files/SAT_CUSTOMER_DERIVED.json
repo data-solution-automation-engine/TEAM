@@ -1,7 +1,7 @@
 {
   "metadataConfiguration": {
     "changeDataCaptureAttribute": "CHANGE_DATA_INDICATOR",
-    "recordSourceAttribute": "RECORD_SOURCE",
+    "recordSourceAttribute": "RECORD_SOURCE_INDICATOR",
     "loadDateTimeAttribute": "INSCRIPTION_TIMESTAMP",
     "expiryDateTimeAttribute": "INSCRIPTION_END_TIMESTAMP",
     "eventDateTimeAttribute": "SOURCE_TIMESTAMP",
@@ -93,43 +93,12 @@
       "relatedDataObjects": [
         {
           "name": "HUB_CUSTOMER",
-          "dataItems": [
-            {
-              "name": "CUSTOMER_SK",
-              "dataType": "binary",
-              "characterLength": 16,
-              "ordinalPosition": 1
-            },
-            {
-              "name": "MODULE_INSTANCE_ID",
-              "dataType": "int",
-              "ordinalPosition": 2
-            },
-            {
-              "name": "LOAD_DATETIME",
-              "dataType": "datetime2",
-              "numericScale": 7,
-              "ordinalPosition": 3
-            },
-            {
-              "name": "RECORD_SOURCE",
-              "dataType": "varchar",
-              "characterLength": 100,
-              "ordinalPosition": 4
-            },
-            {
-              "name": "CUSTOMER_ID",
-              "dataType": "nvarchar",
-              "characterLength": 100,
-              "ordinalPosition": 5
-            }
-          ],
           "dataObjectConnection": {
             "dataConnectionString": "Integration",
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "200_Integration_Layer",
                 "description": "database name"
               },
               {
@@ -146,6 +115,18 @@
           ]
         }
       ],
+      "dataItemMappings": [
+        {
+          "sourceDataItems": [
+            {
+              "name": "REFERRAL_OFFER_CLEAN"
+            }
+          ],
+          "targetDataItem": {
+            "name": "REFERRAL_OFFER_CLEAN"
+          }
+        }
+      ],
       "businessKeys": [
         {
           "businessKeyComponentMapping": [
@@ -157,7 +138,7 @@
                 }
               ],
               "targetDataItem": {
-                "name": "MODULE_INSTANCE_ID"
+                "name": "CUSTOMER_ID"
               }
             }
           ],

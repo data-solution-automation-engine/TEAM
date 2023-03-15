@@ -1,7 +1,7 @@
 {
   "metadataConfiguration": {
     "changeDataCaptureAttribute": "CHANGE_DATA_INDICATOR",
-    "recordSourceAttribute": "RECORD_SOURCE",
+    "recordSourceAttribute": "RECORD_SOURCE_INDICATOR",
     "loadDateTimeAttribute": "INSCRIPTION_TIMESTAMP",
     "expiryDateTimeAttribute": "INSCRIPTION_END_TIMESTAMP",
     "eventDateTimeAttribute": "SOURCE_TIMESTAMP",
@@ -126,7 +126,7 @@
                 }
               ],
               "targetDataItem": {
-                "name": "MODULE_INSTANCE_ID"
+                "name": "CUSTOMER_ID"
               }
             }
           ],
@@ -227,7 +227,7 @@
                 }
               ],
               "targetDataItem": {
-                "name": "MODULE_INSTANCE_ID"
+                "name": "CUSTOMER_ID"
               }
             }
           ],
@@ -328,7 +328,7 @@
                 }
               ],
               "targetDataItem": {
-                "name": "MODULE_INSTANCE_ID"
+                "name": "CUSTOMER_ID"
               }
             }
           ],
@@ -429,7 +429,7 @@
                 }
               ],
               "targetDataItem": {
-                "name": "MODULE_INSTANCE_ID"
+                "name": "CUSTOMER_ID"
               }
             }
           ],
@@ -530,7 +530,7 @@
                 }
               ],
               "targetDataItem": {
-                "name": "MODULE_INSTANCE_ID"
+                "name": "CUSTOMER_ID"
               }
             }
           ],
