@@ -63,6 +63,9 @@
     <StartupObject>TEAM.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER_DERIVED.json" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Update="DataGridViewDataObjects.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -332,6 +335,11 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER_DERIVED.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Ravos-logo-small.ico" />
