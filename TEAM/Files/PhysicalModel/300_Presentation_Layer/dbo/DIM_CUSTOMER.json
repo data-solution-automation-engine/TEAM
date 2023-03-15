@@ -4,42 +4,12 @@
   "schema": "dbo",
   "columns": [
     {
-      "name": "DIM_CUSTOMER_SK",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
-      "numericScale": "0",
-      "ordinalPosition": 1,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "INSERT_MODULE_INSTANCE_ID",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
-      "numericScale": "0",
-      "ordinalPosition": 2,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "RECORD_CHECKSUM_TYPE1",
-      "dataType": "char",
-      "characterLength": "32",
+      "name": "CHANGE_DATA_INDICATOR",
+      "dataType": "varchar",
+      "characterLength": "1",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 3,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "RECORD_CHECKSUM_TYPE2",
-      "dataType": "char",
-      "characterLength": "32",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 4,
+      "ordinalPosition": 7,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -64,82 +34,12 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "CHANGE_DATA_INDICATOR",
-      "dataType": "varchar",
-      "characterLength": "1",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 7,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "CUSTOMER_SK",
-      "dataType": "binary",
-      "characterLength": "16",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 8,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "CUSTOMER_ID",
+      "name": "CONTACT_NUMBER",
       "dataType": "nvarchar",
       "characterLength": "100",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 9,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "GIVEN_NAME",
-      "dataType": "nvarchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 10,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "SURNAME",
-      "dataType": "nvarchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 11,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "GENDER",
-      "dataType": "nvarchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 12,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "SUBURB",
-      "dataType": "nvarchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 13,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "POSTCODE",
-      "dataType": "nvarchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 14,
+      "ordinalPosition": 17,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -154,6 +54,26 @@
       "multiActiveIndicator": "N"
     },
     {
+      "name": "CUSTOMER_ID",
+      "dataType": "nvarchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 9,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "CUSTOMER_SK",
+      "dataType": "binary",
+      "characterLength": "16",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 8,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
       "name": "DATE_OF_BIRTH",
       "dataType": "datetime2",
       "characterLength": "8",
@@ -164,12 +84,72 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "CONTACT_NUMBER",
+      "name": "DIM_CUSTOMER_SK",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 1,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "GENDER",
       "dataType": "nvarchar",
       "characterLength": "100",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 17,
+      "ordinalPosition": 12,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "GIVEN_NAME",
+      "dataType": "nvarchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 10,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "INSERT_MODULE_INSTANCE_ID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "POSTCODE",
+      "dataType": "nvarchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 14,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "RECORD_CHECKSUM_TYPE1",
+      "dataType": "char",
+      "characterLength": "32",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 3,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "RECORD_CHECKSUM_TYPE2",
+      "dataType": "char",
+      "characterLength": "32",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 4,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -180,6 +160,26 @@
       "numericPrecision": "0",
       "numericScale": "0",
       "ordinalPosition": 18,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "SUBURB",
+      "dataType": "nvarchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 13,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "SURNAME",
+      "dataType": "nvarchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 11,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     }

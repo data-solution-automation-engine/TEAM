@@ -1,30 +1,10 @@
 {
-  "name": "SAT_MEMBERSHIP_PLAN_DETAIL",
+  "name": "SAT_CUSTOMER_DERIVED",
   "database": "200_Integration_Layer",
   "schema": "dbo",
   "columns": [
     {
-      "name": "MEMBERSHIP_PLAN_SK",
-      "dataType": "binary",
-      "characterLength": "16",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 1,
-      "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "LOAD_DATETIME",
-      "dataType": "datetime2",
-      "characterLength": "8",
-      "numericPrecision": "27",
-      "numericScale": "7",
-      "ordinalPosition": 2,
-      "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "MODULE_INSTANCE_ID",
+      "name": "AUDIT_TRAIL_ID",
       "dataType": "int",
       "characterLength": "4",
       "numericPrecision": "10",
@@ -44,19 +24,9 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "SOURCE_ROW_ID",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
-      "numericScale": "0",
-      "ordinalPosition": 5,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "RECORD_SOURCE",
-      "dataType": "varchar",
-      "characterLength": "100",
+      "name": "CHECKSUM",
+      "dataType": "binary",
+      "characterLength": "16",
       "numericPrecision": "0",
       "numericScale": "0",
       "ordinalPosition": 6,
@@ -64,22 +34,42 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "RECORD_CHECKSUM",
+      "name": "CUSTOMER_SK",
       "dataType": "binary",
       "characterLength": "16",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 7,
-      "primaryKeyIndicator": "N",
+      "ordinalPosition": 1,
+      "primaryKeyIndicator": "Y",
       "multiActiveIndicator": "N"
     },
     {
-      "name": "PLAN_DESCRIPTION",
+      "name": "INSCRIPTION_RECORD_ID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 5,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
+    },
+    {
+      "name": "INSCRIPTION_TIMESTAMP",
+      "dataType": "datetime2",
+      "characterLength": "8",
+      "numericPrecision": "27",
+      "numericScale": "7",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "REFERRAL_OFFER_CLEAN",
       "dataType": "nvarchar",
       "characterLength": "100",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 8,
+      "ordinalPosition": 7,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     }

@@ -2,12 +2,12 @@
   "metadataConfiguration": {
     "changeDataCaptureAttribute": "CHANGE_DATA_INDICATOR",
     "recordSourceAttribute": "RECORD_SOURCE",
-    "loadDateTimeAttribute": "LOAD_DATETIME",
-    "expiryDateTimeAttribute": "LOAD_END_DATETIME",
-    "eventDateTimeAttribute": "EVENT_DATETIME",
-    "recordChecksumAttribute": "HASH_FULL_RECORD",
-    "etlProcessAttribute": "MODULE_INSTANCE_ID",
-    "sourceRowIdAttribute": "SOURCE_ROW_ID"
+    "loadDateTimeAttribute": "INSCRIPTION_TIMESTAMP",
+    "expiryDateTimeAttribute": "INSCRIPTION_END_TIMESTAMP",
+    "eventDateTimeAttribute": "SOURCE_TIMESTAMP",
+    "recordChecksumAttribute": "CHECKSUM",
+    "etlProcessAttribute": "AUDIT_TRAIL_ID",
+    "sourceRowIdAttribute": "INSCRIPTION_RECORD_ID"
   },
   "generationSpecificMetadata": {
     "selectedDataObject": {
@@ -17,7 +17,7 @@
         "extensions": [
           {
             "key": "database",
-            "value": "VirtualDWH",
+            "value": "200_Integration_Layer",
             "description": "database name"
           },
           {
@@ -50,7 +50,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "150_Persistent_Staging_Area",
                 "description": "database name"
               },
               {
@@ -74,7 +74,7 @@
           "extensions": [
             {
               "key": "database",
-              "value": "VirtualDWH",
+              "value": "200_Integration_Layer",
               "description": "database name"
             },
             {
@@ -126,7 +126,7 @@
                 }
               ],
               "targetDataItem": {
-                "name": "CUSTOMER_ID"
+                "name": "MODULE_INSTANCE_ID"
               }
             }
           ],
@@ -151,7 +151,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "150_Persistent_Staging_Area",
                 "description": "database name"
               },
               {
@@ -175,7 +175,7 @@
           "extensions": [
             {
               "key": "database",
-              "value": "VirtualDWH",
+              "value": "200_Integration_Layer",
               "description": "database name"
             },
             {
@@ -227,7 +227,7 @@
                 }
               ],
               "targetDataItem": {
-                "name": "CUSTOMER_ID"
+                "name": "MODULE_INSTANCE_ID"
               }
             }
           ],
@@ -252,7 +252,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "150_Persistent_Staging_Area",
                 "description": "database name"
               },
               {
@@ -276,7 +276,7 @@
           "extensions": [
             {
               "key": "database",
-              "value": "VirtualDWH",
+              "value": "200_Integration_Layer",
               "description": "database name"
             },
             {
@@ -328,7 +328,7 @@
                 }
               ],
               "targetDataItem": {
-                "name": "CUSTOMER_ID"
+                "name": "MODULE_INSTANCE_ID"
               }
             }
           ],
@@ -353,7 +353,7 @@
             "extensions": [
               {
                 "key": "database",
-                "value": "VirtualDWH",
+                "value": "150_Persistent_Staging_Area",
                 "description": "database name"
               },
               {
@@ -377,7 +377,7 @@
           "extensions": [
             {
               "key": "database",
-              "value": "VirtualDWH",
+              "value": "200_Integration_Layer",
               "description": "database name"
             },
             {
@@ -429,7 +429,108 @@
                 }
               ],
               "targetDataItem": {
-                "name": "CUSTOMER_ID"
+                "name": "MODULE_INSTANCE_ID"
+              }
+            }
+          ],
+          "surrogateKey": "CUSTOMER_SK"
+        }
+      ],
+      "filterCriterion": "",
+      "enabled": true
+    },
+    {
+      "mappingName": "HUB_CUSTOMER",
+      "mappingClassifications": [
+        {
+          "classification": "CoreBusinessConcept"
+        }
+      ],
+      "sourceDataObjects": [
+        {
+          "name": "bdv.CUSTOMER_DERIVED",
+          "dataObjectConnection": {
+            "dataConnectionString": "Derived",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "200_Integration_Layer",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "bdv",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "Source"
+            }
+          ]
+        }
+      ],
+      "targetDataObject": {
+        "name": "HUB_CUSTOMER",
+        "dataObjectConnection": {
+          "dataConnectionString": "Integration",
+          "extensions": [
+            {
+              "key": "database",
+              "value": "200_Integration_Layer",
+              "description": "database name"
+            },
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
+            }
+          ]
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "CoreBusinessConcept"
+          }
+        ]
+      },
+      "relatedDataObjects": [
+        {
+          "name": "DIM_CUSTOMER",
+          "dataObjectConnection": {
+            "dataConnectionString": "Presentation",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "300_Presentation_Layer",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "Presentation"
+            }
+          ]
+        }
+      ],
+      "businessKeys": [
+        {
+          "businessKeyComponentMapping": [
+            {
+              "sourceDataItems": [
+                {
+                  "name": "CustomerID",
+                  "isHardCodedValue": false
+                }
+              ],
+              "targetDataItem": {
+                "name": "MODULE_INSTANCE_ID"
               }
             }
           ],

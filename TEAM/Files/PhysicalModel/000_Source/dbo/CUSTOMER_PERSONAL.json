@@ -4,62 +4,12 @@
   "schema": "dbo",
   "columns": [
     {
-      "name": "CustomerID",
+      "name": "Contact_Number",
       "dataType": "int",
       "characterLength": "4",
       "numericPrecision": "10",
       "numericScale": "0",
-      "ordinalPosition": 1,
-      "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "Y"
-    },
-    {
-      "name": "Given",
-      "dataType": "varchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 2,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "Surname",
-      "dataType": "varchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 3,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "Suburb",
-      "dataType": "varchar",
-      "characterLength": "50",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 4,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "State",
-      "dataType": "varchar",
-      "characterLength": "3",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 5,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "Postcode",
-      "dataType": "varchar",
-      "characterLength": "6",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 6,
+      "ordinalPosition": 10,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -74,14 +24,14 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "Gender",
-      "dataType": "varchar",
-      "characterLength": "1",
-      "numericPrecision": "0",
+      "name": "CustomerID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
       "numericScale": "0",
-      "ordinalPosition": 8,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
+      "ordinalPosition": 1,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
     },
     {
       "name": "DOB",
@@ -94,12 +44,32 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "Contact_Number",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
+      "name": "Gender",
+      "dataType": "varchar",
+      "characterLength": "1",
+      "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 10,
+      "ordinalPosition": 8,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Given",
+      "dataType": "varchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Postcode",
+      "dataType": "varchar",
+      "characterLength": "6",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 6,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -110,6 +80,46 @@
       "numericPrecision": "10",
       "numericScale": "0",
       "ordinalPosition": 11,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "State",
+      "dataType": "varchar",
+      "characterLength": "3",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 5,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Suburb",
+      "dataType": "varchar",
+      "characterLength": "50",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 4,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Surname",
+      "dataType": "varchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 3,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Valid_From",
+      "dataType": "date",
+      "characterLength": "3",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 12,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     }

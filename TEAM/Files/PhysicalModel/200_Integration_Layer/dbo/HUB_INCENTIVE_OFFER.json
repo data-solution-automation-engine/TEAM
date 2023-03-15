@@ -4,6 +4,16 @@
   "schema": "dbo",
   "columns": [
     {
+      "name": "AUDIT_TRAIL_ID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
       "name": "INCENTIVE_OFFER_SK",
       "dataType": "binary",
       "characterLength": "16",
@@ -14,17 +24,7 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "MODULE_INSTANCE_ID",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
-      "numericScale": "0",
-      "ordinalPosition": 2,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "LOAD_DATETIME",
+      "name": "INSCRIPTION_TIMESTAMP",
       "dataType": "datetime2",
       "characterLength": "8",
       "numericPrecision": "27",
@@ -34,22 +34,12 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "RECORD_SOURCE",
-      "dataType": "varchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 4,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
       "name": "OFFER_ID",
       "dataType": "nvarchar",
       "characterLength": "100",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 5,
+      "ordinalPosition": 4,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     }

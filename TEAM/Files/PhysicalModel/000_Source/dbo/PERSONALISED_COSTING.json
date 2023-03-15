@@ -4,42 +4,22 @@
   "schema": "dbo",
   "columns": [
     {
-      "name": "Member",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
-      "numericScale": "0",
-      "ordinalPosition": 1,
-      "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "Y"
-    },
-    {
-      "name": "Segment",
-      "dataType": "varchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 2,
-      "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "Y"
-    },
-    {
-      "name": "Plan_Code",
-      "dataType": "varchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 3,
-      "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "Y"
-    },
-    {
       "name": "Date_effective",
       "dataType": "datetime",
       "characterLength": "8",
       "numericPrecision": "23",
       "numericScale": "3",
       "ordinalPosition": 4,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
+    },
+    {
+      "name": "Member",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 1,
       "primaryKeyIndicator": "Y",
       "multiActiveIndicator": "Y"
     },
@@ -52,6 +32,26 @@
       "ordinalPosition": 5,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Plan_Code",
+      "dataType": "varchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 3,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
+    },
+    {
+      "name": "Segment",
+      "dataType": "varchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
     }
   ]
 }

@@ -4,12 +4,32 @@
   "schema": "dbo",
   "columns": [
     {
+      "name": "AUDIT_TRAIL_ID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 1,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
       "name": "CHANGE_DATA_INDICATOR",
       "dataType": "varchar",
       "characterLength": "100",
       "numericPrecision": "0",
       "numericScale": "0",
       "ordinalPosition": 6,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "CHECKSUM",
+      "dataType": "binary",
+      "characterLength": "16",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 7,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -54,16 +74,6 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "EVENT_DATETIME",
-      "dataType": "datetime2",
-      "characterLength": "8",
-      "numericPrecision": "27",
-      "numericScale": "7",
-      "ordinalPosition": 3,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
       "name": "Gender",
       "dataType": "nvarchar",
       "characterLength": "100",
@@ -84,33 +94,23 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "RECORD_CHECKSUM",
-      "dataType": "binary",
-      "characterLength": "16",
-      "numericPrecision": "0",
+      "name": "INSCRIPTION_RECORD_ID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
       "numericScale": "0",
-      "ordinalPosition": 7,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
+      "ordinalPosition": 5,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
     },
     {
-      "name": "LOAD_DATETIME",
+      "name": "INSCRIPTION_TIMESTAMP",
       "dataType": "datetime2",
       "characterLength": "8",
       "numericPrecision": "27",
       "numericScale": "7",
       "ordinalPosition": 2,
       "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "MODULE_INSTANCE_ID",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
-      "numericScale": "0",
-      "ordinalPosition": 1,
-      "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
     {
@@ -144,14 +144,14 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "SOURCE_ROW_ID",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
-      "numericScale": "0",
-      "ordinalPosition": 5,
-      "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "Y"
+      "name": "SOURCE_TIMESTAMP",
+      "dataType": "datetime2",
+      "characterLength": "8",
+      "numericPrecision": "27",
+      "numericScale": "7",
+      "ordinalPosition": 3,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
     },
     {
       "name": "State",

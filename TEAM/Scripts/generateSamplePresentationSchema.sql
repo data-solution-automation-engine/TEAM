@@ -1,5 +1,4 @@
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[DIM_CUSTOMER]') AND type in (N'U'))
-DROP TABLE [dbo].[DIM_CUSTOMER]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[DIM_CUSTOMER]') AND type in (N'U')) DROP TABLE [dbo].[DIM_CUSTOMER]
 
 CREATE TABLE [dbo].[DIM_CUSTOMER](
 	[DIM_CUSTOMER_SK] [int] IDENTITY(1,1) NOT NULL,

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using DataWarehouseAutomation;
@@ -994,7 +995,7 @@ namespace TEAM_Library
                 tempComponent.ordinal = ordinal;
 
                 // Link surrogate key
-                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.TargetDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
+                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.TargetDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
                 tempComponent.surrogateKey = surrogateKey;
 
                 // Add individual key parts (the individual keys) as well.
@@ -1081,7 +1082,7 @@ namespace TEAM_Library
 
                 tempComponent.ordinal = ordinal;
 
-                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.TargetDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
+                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.TargetDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
                 tempComponent.surrogateKey = surrogateKey;
 
                 businessKeyComponents.Add(tempComponent);
@@ -1188,7 +1189,7 @@ namespace TEAM_Library
                     var column = row.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString();
 
                     // Add if it's not a standard element.
-                    var surrogateKey = DeriveSurrogateKey(lookupDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
+                    var surrogateKey = DeriveSurrogateKey(lookupDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
                     
                     if (!column.IsExcludedBusinessKeyDataItem(dataObjectType, surrogateKey, businessKeyDefinition, teamConnection, teamConfiguration))
                     {
@@ -1355,7 +1356,7 @@ namespace TEAM_Library
                         .Where(r => !r.IsNewRow)
                         .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyComponent.businessKeyComponentElement)) // Match on business key definition
                         .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName)) // Using same source
-                        .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName)) // Note the target
+                        .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName)) // Not the target
                         .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.Context)
                         .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContext)
                         .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
@@ -1381,7 +1382,7 @@ namespace TEAM_Library
         /// <param name="sourceDataObjectName"></param>
         /// <param name="dataGridViewRowsDataObjects"></param>
         /// <returns>surrogateKey</returns>
-        public static string DeriveSurrogateKey(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects)
+        public static string DeriveSurrogateKey(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, EventLog eventLog)
         {
             // Get the type
             var dataObjectType = GetDataObjectType(targetDataObjectName, "", teamConfiguration);
@@ -1389,7 +1390,19 @@ namespace TEAM_Library
             // If a data object has been evaluated to be a Satellite (or Link-Satellite), replace the data object to query with the parent Hub or Link.
             if (new [] { DataObjectTypes.Context, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey}.Contains(dataObjectType))
             {
-                targetDataObjectName = GetParentDataObjects(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects).FirstOrDefault().Name;
+                try
+                {
+                    var parentDataObject = GetParentDataObjects(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects).FirstOrDefault();
+
+                    if (parentDataObject != null)
+                    {
+                        targetDataObjectName = parentDataObject.Name;
+                    }
+                }
+                catch (Exception exception)
+                {
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The parent data object, and therefore the surrogate key could not be identified for '{targetDataObjectName}'. The reported error is {exception.Message}."));
+                }
             }
 
             var surrogateKey = GetSurrogateKey(targetDataObjectName, teamConfiguration, teamConnection);

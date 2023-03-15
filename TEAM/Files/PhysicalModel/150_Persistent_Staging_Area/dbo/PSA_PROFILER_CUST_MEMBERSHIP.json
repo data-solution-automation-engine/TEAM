@@ -4,7 +4,7 @@
   "schema": "dbo",
   "columns": [
     {
-      "name": "MODULE_INSTANCE_ID",
+      "name": "AUDIT_TRAIL_ID",
       "dataType": "int",
       "characterLength": "4",
       "numericPrecision": "10",
@@ -12,46 +12,6 @@
       "ordinalPosition": 1,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
-    },
-    {
-      "name": "LOAD_DATETIME",
-      "dataType": "datetime2",
-      "characterLength": "8",
-      "numericPrecision": "27",
-      "numericScale": "7",
-      "ordinalPosition": 2,
-      "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "EVENT_DATETIME",
-      "dataType": "datetime2",
-      "characterLength": "8",
-      "numericPrecision": "27",
-      "numericScale": "7",
-      "ordinalPosition": 3,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "RECORD_SOURCE",
-      "dataType": "varchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 4,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "SOURCE_ROW_ID",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
-      "numericScale": "0",
-      "ordinalPosition": 5,
-      "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "Y"
     },
     {
       "name": "CHANGE_DATA_INDICATOR",
@@ -64,12 +24,22 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "RECORD_CHECKSUM",
+      "name": "CHECKSUM",
       "dataType": "binary",
       "characterLength": "16",
       "numericPrecision": "0",
       "numericScale": "0",
       "ordinalPosition": 7,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "Comment",
+      "dataType": "nvarchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 13,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -84,6 +54,36 @@
       "multiActiveIndicator": "Y"
     },
     {
+      "name": "End_Date",
+      "dataType": "datetime2",
+      "characterLength": "8",
+      "numericPrecision": "27",
+      "numericScale": "7",
+      "ordinalPosition": 11,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "INSCRIPTION_RECORD_ID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 5,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
+    },
+    {
+      "name": "INSCRIPTION_TIMESTAMP",
+      "dataType": "datetime2",
+      "characterLength": "8",
+      "numericPrecision": "27",
+      "numericScale": "7",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "N"
+    },
+    {
       "name": "Plan_Code",
       "dataType": "nvarchar",
       "characterLength": "100",
@@ -92,6 +92,26 @@
       "ordinalPosition": 9,
       "primaryKeyIndicator": "Y",
       "multiActiveIndicator": "Y"
+    },
+    {
+      "name": "RECORD_SOURCE",
+      "dataType": "varchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 4,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "SOURCE_TIMESTAMP",
+      "dataType": "datetime2",
+      "characterLength": "8",
+      "numericPrecision": "27",
+      "numericScale": "7",
+      "ordinalPosition": 3,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
     },
     {
       "name": "Start_Date",
@@ -104,32 +124,12 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "End_Date",
-      "dataType": "datetime2",
-      "characterLength": "8",
-      "numericPrecision": "27",
-      "numericScale": "7",
-      "ordinalPosition": 11,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
       "name": "Status",
       "dataType": "nvarchar",
       "characterLength": "100",
       "numericPrecision": "0",
       "numericScale": "0",
       "ordinalPosition": 12,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "Comment",
-      "dataType": "nvarchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 13,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     }

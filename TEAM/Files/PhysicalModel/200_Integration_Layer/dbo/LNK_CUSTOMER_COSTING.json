@@ -4,6 +4,26 @@
   "schema": "dbo",
   "columns": [
     {
+      "name": "[INSCRIPTION_TIMESTAMP",
+      "dataType": "datetime2",
+      "characterLength": "8",
+      "numericPrecision": "27",
+      "numericScale": "7",
+      "ordinalPosition": 3,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "AUDIT_TRAIL_ID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
       "name": "CUSTOMER_COSTING_SK",
       "dataType": "binary",
       "characterLength": "16",
@@ -14,37 +34,7 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "MODULE_INSTANCE_ID",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
-      "numericScale": "0",
-      "ordinalPosition": 2,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "LOAD_DATETIME",
-      "dataType": "datetime2",
-      "characterLength": "8",
-      "numericPrecision": "27",
-      "numericScale": "7",
-      "ordinalPosition": 3,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "RECORD_SOURCE",
-      "dataType": "varchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 4,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "MEMBERSHIP_PLAN_SK",
+      "name": "CUSTOMER_SK",
       "dataType": "binary",
       "characterLength": "16",
       "numericPrecision": "0",
@@ -54,12 +44,12 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "CUSTOMER_SK",
+      "name": "MEMBERSHIP_PLAN_SK",
       "dataType": "binary",
       "characterLength": "16",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 6,
+      "ordinalPosition": 4,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -69,7 +59,7 @@
       "characterLength": "16",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 7,
+      "ordinalPosition": 6,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     }

@@ -500,9 +500,7 @@ namespace TEAM_Library
                 businessKeyOrder++;
 
                 // Query the Hub information
-                DataRow[] selectionRows = dataObjectMappingDataTable.Select(DataObjectMappingGridColumns.SourceDataObject + " = '" + validationObject.Item1 + "' AND " +
-                                                                DataObjectMappingGridColumns.BusinessKeyDefinition + " = '" + hubBusinessKey.Replace("'", "''").Trim() + "' AND " +
-                                                                DataObjectMappingGridColumns.TargetDataObject + " NOT LIKE '" + teamConfiguration.SatTablePrefixValue + "_%'");
+                DataRow[] selectionRows = dataObjectMappingDataTable.Select(DataObjectMappingGridColumns.SourceDataObject + " = '" + validationObject.Item1 + "' AND " + DataObjectMappingGridColumns.BusinessKeyDefinition + " = '" + hubBusinessKey.Replace("'", "''").Trim() + "' AND " + DataObjectMappingGridColumns.TargetDataObject + " NOT LIKE '" + teamConfiguration.SatTablePrefixValue + "_%'");
 
                 try
                 {
@@ -510,14 +508,14 @@ namespace TEAM_Library
                     string hubTableConnectionId = selectionRows[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var hubTableConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(hubTableConnectionId, teamConfiguration, eventLog);
 
-                    string hubSurrogateKeyName = JsonOutputHandling.DeriveSurrogateKey(validationObject.Item2, validationObject.Item1, validationObject.Item3, hubTableConnection, teamConfiguration, dataGridViewRowsDataObjects);
+                    string hubSurrogateKeyName = JsonOutputHandling.DeriveSurrogateKey(validationObject.Item2, validationObject.Item1, validationObject.Item3, hubTableConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
 
                     // Add to the dictionary that contains the keys in order.
                     hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
                 }
-                catch
+                catch (Exception exception)
                 {
-                    //
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue identifying the order of the business keys and corresponding surrogate key for '{validationObject}'. The reported error is {exception.Message}."));
                 }
             }
 

@@ -1605,7 +1605,7 @@ namespace TEAM
 
                             var dataObjectType = GetDataObjectType(targetDataObject.Name, "", FormBase.TeamConfiguration);
 
-                            var surrogateKey = JsonOutputHandling.DeriveSurrogateKey(targetDataObject.Name, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration, dataGridViewRowsDataObjects);
+                            var surrogateKey = JsonOutputHandling.DeriveSurrogateKey(targetDataObject.Name, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration, dataGridViewRowsDataObjects, TeamEventLog);
 
                             if (!autoMappedTargetDataItemName.IsIncludedDataItem(dataObjectType, surrogateKey, targetDataItemConnection, TeamConfiguration))
                                 continue;
@@ -1624,7 +1624,7 @@ namespace TEAM
 
                             // Add data types to Data Item that are part of a data item mapping.
                             var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
-                            var sourceDataItemConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
+                            var sourceDataItemConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceDataItemConnectionInternalId, TeamConfiguration, FormBase.TeamEventLog);
 
                             JsonOutputHandling.SetDataItemMappingDataType(autoMappedSourceDataItem, sourceDataObject, sourceDataItemConnection, JsonExportSetting, dataGridViewRowsPhysicalModel);
                             JsonOutputHandling.SetDataItemMappingDataType(autoMappedTargetDataItem, targetDataObject, targetDataItemConnection, JsonExportSetting, dataGridViewRowsPhysicalModel);
