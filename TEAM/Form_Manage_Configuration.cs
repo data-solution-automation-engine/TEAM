@@ -486,7 +486,8 @@ namespace TEAM
             {
                 if (textBoxConfigurationPath.Text != "")
                 {
-                    Process.Start(textBoxConfigurationPath.Text);
+                    var psi = new ProcessStartInfo() { FileName = textBoxConfigurationPath.Text, UseShellExecute = true };
+                    Process.Start(psi);
                 }
                 else
                 {
@@ -879,7 +880,8 @@ namespace TEAM
             {
                 if (textBoxTeamMetadataPath.Text != "")
                 {
-                    Process.Start(textBoxTeamMetadataPath.Text);
+                    var psi = new ProcessStartInfo() { FileName = textBoxTeamMetadataPath.Text, UseShellExecute = true };
+                    Process.Start(psi);
                 }
                 else
                 {

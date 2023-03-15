@@ -199,6 +199,20 @@ namespace TEAM_Library
         }
 
         /// <summary>
+        /// Assert if a given Team Data Object is a STG / LND entity.
+        /// </summary>
+        /// <param name="dataObjectName"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <returns></returns>
+        public static Boolean IsStg(this string dataObjectName, TeamConfiguration teamConfiguration)
+        {
+            bool isDataVaultHub = (teamConfiguration.TableNamingLocation == "Prefix" && dataObjectName.StartsWith(teamConfiguration.StgTablePrefixValue)) ||
+                                  (teamConfiguration.TableNamingLocation == "Suffix" && dataObjectName.EndsWith(teamConfiguration.StgTablePrefixValue));
+
+            return isDataVaultHub;
+        }
+
+        /// <summary>
         /// Receives a comma-separated string and turns it into an array without spaces.
         /// </summary>
         /// <param name="labels"></param>
@@ -258,7 +272,8 @@ namespace TEAM_Library
             if (maxNumber < 1)
                 throw new Exception("The maxNumber value should be greater than 1");
             var b = new byte[4];
-            new RNGCryptoServiceProvider().GetBytes(b);
+            var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(b);
             var seed = (b[0] & 0x7f) << 24 | b[1] << 16 | b[2] << 8 | b[3];
             var r = new Random(seed);
             return r.Next(1, maxNumber);
@@ -274,7 +289,8 @@ namespace TEAM_Library
             var start = new DateTime(startYear, 1, 1);
             var range = (DateTime.Today - start).Days;
             var b = new byte[4];
-            new RNGCryptoServiceProvider().GetBytes(b);
+            var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(b);
             var seed = (b[0] & 0x7f) << 24 | b[1] << 16 | b[2] << 8 | b[3];
             return start.AddDays(new Random(seed).Next(1, range)).AddSeconds(new Random(seed).Next(1, 86400));
         }

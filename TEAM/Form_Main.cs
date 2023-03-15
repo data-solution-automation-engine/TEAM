@@ -24,7 +24,7 @@ namespace TEAM
             InitializeComponent();
 
             // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.6.8";
+            const string versionNumberForTeamApplication = "v1.6.9";
             Text = $@"Taxonomy for ETL Automation Metadata {versionNumberForTeamApplication}";
 
             TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {globalParameters.RootPath}."));
@@ -359,9 +359,9 @@ namespace TEAM
 
                         Application.Run(_myMetadataForm);
                     }
-                    catch
+                    catch (Exception exception)
                     {
-                        //MessageBox.Show($@"Cannot close the form that is open. The reported reason is: {ex.Message}");
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, exception.Message));
                     }
                 }
             }
@@ -549,7 +549,8 @@ namespace TEAM
             {
                 try
                 {
-                    Process.Start(globalParameters.MetadataPath);
+                    var psi = new ProcessStartInfo() { FileName = globalParameters.MetadataPath, UseShellExecute = true };
+                    Process.Start(psi);
                 }
                 catch (Exception ex)
                 {

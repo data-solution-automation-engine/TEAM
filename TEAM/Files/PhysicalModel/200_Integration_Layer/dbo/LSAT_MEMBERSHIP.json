@@ -34,7 +34,7 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "CDC_OPERATION",
+      "name": "CHANGE_DATA_INDICATOR",
       "dataType": "varchar",
       "characterLength": "100",
       "numericPrecision": "0",
@@ -64,7 +64,7 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "HASH_FULL_RECORD",
+      "name": "RECORD_CHECKSUM",
       "dataType": "binary",
       "characterLength": "16",
       "numericPrecision": "0",

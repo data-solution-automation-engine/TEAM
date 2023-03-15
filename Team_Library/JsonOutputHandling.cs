@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using DataWarehouseAutomation;
-using Microsoft.SqlServer.Management.Smo;
 using static TEAM_Library.MetadataHandling;
 using DataObject = DataWarehouseAutomation.DataObject;
 using Extension = DataWarehouseAutomation.Extension;
@@ -29,7 +28,7 @@ namespace TEAM_Library
         public static DataObject CreateDataObject(string dataObjectName, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsPhysicalModel, string sourceOrTarget = "Source")
         {
             // Initialise the object and set the name.
-            DataObject dataObject = new DataObject {name = dataObjectName};
+            DataObject dataObject = new DataObject {Name = dataObjectName};
 
             // Set the data object connection.
             SetDataObjectConnection(dataObject, teamConnection, jsonExportSetting);
@@ -67,11 +66,11 @@ namespace TEAM_Library
             // Remove the list if the setting is disabled.
             if (!jsonExportSetting.IsAddDataItemsToDataObject())
             {
-                dataObject.dataItems = null;
+                dataObject.DataItems = null;
             }
             else if (jsonExportSetting.IsAddDataItemsToDataObject())
             {
-                var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject.name, teamConnection).FirstOrDefault();
+                var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject.Name, teamConnection).FirstOrDefault();
 
                 List<dynamic> dataItems = new List<dynamic>();
 
@@ -84,7 +83,7 @@ namespace TEAM_Library
 
                         if (fullyQualifiedName.Key == schemaName && fullyQualifiedName.Value == tableName)
                         {
-                            DataItem dataItem = new DataItem { name = physicalModelGridViewRow.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString() };
+                            DataItem dataItem = new DataItem { Name = physicalModelGridViewRow.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString() };
 
                             // Apply or remove data item details.
                             SetDataItemDataType(dataItem, physicalModelGridViewRow, jsonExportSetting);
@@ -94,7 +93,7 @@ namespace TEAM_Library
                     }
                 }
 
-                dataObject.dataItems = dataItems;
+                dataObject.DataItems = dataItems;
             }
 
             return dataObject;
@@ -112,13 +111,13 @@ namespace TEAM_Library
             if (!jsonExportSetting.IsAddDataTypeToDataItem())
             {
                 // Remove any data type details.
-                dataItem.characterLength = null;
-                dataItem.dataType = null;
-                dataItem.numericPrecision = null;
-                dataItem.numericScale = null;
-                dataItem.ordinalPosition = null;
-                dataItem.isPrimaryKey = null;
-                dataItem.isHardCodedValue = null;
+                dataItem.CharacterLength = null;
+                dataItem.DataType = null;
+                dataItem.NumericPrecision = null;
+                dataItem.NumericScale = null;
+                dataItem.OrdinalPosition = null;
+                dataItem.IsPrimaryKey = null;
+                dataItem.IsHardCodedValue = null;
             }
             else if (jsonExportSetting.IsAddDataTypeToDataItem())
             {
@@ -126,18 +125,18 @@ namespace TEAM_Library
                 {
                     var dataType = physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.dataType].Value.ToString();
 
-                    dataItem.dataType = dataType;
+                    dataItem.DataType = dataType;
 
                     switch (dataType)
                     {
                         case "varchar":
                         case "nvarchar":
                         case "binary":
-                            dataItem.characterLength = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.characterLength].Value.ToString());
+                            dataItem.CharacterLength = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.characterLength].Value.ToString());
                             break;
                         case "numeric":
-                            dataItem.numericPrecision = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericPrecision].Value.ToString());
-                            dataItem.numericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
+                            dataItem.NumericPrecision = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericPrecision].Value.ToString());
+                            dataItem.NumericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
                             break;
                         case "int":
                             // No length etc.
@@ -145,11 +144,11 @@ namespace TEAM_Library
                         case "datetime":
                         case "datetime2":
                         case "date":
-                            dataItem.numericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
+                            dataItem.NumericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
                             break;
                     }
 
-                    dataItem.ordinalPosition = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value.ToString());
+                    dataItem.OrdinalPosition = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value.ToString());
                 }
             }
 
@@ -170,41 +169,41 @@ namespace TEAM_Library
             if (!jsonExportSetting.IsAddDataTypeToDataItem())
             {
                 // Remove any data type details.
-                dataItem.characterLength = null;
-                dataItem.dataType = null;
-                dataItem.numericPrecision = null;
-                dataItem.numericScale = null;
-                dataItem.ordinalPosition = null;
-                dataItem.isPrimaryKey = null;
-                dataItem.isHardCodedValue = null;
+                dataItem.CharacterLength = null;
+                dataItem.DataType = null;
+                dataItem.NumericPrecision = null;
+                dataItem.NumericScale = null;
+                dataItem.OrdinalPosition = null;
+                dataItem.IsPrimaryKey = null;
+                dataItem.IsHardCodedValue = null;
             }
             else if (jsonExportSetting.IsAddDataTypeToDataItem())
             {
-                var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject.name, teamConnection).FirstOrDefault();
+                var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject.Name, teamConnection).FirstOrDefault();
 
                 // Find the matching physical model row.
                 DataGridViewRow physicalModelRow = dataGridViewRowsPhysicalModel
                     .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.schemaName].Value.ToString().Equals(fullyQualifiedName.Key))
                     .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(fullyQualifiedName.Value))
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(dataItem.name))
+                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(dataItem.Name))
                     .First();
 
                 if (physicalModelRow != null)
                 {
                     var dataType = physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.dataType].Value.ToString();
 
-                    dataItem.dataType = dataType;
+                    dataItem.DataType = dataType;
 
                     switch (dataType)
                     {
                         case "varchar":
                         case "nvarchar":
                         case "binary":
-                            dataItem.characterLength = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.characterLength].Value.ToString());
+                            dataItem.CharacterLength = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.characterLength].Value.ToString());
                             break;
                         case "numeric":
-                            dataItem.numericPrecision = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericPrecision].Value.ToString());
-                            dataItem.numericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
+                            dataItem.NumericPrecision = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericPrecision].Value.ToString());
+                            dataItem.NumericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
                             break;
                         case "int":
                             // No length etc.
@@ -212,11 +211,11 @@ namespace TEAM_Library
                         case "datetime":
                         case "datetime2":
                         case "date":
-                            dataItem.numericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
+                            dataItem.NumericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
                             break;
                     }
 
-                    dataItem.ordinalPosition = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value.ToString());
+                    dataItem.OrdinalPosition = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value.ToString());
                 }
             }
 
@@ -230,20 +229,34 @@ namespace TEAM_Library
         /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
         /// <returns></returns>
-        public static List<Classification> SetMappingClassifications(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, string drivingKeyValue)
+        public static List<DataClassification> MappingClassification(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration,TeamConnection connection, string drivingKeyValue)
         {
-            var tableType = GetDataObjectType(dataObjectName, "", teamConfiguration);
+            var dataObjectType = GetDataObjectType(dataObjectName, "", teamConfiguration);
 
             // Override for driving key.
             if (drivingKeyValue != null && !string.IsNullOrEmpty(drivingKeyValue))
             {
-                tableType = DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey;
+                dataObjectType = DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey;
             }
 
-            List<Classification> dataObjectsMappingClassifications = new List<Classification>();
-            var dataObjectMappingClassification = new Classification
+            var stringDataObjectType = "Unknown";
+
+            if (dataObjectType == DataObjectTypes.Source || dataObjectType == DataObjectTypes.Unknown)
             {
-                classification = tableType.ToString()
+                stringDataObjectType = connection.ConnectionKey;
+            }
+            else
+            {
+                stringDataObjectType = dataObjectType.ToString();
+            }
+
+
+            // Work around for unknowns - replace with connection information.
+
+            List<DataClassification> dataObjectsMappingClassifications = new List<DataClassification>();
+            var dataObjectMappingClassification = new DataClassification
+            {
+                Classification = stringDataObjectType
             };
 
             dataObjectsMappingClassifications.Add(dataObjectMappingClassification);
@@ -267,7 +280,7 @@ namespace TEAM_Library
             {
                 var metaDataObject = GetMetadataDataObject(teamConfiguration, jsonExportSetting, dataGridViewRowsPhysicalModel);
 
-                if (metaDataObject.name != null)
+                if (metaDataObject.Name != null && metaDataObject.Name != "NewDataObject")
                 {
                     returnDataObject = metaDataObject;
                 }
@@ -293,13 +306,13 @@ namespace TEAM_Library
             if (jsonExportSetting.AddParentDataObjectAsRelatedDataObject == "True")
             {
                 // Find the parent data object.
-                var parentDataObject = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataObjectDataGridViewRows);
+                var parentDataObjects = GetParentDataObjects(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataObjectDataGridViewRows);
 
                 // Create the parent data object.
-                if (parentDataObject != null && parentDataObject.name != null)
+                if (parentDataObjects != null)
                 {
                     // Set the name and further settings.
-                    relatedDataObjectList.Add(parentDataObject);
+                    relatedDataObjectList.AddRange(parentDataObjects);
                 }
             }
 
@@ -322,17 +335,23 @@ namespace TEAM_Library
             {
                 var dataObjectMappings = dataObjectDataGrid.Rows.Cast<DataGridViewRow>()
                     .Where(x => !x.IsNewRow)
-                    .Where(x => ((DataRowView)x.DataBoundItem).Row.Field<DataObject>(DataObjectMappingGridColumns.SourceDataObject.ToString()).name == targetDataObjectName).ToList();
+                    .Where(x => ((DataRowView)x.DataBoundItem).Row.Field<DataObject>(DataObjectMappingGridColumns.SourceDataObject.ToString()).Name == targetDataObjectName).ToList();
 
                 foreach (DataGridViewRow row in dataObjectMappings)
                 {
                     var localDataObjectName = row.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
                     var localDataObjectConnectionInternalId = row.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
 
-                    TeamConnection localConnection = TeamConnection.GetTeamConnectionByConnectionId(localDataObjectConnectionInternalId, teamConfiguration, eventLog);
+                    TeamConnection localConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(localDataObjectConnectionInternalId, teamConfiguration, eventLog);
 
                     // Set the name and further settings.
-                    dataObjectList.Add(CreateDataObject(localDataObjectName, localConnection, jsonExportSetting, teamConfiguration, dataGridViewRowsPhysicalModel));
+
+                    var localRelatedDataObject = CreateDataObject(localDataObjectName, localConnection, jsonExportSetting, teamConfiguration, dataGridViewRowsPhysicalModel);
+
+                    if (localRelatedDataObject.Name != "NewDataObject")
+                    {
+                        dataObjectList.Add(localRelatedDataObject);
+                    }
                 }
             }
 
@@ -351,28 +370,28 @@ namespace TEAM_Library
             // If the setting is disabled, remove the data object from the data item
             if (!jsonExportSetting.IsAddParentDataObjectToDataItem())
             {
-                dataItem.dataObject = null;
+                dataItem.DataObject = null;
             }
             else if (jsonExportSetting.IsAddParentDataObjectToDataItem())
             {
                 // Create a separate, smaller / limited, data object to avoid any circular dependencies when assigning the Data Object to the Data Item.
                 var localDataObject = new DataObject
                 {
-                    name = dataObject.name
+                    Name = dataObject.Name
                 };
 
-                if (dataObject.dataObjectClassifications != null && dataObject.dataObjectClassifications.Count > 0)
+                if (dataObject.DataObjectClassifications != null && dataObject.DataObjectClassifications.Count > 0)
                 {
-                    localDataObject.dataObjectClassifications = dataObject.dataObjectClassifications;
+                    localDataObject.DataObjectClassifications = dataObject.DataObjectClassifications;
                 }
 
-                if (dataObject.dataObjectConnection != null && !string.IsNullOrEmpty(dataObject.dataObjectConnection.dataConnectionString))
+                if (dataObject.DataObjectConnection != null && !string.IsNullOrEmpty(dataObject.DataObjectConnection.DataConnectionString))
                 {
-                    localDataObject.dataObjectConnection = dataObject.dataObjectConnection;
+                    localDataObject.DataObjectConnection = dataObject.DataObjectConnection;
                 }
 
                 // Add the Data Object to the Data Item.
-                dataItem.dataObject = localDataObject;
+                dataItem.DataObject = localDataObject;
             }
 
             return dataItem;
@@ -390,32 +409,32 @@ namespace TEAM_Library
             // Store the extensions that may be there, if any.
             var tempExtensions = new List<Extension>();
 
-            if (dataObject.dataObjectConnection != null && dataObject.dataObjectConnection.extensions != null)
+            if (dataObject.DataObjectConnection != null && dataObject.DataObjectConnection.Extensions != null)
             {
-                tempExtensions = dataObject.dataObjectConnection.extensions;
+                tempExtensions = dataObject.DataObjectConnection.Extensions;
             }
 
             var dataObjectConnection = new DataConnection
             {
-                dataConnectionString = teamConnection.ConnectionKey
+                DataConnectionString = teamConnection.ConnectionKey
             };
 
             // Re-add extensions, if available.
             if (tempExtensions != null)
             {
-                dataObjectConnection.extensions = tempExtensions;
+                dataObjectConnection.Extensions = tempExtensions;
             }
 
-            dataObject.dataObjectConnection = dataObjectConnection;
+            dataObject.DataObjectConnection = dataObjectConnection;
 
             return dataObject;
         }
 
         public static DataQuery SetDataQueryConnection(DataQuery dataQuery, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
-            var dataObjectConnection = new DataConnection { dataConnectionString = teamConnection.ConnectionKey };
+            var dataObjectConnection = new DataConnection { DataConnectionString = teamConnection.ConnectionKey };
 
-            dataQuery.dataQueryConnection = dataObjectConnection;
+            dataQuery.DataQueryConnection = dataObjectConnection;
 
             return dataQuery;
         }
@@ -433,13 +452,13 @@ namespace TEAM_Library
             // If no classifications exists, do nothing. Otherwise check if one needs removal.
             if (!jsonExportSetting.IsAddDatabaseAsExtensionToConnection())
             {
-                if (dataObject.dataObjectConnection != null && dataObject.dataObjectConnection.extensions != null)
+                if (dataObject.DataObjectConnection != null && dataObject.DataObjectConnection.Extensions != null)
                 {
                     List<Extension> localExtensions = new List<Extension>();
 
-                    foreach (var extension in dataObject.dataObjectConnection.extensions)
+                    foreach (var extension in dataObject.DataObjectConnection.Extensions)
                     {
-                        if (extension.key != "database")
+                        if (extension.Key != "database")
                         {
                             localExtensions.Add(extension);
                         }
@@ -448,31 +467,31 @@ namespace TEAM_Library
                     // If there's any left, re-add them. Otherwise set to empty.
                     if (localExtensions.Count > 0)
                     {
-                        dataObject.dataObjectConnection.extensions = localExtensions;
+                        dataObject.DataObjectConnection.Extensions = localExtensions;
                     }
                     else
                     {
-                        dataObject.dataObjectConnection.extensions = null;
+                        dataObject.DataObjectConnection.Extensions = null;
                     }
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddDatabaseAsExtensionToConnection() && dataObject.dataObjectConnection != null)
+            else if (jsonExportSetting.IsAddDatabaseAsExtensionToConnection() && dataObject.DataObjectConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
                 List<Extension> returnExtensions = new List<Extension>();
 
                 // Copy any existing classifications already in place, if any.
-                if (dataObject.dataObjectConnection.extensions != null)
+                if (dataObject.DataObjectConnection.Extensions != null)
                 {
-                    localExtensions = dataObject.dataObjectConnection.extensions;
+                    localExtensions = dataObject.DataObjectConnection.Extensions;
                 }
 
                 // Check if this particular classification already exists before adding.
                 // Preserve the others.
                 foreach (var extension in localExtensions)
                 {
-                    if (extension.key != "database")
+                    if (extension.Key != "database")
                     {
                         returnExtensions.Add(extension);
                     }
@@ -480,14 +499,14 @@ namespace TEAM_Library
 
                 var localExtension = new Extension
                 {
-                    key = "database",
-                    value = teamConnection.DatabaseServer.DatabaseName,
-                    description = "database name"
+                    Key = "database",
+                    Value = teamConnection.DatabaseServer.DatabaseName,
+                    Description = "database name"
                 };
 
                 returnExtensions.Add(localExtension);
 
-                dataObject.dataObjectConnection.extensions = returnExtensions;
+                dataObject.DataObjectConnection.Extensions = returnExtensions;
             }
 
             return dataObject;
@@ -499,13 +518,13 @@ namespace TEAM_Library
             // If no classifications exists, do nothing. Otherwise check if one needs removal.
             if (!jsonExportSetting.IsAddDatabaseAsExtensionToConnection())
             {
-                if (dataQuery.dataQueryConnection != null && dataQuery.dataQueryConnection.extensions != null)
+                if (dataQuery.DataQueryConnection != null && dataQuery.DataQueryConnection.Extensions != null)
                 {
                     List<Extension> localExtensions = new List<Extension>();
 
-                    foreach (var extension in dataQuery.dataQueryConnection.extensions)
+                    foreach (var extension in dataQuery.DataQueryConnection.Extensions)
                     {
-                        if (extension.key != "database")
+                        if (extension.Key != "database")
                         {
                             localExtensions.Add(extension);
                         }
@@ -514,30 +533,30 @@ namespace TEAM_Library
                     // If there's any left, re-add them. Otherwise set to empty.
                     if (localExtensions.Count > 0)
                     {
-                        dataQuery.dataQueryConnection.extensions = localExtensions;
+                        dataQuery.DataQueryConnection.Extensions = localExtensions;
                     }
                     else
                     {
-                        dataQuery.dataQueryConnection.extensions = null;
+                        dataQuery.DataQueryConnection.Extensions = null;
                     }
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddDatabaseAsExtensionToConnection() && dataQuery.dataQueryConnection != null)
+            else if (jsonExportSetting.IsAddDatabaseAsExtensionToConnection() && dataQuery.DataQueryConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
                 List<Extension> returnExtensions = new List<Extension>();
 
                 // Copy any existing classifications already in place, if any.
-                if (dataQuery.dataQueryConnection.extensions != null)
+                if (dataQuery.DataQueryConnection.Extensions != null)
                 {
-                    localExtensions = dataQuery.dataQueryConnection.extensions;
+                    localExtensions = dataQuery.DataQueryConnection.Extensions;
                 }
 
                 // Check if this particular classification already exists before adding.
                 foreach (var extension in localExtensions)
                 {
-                    if (extension.key != "database")
+                    if (extension.Key != "database")
                     {
                         returnExtensions.Add(extension);
                     }
@@ -545,14 +564,14 @@ namespace TEAM_Library
 
                 var localExtension = new Extension
                 {
-                    key = "database",
-                    value = teamConnection.DatabaseServer.DatabaseName,
-                    description = "database name"
+                    Key = "database",
+                    Value = teamConnection.DatabaseServer.DatabaseName,
+                    Description = "database name"
                 };
 
                 returnExtensions.Add(localExtension);
 
-                dataQuery.dataQueryConnection.extensions = returnExtensions;
+                dataQuery.DataQueryConnection.Extensions = returnExtensions;
             }
 
             return dataQuery;
@@ -571,13 +590,13 @@ namespace TEAM_Library
             // If no extensions exists, do nothing. Otherwise check if one needs removal.
             if (!jsonExportSetting.IsAddSchemaAsExtensionToConnection())
             {
-                if (dataObject.dataObjectConnection?.extensions != null)
+                if (dataObject.DataObjectConnection?.Extensions != null)
                 {
                     List<Extension> localExtensions = new List<Extension>();
 
-                    foreach (var extension in dataObject.dataObjectConnection.extensions)
+                    foreach (var extension in dataObject.DataObjectConnection.Extensions)
                     {
-                        if (extension.key != "schema")
+                        if (extension.Key != "schema")
                         {
                             localExtensions.Add(extension);
                         }
@@ -586,31 +605,31 @@ namespace TEAM_Library
                     // If there's any left, re-add them. Otherwise set to empty.
                     if (localExtensions.Count > 0)
                     {
-                        dataObject.dataObjectConnection.extensions = localExtensions;
+                        dataObject.DataObjectConnection.Extensions = localExtensions;
                     }
                     else
                     {
-                        dataObject.dataObjectConnection.extensions = null;
+                        dataObject.DataObjectConnection.Extensions = null;
                     }
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddSchemaAsExtensionToConnection() && dataObject.dataObjectConnection != null)
+            else if (jsonExportSetting.IsAddSchemaAsExtensionToConnection() && dataObject.DataObjectConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
                 List<Extension> returnExtensions = new List<Extension>();
 
                 // Copy any existing extensions that are already in place, if any.
-                if (dataObject.dataObjectConnection.extensions != null)
+                if (dataObject.DataObjectConnection.Extensions != null)
                 {
-                    localExtensions = dataObject.dataObjectConnection.extensions;
+                    localExtensions = dataObject.DataObjectConnection.Extensions;
                 }
 
                 // Check if this particular classification already exists before adding.
                 // Preserve the others.
                 foreach (var extension in localExtensions)
                 {
-                    if (extension.key != "schema")
+                    if (extension.Key != "schema")
                     {
                         returnExtensions.Add(extension);
                     }
@@ -619,15 +638,15 @@ namespace TEAM_Library
                 // Re-create the schema extension.
                 var localExtension = new Extension
                 {
-                    key = "schema",
-                    value = teamConnection.DatabaseServer.SchemaName,
-                    description = "schema name"
+                    Key = "schema",
+                    Value = teamConnection.DatabaseServer.SchemaName,
+                    Description = "schema name"
                 };
 
                 returnExtensions.Add(localExtension);
 
                 // Apply all the extensions back to the connection object.
-                dataObject.dataObjectConnection.extensions = returnExtensions;
+                dataObject.DataObjectConnection.Extensions = returnExtensions;
             }
 
             return dataObject;
@@ -639,13 +658,13 @@ namespace TEAM_Library
             // If no classifications exists, do nothing. Otherwise check if one needs removal.
             if (!jsonExportSetting.IsAddSchemaAsExtensionToConnection())
             {
-                if (dataQuery.dataQueryConnection != null && dataQuery.dataQueryConnection.extensions != null)
+                if (dataQuery.DataQueryConnection != null && dataQuery.DataQueryConnection.Extensions != null)
                 {
                     List<Extension> localExtensions = new List<Extension>();
 
-                    foreach (var extension in dataQuery.dataQueryConnection.extensions)
+                    foreach (var extension in dataQuery.DataQueryConnection.Extensions)
                     {
-                        if (extension.key != "schema")
+                        if (extension.Key != "schema")
                         {
                             localExtensions.Add(extension);
                         }
@@ -654,31 +673,31 @@ namespace TEAM_Library
                     // If there's any left, re-add them. Otherwise set to empty.
                     if (localExtensions.Count > 0)
                     {
-                        dataQuery.dataQueryConnection.extensions = localExtensions;
+                        dataQuery.DataQueryConnection.Extensions = localExtensions;
                     }
                     else
                     {
-                        dataQuery.dataQueryConnection.extensions = null;
+                        dataQuery.DataQueryConnection.Extensions = null;
                     }
                 }
             }
             // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
-            else if (jsonExportSetting.IsAddSchemaAsExtensionToConnection() && dataQuery.dataQueryConnection != null)
+            else if (jsonExportSetting.IsAddSchemaAsExtensionToConnection() && dataQuery.DataQueryConnection != null)
             {
                 List<Extension> localExtensions = new List<Extension>();
                 List<Extension> returnExtensions = new List<Extension>();
 
                 // Copy any existing classifications already in place, if any.
-                if (dataQuery.dataQueryConnection.extensions != null)
+                if (dataQuery.DataQueryConnection.Extensions != null)
                 {
-                    localExtensions = dataQuery.dataQueryConnection.extensions;
+                    localExtensions = dataQuery.DataQueryConnection.Extensions;
                 }
 
                 // Check if this particular classification already exists before adding.
                 // Preserve the others.
                 foreach (var extension in localExtensions)
                 {
-                    if (extension.key != "schema")
+                    if (extension.Key != "schema")
                     {
                         returnExtensions.Add(extension);
                     }
@@ -686,21 +705,20 @@ namespace TEAM_Library
 
                 var localExtension = new Extension
                 {
-                    key = "schema",
-                    value = teamConnection.DatabaseServer.SchemaName,
-                    description = "schema name"
+                    Key = "schema",
+                    Value = teamConnection.DatabaseServer.SchemaName,
+                    Description = "schema name"
                 };
 
                 returnExtensions.Add(localExtension);
 
 
-                dataQuery.dataQueryConnection.extensions = returnExtensions;
+                dataQuery.DataQueryConnection.Extensions = returnExtensions;
             }
 
             return dataQuery;
         }
-
-
+        
         /// <summary>
         /// Updates an input DataObject with a classification based on its type, evaluated by its name against defined conventions.
         /// </summary>
@@ -719,20 +737,20 @@ namespace TEAM_Library
             }
             else
             {
-                dataObjectType = GetDataObjectType(dataObject.name, "", teamConfiguration).ToString();
+                dataObjectType = GetDataObjectType(dataObject.Name, "", teamConfiguration).ToString();
             }
 
             if (!jsonExportSetting.IsAddTypeAsClassificationToDataObject())
             {
                 // Remove an existing classification, if indeed existing.
                 // If no classifications exists, do nothing. Otherwise check if one needs removal.
-                if (dataObject.dataObjectClassifications != null)
+                if (dataObject.DataObjectClassifications != null)
                 {
-                    List<Classification> localClassifications = new List<Classification>();
+                    List<DataClassification> localClassifications = new List<DataClassification>();
 
-                    foreach (var classification in dataObject.dataObjectClassifications)
+                    foreach (var classification in dataObject.DataObjectClassifications)
                     {
-                        if (classification.classification != dataObjectType)
+                        if (classification.Classification != dataObjectType)
                         {
                             localClassifications.Add(classification);
                         }
@@ -741,33 +759,33 @@ namespace TEAM_Library
                     // If there's any left, re-add them. Otherwise set to empty.
                     if (localClassifications.Count > 0)
                     {
-                        dataObject.dataObjectClassifications = localClassifications;
+                        dataObject.DataObjectClassifications = localClassifications;
                     }
                     else
                     {
-                        dataObject.dataObjectClassifications = null;
+                        dataObject.DataObjectClassifications = null;
                     }
                 }
             }
             else
             {
-                List<Classification> localClassifications = new List<Classification>();
+                List<DataClassification> localClassifications = new List<DataClassification>();
 
                 // Copy any existing classifications already in place, if any.
-                if (dataObject.dataObjectClassifications != null)
+                if (dataObject.DataObjectClassifications != null)
                 {
-                    localClassifications = dataObject.dataObjectClassifications;
+                    localClassifications = dataObject.DataObjectClassifications;
                 }
 
-                Classification localClassification = new Classification();
+                DataClassification localClassification = new DataClassification();
 
-                localClassification.classification = dataObjectType;
+                localClassification.Classification = dataObjectType;
 
                 // Check if this particular classification already exists before adding.
                 bool classificationExists = false;
                 foreach (var classification in localClassifications)
                 {
-                    if (classification.classification == dataObjectType)
+                    if (classification.Classification == dataObjectType)
                     {
                         classificationExists = true;
                     }
@@ -778,7 +796,7 @@ namespace TEAM_Library
                     localClassifications.Add(localClassification);
                 }
 
-                dataObject.dataObjectClassifications = localClassifications;
+                dataObject.DataObjectClassifications = localClassifications;
             }
 
             return dataObject;
@@ -826,14 +844,14 @@ namespace TEAM_Library
         public static DataObjectMapping SetBusinessKeys(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
         {
             // The list of business keys that will be saved against the data object mapping.
-            List<BusinessKey> businessKeys = new List<BusinessKey>();
+            List<BusinessKeyDefinition> businessKeys = new List<BusinessKeyDefinition>();
 
             List<BusinessKeyComponentList> businessKeyComponentValueList = GetBusinessKeyComponents(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
 
             foreach (BusinessKeyComponentList businessKeyComponentList in businessKeyComponentValueList)
             {
                 // Each business key component in the initial list become a mapping of data items. It will be created as a business key together with a surrogate key.
-                BusinessKey businessKey = new BusinessKey();
+                BusinessKeyDefinition businessKey = new BusinessKeyDefinition();
 
                 // Evaluate the data item mappings that belong to the business key component mapping.
                 List<DataItemMapping> businessKeyComponentMapping = new List<DataItemMapping>();
@@ -873,7 +891,7 @@ namespace TEAM_Library
 
                     DataItemMapping businessKeyDataItemMapping = new DataItemMapping();
 
-                    if (new[] { DataObjectTypes.Presentation.ToString(), DataObjectTypes.StagingArea.ToString(), DataObjectTypes.PersistentStagingArea.ToString() }.Contains(dataObjectMapping.mappingClassifications[0].classification))
+                    if (new[] { DataObjectTypes.Presentation.ToString(), DataObjectTypes.StagingArea.ToString(), DataObjectTypes.PersistentStagingArea.ToString() }.Contains(dataObjectMapping.MappingClassifications[0].Classification))
                     {
                         // Map the key to itself (workaround as above).
                         businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, drivingKeyValue);
@@ -886,13 +904,13 @@ namespace TEAM_Library
                     businessKeyComponentMapping.Add(businessKeyDataItemMapping);
                 }
 
-                businessKey.businessKeyComponentMapping = businessKeyComponentMapping;
+                businessKey.BusinessKeyComponentMapping = businessKeyComponentMapping;
 
                 // Evaluate the surrogate key that comes with the business key component mapping.
-                businessKey.surrogateKey = businessKeyComponentList.surrogateKey;
+                businessKey.SurrogateKey = businessKeyComponentList.surrogateKey;
 
                 // If the mapping is for a driving key AND the extension setting is enabled, add the surrogate key as extension.
-                if (jsonExportSetting.IsAddDrivingKeyAsBusinessKeyExtension() && dataObjectMapping.mappingClassifications[0].classification == DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey.ToString())
+                if (jsonExportSetting.IsAddDrivingKeyAsBusinessKeyExtension() && dataObjectMapping.MappingClassifications[0].Classification == DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey.ToString())
                 {
                     var businessKeyExtensions = new List<Extension>();
 
@@ -904,21 +922,21 @@ namespace TEAM_Library
                         if (businessKeyComponentList.sourceComponentList[i].isDrivingKey)
                         {
                             var drivingKeySurrogateKeyExtension = new Extension();
-                            drivingKeySurrogateKeyExtension.key = "DrivingKey";
-                            drivingKeySurrogateKeyExtension.value = businessKeyComponentList.targetComponentList[i].businessKeyComponentElementSurrogateKey;
-                            drivingKeySurrogateKeyExtension.description = "DrivingKey";
+                            drivingKeySurrogateKeyExtension.Key = "DrivingKey";
+                            drivingKeySurrogateKeyExtension.Value = businessKeyComponentList.targetComponentList[i].businessKeyComponentElementSurrogateKey;
+                            drivingKeySurrogateKeyExtension.Description = "DrivingKey";
 
                             businessKeyExtensions.Add(drivingKeySurrogateKeyExtension);
                         }
                     }
 
-                    businessKey.extensions = businessKeyExtensions;
+                    businessKey.Extensions = businessKeyExtensions;
                 }
 
                 businessKeys.Add(businessKey);
             }
 
-            dataObjectMapping.businessKeys = businessKeys;
+            dataObjectMapping.BusinessKeys = businessKeys;
 
             return dataObjectMapping;
         }
@@ -955,7 +973,7 @@ namespace TEAM_Library
 
             int ordinal = 1;
 
-            var mappingType = dataObjectMapping.mappingClassifications[0].classification;
+            var mappingType = dataObjectMapping.MappingClassifications[0].Classification;
 
             if (mappingType == DataObjectTypes.NaturalBusinessRelationship.ToString())
             {
@@ -967,16 +985,16 @@ namespace TEAM_Library
                 businessKeyComponents.Add(tempComponent);
 
                 // This is the Link name.
-                tempComponent.originalTargetDataObject = dataObjectMapping.targetDataObject.name;
+                tempComponent.originalTargetDataObject = dataObjectMapping.TargetDataObject.Name;
 
                 // Get the target column(s) for the business key, based on the target data object (the Link in this case).
-                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.TargetDataObject, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
                 tempComponent.targetComponentList = tempTargetComponentList;
 
                 tempComponent.ordinal = ordinal;
 
                 // Link surrogate key
-                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.targetDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
+                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.TargetDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
                 tempComponent.surrogateKey = surrogateKey;
 
                 // Add individual key parts (the individual keys) as well.
@@ -1007,7 +1025,7 @@ namespace TEAM_Library
                         individualTempComponent.originalTargetDataObject = originalTargetDataObjectName;
 
                         // Get the target column(s) for the business key, based on the target data object.
-                        var individualTempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, componentElement, originalSourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+                        var individualTempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.TargetDataObject, componentElement, originalSourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
                         individualTempComponent.targetComponentList = individualTempTargetComponentList;
                         individualTempComponent.ordinal = ordinal;
 
@@ -1055,15 +1073,15 @@ namespace TEAM_Library
                 tempComponent.sourceComponentList = tempSourceComponentList;
 
                 // The associated target data object is just the original one.
-                tempComponent.originalTargetDataObject = dataObjectMapping.targetDataObject.name;
+                tempComponent.originalTargetDataObject = dataObjectMapping.TargetDataObject.Name;
 
                 // Get the target column(s) for the business key, based on the target data object.
-                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.targetDataObject, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.TargetDataObject, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
                 tempComponent.targetComponentList = tempTargetComponentList;
 
                 tempComponent.ordinal = ordinal;
 
-                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.targetDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
+                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.TargetDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
                 tempComponent.surrogateKey = surrogateKey;
 
                 businessKeyComponents.Add(tempComponent);
@@ -1102,7 +1120,7 @@ namespace TEAM_Library
             // Evaluate the data object to lookup the target business key component elements for.
             // For a Context or Relationship Context entity the 'parent' needs to be found.
 
-            var dataObjectType = GetDataObjectType(dataObject.name, "", teamConfiguration);
+            var dataObjectType = GetDataObjectType(dataObject.Name, "", teamConfiguration);
             
             if (new[] { DataObjectTypes.Context }.Contains(dataObjectType))
             {
@@ -1111,7 +1129,7 @@ namespace TEAM_Library
                     .Where(r => !r.IsNewRow)
                     .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyDefinition))
                     .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
-                    .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(dataObject.name))
+                    .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(dataObject.Name))
                     .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.Context)
                     .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContext)
                     .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey);
@@ -1133,7 +1151,7 @@ namespace TEAM_Library
                         .Where(r => !r.IsNewRow)
                         .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyComponentElement.Trim()))
                         .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
-                        .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(dataObject.name))
+                        .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(dataObject.Name))
                         .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) == DataObjectTypes.CoreBusinessConcept)
                         .FirstOrDefault();
 
@@ -1152,7 +1170,7 @@ namespace TEAM_Library
             {
                 var physicalModelDataGridViewRow = dataGridViewRowsPhysicalModel
                     .Where(r => !r.IsNewRow)
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(lookupDataObject.name))
+                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(lookupDataObject.Name))
                     .ToList();
 
                 // Sorting separately for debugging purposes. Issues were found in string to int conversion when sorting on ordinal position.
@@ -1162,7 +1180,7 @@ namespace TEAM_Library
                 {
                     // There are no matching target values. This should not happen and should be caught by the validator. 
                     // But just in case...
-                    eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"There was no matching target business key component found for {dataObject.name} with business key definition {businessKeyDefinition} in the physical model."));
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"There was no matching target business key component found for {dataObject.Name} with business key definition {businessKeyDefinition} in the physical model."));
                 }
 
                 foreach (var row in orderedList)
@@ -1170,12 +1188,12 @@ namespace TEAM_Library
                     var column = row.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString();
 
                     // Add if it's not a standard element.
-                    var surrogateKey = DeriveSurrogateKey(lookupDataObject.name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
+                    var surrogateKey = DeriveSurrogateKey(lookupDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects);
                     
                     if (!column.IsExcludedBusinessKeyDataItem(dataObjectType, surrogateKey, businessKeyDefinition, teamConnection, teamConfiguration))
                     {
                         // Get the corresponding Surrogate Key for the (target) component element.
-                        var localSurrogateKey = GetSurrogateKey(lookupDataObject.name, teamConfiguration, teamConnection);
+                        var localSurrogateKey = GetSurrogateKey(lookupDataObject.Name, teamConfiguration, teamConnection);
 
                         var localBusinessKeyTargetComponentElement = new BusinessKeyComponentElement();
                         localBusinessKeyTargetComponentElement.businessKeyComponentElement = column;
@@ -1202,34 +1220,32 @@ namespace TEAM_Library
             DataItem sourceColumn = new DataItem();
             DataItem targetColumn = new DataItem();
 
-            sourceColumn.name = sourceBusinessKeyDefinition;
-            sourceColumn.isHardCodedValue = sourceBusinessKeyDefinition.StartsWith("'") && sourceBusinessKeyDefinition.EndsWith("'");
+            sourceColumn.Name = sourceBusinessKeyDefinition;
+            sourceColumn.IsHardCodedValue = sourceBusinessKeyDefinition.StartsWith("'") && sourceBusinessKeyDefinition.EndsWith("'");
 
             #region Driving Key
 
             // Driving Key
             if (sourceBusinessKeyDefinition == drivingKeyValue)
             {
-                List<Classification> classificationList = new List<Classification>();
-                Classification classification = new Classification();
-                classification.classification = "DrivingKey";
-                classification.notes = "The attribute that triggers (drives) the closing of a relationship.";
+                List<DataClassification> classificationList = new List<DataClassification>();
+                DataClassification classification = new DataClassification();
+                classification.Classification = "DrivingKey";
+                classification.Notes = "The attribute that triggers (drives) the closing of a relationship.";
                 classificationList.Add(classification);
-                sourceColumn.dataItemClassification = classificationList;
+                sourceColumn.DataItemClassification = classificationList;
             }
 
             #endregion
 
             sourceColumns.Add(sourceColumn);
 
-            keyComponent.sourceDataItems = sourceColumns;
+            keyComponent.SourceDataItems = sourceColumns;
+            targetColumn.Name = targetBusinessKeyDefinition;
+            keyComponent.TargetDataItem = targetColumn;
 
-            targetColumn.name = targetBusinessKeyDefinition;
-
-            keyComponent.targetDataItem = targetColumn;
-
-            dataItemMapping.sourceDataItems = sourceColumns;
-            dataItemMapping.targetDataItem = targetColumn;
+            dataItemMapping.SourceDataItems = sourceColumns;
+            dataItemMapping.TargetDataItem = targetColumn;
 
             return dataItemMapping;
         }
@@ -1309,10 +1325,11 @@ namespace TEAM_Library
         /// <param name="teamConfiguration"></param>
         /// <param name="dataGridViewRowsDataObjects"></param>
         /// <returns></returns>
-        public static DataObject GetParentDataObject(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConfiguration teamConfiguration, List<DataGridViewRow>dataGridViewRowsDataObjects)
+        public static List<DataObject> GetParentDataObjects(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConfiguration teamConfiguration, List<DataGridViewRow>dataGridViewRowsDataObjects)
         {
-            DataObject returnValue = new DataObject();
+            var returnValue = new List<DataObject>();
 
+            // Finding the parent for a Satellite or Link Satellite, because this the business key definition is the same for the source- and target.
             var dataObjectGridViewRow = dataGridViewRowsDataObjects
                 .Where(r => !r.IsNewRow)
                 .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyDefinition))
@@ -1325,7 +1342,30 @@ namespace TEAM_Library
 
             if (dataObjectGridViewRow != null)
             {
-                returnValue = (DataObject)dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
+                returnValue.Add((DataObject)dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value);
+            }
+            else
+            {
+                // If the value is null for the initial lookup, it can be tried with a key part. This supports finding the parent Hub for a Link because it matches on a part of the business key.
+                var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition, "");
+
+                foreach (var businessKeyComponent in businessKeyComponentElements)
+                {
+                    var dataObjectGridViewRowKeyComponent = dataGridViewRowsDataObjects
+                        .Where(r => !r.IsNewRow)
+                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyComponent.businessKeyComponentElement)) // Match on business key definition
+                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName)) // Using same source
+                        .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName)) // Note the target
+                        .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.Context)
+                        .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContext)
+                        .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
+                        .FirstOrDefault();
+
+                    if (dataObjectGridViewRowKeyComponent != null)
+                    {
+                        returnValue.Add((DataObject)dataObjectGridViewRowKeyComponent.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value);
+                    }
+                }
             }
 
             return returnValue;
@@ -1349,7 +1389,7 @@ namespace TEAM_Library
             // If a data object has been evaluated to be a Satellite (or Link-Satellite), replace the data object to query with the parent Hub or Link.
             if (new [] { DataObjectTypes.Context, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey}.Contains(dataObjectType))
             {
-                targetDataObjectName = GetParentDataObject(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects).name;
+                targetDataObjectName = GetParentDataObjects(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects).FirstOrDefault().Name;
             }
 
             var surrogateKey = GetSurrogateKey(targetDataObjectName, teamConfiguration, teamConnection);
@@ -1645,19 +1685,19 @@ namespace TEAM_Library
             var physicalModelGridViewRow = physicalModelGridView.Rows
                 .Cast<DataGridViewRow>()
                 .Where(r => !r.IsNewRow)
-                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(targetDataItem.name))
+                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(targetDataItem.Name))
                 .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(targetDataObjectName))
                 .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Value.ToString().Equals("Y"))
                 .FirstOrDefault();
 
             if (physicalModelGridViewRow != null)
             {
-                List<Classification> classificationList = new List<Classification>();
-                Classification classification = new Classification();
-                classification.classification = "MultiActiveKey";
-                classification.notes = "The attribute that supports granularity shift in describing context.";
+                List<DataClassification> classificationList = new List<DataClassification>();
+                DataClassification classification = new DataClassification();
+                classification.Classification = "MultiActiveKey";
+                classification.Notes = "The attribute that supports granularity shift in describing context.";
                 classificationList.Add(classification);
-                targetDataItem.dataItemClassification = classificationList;
+                targetDataItem.DataItemClassification = classificationList;
             }
         }
     }

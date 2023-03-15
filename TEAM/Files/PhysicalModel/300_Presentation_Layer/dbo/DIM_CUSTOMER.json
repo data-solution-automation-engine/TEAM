@@ -24,7 +24,7 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "CHECKSUM_TYPE1",
+      "name": "RECORD_CHECKSUM_TYPE1",
       "dataType": "char",
       "characterLength": "32",
       "numericPrecision": "0",
@@ -34,7 +34,7 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "CHECKSUM_TYPE2",
+      "name": "RECORD_CHECKSUM_TYPE2",
       "dataType": "char",
       "characterLength": "32",
       "numericPrecision": "0",
@@ -64,7 +64,7 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "CDC_OPERATION",
+      "name": "CHANGE_DATA_INDICATOR",
       "dataType": "varchar",
       "characterLength": "1",
       "numericPrecision": "0",

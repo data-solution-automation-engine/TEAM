@@ -214,19 +214,19 @@ namespace TEAM_Library
 
                 // Data Object group.
                 validationFile.AppendLine("AddTypeAsClassificationToDataObject|True");
-                validationFile.AppendLine("AddDataItemsToDataObject|True");
+                validationFile.AppendLine("AddDataItemsToDataObject|False");
                 // Connections
                 validationFile.AppendLine("AddDatabaseAsExtensionToConnection|True");
                 validationFile.AppendLine("AddSchemaAsExtensionToConnection|True");
                 
                 // Data Item group.
-                validationFile.AppendLine("AddDataTypeToDataItem|True");
-                validationFile.AppendLine("AddParentDataObjectToDataItem|True");
+                validationFile.AppendLine("AddDataTypeToDataItem|False");
+                validationFile.AppendLine("AddParentDataObjectToDataItem|False");
 
                 // Related Data Objects.
                 validationFile.AppendLine("AddMetadataAsRelatedDataObject|False");
                 validationFile.AppendLine("AddNextUpDataObjectsAsRelatedDataObject|True");
-                validationFile.AppendLine("AddParentDataObjectAsRelatedDataObject|False");
+                validationFile.AppendLine("AddParentDataObjectAsRelatedDataObject|True");
 
                 // Data Vault specific.
                 validationFile.AppendLine("AddDrivingKeyAsBusinessKeyExtension|False");

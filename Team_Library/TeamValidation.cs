@@ -64,6 +64,7 @@ namespace TEAM_Library
                         sourceDataObjectName = r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString(),
                         TargetDataObjectName = r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(),
                         BusinessKeyDefinition = r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString(),
+                        FilterCriterion = r.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value.ToString(),
                     })
                 .Where(g => g.Count() > 1);
 
@@ -111,8 +112,8 @@ namespace TEAM_Library
                     string localSourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                     string localTargetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
 
-                    TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(localSourceConnectionInternalId, teamConfiguration, eventLog);
-                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionId(localTargetConnectionInternalId, teamConfiguration, eventLog);
+                    TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(localSourceConnectionInternalId, teamConfiguration, eventLog);
+                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(localTargetConnectionInternalId, teamConfiguration, eventLog);
 
                     // The values in the data grid, fully qualified. This means the default schema is added if necessary.
                     var sourceDataObject = MetadataHandling.GetFullyQualifiedDataObjectName(row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString(), sourceConnection).FirstOrDefault();
@@ -507,7 +508,7 @@ namespace TEAM_Library
                 {
                     // Derive the Hub surrogate key name, as this can be compared against the Link
                     string hubTableConnectionId = selectionRows[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    var hubTableConnection = TeamConnection.GetTeamConnectionByConnectionId(hubTableConnectionId, teamConfiguration, eventLog);
+                    var hubTableConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(hubTableConnectionId, teamConfiguration, eventLog);
 
                     string hubSurrogateKeyName = JsonOutputHandling.DeriveSurrogateKey(validationObject.Item2, validationObject.Item1, validationObject.Item3, hubTableConnection, teamConfiguration, dataGridViewRowsDataObjects);
 
@@ -625,14 +626,14 @@ namespace TEAM_Library
                 {
                     var targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
                     var targetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionInternalId, teamConfiguration, eventLog);
+                    var targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionInternalId, teamConfiguration, eventLog);
                     var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
                     var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", teamConfiguration);
                     var targetFilterCriterion = row[DataObjectMappingGridColumns.FilterCriterion.ToString()].ToString();
 
                     var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
                     var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionInternalId, teamConfiguration, eventLog);
+                    var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, teamConfiguration, eventLog);
                     var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
 
                     if (targetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship || targetTableType == MetadataHandling.DataObjectTypes.Context || targetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext)
@@ -755,14 +756,14 @@ namespace TEAM_Library
 
                         var TargetDataObject = dataObjectMappingRow[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
                         var targetConnectionInternalId = dataObjectMappingRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionInternalId, teamConfiguration, eventLog);
+                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionInternalId, teamConfiguration, eventLog);
                         var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(TargetDataObject, targetConnection).FirstOrDefault();
                         //var targetTableType = MetadataHandling.GetDataObjectType(TargetDataObject, "", FormBase.TeamConfiguration);
                         var filterCriterion = dataObjectMappingRow[DataObjectMappingGridColumns.FilterCriterion.ToString()].ToString();
 
                         var sourceDataObjectName = dataObjectMappingRow[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
                         var sourceConnectionInternalId = dataObjectMappingRow[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionInternalId, teamConfiguration, eventLog);
+                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, teamConfiguration, eventLog);
                         var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
                         //var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", FormBase.TeamConfiguration);
 
@@ -790,13 +791,13 @@ namespace TEAM_Library
                     {
                         var targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
                         var targetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionInternalId, teamConfiguration, eventLog);
+                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionInternalId, teamConfiguration, eventLog);
                         var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
                         //var targetTableType = MetadataHandling.GetDataObjectType(TargetDataObject, "", FormBase.TeamConfiguration);
 
                         var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
                         var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionInternalId, teamConfiguration, eventLog);
+                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, teamConfiguration, eventLog);
                         var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
                         //var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", FormBase.TeamConfiguration);
 
@@ -947,8 +948,8 @@ namespace TEAM_Library
             {
                 var connectionInternalIdSource = DataObjectMappings[0][DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                 var connectionInternalIdTarget = DataObjectMappings[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(connectionInternalIdSource, teamConfiguration, eventLog);
-                TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionId(connectionInternalIdTarget, teamConfiguration, eventLog);
+                TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(connectionInternalIdSource, teamConfiguration, eventLog);
+                TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(connectionInternalIdTarget, teamConfiguration, eventLog);
 
                 // Set the right values
                 returnTuple = new Tuple<string, string, TeamConnection, string, TeamConnection>
@@ -1025,7 +1026,7 @@ namespace TEAM_Library
                     // Source table and business key definitions.
                     string validationObject = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
                     string validationConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    TeamConnection validationConnection = TeamConnection.GetTeamConnectionByConnectionId(validationConnectionId, teamConfiguration, eventLog);
+                    TeamConnection validationConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(validationConnectionId, teamConfiguration, eventLog);
                     string businessKeyDefinition = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString();
 
                     // Exclude a lookup to the source
@@ -1155,13 +1156,13 @@ namespace TEAM_Library
                     // Sources
                     var validationObjectSource = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
                     var validationObjectSourceConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(validationObjectSourceConnectionId, teamConfiguration, eventLog);
+                    var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(validationObjectSourceConnectionId, teamConfiguration, eventLog);
                     KeyValuePair<string, string> fullyQualifiedValidationObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectSource, sourceConnection).FirstOrDefault();
 
                     // Targets
                     var validationObjectTarget = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
                     var validationObjectTargetConnectionId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(validationObjectTargetConnectionId, teamConfiguration, eventLog);
+                    var targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(validationObjectTargetConnectionId, teamConfiguration, eventLog);
                     KeyValuePair<string, string> fullyQualifiedValidationObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectTarget, targetConnection).FirstOrDefault();
 
                     // No need to evaluate the operational system (real sources))
@@ -1256,12 +1257,12 @@ namespace TEAM_Library
                 {
                     var localDataObjectSourceName = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
                     var localDataObjectSourceConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    var localDataObjectSourceConnection = TeamConnection.GetTeamConnectionByConnectionId(localDataObjectSourceConnectionId, teamConfiguration, eventLog);
+                    var localDataObjectSourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(localDataObjectSourceConnectionId, teamConfiguration, eventLog);
                     var localDataObjectSourceTableType = MetadataHandling.GetDataObjectType(localDataObjectSourceName, "", teamConfiguration);
 
                     var localDataObjectTargetName = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
                     var localDataObjectTargetConnectionId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    var localDataObjectTargetConnection = TeamConnection.GetTeamConnectionByConnectionId(localDataObjectTargetConnectionId, teamConfiguration, eventLog);
+                    var localDataObjectTargetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(localDataObjectTargetConnectionId, teamConfiguration, eventLog);
                     var localDataObjectTargetTableType = MetadataHandling.GetDataObjectType(localDataObjectTargetName, "", teamConfiguration);
 
                     // Source

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace TEAM_Library
@@ -49,12 +51,12 @@ namespace TEAM_Library
         /// <param name="teamConfiguration"></param>
         /// <param name="eventLog"></param>
         /// <returns></returns>
-        public static TeamConnection GetTeamConnectionByConnectionId(string connectionId, TeamConfiguration teamConfiguration, EventLog eventLog)
+        public static TeamConnection GetTeamConnectionByConnectionInternalId(string connectionId, TeamConfiguration teamConfiguration, EventLog eventLog)
         {
             if (!teamConfiguration.ConnectionDictionary.TryGetValue(connectionId, out var teamConnection))
             {
                 // The key isn't in the dictionary.
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Id {connectionId}."));
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Id '{connectionId}'."));
             }
 
             return teamConnection;
@@ -114,7 +116,7 @@ namespace TEAM_Library
             return outputConnectionString;
         }
 
-        public static TeamConnection GetTeamConnectionByConnectionKey(string connectionKey, TeamConfiguration teamConfiguration)
+        public static TeamConnection GetTeamConnectionByConnectionKey(string connectionKey, TeamConfiguration teamConfiguration, EventLog eventLog)
         {
             TeamConnection returnTeamConnection = new TeamConnection();
 
@@ -124,6 +126,12 @@ namespace TEAM_Library
                 {
                     returnTeamConnection = teamConnection.Value;
                 }
+            }
+
+            if (returnTeamConnection.ConnectionInternalId.IsNullOrEmpty())
+            {
+                // The key isn't in the dictionary.
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The connection could not be matched for Connection Key '{connectionKey}'."));
             }
 
             return returnTeamConnection;
@@ -248,8 +256,6 @@ namespace TEAM_Library
 
                     string output = JsonConvert.SerializeObject(list.ToArray(), Formatting.Indented);
                     File.WriteAllText(connectionFileName, output);
-
-                    //localEvent = Event.CreateNewEvent(EventTypes.Information, $"A new (dummy) connections file {connectionFileName} was created.");
                 }
                 else
                 {
@@ -302,11 +308,11 @@ namespace TEAM_Library
             };
 
             newTeamConnectionProfileMetadata.DatabaseServer = newTeamDatabaseConnectionMetadata;
+            localDictionary.Add(newTeamConnectionProfileMetadata.ConnectionInternalId, newTeamConnectionProfileMetadata);
 
             // Source
             var newTeamConnectionProfileSource = new TeamConnection
             {
-                //connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Source" }, "%$@"),
                 ConnectionInternalId =  "SourceConnectionInternalId",
                 ConnectionKey = "Source",
                 ConnectionName = "Source System",
@@ -325,11 +331,11 @@ namespace TEAM_Library
             };
 
             newTeamConnectionProfileSource.DatabaseServer = newTeamDatabaseConnectionSource;
+            localDictionary.Add(newTeamConnectionProfileSource.ConnectionInternalId, newTeamConnectionProfileSource);
 
             // Staging
             var newTeamConnectionProfileStaging = new TeamConnection
             {
-                //connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Staging" }, "%$@"),
                 ConnectionInternalId =  "StagingConnectionInternalId",
                 ConnectionKey = "Staging",
                 ConnectionName = "Staging / Landing Area",
@@ -348,11 +354,11 @@ namespace TEAM_Library
             };
 
             newTeamConnectionProfileStaging.DatabaseServer = newTeamDatabaseConnectionStaging;
+            localDictionary.Add(newTeamConnectionProfileStaging.ConnectionInternalId, newTeamConnectionProfileStaging);
 
             // PSA
             var newTeamConnectionProfilePsa = new TeamConnection
             {
-                //connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "PersistentStagingArea" }, "%$@"),
                 ConnectionInternalId =  "PsaConnectionInternalId",
                 ConnectionKey = "PSA",
                 ConnectionName = "Persistent Staging Area",
@@ -371,11 +377,11 @@ namespace TEAM_Library
             };
 
             newTeamConnectionProfilePsa.DatabaseServer = newTeamDatabaseConnectionPsa;
+            localDictionary.Add(newTeamConnectionProfilePsa.ConnectionInternalId, newTeamConnectionProfilePsa);
 
             // Integration
             var newTeamConnectionProfileIntegration = new TeamConnection
             {
-                //connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Integration" }, "%$@"),
                 ConnectionInternalId =  "IntegrationConnectionInternalId",
                 ConnectionKey = "Integration",
                 ConnectionName = "Integration Layer",
@@ -394,11 +400,34 @@ namespace TEAM_Library
             };
 
             newTeamConnectionProfileIntegration.DatabaseServer = newTeamDatabaseConnectionIntegration;
+            localDictionary.Add(newTeamConnectionProfileIntegration.ConnectionInternalId, newTeamConnectionProfileIntegration);
+            
+            // Integration Derived
+            var newTeamConnectionProfileIntegrationDerived = new TeamConnection
+            {
+                ConnectionInternalId = "IntegrationConnectionInternalDerivedId",
+                ConnectionKey = "Derived",
+                ConnectionName = "Integration Derived",
+                ConnectionType = ConnectionTypes.Catalog,
+                ConnectionNotes = ""
+            };
 
+            var newTeamDatabaseConnectionIntegrationDerived = new TeamDatabaseConnection
+            {
+                authenticationType = ServerAuthenticationTypes.SSPI,
+                DatabaseName = "200_Integration_Layer",
+                SchemaName = "bdv",
+                NamedUserName = "sa",
+                NamedUserPassword = "",
+                ServerName = "localhost"
+            };
+
+            newTeamConnectionProfileIntegrationDerived.DatabaseServer = newTeamDatabaseConnectionIntegrationDerived;
+            localDictionary.Add(newTeamConnectionProfileIntegrationDerived.ConnectionInternalId, newTeamConnectionProfileIntegrationDerived);
+            
             // Presentation
             var newTeamConnectionProfilePresentation = new TeamConnection
             {
-                //connectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100), "Presentation" }, "%$@"),
                 ConnectionInternalId = "PresentationConnectionInternalId",
                 ConnectionKey = "Presentation",
                 ConnectionName = "Presentation Layer",
@@ -417,35 +446,14 @@ namespace TEAM_Library
             };
 
             newTeamConnectionProfilePresentation.DatabaseServer = newTeamDatabaseConnectionPresentation;
-
-            // Compile the dictionary
-            localDictionary.Add(newTeamConnectionProfileMetadata.ConnectionInternalId, newTeamConnectionProfileMetadata);
-            localDictionary.Add(newTeamConnectionProfileSource.ConnectionInternalId, newTeamConnectionProfileSource);
-            localDictionary.Add(newTeamConnectionProfileStaging.ConnectionInternalId, newTeamConnectionProfileStaging);
-            localDictionary.Add(newTeamConnectionProfilePsa.ConnectionInternalId, newTeamConnectionProfilePsa);
-            localDictionary.Add(newTeamConnectionProfileIntegration.ConnectionInternalId, newTeamConnectionProfileIntegration);
             localDictionary.Add(newTeamConnectionProfilePresentation.ConnectionInternalId, newTeamConnectionProfilePresentation);
 
-            // Commit to memory.
-            //FormBase.ConfigurationSettings.connectionDictionary = localDictionary;
             return localDictionary;
         }
     }
 
     public class LocalConnectionDictionary
     {
-        //public Dictionary<string, TeamConnection> ConnectionDictionary { get; set; }
-
-        //public string connectionKey;
-        //public string connectionString;
-
-        //public LocalConnectionDictionary(Dictionary<string, TeamConnectionProfile> localConnectionDictionary)
-        //{
-        //    connectionKey = localConnectionDictionary.
-        //    ConnectionDictionary = localConnectionDictionary;
-        //}
-
-
         /// <summary>
         /// Create a key/value pair of the database keys and the connection string.
         /// </summary>

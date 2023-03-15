@@ -243,10 +243,10 @@ namespace TEAM
                 var vdwDataObjectMappingList = FormManageMetadata.GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.name), output);
+                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.Name), output);
 
                 // Update the original form through the delegate/event handler.
-                DataObjectsParse($"A parse action has been called from the context menu. The Data Object Mapping for '{targetDataObject.name}' has been saved.\r\n");
+                DataObjectsParse($"A parse action has been called from the context menu. The Data Object Mapping for '{targetDataObject.Name}' has been saved.\r\n");
             }
 
             catch (Exception exception)
@@ -554,7 +554,7 @@ namespace TEAM
                         if (dataObjectGridViewRow != null)
                         {
                             var targetConnectionId = dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                            TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
+                            TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionId, TeamConfiguration, TeamEventLog);
 
                             KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair =
                                 MetadataHandling.GetFullyQualifiedDataObjectName(targetdataObjectName, targetConnection).FirstOrDefault();

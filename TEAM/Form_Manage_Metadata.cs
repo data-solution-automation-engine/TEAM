@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using TEAM_Library;
 using static TEAM.DataGridViewDataObjects;
 using DataObject = DataWarehouseAutomation.DataObject;
+using EventLog = TEAM_Library.EventLog;
 using SqlConnection = Microsoft.Data.SqlClient.SqlConnection;
 
 namespace TEAM
@@ -96,7 +97,7 @@ namespace TEAM
 
             if (errors > 0)
             {
-                richTextBoxInformation.AppendText($"{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
+                richTextBoxInformation.AppendText($"\r\n{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
             }
         }
 
@@ -137,7 +138,7 @@ namespace TEAM
             tabPageDataObjectMapping.TabIndex = 0;
             tabPageDataObjectMapping.Text = @"Data Object (Table) Mappings";
             tabPageDataObjectMapping.UseVisualStyleBackColor = true;
-            
+
             tabPageDataObjectMapping.ResumeLayout(false);
             ((ISupportInitialize)(_dataGridViewDataObjects)).EndInit();
         }
@@ -149,7 +150,7 @@ namespace TEAM
                 ApplyDataGridViewFiltering();
             }
         }
-        
+
         /// <summary>
         /// Definition of the Data Item grid view.
         /// </summary>
@@ -303,8 +304,8 @@ namespace TEAM
 
             foreach (DataRow row in teamDataObjectMappings.DataTable.Rows)
             {
-                var comboBoxValueSource = row[(int) DataObjectMappingGridColumns.SourceConnection].ToString();
-                var comboBoxValueTarget = row[(int) DataObjectMappingGridColumns.TargetConnection].ToString();
+                var comboBoxValueSource = row[(int)DataObjectMappingGridColumns.SourceConnection].ToString();
+                var comboBoxValueTarget = row[(int)DataObjectMappingGridColumns.TargetConnection].ToString();
 
                 if (!localConnectionKeyList.Contains(comboBoxValueSource))
                 {
@@ -313,7 +314,7 @@ namespace TEAM
                         userFeedbackList.Add(comboBoxValueSource);
                     }
 
-                    row[(int) DataObjectMappingGridColumns.SourceConnection] = DBNull.Value;
+                    row[(int)DataObjectMappingGridColumns.SourceConnection] = DBNull.Value;
                 }
 
                 if (!localConnectionKeyList.Contains(comboBoxValueTarget))
@@ -323,7 +324,7 @@ namespace TEAM
                         userFeedbackList.Add(comboBoxValueTarget);
                     }
 
-                    row[(int) DataObjectMappingGridColumns.TargetConnection] = DBNull.Value;
+                    row[(int)DataObjectMappingGridColumns.TargetConnection] = DBNull.Value;
                 }
             }
 
@@ -463,7 +464,7 @@ namespace TEAM
 
         private DialogResult STAShowDialog(FileDialog dialog)
         {
-            var state = new DialogState {FileDialog = dialog};
+            var state = new DialogState { FileDialog = dialog };
             var t = new Thread(state.ThreadProcShowDialog);
             t.SetApartmentState(ApartmentState.STA);
 
@@ -491,7 +492,6 @@ namespace TEAM
             GridAutoLayout(_dataGridViewDataItems);
             GridAutoLayout(_dataGridViewPhysicalModel);
         }
-
 
         private void GridAutoLayout(DataGridView dataGridView)
         {
@@ -536,7 +536,7 @@ namespace TEAM
 
                 if (gridViewRows != counter + 1 && targetDataObject.Length > 3)
                 {
-                    if (targetDataObjectType==MetadataHandling.DataObjectTypes.CoreBusinessConcept)
+                    if (targetDataObjectType == MetadataHandling.DataObjectTypes.CoreBusinessConcept)
                     {
                         if (!hubSet.Contains(targetDataObject))
                         {
@@ -550,7 +550,7 @@ namespace TEAM
                             satSet.Add(targetDataObject);
                         }
                     }
-                    else if (targetDataObjectType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext|| targetDataObjectType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
+                    else if (targetDataObjectType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext || targetDataObjectType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
                     {
                         if (!lsatSet.Contains(targetDataObject))
                         {
@@ -615,7 +615,7 @@ namespace TEAM
                 if (_myValidationForm.InvokeRequired)
                 {
                     // Thread Error
-                    _myValidationForm.Invoke((MethodInvoker) delegate { _myValidationForm.Close(); });
+                    _myValidationForm.Invoke((MethodInvoker)delegate { _myValidationForm.Close(); });
                     _myValidationForm.FormClosed += CloseValidationForm;
 
                     _myValidationForm = new FormManageValidation();
@@ -652,7 +652,7 @@ namespace TEAM
                 if (_myJsonForm.InvokeRequired)
                 {
                     // Thread Error
-                    _myJsonForm.Invoke((MethodInvoker) delegate { _myJsonForm.Close(); });
+                    _myJsonForm.Invoke((MethodInvoker)delegate { _myJsonForm.Close(); });
                     _myJsonForm.FormClosed += CloseJsonForm;
 
                     _myJsonForm = new FormJsonConfiguration();
@@ -686,81 +686,81 @@ namespace TEAM
             //}
             //else
             //{
-                foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
+            foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
+            {
+                if (!string.IsNullOrEmpty(row.ErrorText))
                 {
-                    if (!string.IsNullOrEmpty(row.ErrorText))
-                    {
-                        richTextBoxInformation.AppendText($"The Data Object Mapping from '{row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value}' to '{row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value}' has an unresolved validation warning.");
+                    richTextBoxInformation.AppendText($"The Data Object Mapping from '{row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value}' to '{row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value}' has an unresolved validation warning.");
 
-                        validationIssue = true;
-                    }
+                    validationIssue = true;
                 }
+            }
 
-                if (validationIssue == false)
+            if (validationIssue == false)
+            {
+                richTextBoxInformation.Clear();
+
+                // Create a data table containing the changes, to check if there are changes made to begin with
+                var dataTableTableMappingChanges = ((DataTable)BindingSourceDataObjectMappings.DataSource).GetChanges();
+                var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
+                var dataTablePhysicalModelChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
+
+                // Check if there are any rows available in the grid view, and if changes have been detected at all.
+                if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 ||
+                    _dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 ||
+                    _dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
                 {
-                    richTextBoxInformation.Clear();
 
-                    // Create a data table containing the changes, to check if there are changes made to begin with
-                    var dataTableTableMappingChanges = ((DataTable)BindingSourceDataObjectMappings.DataSource).GetChanges();
-                    var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
-                    var dataTablePhysicalModelChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
-
-                    // Check if there are any rows available in the grid view, and if changes have been detected at all.
-                    if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0 ||
-                        _dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0 ||
-                        _dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+                    // Perform the saving of the metadata, one for each grid.
+                    if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0)
                     {
-
-                        // Perform the saving of the metadata, one for each grid.
-                        if (_dataGridViewDataObjects.RowCount > 0 && dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0)
+                        try
                         {
-                            try
-                            {
-                                SaveDataObjectMappingJson(dataTableTableMappingChanges);
-                            }
-                            catch (Exception exception)
-                            {
-                                richTextBoxInformation.Text += $@"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
-                            }
+                            SaveDataObjectMappingJson(dataTableTableMappingChanges);
                         }
-
-                        if (_dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
+                        catch (Exception exception)
                         {
-                            try
-                            {
-                                SaveDataItemMappingMetadata(dataTableAttributeMappingChanges);
-                            }
-                            catch (Exception exception)
-                            {
-                                richTextBoxInformation.Text += $@"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
-                            }
+                            richTextBoxInformation.Text += $@"The Data Object Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
                         }
-
-                        if (_dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
-                        {
-                            try
-                            {
-                                SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
-                            }
-                            catch (Exception exception)
-                            {
-                                richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
-                            }
-                        }
-
-                        // Re-apply any filtering, if required.
-                        ApplyDataGridViewFiltering();
                     }
-                    else
+
+                    if (_dataGridViewDataItems.RowCount > 0 && dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
                     {
-                        richTextBoxInformation.Text += @"There is no metadata to save!";
+                        try
+                        {
+                            SaveDataItemMappingMetadata(dataTableAttributeMappingChanges);
+                        }
+                        catch (Exception exception)
+                        {
+                            richTextBoxInformation.Text += $@"The Data Item Mapping metadata wasn't saved. The reported error is: {exception.Message}.";
+                        }
                     }
+
+                    if (_dataGridViewPhysicalModel.RowCount > 0 && dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+                    {
+                        try
+                        {
+                            SaveModelPhysicalModelMetadata(dataTablePhysicalModelChanges);
+                        }
+                        catch (Exception exception)
+                        {
+                            richTextBoxInformation.Text += $@"The Physical Model metadata wasn't saved. The reported error is: {exception.Message}.";
+                        }
+                    }
+
+                    // Re-apply any filtering, if required.
+                    ApplyDataGridViewFiltering();
                 }
                 else
                 {
-                    MessageBox.Show(@"There are unresolved validation issues, please check the information pane below.", @"Validation issues", MessageBoxButtons.OK);
+                    richTextBoxInformation.Text += @"There is no metadata to save!";
                 }
-           //}
+            }
+            else
+            {
+                MessageBox.Show(@"There are unresolved validation issues, please check the information pane below.", @"Validation issues", MessageBoxButtons.OK);
+            }
+            //}
         }
 
         /// <summary>
@@ -779,7 +779,7 @@ namespace TEAM
                     {
                         // Figure out the current / previous file name based on the previous target data object name (pre-change).
                         var previousDataObjectName = "";
-                        
+
                         if (row[DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString()] != DBNull.Value)
                         {
                             previousDataObjectName = (string)row[DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString()];
@@ -796,7 +796,7 @@ namespace TEAM
                         // If there is a change, the values must be written to a new or other file and an existing segment must be removed.
 
                         // Note that case is ignored here, because this will cause issues on the file system (which is not case-sensitive by default).
-                        if (string.Equals(previousDataObjectName, newDataObject.name, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(previousDataObjectName, newDataObject.Name, StringComparison.OrdinalIgnoreCase))
                         {
                             // A file already exists, and must only be updated.
                             try
@@ -824,6 +824,8 @@ namespace TEAM
                                 richTextBoxInformation.Text += $@"There were issues updating the JSON. The error message is {ex.Message}.";
                             }
                         }
+
+                        ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
                     }
 
                     #endregion
@@ -845,6 +847,8 @@ namespace TEAM
                         {
                             richTextBoxInformation.Text += $@"There were issues updating the JSON. The error message is {ex.Message}.";
                         }
+
+                        ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
                     }
 
                     #endregion
@@ -871,6 +875,8 @@ namespace TEAM
                     #endregion
                 }
             }
+
+            ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
         }
 
         /// <summary>
@@ -886,19 +892,19 @@ namespace TEAM
                 var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                string outputFilePath = globalParameters.GetMetadataFilePath(targetDataObject.name);
+                string outputFilePath = globalParameters.GetMetadataFilePath(targetDataObject.Name);
 
                 try
                 {
                     File.WriteAllText(outputFilePath, output);
 
-                    ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
+                    //((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
-                    ThreadHelper.SetText(this, richTextBoxInformation, $"The Data Object Mapping for '{targetDataObject.name}' has been saved.\r\n");
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"The Data Object Mapping for '{targetDataObject.Name}' has been saved.\r\n");
                 }
                 catch (Exception exception)
                 {
-                    ThreadHelper.SetText(this, richTextBoxInformation, $"There was an issue saving the Data Object Mapping for '{targetDataObject.name}', the reported exception is {exception.Message}\r\n");
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"There was an issue saving the Data Object Mapping for '{targetDataObject.Name}', the reported exception is {exception.Message}\r\n");
                 }
             }
             else
@@ -906,13 +912,13 @@ namespace TEAM
                 // Deleting a file that has been renamed, removed or otherwise emptied.
                 try
                 {
-                    var fileToDelete = globalParameters.GetMetadataFilePath(targetDataObject.name);
+                    var fileToDelete = globalParameters.GetMetadataFilePath(targetDataObject.Name);
                     File.Delete(fileToDelete);
-                    ThreadHelper.SetText(this, richTextBoxInformation, $"Data Object Mapping for '{targetDataObject.name}' has been removed.\r\n");
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"Data Object Mapping for '{targetDataObject.Name}' has been removed.\r\n");
                 }
                 catch (Exception exception)
                 {
-                    ThreadHelper.SetText(this, richTextBoxInformation, $"There was an issue deleting the Data Object Mapping for '{targetDataObject.name}', the reported exception is {exception.Message}\r\n");
+                    ThreadHelper.SetText(this, richTextBoxInformation, $"There was an issue deleting the Data Object Mapping for '{targetDataObject.Name}', the reported exception is {exception.Message}\r\n");
                 }
             }
         }
@@ -927,15 +933,15 @@ namespace TEAM
 
             if (dataObjectMappings.Count > 0)
             {
-                var targetDataObject = dataObjectMappings[0].targetDataObject;
+                var targetDataObject = dataObjectMappings[0].TargetDataObject;
                 var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.name), output);
+                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.Name), output);
 
                 ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
-                richTextBoxInformation.Text += $"The Data Object Mapping for '{targetDataObject.name}' has been saved.\r\n";
+                richTextBoxInformation.Text += $"The Data Object Mapping for '{targetDataObject.Name}' has been saved.\r\n";
             }
             else
             {
@@ -952,7 +958,7 @@ namespace TEAM
 
             VDW_DataObjectMappingList sourceTargetMappingList = new VDW_DataObjectMappingList
             {
-                dataObjectMappings = dataObjectMappings,
+                DataObjectMappings = dataObjectMappings,
                 generationSpecificMetadata = vdwMetadata,
                 metadataConfiguration = metadataConfiguration
             };
@@ -981,17 +987,17 @@ namespace TEAM
 
                         if (row[PhysicalModelMappingMetadataColumns.databaseName.ToString()] != DBNull.Value)
                         {
-                            databaseName = (string) row[PhysicalModelMappingMetadataColumns.databaseName.ToString()];
+                            databaseName = (string)row[PhysicalModelMappingMetadataColumns.databaseName.ToString()];
                         }
 
                         if (row[PhysicalModelMappingMetadataColumns.schemaName.ToString()] != DBNull.Value)
                         {
-                            schemaName = (string) row[PhysicalModelMappingMetadataColumns.schemaName.ToString()];
+                            schemaName = (string)row[PhysicalModelMappingMetadataColumns.schemaName.ToString()];
                         }
 
                         if (row[PhysicalModelMappingMetadataColumns.tableName.ToString()] != DBNull.Value)
                         {
-                            tableName = (string) row[PhysicalModelMappingMetadataColumns.tableName.ToString()];
+                            tableName = (string)row[PhysicalModelMappingMetadataColumns.tableName.ToString()];
                         }
 
                         // Save the file. 
@@ -1023,7 +1029,7 @@ namespace TEAM
 
                 //Committing the changes to the data table
                 dataTableChanges.AcceptChanges();
-                ((DataTable) BindingSourcePhysicalModel.DataSource).AcceptChanges();
+                ((DataTable)BindingSourcePhysicalModel.DataSource).AcceptChanges();
 
                 // Reset all data bound items etc. etc.
                 PopulatePhysicalModelGrid();
@@ -1094,7 +1100,7 @@ namespace TEAM
                             }
                             else
                             {
-                                string[] inputHashValue = new[] { sourceDataObject, sourceDataItem, targetDataObject, targetDataItem, notes, DateTime.Now.ToString(), Utility.KeyGenerator.GetUniqueKey()};
+                                string[] inputHashValue = new[] { sourceDataObject, sourceDataItem, targetDataObject, targetDataItem, notes, DateTime.Now.ToString(), Utility.KeyGenerator.GetUniqueKey() };
                                 hashKey = Utility.CreateMd5(inputHashValue, Utility.SandingElement);
                             }
 
@@ -1263,8 +1269,8 @@ namespace TEAM
                 #endregion
             }
         }
-        
-        # region Parse process
+
+        #region Parse process
 
         private void ButtonParse_Click(object sender, EventArgs e)
         {
@@ -1274,95 +1280,95 @@ namespace TEAM
             //}
             //else
             //{
-                richTextBoxInformation.Clear();
+            richTextBoxInformation.Clear();
 
-                #region Preparation
+            #region Preparation
 
-                // Local boolean to manage whether activation is OK to go ahead.
-                bool activationContinue = true;
+            // Local boolean to manage whether activation is OK to go ahead.
+            bool activationContinue = true;
 
-                // Check if there are any outstanding saves / commits in the data grid
-                var dataTableTableMappingChanges = ((DataTable)BindingSourceDataObjectMappings.DataSource).GetChanges();
-                var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
-                var dataTablePhysicalModelChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
+            // Check if there are any outstanding saves / commits in the data grid
+            var dataTableTableMappingChanges = ((DataTable)BindingSourceDataObjectMappings.DataSource).GetChanges();
+            var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
+            var dataTablePhysicalModelChanges = ((DataTable)BindingSourcePhysicalModel.DataSource).GetChanges();
 
-                if (
-                    (dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0) ||
-                    (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0) ||
-                    (dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
-                )
+            if (
+                (dataTableTableMappingChanges != null && dataTableTableMappingChanges.Rows.Count > 0) ||
+                (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0) ||
+                (dataTablePhysicalModelChanges != null && dataTablePhysicalModelChanges.Rows.Count > 0)
+            )
+            {
+                string localMessage = "You have unsaved edits, please save your work before running the end-to-end update.";
+                MessageBox.Show(localMessage);
+                richTextBoxInformation.AppendText(localMessage);
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, localMessage));
+                activationContinue = false;
+            }
+
+            #endregion
+
+            #region Validation
+
+            // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes).
+            if (checkBoxValidation.Checked && activationContinue)
+            {
+                if (BindingSourcePhysicalModel.Count == 0)
                 {
-                    string localMessage = "You have unsaved edits, please save your work before running the end-to-end update.";
-                    MessageBox.Show(localMessage);
-                    richTextBoxInformation.AppendText(localMessage);
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, localMessage));
+                    richTextBoxInformation.Text = @"There is no physical model metadata available, please make sure the physical model grid contains data.";
                     activationContinue = false;
-                }
-
-                #endregion
-
-                #region Validation
-
-                // The first thing to happen is to check if the validation needs to be run (and started if the answer to this is yes).
-                if (checkBoxValidation.Checked && activationContinue)
-                {
-                    if (BindingSourcePhysicalModel.Count == 0)
-                    {
-                        richTextBoxInformation.Text = @"There is no physical model metadata available, please make sure the physical model grid contains data.";
-                        activationContinue = false;
-                    }
-                    else
-                    {
-                        if (backgroundWorkerValidationOnly.IsBusy) return;
-                        // create a new instance of the alert form
-                        _alertValidation = new Form_Alert();
-                        _alertValidation.SetFormName("Validating the metadata");
-                        _alertValidation.ShowLogButton(false);
-                        _alertValidation.ShowCancelButton(true);
-                        _alertValidation.Canceled += buttonCancelParse_Click;
-                        _alertValidation.Show();
-
-                        // Start the asynchronous operation.
-                        backgroundWorkerValidationOnly.RunWorkerAsync();
-
-                        while (backgroundWorkerValidationOnly.IsBusy)
-                        {
-                            Application.DoEvents();
-                        }
-                    }
-                }
-
-                #endregion
-
-                // After validation finishes, the parse thread / process should start.
-                // Only if the validation is enabled AND there are no issues identified in earlier validation checks.
-
-                #region Parse Thread
-
-                if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && metadataValidations.ValidationIssues == 0) && activationContinue)
-                {
-                    if (backgroundWorkerParse.IsBusy) return;
-                    // create a new instance of the alert form
-                    _alertParse = new Form_Alert();
-                    _alertParse.SetFormName("Parsing the data object mappings");
-                    _alertParse.Canceled += buttonCancelParse_Click;
-                    _alertParse.ShowLogButton(false);
-                    _alertParse.ShowCancelButton(true);
-                    _alertParse.Show();
-
-                    // Temporarily disable event handling on binding source to avoid cross-thread issues.
-                    BindingSourceDataObjectMappings.SuspendBinding();
-
-                    // Start the asynchronous operation.
-                    backgroundWorkerParse.RunWorkerAsync();
                 }
                 else
                 {
-                    richTextBoxInformation.AppendText("Validation found issues which should be investigated.");
-                }
+                    if (backgroundWorkerValidationOnly.IsBusy) return;
+                    // create a new instance of the alert form
+                    _alertValidation = new Form_Alert();
+                    _alertValidation.SetFormName("Validating the metadata");
+                    _alertValidation.ShowLogButton(false);
+                    _alertValidation.ShowCancelButton(true);
+                    _alertValidation.Canceled += buttonCancelParse_Click;
+                    _alertValidation.Show();
 
-                #endregion
-           // }
+                    // Start the asynchronous operation.
+                    backgroundWorkerValidationOnly.RunWorkerAsync();
+
+                    while (backgroundWorkerValidationOnly.IsBusy)
+                    {
+                        Application.DoEvents();
+                    }
+                }
+            }
+
+            #endregion
+
+            // After validation finishes, the parse thread / process should start.
+            // Only if the validation is enabled AND there are no issues identified in earlier validation checks.
+
+            #region Parse Thread
+
+            if (!checkBoxValidation.Checked || (checkBoxValidation.Checked && metadataValidations.ValidationIssues == 0) && activationContinue)
+            {
+                if (backgroundWorkerParse.IsBusy) return;
+                // create a new instance of the alert form
+                _alertParse = new Form_Alert();
+                _alertParse.SetFormName("Parsing the data object mappings");
+                _alertParse.Canceled += buttonCancelParse_Click;
+                _alertParse.ShowLogButton(false);
+                _alertParse.ShowCancelButton(true);
+                _alertParse.Show();
+
+                // Temporarily disable event handling on binding source to avoid cross-thread issues.
+                BindingSourceDataObjectMappings.SuspendBinding();
+
+                // Start the asynchronous operation.
+                backgroundWorkerParse.RunWorkerAsync();
+            }
+            else
+            {
+                richTextBoxInformation.AppendText("Validation found issues which should be investigated.");
+            }
+
+            #endregion
+            // }
         }
 
         /// <summary>
@@ -1454,7 +1460,7 @@ namespace TEAM
                         else
                         {
                             DataObject targetDataObject = (DataObject)dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
-                            targetDataObjectName = targetDataObject.name;
+                            targetDataObjectName = targetDataObject.Name;
                         }
 
                         if (!targetNameList.Contains(targetDataObjectName))
@@ -1467,7 +1473,7 @@ namespace TEAM
 
                                 WriteDataObjectMappingsToFile(targetDataObject);
 
-                                LogMetadataEvent($"  --> Saved as '{globalParameters.GetMetadataFilePath(targetDataObject.name)}'.", EventTypes.Information);
+                                LogMetadataEvent($"  --> Saved as '{globalParameters.GetMetadataFilePath(targetDataObject.Name)}'.", EventTypes.Information);
 
                                 targetNameList.Add(targetDataObjectName);
                             }
@@ -1488,6 +1494,8 @@ namespace TEAM
                     LogMetadataEvent($"A row in the grid could not be parsed. The reported exception is {exception.Message}.", EventTypes.Error);
                 }
             }
+
+            ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
             // Manage cancellation.
             if (worker != null && worker.CancellationPending)
@@ -1586,6 +1594,38 @@ namespace TEAM
             return filteredRowSet;
         }
 
+        private string GetDgmlCategory(string node)
+        {
+            var returnValue = "";
+
+            if (node.IsPsa(TeamConfiguration))
+            {
+                returnValue = "Persistent Staging Area";
+            }
+            else if (node.IsDataVaultHub(TeamConfiguration))
+            {
+                returnValue = "Core Business Concept";
+            }
+            else if (node.IsDataVaultLink(TeamConfiguration))
+            {
+                returnValue = "Natural Business Relationship";
+            }
+            else if (node.IsDataVaultSatellite(TeamConfiguration))
+            {
+                returnValue = "Context";
+            }
+            else if (node.IsDataVaultLinkSatellite(TeamConfiguration))
+            {
+                returnValue = "Context";
+            }
+            return returnValue;
+        }
+
+        /// <summary>
+        /// Save existing metadata as a Directed Graph Markup Language (DGML) file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveAsDirectionalGraphMarkupLanguageDgmlToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var theDialog = new SaveFileDialog
@@ -1596,419 +1636,560 @@ namespace TEAM
             };
 
             var ret = STAShowDialog(theDialog);
-            
+
             if (ret == DialogResult.OK)
             {
-                var chosenFile = theDialog.FileName;
+                var selectedFile = theDialog.FileName;
 
-                int errorCounter = 0;
+                bool skipSource = false;
+                bool skipPsa = false;
+                bool skipRelatedDataObjects = false;
 
-                if (_dataGridViewDataObjects != null) // There needs to be metadata available
+                // Get the JSON files and load these into memory.
+                var teamDataObjectMappingFileCombinations = new TeamDataObjectMappingsFileCombinations(globalParameters.MetadataPath);
+                teamDataObjectMappingFileCombinations.GetMetadata(globalParameters);
+
+                // DGML part strings - nodes.
+                var nodeBuilder = new List<string> { "  <Nodes>" };
+
+                // DGML part strings - edges.
+                var edgeBuilder = new List<string> { "  <Links>" };
+
+                // Create all the nodes and edges.
+                foreach (var fileCombination in teamDataObjectMappingFileCombinations.DataObjectMappingsFileCombinations)
                 {
-                    var connOmd = new SqlConnection
+                    List<DataObjectMapping> dataObjectMappings = fileCombination.DataObjectMappings.DataObjectMappings;
+
+                    foreach (var dataObjectMapping in dataObjectMappings)
                     {
-                        ConnectionString = TeamConfiguration.MetadataConnection.CreateSqlServerConnectionString(false)
-                    };
+                        if (dataObjectMapping.Enabled==false)
+                            continue;
 
-                    //Write the DGML file
-                    var dgmlExtract = new StringBuilder();
-                    dgmlExtract.AppendLine("<?xml version=\"1.0\" encoding=\"utf - 8\"?>");
-                    dgmlExtract.AppendLine("<DirectedGraph ZoomLevel=\" - 1\" xmlns=\"http://schemas.microsoft.com/vs/2009/dgml\">");
+                        DataClassification classification = dataObjectMapping.MappingClassifications.FirstOrDefault();
 
-                    #region Table nodes
+                        if (skipPsa && classification.Classification == "PersistentStagingArea")
+                            continue;
 
-                    //Build up the list of nodes based on the data grid
-                    List<string> nodeList = new List<string>();
+                        if (skipSource && classification.Classification == "StagingArea")
+                            continue;
 
-                    for (int i = 0; i < _dataGridViewDataObjects.Rows.Count - 1; i++)
-                    {
-                        DataGridViewRow row = _dataGridViewDataObjects.Rows[i];
-                        string sourceNode = row.Cells[(int) DataObjectMappingGridColumns.SourceDataObject].Value.ToString();
-                        var sourceConnectionId = row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
-                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionId, TeamConfiguration, TeamEventLog);
-                        KeyValuePair<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceNode, sourceConnection).FirstOrDefault();
+                        #region Target node (data object)
 
+                        // The target is set once for the mapping.
+                        DataObject targetDataObject = dataObjectMapping.TargetDataObject;
+                        var targetConnectionKey = targetDataObject.DataObjectConnection.DataConnectionString;
+                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionKey(targetConnectionKey, TeamConfiguration, TeamEventLog);
+                        KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.Name, targetConnection).FirstOrDefault();
 
-                        string targetNode = row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value.ToString();
-                        var targetConnectionId = row.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
-                        KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetNode, targetConnection).FirstOrDefault();
+                        var targetNodeName = fullyQualifiedObjectTarget.Key + '.' + fullyQualifiedObjectTarget.Value;
 
+                        var targetCategoryName = GetDgmlCategory(fullyQualifiedObjectTarget.Value);
 
-                        // Add source tables to Node List
-                        if (!nodeList.Contains(fullyQualifiedObjectSource.Key+'.'+ fullyQualifiedObjectSource.Value))
+                        // Add the target node, if not existing already.
+                        var localTargetNode = "     <Node Id=\"" + targetNodeName + "\" Category=\"" + targetCategoryName + "\" Group=\"Collapsed\" Label=\"" + fullyQualifiedObjectTarget.Value + "\" />";
+                        if (!nodeBuilder.Contains(localTargetNode))
                         {
-                            nodeList.Add(fullyQualifiedObjectSource.Key + '.' + fullyQualifiedObjectSource.Value);
+                            nodeBuilder.Add(localTargetNode);
                         }
 
-                        // Add target tables to Node List
-                        if (!nodeList.Contains(fullyQualifiedObjectTarget.Key + '.' + fullyQualifiedObjectTarget.Value))
-                        {
-                            nodeList.Add(fullyQualifiedObjectTarget.Key + '.' + fullyQualifiedObjectTarget.Value);
-                        }
-                    }
+                        var targetConnectionName = targetConnectionKey;
 
-                    dgmlExtract.AppendLine("  <Nodes>");
-
-                    var edgeBuilder = new StringBuilder(); // Also create the links while iterating through the below set
-
-                    var presentationLayerLabelArray = Utility.SplitLabelIntoArray(TeamConfiguration.PresentationLayerLabels);
-                    
-                    
-                        
-                    foreach (string node in nodeList)
-                    {
-                        if (node.Contains(TeamConfiguration.StgTablePrefixValue))
+                        // Add the connection node, if not existing already.
+                        var localTargetConnectionNode = "     <Node Id=\"" + targetConnectionName + "\" Group=\"Collapsed\" Label=\"" + targetConnectionName + "\" />";
+                        if (!nodeBuilder.Contains(localTargetConnectionNode))
                         {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Landing Area\" Group=\"Collapsed\" Label=\"" + node + "\" />");
-                            edgeBuilder.AppendLine("     <Link Source=\"Staging Layer\" Target=\"" + node + "\" Category=\"Contains\" />");
-                        }
-                        else if (node.Contains(TeamConfiguration.PsaTablePrefixValue))
-                        {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Persistent Staging Area\" Group=\"Collapsed\" Label=\"" + node + "\" />");
-                            edgeBuilder.AppendLine("     <Link Source=\"Staging Layer\" Target=\"" + node + "\" Category=\"Contains\" />");
-                        }
-                        else if (node.Contains(TeamConfiguration.HubTablePrefixValue))
-                        {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Hub\"  Label=\"" + node + "\" />");
-                        }
-                        else if (node.Contains(TeamConfiguration.LinkTablePrefixValue))
-                        {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Link\" Label=\"" + node + "\" />");
-                        }
-                        else if (node.Contains(TeamConfiguration.SatTablePrefixValue) ||
-                                 node.Contains(TeamConfiguration.LsatTablePrefixValue))
-                        {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Satellite\" Group=\"Collapsed\" Label=\"" + node + "\" />");
-                        }
-                        else if (presentationLayerLabelArray.Any(s => node.Contains(s)))
-                        {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Presentation\" Label=\"" + node + "\" />");
-                        }
-                        else
-                        {
-                            dgmlExtract.AppendLine("     <Node Id=\"" + node + "\"  Category=\"Sources\" Label=\"" + node + "\" />");
-                            edgeBuilder.AppendLine("     <Link Source=\"Sources\" Target=\"" + node + "\" Category=\"Contains\" />");
-                        }
-                    }
-
-                    #endregion
-
-                    #region Attribute nodes
-
-                    // Separate routine for attribute nodes, with some additional logic to allow for 'duplicate' nodes e.g. source and target attribute names
-                    var sqlStatementForSatelliteAttributes = new StringBuilder();
-                    sqlStatementForSatelliteAttributes.AppendLine("SELECT SOURCE_SCHEMA_NAME+'.'+SOURCE_NAME AS SOURCE_NAME, TARGET_SCHEMA_NAME+'.'+TARGET_NAME AS TARGET_NAME, SOURCE_ATTRIBUTE_NAME, TARGET_ATTRIBUTE_NAME");
-                    sqlStatementForSatelliteAttributes.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_ATTRIBUTE_XREF]");
-
-                    var satelliteAttributes = Utility.GetDataTable(ref connOmd, sqlStatementForSatelliteAttributes.ToString());
-                    foreach (DataRow row in satelliteAttributes.Rows)
-                    {
-                        var sourceNodeLabel = (string) row["SOURCE_ATTRIBUTE_NAME"];
-                        var sourceNode = "staging_" + sourceNodeLabel;
-                        var targetNodeLabel = (string) row["TARGET_ATTRIBUTE_NAME"];
-                        var targetNode = "dwh_" + targetNodeLabel;
-
-                        // Add source tables to Node List
-                        if (!nodeList.Contains(sourceNode))
-                        {
-                            nodeList.Add(sourceNode);
+                            nodeBuilder.Add(localTargetConnectionNode);
                         }
 
-                        // Add target tables to Node List
-                        if (!nodeList.Contains(targetNode))
+                        // Add the target node to the connection (contains), if this hasn't been done already.
+                        var targetEdge = "     <Link Source=\"" + targetConnectionName + "\" Target=\"" + targetNodeName + "\" Category=\"Contains\"/>";
+                        if (!edgeBuilder.Contains(targetEdge))
                         {
-                            nodeList.Add(targetNode);
+                            edgeBuilder.Add(targetEdge);
                         }
 
-                        dgmlExtract.AppendLine("     <Node Id=\"" + sourceNode + "\"  Category=\"Attribute\" Label=\"" + sourceNodeLabel + "\" />");
-                        dgmlExtract.AppendLine("     <Node Id=\"" + targetNode + "\"  Category=\"Attribute\" Label=\"" + targetNodeLabel + "\" />");
-                    }
+                        #endregion
 
-                    #endregion
+                        #region Source node (data object)
 
-                    #region Category nodes
-
-                    //Adding the category nodes
-                    dgmlExtract.AppendLine("     <Node Id=\"Sources\" Group=\"Collapsed\" Label=\"Sources\"/>");
-                    dgmlExtract.AppendLine("     <Node Id=\"Staging Layer\" Group=\"Collapsed\" Label=\"Staging Layer\"/>");
-                    dgmlExtract.AppendLine("     <Node Id=\"Data Vault\" Group=\"Expanded\" Label=\"Data Vault\"/>");
-
-                    #endregion
-
-                    #region Subject Area nodes
-
-                    // Add the subject area nodes
-                    dgmlExtract.AppendLine("     <!-- Subject Area nodes -->");
-                    var sqlStatementForSubjectAreas = new StringBuilder();
-                    try
-                    {
-                        sqlStatementForSubjectAreas.AppendLine("SELECT DISTINCT SUBJECT_AREA");
-                        sqlStatementForSubjectAreas.AppendLine("FROM [interface].[INTERFACE_SUBJECT_AREA]");
-
-                        var modelRelationshipsLinksDataTable =
-                            Utility.GetDataTable(ref connOmd, sqlStatementForSubjectAreas.ToString());
-
-                        foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
+                        try
                         {
-                            //dgmlExtract.AppendLine("     <Link Source=\"" + (string)row["BUSINESS_CONCEPT"] + "\" Target=\"" + (string)row["CONTEXT_TABLE"] + "\" />");
-                            dgmlExtract.AppendLine("     <Node Id=\"SubjectArea_" + (string) row["SUBJECT_AREA"] +
-                                                   "\"  Group=\"Collapsed\" Category=\"Subject Area\" Label=\"" +
-                                                   (string) row["SUBJECT_AREA"] + "\" />");
-                            edgeBuilder.AppendLine("     <Link Source=\"Data Vault\" Target=\"SubjectArea_" +
-                                                   (string) row["SUBJECT_AREA"] + "\" Category=\"Contains\" />");
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForSubjectAreas}."));
-                        errorCounter++;
-                    }
-
-                    #endregion
-
-                    dgmlExtract.AppendLine("  </Nodes>");
-                    //End of Nodes
-
-
-                    //Edges and containers
-                    dgmlExtract.AppendLine("  <Links>");
-                    dgmlExtract.AppendLine("     <!-- Place regular nodes in layer containers ('contains') -->");
-                    dgmlExtract.Append(
-                        edgeBuilder); // Add the containers (e.g. STG and PSA to Staging Layer, Hubs, Links and Satellites to Data Vault
-
-
-                    // Separate routine to create table / attribute relationships
-                    dgmlExtract.AppendLine("     <!-- Table / Attribute relationships -->");
-                    foreach (DataRow row in satelliteAttributes.Rows)
-                    {
-                        var sourceNodeSat = (string) row["TARGET_NAME"];
-                        var targetNodeSat = "dwh_" + (string) row["TARGET_ATTRIBUTE_NAME"];
-                        var sourceNodeStg = (string) row["SOURCE_NAME"];
-                        var targetNodeStg = "staging_" + (string) row["SOURCE_ATTRIBUTE_NAME"];
-
-                        // This is adding the attributes to the tables
-                        dgmlExtract.AppendLine("     <Link Source=\"" + sourceNodeSat + "\" Target=\"" + targetNodeSat +
-                                               "\" Category=\"Contains\" />");
-                        dgmlExtract.AppendLine("     <Link Source=\"" + sourceNodeStg + "\" Target=\"" + targetNodeStg +
-                                               "\" Category=\"Contains\" />");
-
-                        // This is adding the edge between the attributes
-                        dgmlExtract.AppendLine("     <Link Source=\"" + targetNodeStg + "\" Target=\"" + targetNodeSat +
-                                               "\" />");
-                    }
-
-                    // Get the source / target model relationships for Hubs and Satellites
-                    List<string> segmentNodeList = new List<string>();
-                    var modelRelationshipsHubDataTable = new DataTable();
-                    var sqlStatementForHubCategories = new StringBuilder();
-                    try
-                    {
-                        sqlStatementForHubCategories.AppendLine("SELECT  TARGET_SCHEMA_NAME+'.'+TARGET_NAME AS TARGET_NAME");
-                        sqlStatementForHubCategories.AppendLine("FROM [interface].[INTERFACE_SOURCE_SATELLITE_XREF]");
-                        sqlStatementForHubCategories.AppendLine("WHERE TARGET_TYPE = 'Normal'");
-
-                        modelRelationshipsHubDataTable = Utility.GetDataTable(ref connOmd, sqlStatementForHubCategories.ToString());
-                    }
-                    catch
-                    {
-                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForHubCategories}."));
-                        errorCounter++;
-                    }
-
-                    foreach (DataRow row in modelRelationshipsHubDataTable.Rows)
-                    {
-                        var modelRelationshipsHub = (string) row["TARGET_NAME"];
-
-                        if (!segmentNodeList.Contains(modelRelationshipsHub))
-                        {
-                            segmentNodeList.Add(modelRelationshipsHub);
-                        }
-                    }
-
-
-                    //Add the relationships between core business concepts - from Hub to Link
-                    dgmlExtract.AppendLine("     <!-- Hub / Link relationships -->");
-                    var sqlStatementForRelationships = new StringBuilder();
-                    try
-                    {
-                        sqlStatementForRelationships.AppendLine("SELECT DISTINCT [HUB_NAME], TARGET_SCHEMA_NAME+'.'+[TARGET_NAME] AS TARGET_NAME");
-                        sqlStatementForRelationships.AppendLine("FROM [interface].[INTERFACE_HUB_LINK_XREF]");
-                        sqlStatementForRelationships.AppendLine("WHERE HUB_NAME NOT IN ('N/A')");
-
-                        var businessConceptsRelationships = Utility.GetDataTable(ref connOmd, sqlStatementForRelationships.ToString());
-
-                        foreach (DataRow row in businessConceptsRelationships.Rows)
-                        {
-                            dgmlExtract.AppendLine("     <Link Source=\"" + (string) row["HUB_NAME"] + "\" Target=\"" + (string) row["TARGET_NAME"] + "\" />");
-                        }
-                    }
-                    catch
-                    {
-                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForRelationships}."));
-                        errorCounter++;
-                    }
-
-
-                    // Add the relationships to the context tables
-                    dgmlExtract.AppendLine("     <!-- Relationships between Hubs/Links to context and their subject area -->");
-                    var sqlStatementForLinkCategories = new StringBuilder();
-                    try
-                    {
-                        sqlStatementForLinkCategories.AppendLine("SELECT *");
-                        sqlStatementForLinkCategories.AppendLine("FROM [interface].[INTERFACE_SUBJECT_AREA]");
-
-                        var modelRelationshipsLinksDataTable =
-                            Utility.GetDataTable(ref connOmd, sqlStatementForLinkCategories.ToString());
-
-                        foreach (DataRow row in modelRelationshipsLinksDataTable.Rows)
-                        {
-                            var businessConcept = (string) row["BUSINESS_CONCEPT"];
-
-                            var contextTable = Utility.ConvertFromDBVal<string>(row["CONTEXT_TABLE"]);
-
-                            dgmlExtract.AppendLine("     <Link Source=\"" + businessConcept + "\" Target=\"" +
-                                                   contextTable + "\" />");
-
-                            dgmlExtract.AppendLine("     <Link Source=\"SubjectArea_" + (string) row["SUBJECT_AREA"] +
-                                                   "\" Target=\"" + businessConcept + "\" Category=\"Contains\" />");
-
-                            if (contextTable != null)
+                            foreach (var sourceDataObjectDynamic in dataObjectMapping.SourceDataObjects)
                             {
-                                dgmlExtract.AppendLine("     <Link Source=\"SubjectArea_" +
-                                                       (string) row["SUBJECT_AREA"] + "\" Target=\"" + contextTable +
-                                                       "\" Category=\"Contains\" />");
+                                var intermediateJson = JsonConvert.SerializeObject(sourceDataObjectDynamic);
+
+                                if (JsonConvert.DeserializeObject(intermediateJson).ContainsKey("dataQueryCode"))
+                                {
+                                    // If the source is a query.
+                                    DataQuery tempDataItem = JsonConvert.DeserializeObject<DataQuery>(intermediateJson);
+
+                                    if (tempDataItem.DataQueryConnection != null)
+                                    {
+                                        var sourceNodeNameDataQuery = tempDataItem.DataQueryConnection.DataConnectionString + '.' + tempDataItem.DataQueryCode;
+                                        var connectionNameDataQuery = tempDataItem.DataQueryConnection.DataConnectionString;
+
+                                        // Add the source node, if not existing already.
+                                        var localSourceNode = "     <Node Id=\"" + sourceNodeNameDataQuery + "\" Category=\"" + "" + "" + "\" Group=\"Collapsed\" Label=\"" + sourceNodeNameDataQuery + "\" />";
+                                        if (!nodeBuilder.Contains(localSourceNode))
+                                        {
+                                            nodeBuilder.Add(localSourceNode);
+                                        }
+
+                                        // Add the connection node, if not existing already.
+                                        var localDataQueryNode = "     <Node Id=\"" + connectionNameDataQuery + "\" Group=\"Collapsed\" Label=\"" + connectionNameDataQuery + "\" />";
+                                        if (!nodeBuilder.Contains(localDataQueryNode))
+                                        {
+                                            nodeBuilder.Add(localDataQueryNode);
+                                        }
+
+                                        // Add the source node to the connection, if this hasn't been done already.
+                                        var dataQueryEdge = "     <Link Source=\"" + connectionNameDataQuery + "\" Target=\"" + sourceNodeNameDataQuery + "\" Category=\"Contains\"/>";
+                                        if (!edgeBuilder.Contains(dataQueryEdge))
+                                        {
+                                            edgeBuilder.Add(dataQueryEdge);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // The source is an object.
+                                    var singleSourceDataObject = (DataObject)JsonConvert.DeserializeObject<DataObject>(intermediateJson);
+
+                                    if (singleSourceDataObject.DataObjectConnection != null)
+                                    {
+                                        string sourceConnectionString = singleSourceDataObject.DataObjectConnection.DataConnectionString;
+                                        var sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, TeamConfiguration, TeamEventLog).ConnectionInternalId;
+
+                                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
+
+                                        Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(singleSourceDataObject.Name, sourceConnection);
+
+                                        var uniqueValue = fullyQualifiedObjectSource.FirstOrDefault();
+                                        var sourceNodeNameFullyQualified = uniqueValue.Key + '.' + uniqueValue.Value;
+                                        var sourceCategoryName = GetDgmlCategory(uniqueValue.Value);
+
+                                        // Add the source node, if not existing already.
+                                        var localSourceNode = "     <Node Id=\"" + sourceNodeNameFullyQualified + "\" Category=\"" + sourceCategoryName + "\" Group=\"Collapsed\" Label=\"" + uniqueValue.Value + "\" />";
+                                        if (!nodeBuilder.Contains(localSourceNode))
+                                        {
+                                            nodeBuilder.Add(localSourceNode);
+                                        }
+
+                                        var sourceConnectionName = sourceConnectionString;
+
+                                        // Add the connection node, if not existing already.
+                                        var localSourceConnectionNode = "     <Node Id=\"" + sourceConnectionName + "\" Group=\"Collapsed\" Label=\"" + sourceConnectionName + "\" />";
+                                        if (!nodeBuilder.Contains(localSourceConnectionNode))
+                                        {
+                                            nodeBuilder.Add(localSourceConnectionNode);
+                                        }
+
+                                        // Add the source node to the connection, if this hasn't been done already.
+                                        var sourceConnectionEdge = "     <Link Source=\"" + sourceConnectionName + "\" Target=\"" + sourceNodeNameFullyQualified + "\" Category=\"Contains\"/>";
+                                        if (!edgeBuilder.Contains(sourceConnectionEdge))
+                                        {
+                                            edgeBuilder.Add(sourceConnectionEdge);
+                                        }
+
+                                        // Build the source-target relationship between the data objects.
+                                        var dataObjectMappingEdge = "     <Link Source=\"" + sourceNodeNameFullyQualified + "\" Target=\"" + targetNodeName + "\" />";
+                                        //var dataObjectMappingEdge = "     <Link Source=\"" + sourceNodeNameFullyQualified + "\" Target=\"" + targetNodeName + "\" BusinessKeyDefinition=\"@" + JsonConvert.SerializeObject(dataObjectMapping.BusinessKeys) + "\" />";
+                                        if (!edgeBuilder.Contains(dataObjectMappingEdge))
+                                        {
+                                            edgeBuilder.Add(dataObjectMappingEdge);
+                                        }
+                                    }
+                                }
                             }
                         }
+                        catch (Exception exception)
+                        {
+                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered generating the DGML file, when building the nodes: {exception.Message}"));
+                        }
 
+                        #endregion
+
+                        if (!skipRelatedDataObjects)
+                        {
+                            #region RelatedDataObjects
+
+                            try
+                            {
+                                if (dataObjectMapping.RelatedDataObjects != null)
+                                {
+                                    foreach (var relatedDataObject in dataObjectMapping.RelatedDataObjects)
+                                    {
+                                        if (relatedDataObject.DataObjectConnection != null && relatedDataObject.Name != "Metadata")
+                                        {
+                                            var relatedDataObjectConnectionKey = relatedDataObject.DataObjectConnection.DataConnectionString;
+                                            var relatedDataObjectConnection = TeamConnection.GetTeamConnectionByConnectionKey(relatedDataObjectConnectionKey, TeamConfiguration, TeamEventLog);
+                                            KeyValuePair<string, string> fullyQualifiedRelatedDataObjectName =
+                                                MetadataHandling.GetFullyQualifiedDataObjectName(relatedDataObject.Name, relatedDataObjectConnection).FirstOrDefault();
+
+                                            var fullyQualifiedRelatedDataObjectNodeName = fullyQualifiedRelatedDataObjectName.Key + '.' + fullyQualifiedRelatedDataObjectName.Value;
+
+                                            var relatedDataObjectEdge = "     <Link Source=\"" + targetNodeName + "\" Target=\"" + fullyQualifiedRelatedDataObjectNodeName + "\" RelatedDataObject=\"" +
+                                                                        targetNodeName + "\" />";
+                                            if (!edgeBuilder.Contains(relatedDataObjectEdge))
+                                            {
+                                                edgeBuilder.Add(relatedDataObjectEdge);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception exception)
+                            {
+                                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered generating the DGML file, when building the related data objects: {exception.Message}"));
+                            }
+
+                            #endregion
+                        }
+
+                        #region Data Item mappings
+
+                        try
+                        {
+                            if (dataObjectMapping.DataItemMappings != null)
+                            {
+                                foreach (var dataItemMapping in dataObjectMapping.DataItemMappings)
+                                {
+                                    var sourceDataObject = dataObjectMapping.SourceDataObjects.FirstOrDefault();
+
+                                    var sourceDataObjectName = "";
+                                    var sourceDataObjectFullyQualified = "";
+
+                                    // Check if the source data object is a query, or a data object.
+                                    var intermediateJson = JsonConvert.SerializeObject(sourceDataObject);
+
+                                    if (!JsonConvert.DeserializeObject(intermediateJson).ContainsKey("dataQueryCode"))
+                                    {
+                                        // It's an object.
+                                        var singleSourceDataObject = (DataObject)JsonConvert.DeserializeObject<DataObject>(intermediateJson);
+
+                                        sourceDataObjectName = singleSourceDataObject.Name;
+                                        string sourceConnectionString = singleSourceDataObject.DataObjectConnection.DataConnectionString;
+                                        var sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, TeamConfiguration, TeamEventLog).ConnectionInternalId;
+                                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
+
+                                        Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection);
+                                        var uniqueValue = fullyQualifiedObjectSource.FirstOrDefault();
+                                        sourceDataObjectFullyQualified = uniqueValue.Key + '.' + uniqueValue.Value;
+                                    }
+                                    else
+                                    {
+                                        // It's a query.
+                                        var singleSourceDataObject = (DataQuery)JsonConvert.DeserializeObject<DataQuery>(intermediateJson);
+                                        sourceDataObjectFullyQualified = singleSourceDataObject.DataQueryCode;
+                                    }
+
+                                    //* Data Items **/
+
+                                    var sourceDataItemNameFullyQualified = "";
+
+                                    // Check if the source data item is a query, or a data object.
+                                    var sourceDataItem = dataItemMapping.SourceDataItems.FirstOrDefault();
+                                    var intermediateDataItemJson = JsonConvert.SerializeObject(sourceDataItem);
+
+                                    if (!JsonConvert.DeserializeObject(intermediateDataItemJson).ContainsKey("dataQueryCode"))
+                                    {
+                                        // It's an object.
+                                        sourceDataItem = (DataItem)JsonConvert.DeserializeObject<DataItem>(intermediateDataItemJson);
+                                        sourceDataItemNameFullyQualified = sourceDataObjectFullyQualified + "." + sourceDataItem.Name;
+                                    }
+                                    else
+                                    {
+                                        // It's a query.
+                                        sourceDataItem = (DataQuery)JsonConvert.DeserializeObject<DataQuery>(intermediateDataItemJson);
+                                        sourceDataItemNameFullyQualified = sourceDataObjectFullyQualified + "." + sourceDataItem.DataQueryCode;
+                                    }
+
+                                    var targetDataItemName = dataItemMapping.TargetDataItem.Name;
+                                    var targetDataItemNameFullyQualified = targetNodeName + "." + targetDataItemName;
+
+                                    // Add the source node, if not existing already.
+                                    var localSourceDataItemNode = "     <Node Id=\"" + sourceDataItemNameFullyQualified + "\" Label=\"" + sourceDataItem.Name + "\" />";
+                                    if (!nodeBuilder.Contains(localSourceDataItemNode))
+                                    {
+                                        nodeBuilder.Add(localSourceDataItemNode);
+                                    }
+
+                                    // Add the target node, if not existing already.
+                                    var localTargetDataItemNode = "     <Node Id=\"" + targetDataItemNameFullyQualified + "\" Label=\"" + targetDataItemName + "\" />";
+                                    if (!nodeBuilder.Contains(localTargetDataItemNode))
+                                    {
+                                        nodeBuilder.Add(localTargetDataItemNode);
+                                    }
+
+                                    // Build the source-target relationship between the data items.
+                                    var dataItemMappingEdge = "     <Link Source=\"" + sourceDataItemNameFullyQualified + "\" Target=\"" + targetDataItemNameFullyQualified + "\" />";
+                                    if (!edgeBuilder.Contains(dataItemMappingEdge))
+                                    {
+                                        edgeBuilder.Add(dataItemMappingEdge);
+                                    }
+
+                                    // Add the source data item to the data object, if this hasn't been done already.
+                                    var sourceDataItemDataObjectEdge = "     <Link Source=\"" + sourceDataObjectFullyQualified + "\" Target=\"" + sourceDataItemNameFullyQualified + "\" Category=\"Contains\"/>";
+                                    if (!edgeBuilder.Contains(sourceDataItemDataObjectEdge))
+                                    {
+                                        edgeBuilder.Add(sourceDataItemDataObjectEdge);
+                                    }
+
+                                    // Add the target data item to the data object, if this hasn't been done already.
+                                    var targetDataItemDataObjectEdge = "     <Link Source=\"" + targetNodeName + "\" Target=\"" + targetDataItemNameFullyQualified + "\" Category=\"Contains\"/>";
+                                    if (!edgeBuilder.Contains(targetDataItemDataObjectEdge))
+                                    {
+                                        edgeBuilder.Add(targetDataItemDataObjectEdge);
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered generating the DGML file, when adding data item mappings: {exception.Message}"));
+                        }
+
+                        #endregion
+
+                        #region Business Keys
+
+                        try
+                        {
+                            if (dataObjectMapping.BusinessKeys != null)
+                            {
+                                var sourceDataObject = dataObjectMapping.SourceDataObjects.FirstOrDefault();
+
+                                var sourceDataObjectName = "";
+                                var sourceDataObjectFullyQualified = "";
+
+                                // Check if the source data object is a query, or a data object.
+                                var intermediateJson = JsonConvert.SerializeObject(sourceDataObject);
+
+                                if (!JsonConvert.DeserializeObject(intermediateJson).ContainsKey("dataQueryCode"))
+                                {
+                                    // It's an object.
+                                    var singleSourceDataObject = (DataObject)JsonConvert.DeserializeObject<DataObject>(intermediateJson);
+
+                                    sourceDataObjectName = singleSourceDataObject.Name;
+                                    string sourceConnectionString = singleSourceDataObject.DataObjectConnection.DataConnectionString;
+                                    var sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, TeamConfiguration, TeamEventLog).ConnectionInternalId;
+                                    var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
+
+                                    Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection);
+                                    var uniqueValue = fullyQualifiedObjectSource.FirstOrDefault();
+                                    sourceDataObjectFullyQualified = uniqueValue.Key + '.' + uniqueValue.Value;
+                                }
+                                else
+                                {
+                                    // It's a query.
+                                    var singleSourceDataObject = (DataQuery)JsonConvert.DeserializeObject<DataQuery>(intermediateJson);
+                                    sourceDataObjectFullyQualified = singleSourceDataObject.DataQueryCode;
+                                }
+
+                                //** Business Key **/
+
+                                foreach (var businessKey in dataObjectMapping.BusinessKeys)
+                                {
+                                    var surrogateKeyFullyQualified = targetNodeName + "." + businessKey.SurrogateKey;
+
+                                    // Add the surrogate key node, if not existing already.
+                                    var localSurrogateKeyNode = "     <Node Id=\"" + surrogateKeyFullyQualified + "\" Label=\"" + businessKey.SurrogateKey + "\" />";
+                                    if (!nodeBuilder.Contains(localSurrogateKeyNode))
+                                    {
+                                        nodeBuilder.Add(localSurrogateKeyNode);
+                                    }
+
+                                    // Add the surrogate to the data object, if this hasn't been done already.
+                                    var targetSurrogateKeyDataObjectEdge = "     <Link Source=\"" + targetNodeName + "\" Target=\"" + surrogateKeyFullyQualified + "\" Category=\"Contains\"/>";
+                                    if (!edgeBuilder.Contains(targetSurrogateKeyDataObjectEdge))
+                                    {
+                                        edgeBuilder.Add(targetSurrogateKeyDataObjectEdge);
+                                    }
+
+                                    // For each of the business key components, create the source and target items as well as a mapping to the surrogate key.
+                                    foreach (var businessKeyComponentMapping in businessKey.BusinessKeyComponentMapping)
+                                    {
+                                        var sourceBusinessKeyDataItemNameFullyQualified = "";
+
+                                        // Check if the source data item is a query, or a data object.
+                                        var sourceBusinessKeyDataItem = businessKeyComponentMapping.SourceDataItems.FirstOrDefault();
+                                        var intermediateDataItemJson = JsonConvert.SerializeObject(sourceBusinessKeyDataItem);
+
+                                        if (!JsonConvert.DeserializeObject(intermediateDataItemJson).ContainsKey("dataQueryCode"))
+                                        {
+                                            // It's an object.
+                                            sourceBusinessKeyDataItem = (DataItem)JsonConvert.DeserializeObject<DataItem>(intermediateDataItemJson);
+                                            sourceBusinessKeyDataItemNameFullyQualified = sourceDataObjectFullyQualified + "." + sourceBusinessKeyDataItem.Name;
+                                        }
+                                        else
+                                        {
+                                            // It's a query.
+                                            sourceBusinessKeyDataItem = (DataQuery)JsonConvert.DeserializeObject<DataQuery>(intermediateDataItemJson);
+                                            sourceBusinessKeyDataItemNameFullyQualified = sourceDataObjectFullyQualified + "." + sourceBusinessKeyDataItem.DataQueryCode;
+                                        }
+
+                                        var targetBusinessKeyDataItemName = businessKeyComponentMapping.TargetDataItem.Name;
+                                        var targetBusinessKeyDataItemNameFullyQualified = targetNodeName + "." + targetBusinessKeyDataItemName;
+                                        
+                                        // Add the source node, if not existing already.
+                                        var localSourceDataItemNode = "     <Node Id=\"" + sourceBusinessKeyDataItemNameFullyQualified + "\" Label=\"" + sourceBusinessKeyDataItem.Name + "\" />";
+                                        if (!nodeBuilder.Contains(localSourceDataItemNode))
+                                        {
+                                            nodeBuilder.Add(localSourceDataItemNode);
+                                        }
+
+                                        // Add the source data item to the data object, if this hasn't been done already.
+                                        var sourceDataItemDataObjectEdge = "     <Link Source=\"" + sourceDataObjectFullyQualified + "\" Target=\"" + sourceBusinessKeyDataItemNameFullyQualified + "\" Category=\"Contains\"/>";
+                                        if (!edgeBuilder.Contains(sourceDataItemDataObjectEdge))
+                                        {
+                                            edgeBuilder.Add(sourceDataItemDataObjectEdge);
+                                        }
+
+                                        if (!dataObjectMapping.TargetDataObject.Name.IsDataVaultLink(TeamConfiguration))
+                                        {
+                                            // Add the target node, if not existing already.
+                                            var localTargetDataItemNode = "     <Node Id=\"" + targetBusinessKeyDataItemNameFullyQualified + "\" Label=\"" + targetBusinessKeyDataItemName + "\" />";
+                                            if (!nodeBuilder.Contains(localTargetDataItemNode))
+                                            {
+                                                nodeBuilder.Add(localTargetDataItemNode);
+                                            }
+
+                                            // Add the target data item to the data object, if this hasn't been done already.
+                                            var targetDataItemDataObjectEdge = "     <Link Source=\"" + targetNodeName + "\" Target=\"" + targetBusinessKeyDataItemNameFullyQualified +
+                                                                               "\" Category=\"Contains\"/>";
+                                            if (!edgeBuilder.Contains(targetDataItemDataObjectEdge))
+                                            {
+                                                edgeBuilder.Add(targetDataItemDataObjectEdge);
+                                            }
+
+                                            // Build the source-target relationship between the data items.
+                                            var dataItemMappingEdge = "     <Link Source=\"" + sourceBusinessKeyDataItemNameFullyQualified + "\" Target=\"" + targetBusinessKeyDataItemNameFullyQualified + "\" />";
+                                            if (!edgeBuilder.Contains(dataItemMappingEdge))
+                                            {
+                                                edgeBuilder.Add(dataItemMappingEdge);
+                                            }
+                                        }
+
+                                        // Build the source-target relationship between the source data item and the surrogate key.
+                                        var surrogateKeyEdge = "     <Link Source=\"" + sourceBusinessKeyDataItemNameFullyQualified + "\" Target=\"" + surrogateKeyFullyQualified + "\" />";
+                                        if (!edgeBuilder.Contains(surrogateKeyEdge))
+                                        {
+                                            edgeBuilder.Add(surrogateKeyEdge);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered generating the DGML file, when adding data item mappings: {exception.Message}"));
+                        }
+
+                        #endregion
                     }
-                    catch (Exception)
-                    {
-                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The following query caused an issue when generating the DGML file: \r\n\r\n{sqlStatementForLinkCategories}."));
-                        errorCounter++;
-                    }
-
-
-                    // Add the regular source-to-target mappings as edges using the data grid
-                    dgmlExtract.AppendLine("     <!-- Regular source-to-target mappings -->");
-                    for (var i = 0; i < _dataGridViewDataObjects.Rows.Count - 1; i++)
-                    {
-                        var row = _dataGridViewDataObjects.Rows[i];
-                        
-                        string sourceNode = row.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value.ToString();
-                        var sourceConnectionId = row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
-                        var sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionId, TeamConfiguration, TeamEventLog);
-                        KeyValuePair<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceNode, sourceConnection).FirstOrDefault();
-
-                        string targetNode = row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value.ToString();
-                        var targetConnectionId = row.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                        var targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
-                        KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetNode, targetConnection).FirstOrDefault();
-
-                        var businessKey = row.Cells[(int) DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString();
-
-                        dgmlExtract.AppendLine("     <Link Source=\"" + fullyQualifiedObjectSource.Key+'.'+ fullyQualifiedObjectSource.Value + "\" Target=\"" + fullyQualifiedObjectTarget.Key+'.'+fullyQualifiedObjectTarget.Value  + "\" BusinessKeyDefinition=\"" + businessKey + "\"/>");
-                    }
-
-                    dgmlExtract.AppendLine("  </Links>");
-                    // End of edges and containers
-
-
-
-                    //Add categories
-                    dgmlExtract.AppendLine("  <Categories>");
-                    dgmlExtract.AppendLine("    <Category Id = \"Sources\" Label = \"Sources\" Background = \"#FFE51400\" IsTag = \"True\" /> ");
-                    dgmlExtract.AppendLine("    <Category Id = \"Landing Area\" Label = \"Landing Area\" IsTag = \"True\" /> ");
-                    dgmlExtract.AppendLine("    <Category Id = \"Persistent Staging Area\" Label = \"Persistent Staging Area\" IsTag = \"True\" /> ");
-                    dgmlExtract.AppendLine("    <Category Id = \"Hub\" Label = \"Hub\" IsTag = \"True\" /> ");
-                    dgmlExtract.AppendLine("    <Category Id = \"Link\" Label = \"Link\" IsTag = \"True\" /> ");
-                    dgmlExtract.AppendLine("    <Category Id = \"Satellite\" Label = \"Satellite\" IsTag = \"True\" /> ");
-                    dgmlExtract.AppendLine("    <Category Id = \"Subject Area\" Label = \"Subject Area\" IsTag = \"True\" /> ");
-                    dgmlExtract.AppendLine("  </Categories>");
-
-                    //Add category styles 
-                    dgmlExtract.AppendLine("  <Styles >");
-
-                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Sources\" ValueLabel = \"Has category\" >");
-                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Sources')\" />");
-                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFFFFFFF\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-                    dgmlExtract.AppendLine("    </Style >");
-
-                    dgmlExtract.AppendLine(
-                        "    <Style TargetType = \"Node\" GroupLabel = \"Landing Area\" ValueLabel = \"Has category\" >");
-                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Landing Area')\" />");
-                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FE000000\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FE6E6A69\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-                    dgmlExtract.AppendLine("    </Style >");
-
-                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Persistent Staging Area\" ValueLabel = \"Has category\" >");
-                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Persistent Staging Area')\" />");
-                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FA000000\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FA6E6A69\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-                    dgmlExtract.AppendLine("    </Style >");
-
-                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Hub\" ValueLabel = \"Has category\" >");
-                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Hub')\" />");
-                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FF6495ED\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-                    dgmlExtract.AppendLine("    </Style >");
-
-                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Link\" ValueLabel = \"Has category\" >");
-                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Link')\" />");
-                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFB22222\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-                    dgmlExtract.AppendLine("    </Style >");
-
-                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Satellite\" ValueLabel = \"Has category\" >");
-                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Satellite')\" />");
-                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFC0A000\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-                    dgmlExtract.AppendLine("    </Style >");
-
-                    dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Subject Area\" ValueLabel = \"Has category\" >");
-                    dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Subject Area')\" />");
-                    dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFFFFFFF\" />");
-                    dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
-                    dgmlExtract.AppendLine("    </Style >");
-
-                    dgmlExtract.AppendLine("  </Styles >");
-
-                    dgmlExtract.AppendLine("</DirectedGraph>");
-                    // End of graph file creation
-                    
-                    // Error handling
-                    if (errorCounter > 0)
-                    {
-                        richTextBoxInformation.AppendText("\r\nWarning! There were " + errorCounter + " error(s) found while generating the DGML file.\r\n");
-                        richTextBoxInformation.AppendText("Please check the Event Log for details \r\n");
-
-                    }
-                    else
-                    {
-                        richTextBoxInformation.AppendText("\r\nNo errors were detected.\r\n");
-                    }
-                    
-                    // Writing the output
-                    using (StreamWriter outfile = new StreamWriter(chosenFile))
-                    {
-                        outfile.Write(dgmlExtract.ToString());
-                        outfile.Close();
-                    }
-
-                    richTextBoxInformation.AppendText("The DGML metadata file file://" + chosenFile + " has been saved successfully.");
                 }
-                else
+
+                // End of edges and containers.
+                nodeBuilder.Add("  </Nodes>");
+                edgeBuilder.Add("  </Links>");
+
+                // Start the creation of the final the DGML file.
+                var dgmlExtract = new StringBuilder();
+                dgmlExtract.AppendLine("<?xml version=\"1.0\" encoding=\"utf - 8\"?>");
+                dgmlExtract.AppendLine("<DirectedGraph ZoomLevel=\" - 1\" xmlns=\"http://schemas.microsoft.com/vs/2009/dgml\">");
+
+                foreach (var node in nodeBuilder)
                 {
-                    richTextBoxInformation.AppendText("There was no metadata to create the graph with, is the grid view empty?");
+                    dgmlExtract.AppendLine(node);
                 }
+
+                foreach (var edge in edgeBuilder)
+                {
+                    dgmlExtract.AppendLine(edge);
+                }
+
+                // Add categories.
+                dgmlExtract.AppendLine("  <Categories>");
+                dgmlExtract.AppendLine("    <Category Id = \"Sources\" Label = \"Sources\" Background = \"#FFE51400\" IsTag = \"True\" /> ");
+                dgmlExtract.AppendLine("    <Category Id = \"Landing Area\" Label = \"Landing Area\" IsTag = \"True\" /> ");
+                dgmlExtract.AppendLine("    <Category Id = \"Persistent Staging Area\" Label = \"Persistent Staging Area\" IsTag = \"True\" /> ");
+                dgmlExtract.AppendLine("    <Category Id = \"Hub\" Label = \"Hub\" IsTag = \"True\" /> ");
+                dgmlExtract.AppendLine("    <Category Id = \"Link\" Label = \"Link\" IsTag = \"True\" /> ");
+                dgmlExtract.AppendLine("    <Category Id = \"Satellite\" Label = \"Satellite\" IsTag = \"True\" /> ");
+                dgmlExtract.AppendLine("    <Category Id = \"Subject Area\" Label = \"Subject Area\" IsTag = \"True\" /> ");
+                dgmlExtract.AppendLine("  </Categories>");
+
+                // Add properties.
+                dgmlExtract.AppendLine("  <Properties>");
+                dgmlExtract.AppendLine("    <Property Id=\"BusinessKeyDefinition\" DataType=\"System.String\" />");
+                dgmlExtract.AppendLine("    <Property Id=\"RelatedDataObject\" DataType=\"System.String\" />");
+                dgmlExtract.AppendLine("  </Properties>");
+
+                // Add category styles.
+                dgmlExtract.AppendLine("  <Styles >");
+
+                dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Source\" ValueLabel = \"Has category\" >");
+                dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Source')\" />");
+                dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFFFFFFF\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                dgmlExtract.AppendLine("    </Style >");
+
+                dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Landing Area\" ValueLabel = \"Has category\" >");
+                dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Landing Area')\" />");
+                dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FE000000\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FE6E6A69\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                dgmlExtract.AppendLine("    </Style >");
+
+                dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Persistent Staging Area\" ValueLabel = \"Has category\" >");
+                dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Persistent Staging Area')\" />");
+                dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FA000000\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FA6E6A69\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                dgmlExtract.AppendLine("    </Style >");
+
+                dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Core Business Concept\" ValueLabel = \"Has category\" >");
+                dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Core Business Concept')\" />");
+                dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FF6495ED\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                dgmlExtract.AppendLine("    </Style >");
+
+                dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Natural Business Relationship\" ValueLabel = \"Has category\" >");
+                dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Natural Business Relationship')\" />");
+                dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFB22222\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                dgmlExtract.AppendLine("    </Style >");
+
+                dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Context\" ValueLabel = \"Has category\" >");
+                dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Context')\" />");
+                dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFC0A000\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                dgmlExtract.AppendLine("    </Style >");
+
+                dgmlExtract.AppendLine("    <Style TargetType = \"Node\" GroupLabel = \"Subject Area\" ValueLabel = \"Has category\" >");
+                dgmlExtract.AppendLine("      <Condition Expression = \"HasCategory('Subject Area')\" />");
+                dgmlExtract.AppendLine("      <Setter Property=\"Foreground\" Value=\"#FF000000\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Background\" Value = \"#FFFFFFFF\" />");
+                dgmlExtract.AppendLine("      <Setter Property = \"Icon\" Value = \"pack://application:,,,/Microsoft.VisualStudio.Progression.GraphControl;component/Icons/Table.png\" />");
+                dgmlExtract.AppendLine("    </Style >");
+
+                dgmlExtract.AppendLine("  </Styles >");
+
+                dgmlExtract.AppendLine("</DirectedGraph>");
+                // End of graph file creation.
+
+                // Writing the output.
+                using (StreamWriter outfile = new StreamWriter(selectedFile))
+                {
+                    outfile.Write(dgmlExtract.ToString());
+                    outfile.Close();
+                }
+
+                richTextBoxInformation.AppendText("The DGML metadata file file://" + selectedFile + " has been saved successfully.");
             }
         }
 
@@ -2202,12 +2383,16 @@ namespace TEAM
             try
             {
                 conn.Open();
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Connection {teamConnection.ConnectionKey} was opened using '{conn.ConnectionString}'."));
 
-                var sqlStatementForDataItems = SqlStatementForDataItems(GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), teamConnection);
+                var filteredObjects = GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows);
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The list of filtered objects has been prepared."));
 
+                var sqlStatementForDataItems = SqlStatementForDataItems(filteredObjects, teamConnection);
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The reverse-engineering query run for connection '{teamConnection.ConnectionKey}' is \r\n {sqlStatementForDataItems}"));
 
                 reverseEngineerResults = Utility.GetDataTable(ref conn, sqlStatementForDataItems);
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The data table containing the reverse engineering results has been created."));
             }
             catch (Exception exception)
             {
@@ -2218,6 +2403,7 @@ namespace TEAM
             {
                 conn.Close();
                 conn.Dispose();
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Connection '{teamConnection.ConnectionKey}' has been closed."));
             }
 
             return reverseEngineerResults;
@@ -2257,7 +2443,7 @@ namespace TEAM
             string ordinalPositionColumnName = PhysicalModelMappingMetadataColumns.ordinalPosition.ToString();
             string primaryKeyColumnName = PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString();
             string multiActiveKeyColumnName = PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString();
-            
+
             // Prepare the query, depending on the type.
             // Create the attribute selection statement for the array.
             var sqlStatementForDataItems = new StringBuilder();
@@ -2268,7 +2454,7 @@ namespace TEAM
                 if (teamConnection.ConnectionType == ConnectionTypes.Catalog)
                 {
                     var databaseName = teamConnection.DatabaseServer.DatabaseName;
-                    
+
                     sqlStatementForDataItems.AppendLine($"-- Physical Model Snapshot query for {teamConnection.ConnectionKey}.");
                     sqlStatementForDataItems.AppendLine("SELECT * FROM");
                     sqlStatementForDataItems.AppendLine("(");
@@ -2370,10 +2556,10 @@ namespace TEAM
                         continue;
 
                     string localInternalConnectionIdSource = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    TeamConnection localConnectionSource = TeamConnection.GetTeamConnectionByConnectionId(localInternalConnectionIdSource, TeamConfiguration, TeamEventLog);
+                    TeamConnection localConnectionSource = TeamConnection.GetTeamConnectionByConnectionInternalId(localInternalConnectionIdSource, TeamConfiguration, TeamEventLog);
 
                     string localInternalConnectionIdTarget = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-                    TeamConnection localConnectionTarget = TeamConnection.GetTeamConnectionByConnectionId(localInternalConnectionIdTarget, TeamConfiguration, TeamEventLog);
+                    TeamConnection localConnectionTarget = TeamConnection.GetTeamConnectionByConnectionInternalId(localInternalConnectionIdTarget, TeamConfiguration, TeamEventLog);
 
                     var localTupleSource = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], localConnectionSource);
 
@@ -2585,7 +2771,7 @@ namespace TEAM
                     _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateDataItemExistence(filteredDataItemDataRows, dataObjectMappingDataTable, physicalModelDataTable, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
                 worker?.ReportProgress(30);
-                
+
                 if (ValidationSetting.LogicalGroup == "True")
                 {
                     _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateLogicalGroup(filteredDataObjectMappingDataRows, dataObjectMappingDataTable, TeamConfiguration, TeamEventLog, ref metadataValidations));
@@ -2639,7 +2825,7 @@ namespace TEAM
                 _alertValidation.SetTextLogging("\r\n\r\nIn total " + metadataValidations.ValidationIssues + " validation issues have been found.");
             }
         }
-     
+
         private void backgroundWorkerValidationOnly_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             // Show the progress in main form (GUI)
@@ -2666,13 +2852,13 @@ namespace TEAM
                 richTextBoxInformation.Text += "\r\nThe metadata was validated successfully!\r\n";
             }
         }
-        
+
         private void displayTableScriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Retrieve the index of the selected row
             Int32 selectedRow = _dataGridViewPhysicalModel.Rows.GetFirstRow(DataGridViewElementStates.Selected);
 
-            DataTable gridDataTable = (DataTable) BindingSourcePhysicalModel.DataSource;
+            DataTable gridDataTable = (DataTable)BindingSourcePhysicalModel.DataSource;
             DataTable dt2 = gridDataTable.Clone();
             dt2.Columns[PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()].DataType = Type.GetType("System.Int32");
 
@@ -2724,7 +2910,7 @@ namespace TEAM
                 }
 
                 counter++;
-                results.AppendLine(commaSnippet + row[PhysicalModelMappingMetadataColumns.columnName.ToString()] +" -- with ordinal position of " +row[PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()]);
+                results.AppendLine(commaSnippet + row[PhysicalModelMappingMetadataColumns.columnName.ToString()] + " -- with ordinal position of " + row[PhysicalModelMappingMetadataColumns.ordinalPosition.ToString()]);
             }
 
             results.AppendLine(")");
@@ -2756,7 +2942,8 @@ namespace TEAM
             {
                 if (globalParameters.ConfigurationPath != "")
                 {
-                    Process.Start(globalParameters.ConfigurationPath);
+                    var psi = new ProcessStartInfo() { FileName = globalParameters.ConfigurationPath, UseShellExecute = true };
+                    Process.Start(psi);
                 }
                 else
                 {
@@ -2784,7 +2971,7 @@ namespace TEAM
                 try
                 {
                     var chosenFile = theDialog.FileName;
-                    
+
                     // Load the file, convert it to a DataTable and bind it to the source
                     List<DataItemMappingJson> jsonArray = JsonConvert.DeserializeObject<List<DataItemMappingJson>>(File.ReadAllText(chosenFile));
 
@@ -2795,7 +2982,7 @@ namespace TEAM
                             // Check if the row does not already exist.
                             var lookupRow = _dataGridViewDataItems.Rows
                                 .Cast<DataGridViewRow>()
-                                .FirstOrDefault(row => !row.IsNewRow && row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString() == dataItemMappingJson.sourceTable && 
+                                .FirstOrDefault(row => !row.IsNewRow && row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString() == dataItemMappingJson.sourceTable &&
                                                        row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString() == dataItemMappingJson.targetTable &&
                                                        row.Cells[(int)DataItemMappingGridColumns.SourceDataItem].Value.ToString() == dataItemMappingJson.sourceAttribute &&
                                                        row.Cells[(int)DataItemMappingGridColumns.TargetDataItem].Value.ToString() == dataItemMappingJson.targetAttribute);
@@ -2882,12 +3069,12 @@ namespace TEAM
                         {
                             var localSourceDataObject = new DataObject
                             {
-                                name = tableMappingJson.sourceTable
+                                Name = tableMappingJson.sourceTable
                             };
 
                             var localTargetDataObject = new DataObject
                             {
-                                name = tableMappingJson.targetTable
+                                Name = tableMappingJson.targetTable
                             };
 
                             var newRow = localDataTable.NewRow();
@@ -2901,9 +3088,9 @@ namespace TEAM
                             newRow[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = tableMappingJson.businessKeyDefinition;
                             newRow[(int)DataObjectMappingGridColumns.DrivingKeyDefinition] = tableMappingJson.drivingKeyDefinition;
                             newRow[(int)DataObjectMappingGridColumns.FilterCriterion] = tableMappingJson.filterCriteria;
-                            newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = localSourceDataObject.name;
-                            newRow[(int)DataObjectMappingGridColumns.TargetDataObjectName] = localTargetDataObject.name;
-                            newRow[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName] = localTargetDataObject.name;
+                            newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = localSourceDataObject.Name;
+                            newRow[(int)DataObjectMappingGridColumns.TargetDataObjectName] = localTargetDataObject.Name;
+                            newRow[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName] = localTargetDataObject.Name;
                             newRow[(int)DataObjectMappingGridColumns.SurrogateKey] = "";
 
                             localDataTable.Rows.Add(newRow);
@@ -2934,6 +3121,7 @@ namespace TEAM
                     #endregion
 
                     #region Generate the JSON files
+
                     foreach (DataRow row in localDataTable.Rows)
                     {
                         var newDataObject = (DataObject)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
@@ -2948,6 +3136,9 @@ namespace TEAM
                             richTextBoxInformation.Text += $@"There were issues updating the JSON. The error message is {ex.Message}.";
                         }
                     }
+
+                    ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
+
                     #endregion
 
                     #region Reload the full Data Grid
@@ -2960,7 +3151,7 @@ namespace TEAM
 
                     if (errors > 0)
                     {
-                        richTextBoxInformation.AppendText($"{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
+                        richTextBoxInformation.AppendText($"\r\n{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
                     }
 
                     #endregion
@@ -2999,7 +3190,7 @@ namespace TEAM
                 {
                     foreach (var individualEvent in localEventLog)
                     {
-                        _alertEventLog.SetTextLogging($"{individualEvent.eventTime} - {(EventTypes) individualEvent.eventCode}: {individualEvent.eventDescription}\r\n");
+                        _alertEventLog.SetTextLogging($"{individualEvent.eventTime} - {(EventTypes)individualEvent.eventCode}: {individualEvent.eventDescription}\r\n");
                     }
                 }
                 catch (Exception ex)
@@ -3087,8 +3278,8 @@ namespace TEAM
         private void AutoMapDataItemsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             tabControlDataMappings.SelectedTab = tabPageDataItemMapping;
-            
-            var dataTableAttributeMappingChanges = ((DataTable) BindingSourceDataItemMappings.DataSource).GetChanges();
+
+            var dataTableAttributeMappingChanges = ((DataTable)BindingSourceDataItemMappings.DataSource).GetChanges();
 
             if (dataTableAttributeMappingChanges != null && dataTableAttributeMappingChanges.Rows.Count > 0)
             {
@@ -3119,10 +3310,10 @@ namespace TEAM
                     #region Source Data Object
 
                     var sourceConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
-                    TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionId(sourceConnectionId, TeamConfiguration, TeamEventLog);
+                    TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionId, TeamConfiguration, TeamEventLog);
 
                     DataObject sourceDataObject = (DataObject)dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value;
-                    var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObject.name, sourceConnection).FirstOrDefault();
+                    var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObject.Name, sourceConnection).FirstOrDefault();
 
                     var sourceColumnsDataTable = physicalModelDataTable.AsEnumerable()
                         .Where(row => row[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString() == sourceConnection.DatabaseServer.DatabaseName &&
@@ -3144,9 +3335,9 @@ namespace TEAM
                     DataObject targetDataObject = (DataObject)dataObjectRow.Cells[DataObjectMappingGridColumns.TargetDataObject.ToString()].Value;
 
                     var targetConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionId(targetConnectionId, TeamConfiguration, TeamEventLog);
+                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionId, TeamConfiguration, TeamEventLog);
 
-                    var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.name, targetConnection).FirstOrDefault();
+                    var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.Name, targetConnection).FirstOrDefault();
 
                     var targetColumnDataTable = physicalModelDataTable.AsEnumerable()
                         .Where(row => row[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString() == targetConnection.DatabaseServer.DatabaseName &&
@@ -3169,8 +3360,8 @@ namespace TEAM
                     {
                         // Do the lookup in the target data table
                         var results = from localRow in targetColumnDataTable.AsEnumerable()
-                            where localRow.Field<string>(PhysicalModelMappingMetadataColumns.columnName.ToString()) == sourceDataObjectRow[PhysicalModelMappingMetadataColumns.columnName.ToString()].ToString()
-                            select localRow;
+                                      where localRow.Field<string>(PhysicalModelMappingMetadataColumns.columnName.ToString()) == sourceDataObjectRow[PhysicalModelMappingMetadataColumns.columnName.ToString()].ToString()
+                                      select localRow;
 
                         if (results.FirstOrDefault() != null)
                         {
@@ -3199,10 +3390,10 @@ namespace TEAM
                             {
                                 var localMapping = new TeamDataItemMappingRow
                                 {
-                                    sourceDataObjectName = sourceDataObject.name,
+                                    sourceDataObjectName = sourceDataObject.Name,
                                     sourceDataObjectConnectionId = sourceConnectionId,
                                     sourceDataItemName = sourceDataObjectRow[PhysicalModelMappingMetadataColumns.columnName.ToString()].ToString(),
-                                    targetDataObjectName = targetDataObject.name,
+                                    targetDataObjectName = targetDataObject.Name,
                                     targetDataObjectConnectionId = targetConnectionId,
                                     targetDataItemName = sourceDataObjectRow[PhysicalModelMappingMetadataColumns.columnName.ToString()].ToString() // Same as source, as it's a direct match on this value.
                                 };
@@ -3213,7 +3404,7 @@ namespace TEAM
                     }
 
                     // Now, for each item in the matched list check if there is a corresponding Data Item Mapping in the grid already.
-                    DataTable localDataItemDataTable = (DataTable) BindingSourceDataItemMappings.DataSource;
+                    DataTable localDataItemDataTable = (DataTable)BindingSourceDataItemMappings.DataSource;
 
                     foreach (var matchedDataItemMappingFromDatabase in localDataItemMappings)
                     {
@@ -3234,7 +3425,7 @@ namespace TEAM
 
                             DataRow newRow = localDataItemDataTable.NewRow();
 
-                            newRow[DataItemMappingGridColumns.HashKey.ToString()] = Utility.CreateMd5(new[] {Utility.GetRandomString(100)}, "#");
+                            newRow[DataItemMappingGridColumns.HashKey.ToString()] = Utility.CreateMd5(new[] { Utility.GetRandomString(100) }, "#");
                             newRow[DataItemMappingGridColumns.SourceDataObject.ToString()] = matchedDataItemMappingFromDatabase.sourceDataObjectName;
                             newRow[DataItemMappingGridColumns.SourceDataItem.ToString()] = matchedDataItemMappingFromDatabase.sourceDataItemName;
                             newRow[DataItemMappingGridColumns.TargetDataObject.ToString()] = matchedDataItemMappingFromDatabase.targetDataObjectName;
@@ -3253,7 +3444,8 @@ namespace TEAM
             {
                 try
                 {
-                    Process.Start(globalParameters.MetadataPath);
+                    var psi = new ProcessStartInfo() { FileName = globalParameters.MetadataPath, UseShellExecute = true };
+                    Process.Start(psi);
                 }
                 catch (Exception ex)
                 {
@@ -3442,7 +3634,7 @@ namespace TEAM
                     foreach (DataRow row in localDataTable.Rows)
                     {
                         var database = row[PhysicalModelMappingMetadataColumns.databaseName.ToString()].ToString();
-                        var schema = row[PhysicalModelMappingMetadataColumns.schemaName .ToString()].ToString();
+                        var schema = row[PhysicalModelMappingMetadataColumns.schemaName.ToString()].ToString();
                         var table = row[PhysicalModelMappingMetadataColumns.tableName.ToString()].ToString();
 
                         // Process all columns only once per table.
@@ -3473,7 +3665,7 @@ namespace TEAM
 
                     if (errors > 0)
                     {
-                        richTextBoxInformation.AppendText($"{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
+                        richTextBoxInformation.AppendText($"\r\n{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
                     }
 
                     #endregion
@@ -3546,7 +3738,7 @@ namespace TEAM
                     ThreadHelper.SetText(this, richTextBoxInformation, $"The Physical Model object '{table}' could not be created. The exception message is {exception.Message}.\r\n");
                 }
 
-                string outputFilePath = globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory + database + @"\" + schema + @"\" + table +".json";
+                string outputFilePath = globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory + database + @"\" + schema + @"\" + table + ".json";
 
                 try
                 {
@@ -3605,6 +3797,21 @@ namespace TEAM
                 catch (Exception exception)
                 {
                     ThreadHelper.SetText(this, richTextBoxInformation, $"There was an issue deleting the physical model '{databaseDirectory}' directory, the reported exception is {exception.Message}\r\n");
+                }
+            }
+        }
+
+        private void openCoreDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            {
+                try
+                {
+                    var psi = new ProcessStartInfo() { FileName = globalParameters.CorePath, UseShellExecute = true };
+                    Process.Start(psi);
+                }
+                catch (Exception ex)
+                {
+                    richTextBoxInformation.Text = $@"An error has occurred while attempting to open the directory. The error message is: {ex.Message}.";
                 }
             }
         }
