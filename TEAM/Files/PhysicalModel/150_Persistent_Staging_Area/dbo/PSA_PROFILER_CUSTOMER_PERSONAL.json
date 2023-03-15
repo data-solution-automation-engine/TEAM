@@ -124,16 +124,6 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "RECORD_SOURCE",
-      "dataType": "varchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 4,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
       "name": "Referee_Offer_Made",
       "dataType": "int",
       "characterLength": "4",

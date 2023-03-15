@@ -324,7 +324,7 @@ namespace TEAM
                 var loadDateTime = "INSCRIPTION_TIMESTAMP";
                 var expiryDateTime = "INSCRIPTION_END_TIMESTAMP";
                 var changeDataIndicator = "CHANGE_DATA_INDICATOR";
-                var recordSource = "RECORD_SOURCE";
+                var recordSource = "RECORD_SOURCE_INDICATOR";
                 var etlProcessId = "AUDIT_TRAIL_ID";
                 var etlUpdateProcessId = "AUDIT_TRAIL_UPDATE_ID";
                 var logicalDeleteAttribute = "DELETED_RECORD_INDICATOR";

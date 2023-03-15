@@ -94,16 +94,6 @@
       "multiActiveIndicator": "Y"
     },
     {
-      "name": "RECORD_SOURCE",
-      "dataType": "varchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 4,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
       "name": "Segment",
       "dataType": "nvarchar",
       "characterLength": "100",

@@ -74,16 +74,6 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "RECORD_SOURCE",
-      "dataType": "varchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 4,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
       "name": "SOURCE_TIMESTAMP",
       "dataType": "datetime2",
       "characterLength": "8",
