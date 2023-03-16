@@ -448,7 +448,7 @@
       ],
       "sourceDataObjects": [
         {
-          "name": "bdv.CUSTOMER_DERIVED",
+          "name": "CUSTOMER_DERIVED",
           "dataObjectConnection": {
             "dataConnectionString": "Derived",
             "extensions": [

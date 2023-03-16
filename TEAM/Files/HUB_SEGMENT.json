@@ -96,14 +96,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "",
-                  "isHardCodedValue": false,
-                  "dataItemClassification": [
-                    {
-                      "classification": "DrivingKey",
-                      "notes": "The attribute that triggers (drives) the closing of a relationship."
-                    }
-                  ]
+                  "name": "Segment+'TEST'",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {
@@ -178,14 +172,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "",
-                  "isHardCodedValue": false,
-                  "dataItemClassification": [
-                    {
-                      "classification": "DrivingKey",
-                      "notes": "The attribute that triggers (drives) the closing of a relationship."
-                    }
-                  ]
+                  "name": "Demographic_Segment_Code+'TEST'",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {

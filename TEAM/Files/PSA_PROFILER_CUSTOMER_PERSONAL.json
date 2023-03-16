@@ -165,11 +165,15 @@
         {
           "sourceDataItems": [
             {
-              "name": "CustomerID"
+              "name": "CustomerID",
+              "dataType": "int",
+              "ordinalPosition": 7
             }
           ],
           "targetDataItem": {
             "name": "CustomerID",
+            "dataType": "int",
+            "ordinalPosition": 8,
             "dataItemClassification": [
               {
                 "classification": "MultiActiveKey",
@@ -181,101 +185,157 @@
         {
           "sourceDataItems": [
             {
-              "name": "Given"
+              "name": "Given",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 8
             }
           ],
           "targetDataItem": {
-            "name": "Given"
+            "name": "Given",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 9
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Surname"
+              "name": "Surname",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 9
             }
           ],
           "targetDataItem": {
-            "name": "Surname"
+            "name": "Surname",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 10
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Suburb"
+              "name": "Suburb",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 10
             }
           ],
           "targetDataItem": {
-            "name": "Suburb"
+            "name": "Suburb",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 11
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "State"
+              "name": "State",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 11
             }
           ],
           "targetDataItem": {
-            "name": "State"
+            "name": "State",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 12
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Postcode"
+              "name": "Postcode",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 12
             }
           ],
           "targetDataItem": {
-            "name": "Postcode"
+            "name": "Postcode",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 13
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Country"
+              "name": "Country",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 13
             }
           ],
           "targetDataItem": {
-            "name": "Country"
+            "name": "Country",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 14
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Gender"
+              "name": "Gender",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 14
             }
           ],
           "targetDataItem": {
-            "name": "Gender"
+            "name": "Gender",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 15
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "DOB"
+              "name": "DOB",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 15
             }
           ],
           "targetDataItem": {
-            "name": "DOB"
+            "name": "DOB",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 16
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Contact_Number"
+              "name": "Contact_Number",
+              "dataType": "int",
+              "ordinalPosition": 16
             }
           ],
           "targetDataItem": {
-            "name": "Contact_Number"
+            "name": "Contact_Number",
+            "dataType": "int",
+            "ordinalPosition": 17
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Referee_Offer_Made"
+              "name": "Referee_Offer_Made",
+              "dataType": "int",
+              "ordinalPosition": 17
             }
           ],
           "targetDataItem": {
-            "name": "Referee_Offer_Made"
+            "name": "Referee_Offer_Made",
+            "dataType": "int",
+            "ordinalPosition": 18
           }
         }
       ],

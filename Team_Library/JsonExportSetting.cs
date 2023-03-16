@@ -220,7 +220,7 @@ namespace TEAM_Library
                 validationFile.AppendLine("AddSchemaAsExtensionToConnection|True");
                 
                 // Data Item group.
-                validationFile.AppendLine("AddDataTypeToDataItem|False");
+                validationFile.AppendLine("AddDataTypeToDataItem|True");
                 validationFile.AppendLine("AddParentDataObjectToDataItem|False");
 
                 // Related Data Objects.

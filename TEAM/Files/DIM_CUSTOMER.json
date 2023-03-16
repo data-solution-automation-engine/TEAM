@@ -94,11 +94,17 @@
         {
           "sourceDataItems": [
             {
-              "name": "CUSTOMER_ID"
+              "name": "CUSTOMER_ID",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
             }
           ],
           "targetDataItem": {
-            "name": "CUSTOMER_ID"
+            "name": "CUSTOMER_ID",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 9
           }
         }
       ],
@@ -182,31 +188,49 @@
         {
           "sourceDataItems": [
             {
-              "name": "DATE_OF_BIRTH"
+              "name": "DATE_OF_BIRTH",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 13
             }
           ],
           "targetDataItem": {
-            "name": "DATE_OF_BIRTH"
+            "name": "DATE_OF_BIRTH",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 16
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "GIVEN_NAME"
+              "name": "GIVEN_NAME",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 7
             }
           ],
           "targetDataItem": {
-            "name": "GIVEN_NAME"
+            "name": "GIVEN_NAME",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 10
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "SUBURB"
+              "name": "SUBURB",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 9
             }
           ],
           "targetDataItem": {
-            "name": "SUBURB"
+            "name": "SUBURB",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 13
           }
         }
       ],
@@ -290,11 +314,17 @@
         {
           "sourceDataItems": [
             {
-              "name": "CONTACT_NUMBER"
+              "name": "CONTACT_NUMBER",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 7
             }
           ],
           "targetDataItem": {
-            "name": "CONTACT_NUMBER"
+            "name": "CONTACT_NUMBER",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 17
           }
         }
       ],

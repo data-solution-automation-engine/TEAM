@@ -286,7 +286,7 @@ namespace TEAM
             }
             else
             {
-               labelWorkingEnvironment.Text = localTextForLabel;
+                labelWorkingEnvironment.Text = localTextForLabel;
             }
 
             LocalTeamEnvironmentConfiguration.InitialiseEnvironmentPaths();
@@ -295,7 +295,7 @@ namespace TEAM
         #endregion
 
         #region Form Threads
-        
+
         private FormManageConfiguration _myConfigurationForm;
         [STAThread]
         public void ThreadProcConfiguration()
@@ -321,7 +321,7 @@ namespace TEAM
                 else
                 {
                     // No invoke required - same thread
-                    _myConfigurationForm.FormClosed += CloseConfigurationForm; 
+                    _myConfigurationForm.FormClosed += CloseConfigurationForm;
                     _myConfigurationForm.OnUpdateEnvironment += UpdateEnvironmentLabel;
                     _myConfigurationForm = new FormManageConfiguration(this);
 
@@ -455,7 +455,7 @@ namespace TEAM
         {
             ActiveControl = null;
         }
-        
+
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
             Application.Exit();
@@ -480,7 +480,7 @@ namespace TEAM
                 {
                     foreach (var individualEvent in localEventLog)
                     {
-                        _alertEventLog.SetTextLogging($"{individualEvent.eventTime} - {(EventTypes) individualEvent.eventCode}: {individualEvent.eventDescription}\r\n");
+                        _alertEventLog.SetTextLogging($"{individualEvent.eventTime} - {(EventTypes)individualEvent.eventCode}: {individualEvent.eventDescription}\r\n");
                     }
                 }
                 catch (Exception ex)
@@ -526,7 +526,7 @@ namespace TEAM
                 _alertEventLog.ShowProgressBar(false);
                 _alertEventLog.ShowProgressLabel(false);
                 _alertEventLog.Show();
-                
+
                 // Start the asynchronous operation.
                 backgroundWorkerEventLog.RunWorkerAsync();
             }
@@ -555,6 +555,21 @@ namespace TEAM
                 catch (Exception ex)
                 {
                     richTextBoxInformation.Text = $@"An error has occurred while attempting to open the metadata directory. The error message is: {ex.Message}.";
+                }
+            }
+        }
+
+        private void openCoreDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            {
+                try
+                {
+                    var psi = new ProcessStartInfo() { FileName = globalParameters.CorePath, UseShellExecute = true };
+                    Process.Start(psi);
+                }
+                catch (Exception ex)
+                {
+                    richTextBoxInformation.Text = $@"An error has occurred while attempting to open the directory. The error message is: {ex.Message}.";
                 }
             }
         }

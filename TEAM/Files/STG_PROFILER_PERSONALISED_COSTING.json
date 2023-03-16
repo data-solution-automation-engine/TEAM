@@ -119,51 +119,81 @@
         {
           "sourceDataItems": [
             {
-              "name": "Member"
+              "name": "Member",
+              "dataType": "int",
+              "ordinalPosition": 1
             }
           ],
           "targetDataItem": {
-            "name": "Member"
+            "name": "Member",
+            "dataType": "int",
+            "ordinalPosition": 7
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Segment"
+              "name": "Segment",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 2
             }
           ],
           "targetDataItem": {
-            "name": "Segment"
+            "name": "Segment",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 8
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Plan_Code"
+              "name": "Plan_Code",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 3
             }
           ],
           "targetDataItem": {
-            "name": "Plan_Code"
+            "name": "Plan_Code",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 9
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Date_effective"
+              "name": "Date_effective",
+              "dataType": "datetime",
+              "numericScale": 3,
+              "ordinalPosition": 4
             }
           ],
           "targetDataItem": {
-            "name": "Date_effective"
+            "name": "Date_effective",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 10
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Monthly_Cost"
+              "name": "Monthly_Cost",
+              "dataType": "numeric",
+              "numericPrecision": 18,
+              "numericScale": 0,
+              "ordinalPosition": 5
             }
           ],
           "targetDataItem": {
-            "name": "Monthly_Cost"
+            "name": "Monthly_Cost",
+            "dataType": "numeric",
+            "numericPrecision": 38,
+            "numericScale": 20,
+            "ordinalPosition": 11
           }
         }
       ],

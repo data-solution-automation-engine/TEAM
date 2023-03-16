@@ -119,21 +119,29 @@
         {
           "sourceDataItems": [
             {
-              "name": "CustomerID"
+              "name": "CustomerID",
+              "dataType": "int",
+              "ordinalPosition": 1
             }
           ],
           "targetDataItem": {
-            "name": "CustomerID"
+            "name": "CustomerID",
+            "dataType": "int",
+            "ordinalPosition": 7
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "OfferID"
+              "name": "OfferID",
+              "dataType": "int",
+              "ordinalPosition": 2
             }
           ],
           "targetDataItem": {
-            "name": "OfferID"
+            "name": "OfferID",
+            "dataType": "int",
+            "ordinalPosition": 8
           }
         }
       ],

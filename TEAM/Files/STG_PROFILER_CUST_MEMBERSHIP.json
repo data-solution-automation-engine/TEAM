@@ -119,61 +119,95 @@
         {
           "sourceDataItems": [
             {
-              "name": "CustomerID"
+              "name": "CustomerID",
+              "dataType": "int",
+              "ordinalPosition": 1
             }
           ],
           "targetDataItem": {
-            "name": "CustomerID"
+            "name": "CustomerID",
+            "dataType": "int",
+            "ordinalPosition": 7
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Plan_Code"
+              "name": "Plan_Code",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 2
             }
           ],
           "targetDataItem": {
-            "name": "Plan_Code"
+            "name": "Plan_Code",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 8
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Start_Date"
+              "name": "Start_Date",
+              "dataType": "datetime",
+              "numericScale": 3,
+              "ordinalPosition": 3
             }
           ],
           "targetDataItem": {
-            "name": "Start_Date"
+            "name": "Start_Date",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 9
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "End_Date"
+              "name": "End_Date",
+              "dataType": "datetime",
+              "numericScale": 3,
+              "ordinalPosition": 4
             }
           ],
           "targetDataItem": {
-            "name": "End_Date"
+            "name": "End_Date",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 10
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Status"
+              "name": "Status",
+              "dataType": "varchar",
+              "characterLength": 10,
+              "ordinalPosition": 5
             }
           ],
           "targetDataItem": {
-            "name": "Status"
+            "name": "Status",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 11
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Comment"
+              "name": "Comment",
+              "dataType": "varchar",
+              "characterLength": 50,
+              "ordinalPosition": 6
             }
           ],
           "targetDataItem": {
-            "name": "Comment"
+            "name": "Comment",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 12
           }
         }
       ],

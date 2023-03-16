@@ -210,7 +210,7 @@
   },
   {
     "attributeMappingHash": "AC9EA28B74B6D9E58FA00EA908A8CB73",
-    "sourceTable": "bdv.CUSTOMER_DERIVED",
+    "sourceTable": "CUSTOMER_DERIVED",
     "sourceAttribute": "REFERRAL_OFFER_CLEAN",
     "targetTable": "SAT_CUSTOMER_DERIVED",
     "targetAttribute": "REFERRAL_OFFER_CLEAN",

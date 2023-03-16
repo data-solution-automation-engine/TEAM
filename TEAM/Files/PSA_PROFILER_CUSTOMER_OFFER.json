@@ -188,11 +188,15 @@
         {
           "sourceDataItems": [
             {
-              "name": "CustomerID"
+              "name": "CustomerID",
+              "dataType": "int",
+              "ordinalPosition": 7
             }
           ],
           "targetDataItem": {
             "name": "CustomerID",
+            "dataType": "int",
+            "ordinalPosition": 8,
             "dataItemClassification": [
               {
                 "classification": "MultiActiveKey",
@@ -204,11 +208,15 @@
         {
           "sourceDataItems": [
             {
-              "name": "OfferID"
+              "name": "OfferID",
+              "dataType": "int",
+              "ordinalPosition": 8
             }
           ],
           "targetDataItem": {
             "name": "OfferID",
+            "dataType": "int",
+            "ordinalPosition": 9,
             "dataItemClassification": [
               {
                 "classification": "MultiActiveKey",

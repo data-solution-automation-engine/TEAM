@@ -119,11 +119,17 @@
         {
           "sourceDataItems": [
             {
-              "name": "Demographic_Segment_Description"
+              "name": "Demographic_Segment_Description",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 9
             }
           ],
           "targetDataItem": {
-            "name": "SEGMENT_DESCRIPTION"
+            "name": "SEGMENT_DESCRIPTION",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 7
           }
         }
       ],
@@ -133,14 +139,8 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "",
-                  "isHardCodedValue": false,
-                  "dataItemClassification": [
-                    {
-                      "classification": "DrivingKey",
-                      "notes": "The attribute that triggers (drives) the closing of a relationship."
-                    }
-                  ]
+                  "name": "Demographic_Segment_Code+'TEST'",
+                  "isHardCodedValue": false
                 }
               ],
               "targetDataItem": {

@@ -119,31 +119,49 @@
         {
           "sourceDataItems": [
             {
-              "name": "Plan_Code"
+              "name": "Plan_Code",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 1
             }
           ],
           "targetDataItem": {
-            "name": "Plan_Code"
+            "name": "Plan_Code",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 7
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Plan_Desc"
+              "name": "Plan_Desc",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 2
             }
           ],
           "targetDataItem": {
-            "name": "Plan_Desc"
+            "name": "Plan_Desc",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 8
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Renewal_Plan_Code"
+              "name": "Renewal_Plan_Code",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 3
             }
           ],
           "targetDataItem": {
-            "name": "Renewal_Plan_Code"
+            "name": "Renewal_Plan_Code",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 9
           }
         }
       ],

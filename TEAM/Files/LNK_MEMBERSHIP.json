@@ -119,11 +119,17 @@
         {
           "sourceDataItems": [
             {
-              "name": "Status"
+              "name": "Status",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 12
             }
           ],
           "targetDataItem": {
-            "name": "SALES_CHANNEL"
+            "name": "SALES_CHANNEL",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 6
           }
         }
       ],

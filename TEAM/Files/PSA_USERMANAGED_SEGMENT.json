@@ -142,11 +142,17 @@
         {
           "sourceDataItems": [
             {
-              "name": "Demographic_Segment_Code"
+              "name": "Demographic_Segment_Code",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 7
             }
           ],
           "targetDataItem": {
             "name": "Demographic_Segment_Code",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 8,
             "dataItemClassification": [
               {
                 "classification": "MultiActiveKey",
@@ -158,11 +164,17 @@
         {
           "sourceDataItems": [
             {
-              "name": "Demographic_Segment_Description"
+              "name": "Demographic_Segment_Description",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 8
             }
           ],
           "targetDataItem": {
-            "name": "Demographic_Segment_Description"
+            "name": "Demographic_Segment_Description",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 9
           }
         }
       ],

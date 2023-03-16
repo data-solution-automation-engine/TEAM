@@ -119,31 +119,49 @@
         {
           "sourceDataItems": [
             {
-              "name": "End_Date"
+              "name": "End_Date",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 11
             }
           ],
           "targetDataItem": {
-            "name": "MEMBERSHIP_END_DATE"
+            "name": "MEMBERSHIP_END_DATE",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 8
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Start_Date"
+              "name": "Start_Date",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 10
             }
           ],
           "targetDataItem": {
-            "name": "MEMBERSHIP_START_DATE"
+            "name": "MEMBERSHIP_START_DATE",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 7
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "Status"
+              "name": "Status",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 12
             }
           ],
           "targetDataItem": {
-            "name": "MEMBERSHIP_STATUS"
+            "name": "MEMBERSHIP_STATUS",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 9
           }
         }
       ],

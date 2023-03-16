@@ -119,11 +119,17 @@
         {
           "sourceDataItems": [
             {
-              "name": "Date_effective"
+              "name": "Date_effective",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 11
             }
           ],
           "targetDataItem": {
             "name": "COSTING_EFFECTIVE_DATE",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 2,
             "dataItemClassification": [
               {
                 "classification": "MultiActiveKey",
@@ -135,11 +141,19 @@
         {
           "sourceDataItems": [
             {
-              "name": "Monthly_Cost"
+              "name": "Monthly_Cost",
+              "dataType": "numeric",
+              "numericPrecision": 38,
+              "numericScale": 20,
+              "ordinalPosition": 12
             }
           ],
           "targetDataItem": {
-            "name": "PERSONAL_MONTHLY_COST"
+            "name": "PERSONAL_MONTHLY_COST",
+            "dataType": "numeric",
+            "numericPrecision": 38,
+            "numericScale": 20,
+            "ordinalPosition": 8
           }
         }
       ],

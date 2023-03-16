@@ -64,6 +64,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER_DERIVED.json" />
+    <None Remove="Scripts\generateSampleIntegrationSchemaView.sql" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="DataGridViewDataObjects.cs">
@@ -343,6 +344,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Ravos-logo-small.ico" />
+    <Content Include="Scripts\generateSampleIntegrationSchemaView.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\generateSampleIntegrationSchema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

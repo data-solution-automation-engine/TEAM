@@ -119,11 +119,17 @@
         {
           "sourceDataItems": [
             {
-              "name": "Plan_Desc"
+              "name": "Plan_Desc",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 9
             }
           ],
           "targetDataItem": {
-            "name": "PLAN_DESCRIPTION"
+            "name": "PLAN_DESCRIPTION",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 7
           }
         }
       ],

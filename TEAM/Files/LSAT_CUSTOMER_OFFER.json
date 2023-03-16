@@ -147,7 +147,14 @@
               }
             }
           ],
-          "surrogateKey": "CUSTOMER_OFFER_SK"
+          "surrogateKey": "CUSTOMER_OFFER_SK",
+          "extensions": [
+            {
+              "key": "DrivingKey",
+              "value": "CUSTOMER_SK",
+              "description": "DrivingKey"
+            }
+          ]
         }
       ],
       "filterCriterion": "",

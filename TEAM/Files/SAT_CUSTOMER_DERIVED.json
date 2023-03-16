@@ -44,7 +44,7 @@
       ],
       "sourceDataObjects": [
         {
-          "name": "bdv.CUSTOMER_DERIVED",
+          "name": "CUSTOMER_DERIVED",
           "dataObjectConnection": {
             "dataConnectionString": "Derived",
             "extensions": [
@@ -90,43 +90,6 @@
           }
         ]
       },
-      "relatedDataObjects": [
-        {
-          "name": "HUB_CUSTOMER",
-          "dataObjectConnection": {
-            "dataConnectionString": "Integration",
-            "extensions": [
-              {
-                "key": "database",
-                "value": "200_Integration_Layer",
-                "description": "database name"
-              },
-              {
-                "key": "schema",
-                "value": "dbo",
-                "description": "schema name"
-              }
-            ]
-          },
-          "dataObjectClassifications": [
-            {
-              "classification": "CoreBusinessConcept"
-            }
-          ]
-        }
-      ],
-      "dataItemMappings": [
-        {
-          "sourceDataItems": [
-            {
-              "name": "REFERRAL_OFFER_CLEAN"
-            }
-          ],
-          "targetDataItem": {
-            "name": "REFERRAL_OFFER_CLEAN"
-          }
-        }
-      ],
       "businessKeys": [
         {
           "businessKeyComponentMapping": [
@@ -138,11 +101,11 @@
                 }
               ],
               "targetDataItem": {
-                "name": "CUSTOMER_ID"
+                "name": "Placeholder"
               }
             }
           ],
-          "surrogateKey": "CUSTOMER_SK"
+          "surrogateKey": "CUSTOMER_DERIVED_SK"
         }
       ],
       "filterCriterion": "",

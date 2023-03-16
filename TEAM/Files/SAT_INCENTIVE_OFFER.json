@@ -119,11 +119,17 @@
         {
           "sourceDataItems": [
             {
-              "name": "Offer_Long_Description"
+              "name": "Offer_Long_Description",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 9
             }
           ],
           "targetDataItem": {
-            "name": "OFFER_DESCRIPTION"
+            "name": "OFFER_DESCRIPTION",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 7
           }
         }
       ],

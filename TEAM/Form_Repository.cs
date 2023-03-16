@@ -222,10 +222,8 @@ namespace TEAM
             #region Integration Layer
             if (checkBoxCreateSampleIntegration.Checked)
             {
-
-                
-                    PopulateSqlCommandDictionaryFromFile(globalParameters.ScriptPath + @"generateSampleIntegrationSchema.sql", commandDictionary, localIntegrationConnectionString);
-                
+                PopulateSqlCommandDictionaryFromFile(globalParameters.ScriptPath + @"generateSampleIntegrationSchema.sql", commandDictionary, localIntegrationConnectionString);
+                PopulateSqlCommandDictionaryFromFile(globalParameters.ScriptPath + @"generateSampleIntegrationSchemaView.sql", commandDictionary, localIntegrationConnectionString);
             }
             #endregion
 

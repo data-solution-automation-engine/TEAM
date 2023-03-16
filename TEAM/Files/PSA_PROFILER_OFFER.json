@@ -142,11 +142,15 @@
         {
           "sourceDataItems": [
             {
-              "name": "OfferID"
+              "name": "OfferID",
+              "dataType": "int",
+              "ordinalPosition": 7
             }
           ],
           "targetDataItem": {
             "name": "OfferID",
+            "dataType": "int",
+            "ordinalPosition": 8,
             "dataItemClassification": [
               {
                 "classification": "MultiActiveKey",
@@ -158,11 +162,17 @@
         {
           "sourceDataItems": [
             {
-              "name": "Offer_Long_Description"
+              "name": "Offer_Long_Description",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 8
             }
           ],
           "targetDataItem": {
-            "name": "Offer_Long_Description"
+            "name": "Offer_Long_Description",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 9
           }
         }
       ],

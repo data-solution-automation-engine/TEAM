@@ -30,260 +30,260 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.labelWorkingEnvironment = new System.Windows.Forms.Label();
-            this.labelWorkingEnvironmentType = new System.Windows.Forms.Label();
-            this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
-            this.menuStripMainMenu = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openMetadataFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.configurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.generalSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.deployMetadataExamplesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.displayEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.groupBox2.SuspendLayout();
-            this.menuStripMainMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.SuspendLayout();
+            groupBox2 = new System.Windows.Forms.GroupBox();
+            labelWorkingEnvironment = new System.Windows.Forms.Label();
+            labelWorkingEnvironmentType = new System.Windows.Forms.Label();
+            richTextBoxInformation = new System.Windows.Forms.RichTextBox();
+            menuStripMainMenu = new System.Windows.Forms.MenuStrip();
+            fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openMetadataFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            configurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            generalSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            deployMetadataExamplesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            displayEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
+            pictureBox1 = new System.Windows.Forms.PictureBox();
+            openCoreDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            groupBox2.SuspendLayout();
+            menuStripMainMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            SuspendLayout();
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox2.Controls.Add(this.labelWorkingEnvironment);
-            this.groupBox2.Controls.Add(this.labelWorkingEnvironmentType);
-            this.groupBox2.Location = new System.Drawing.Point(12, 501);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(252, 49);
-            this.groupBox2.TabIndex = 22;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Environment";
+            groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            groupBox2.Controls.Add(labelWorkingEnvironment);
+            groupBox2.Controls.Add(labelWorkingEnvironmentType);
+            groupBox2.Location = new System.Drawing.Point(14, 578);
+            groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBox2.Size = new System.Drawing.Size(294, 57);
+            groupBox2.TabIndex = 22;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Environment";
             // 
             // labelWorkingEnvironment
             // 
-            this.labelWorkingEnvironment.AutoSize = true;
-            this.labelWorkingEnvironment.Location = new System.Drawing.Point(141, 21);
-            this.labelWorkingEnvironment.Name = "labelWorkingEnvironment";
-            this.labelWorkingEnvironment.Size = new System.Drawing.Size(27, 13);
-            this.labelWorkingEnvironment.TabIndex = 67;
-            this.labelWorkingEnvironment.Text = "N/A";
+            labelWorkingEnvironment.AutoSize = true;
+            labelWorkingEnvironment.Location = new System.Drawing.Point(164, 24);
+            labelWorkingEnvironment.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelWorkingEnvironment.Name = "labelWorkingEnvironment";
+            labelWorkingEnvironment.Size = new System.Drawing.Size(29, 15);
+            labelWorkingEnvironment.TabIndex = 67;
+            labelWorkingEnvironment.Text = "N/A";
             // 
             // labelWorkingEnvironmentType
             // 
-            this.labelWorkingEnvironmentType.AutoSize = true;
-            this.labelWorkingEnvironmentType.Location = new System.Drawing.Point(6, 21);
-            this.labelWorkingEnvironmentType.Name = "labelWorkingEnvironmentType";
-            this.labelWorkingEnvironmentType.Size = new System.Drawing.Size(140, 13);
-            this.labelWorkingEnvironmentType.TabIndex = 65;
-            this.labelWorkingEnvironmentType.Text = "The working environment is:";
+            labelWorkingEnvironmentType.AutoSize = true;
+            labelWorkingEnvironmentType.Location = new System.Drawing.Point(7, 24);
+            labelWorkingEnvironmentType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelWorkingEnvironmentType.Name = "labelWorkingEnvironmentType";
+            labelWorkingEnvironmentType.Size = new System.Drawing.Size(157, 15);
+            labelWorkingEnvironmentType.TabIndex = 65;
+            labelWorkingEnvironmentType.Text = "The working environment is:";
             // 
             // richTextBoxInformation
             // 
-            this.richTextBoxInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxInformation.Location = new System.Drawing.Point(14, 59);
-            this.richTextBoxInformation.Name = "richTextBoxInformation";
-            this.richTextBoxInformation.ReadOnly = true;
-            this.richTextBoxInformation.Size = new System.Drawing.Size(758, 512);
-            this.richTextBoxInformation.TabIndex = 2;
-            this.richTextBoxInformation.Text = "";
-            this.richTextBoxInformation.TextChanged += new System.EventHandler(this.richTextBoxInformation_TextChanged);
-            this.richTextBoxInformation.Enter += new System.EventHandler(this.richTextBoxInformation_Enter);
+            richTextBoxInformation.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            richTextBoxInformation.Location = new System.Drawing.Point(16, 68);
+            richTextBoxInformation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            richTextBoxInformation.Name = "richTextBoxInformation";
+            richTextBoxInformation.ReadOnly = true;
+            richTextBoxInformation.Size = new System.Drawing.Size(884, 591);
+            richTextBoxInformation.TabIndex = 2;
+            richTextBoxInformation.Text = "";
+            richTextBoxInformation.TextChanged += richTextBoxInformation_TextChanged;
+            richTextBoxInformation.Enter += richTextBoxInformation_Enter;
             // 
             // menuStripMainMenu
             // 
-            this.menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.metadataToolStripMenuItem,
-            this.configurationToolStripMenuItem,
-            this.helpToolStripMenuItem});
-            this.menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
-            this.menuStripMainMenu.Name = "menuStripMainMenu";
-            this.menuStripMainMenu.Size = new System.Drawing.Size(784, 24);
-            this.menuStripMainMenu.TabIndex = 4;
-            this.menuStripMainMenu.Text = "menuStrip1";
+            menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, metadataToolStripMenuItem, configurationToolStripMenuItem, helpToolStripMenuItem });
+            menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
+            menuStripMainMenu.Name = "menuStripMainMenu";
+            menuStripMainMenu.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+            menuStripMainMenu.Size = new System.Drawing.Size(915, 24);
+            menuStripMainMenu.TabIndex = 4;
+            menuStripMainMenu.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openMetadataDirectoryToolStripMenuItem,
-            this.toolStripSeparator3,
-            this.exitToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "&File";
+            fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openMetadataDirectoryToolStripMenuItem, openCoreDirectoryToolStripMenuItem, toolStripSeparator3, exitToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            fileToolStripMenuItem.Text = "&File";
             // 
             // openMetadataDirectoryToolStripMenuItem
             // 
-            this.openMetadataDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
-            this.openMetadataDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
-            this.openMetadataDirectoryToolStripMenuItem.Text = "&Open Metadata Directory";
-            this.openMetadataDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openMetadataDirectoryToolStripMenuItem_Click);
+            openMetadataDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
+            openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
+            openMetadataDirectoryToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
+            openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            openMetadataDirectoryToolStripMenuItem.Text = "&Open Metadata Directory";
+            openMetadataDirectoryToolStripMenuItem.Click += openMetadataDirectoryToolStripMenuItem_Click;
             // 
             // toolStripSeparator3
             // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(247, 6);
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new System.Drawing.Size(247, 6);
             // 
             // exitToolStripMenuItem
             // 
-            this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
-            this.exitToolStripMenuItem.Text = "E&xit Application";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            exitToolStripMenuItem.Image = Properties.Resources.ExitApplication;
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X;
+            exitToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            exitToolStripMenuItem.Text = "E&xit Application";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
             // 
             // metadataToolStripMenuItem
             // 
-            this.metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openMetadataFormToolStripMenuItem});
-            this.metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
-            this.metadataToolStripMenuItem.Size = new System.Drawing.Size(108, 20);
-            this.metadataToolStripMenuItem.Text = "Design &Metadata";
+            metadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openMetadataFormToolStripMenuItem });
+            metadataToolStripMenuItem.Name = "metadataToolStripMenuItem";
+            metadataToolStripMenuItem.Size = new System.Drawing.Size(108, 20);
+            metadataToolStripMenuItem.Text = "Design &Metadata";
             // 
             // openMetadataFormToolStripMenuItem
             // 
-            this.openMetadataFormToolStripMenuItem.Image = global::TEAM.Properties.Resources.CubeIcon;
-            this.openMetadataFormToolStripMenuItem.Name = "openMetadataFormToolStripMenuItem";
-            this.openMetadataFormToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
-            this.openMetadataFormToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.openMetadataFormToolStripMenuItem.Text = "Manage &Metadata";
-            this.openMetadataFormToolStripMenuItem.Click += new System.EventHandler(this.openMetadataFormToolStripMenuItem_Click);
+            openMetadataFormToolStripMenuItem.Image = Properties.Resources.CubeIcon;
+            openMetadataFormToolStripMenuItem.Name = "openMetadataFormToolStripMenuItem";
+            openMetadataFormToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M;
+            openMetadataFormToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            openMetadataFormToolStripMenuItem.Text = "Manage &Metadata";
+            openMetadataFormToolStripMenuItem.Click += openMetadataFormToolStripMenuItem_Click;
             // 
             // configurationToolStripMenuItem
             // 
-            this.configurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.generalSettingsToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.deployMetadataExamplesToolStripMenuItem});
-            this.configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
-            this.configurationToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
-            this.configurationToolStripMenuItem.Text = "&Configuration";
+            configurationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { generalSettingsToolStripMenuItem, toolStripSeparator2, deployMetadataExamplesToolStripMenuItem });
+            configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
+            configurationToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
+            configurationToolStripMenuItem.Text = "&Configuration";
             // 
             // generalSettingsToolStripMenuItem
             // 
-            this.generalSettingsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generalSettingsToolStripMenuItem.Image")));
-            this.generalSettingsToolStripMenuItem.Name = "generalSettingsToolStripMenuItem";
-            this.generalSettingsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-            this.generalSettingsToolStripMenuItem.Text = "&Settings";
-            this.generalSettingsToolStripMenuItem.Click += new System.EventHandler(this.generalSettingsToolStripMenuItem_Click);
+            generalSettingsToolStripMenuItem.Image = (System.Drawing.Image)resources.GetObject("generalSettingsToolStripMenuItem.Image");
+            generalSettingsToolStripMenuItem.Name = "generalSettingsToolStripMenuItem";
+            generalSettingsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
+            generalSettingsToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            generalSettingsToolStripMenuItem.Text = "&Settings";
+            generalSettingsToolStripMenuItem.Click += generalSettingsToolStripMenuItem_Click;
             // 
             // toolStripSeparator2
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(203, 6);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new System.Drawing.Size(203, 6);
             // 
             // deployMetadataExamplesToolStripMenuItem
             // 
-            this.deployMetadataExamplesToolStripMenuItem.Image = global::TEAM.Properties.Resources.database_icon;
-            this.deployMetadataExamplesToolStripMenuItem.Name = "deployMetadataExamplesToolStripMenuItem";
-            this.deployMetadataExamplesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.deployMetadataExamplesToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-            this.deployMetadataExamplesToolStripMenuItem.Text = "&Deploy Examples";
-            this.deployMetadataExamplesToolStripMenuItem.Click += new System.EventHandler(this.deployMetadataExamplesToolStripMenuItem_Click);
+            deployMetadataExamplesToolStripMenuItem.Image = Properties.Resources.database_icon;
+            deployMetadataExamplesToolStripMenuItem.Name = "deployMetadataExamplesToolStripMenuItem";
+            deployMetadataExamplesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D;
+            deployMetadataExamplesToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            deployMetadataExamplesToolStripMenuItem.Text = "&Deploy Examples";
+            deployMetadataExamplesToolStripMenuItem.Click += deployMetadataExamplesToolStripMenuItem_Click;
             // 
             // helpToolStripMenuItem
             // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.helpToolStripMenuItem1,
-            this.displayEventLogToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.aboutToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "&Help";
+            helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { helpToolStripMenuItem1, displayEventLogToolStripMenuItem, toolStripSeparator1, aboutToolStripMenuItem });
+            helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            helpToolStripMenuItem.Text = "&Help";
             // 
             // helpToolStripMenuItem1
             // 
-            this.helpToolStripMenuItem1.Image = global::TEAM.Properties.Resources.HelpIconSmall;
-            this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
-            this.helpToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
-            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(207, 22);
-            this.helpToolStripMenuItem1.Text = "&Help";
-            this.helpToolStripMenuItem1.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
+            helpToolStripMenuItem1.Image = Properties.Resources.HelpIconSmall;
+            helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
+            helpToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H;
+            helpToolStripMenuItem1.Size = new System.Drawing.Size(207, 22);
+            helpToolStripMenuItem1.Text = "&Help";
+            helpToolStripMenuItem1.Click += helpToolStripMenuItem_Click;
             // 
             // displayEventLogToolStripMenuItem
             // 
-            this.displayEventLogToolStripMenuItem.Image = global::TEAM.Properties.Resources.log_file;
-            this.displayEventLogToolStripMenuItem.Name = "displayEventLogToolStripMenuItem";
-            this.displayEventLogToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.displayEventLogToolStripMenuItem.Text = "Display &Event Log";
-            this.displayEventLogToolStripMenuItem.Click += new System.EventHandler(this.displayEventLogToolStripMenuItem_Click);
+            displayEventLogToolStripMenuItem.Image = Properties.Resources.log_file;
+            displayEventLogToolStripMenuItem.Name = "displayEventLogToolStripMenuItem";
+            displayEventLogToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E;
+            displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            displayEventLogToolStripMenuItem.Text = "Display &Event Log";
+            displayEventLogToolStripMenuItem.Click += displayEventLogToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(204, 6);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new System.Drawing.Size(204, 6);
             // 
             // aboutToolStripMenuItem
             // 
-            this.aboutToolStripMenuItem.Image = global::TEAM.Properties.Resources.RavosLogo;
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.aboutToolStripMenuItem.Text = "About";
-            this.aboutToolStripMenuItem.ToolTipText = "Information about TEAM";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            aboutToolStripMenuItem.Image = Properties.Resources.RavosLogo;
+            aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            aboutToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            aboutToolStripMenuItem.Text = "About";
+            aboutToolStripMenuItem.ToolTipText = "Information about TEAM";
+            aboutToolStripMenuItem.Click += aboutToolStripMenuItem_Click;
             // 
             // backgroundWorkerEventLog
             // 
-            this.backgroundWorkerEventLog.WorkerReportsProgress = true;
-            this.backgroundWorkerEventLog.WorkerSupportsCancellation = true;
-            this.backgroundWorkerEventLog.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorkerEventLog_DoWork);
-            this.backgroundWorkerEventLog.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerEventLog_ProgressChanged);
-            this.backgroundWorkerEventLog.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerEventLog_RunWorkerCompleted);
+            backgroundWorkerEventLog.WorkerReportsProgress = true;
+            backgroundWorkerEventLog.WorkerSupportsCancellation = true;
+            backgroundWorkerEventLog.DoWork += backgroundWorkerEventLog_DoWork;
+            backgroundWorkerEventLog.ProgressChanged += backgroundWorkerEventLog_ProgressChanged;
+            backgroundWorkerEventLog.RunWorkerCompleted += backgroundWorkerEventLog_RunWorkerCompleted;
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.Image = global::TEAM.Properties.Resources.RavosLogo;
-            this.pictureBox1.Location = new System.Drawing.Point(663, 448);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(109, 100);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 15;
-            this.pictureBox1.TabStop = false;
+            pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            pictureBox1.Image = Properties.Resources.RavosLogo;
+            pictureBox1.Location = new System.Drawing.Point(774, 517);
+            pictureBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new System.Drawing.Size(127, 115);
+            pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            pictureBox1.TabIndex = 15;
+            pictureBox1.TabStop = false;
+            // 
+            // openCoreDirectoryToolStripMenuItem
+            // 
+            openCoreDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
+            openCoreDirectoryToolStripMenuItem.Name = "openCoreDirectoryToolStripMenuItem";
+            openCoreDirectoryToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            openCoreDirectoryToolStripMenuItem.Text = "Open Core Directory";
+            openCoreDirectoryToolStripMenuItem.Click += openCoreDirectoryToolStripMenuItem_Click;
             // 
             // FormMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(784, 561);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.richTextBoxInformation);
-            this.Controls.Add(this.menuStripMainMenu);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.menuStripMainMenu;
-            this.MinimumSize = new System.Drawing.Size(600, 400);
-            this.Name = "FormMain";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Taxonomy for ETL Automation Metadata ";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.menuStripMainMenu.ResumeLayout(false);
-            this.menuStripMainMenu.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.SystemColors.Control;
+            ClientSize = new System.Drawing.Size(915, 647);
+            Controls.Add(groupBox2);
+            Controls.Add(pictureBox1);
+            Controls.Add(richTextBoxInformation);
+            Controls.Add(menuStripMainMenu);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            MainMenuStrip = menuStripMainMenu;
+            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            MinimumSize = new System.Drawing.Size(697, 456);
+            Name = "FormMain";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            Text = "Taxonomy for ETL Automation Metadata ";
+            FormClosed += FormMain_FormClosed;
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            menuStripMainMenu.ResumeLayout(false);
+            menuStripMainMenu.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -309,6 +309,7 @@
         private System.Windows.Forms.ToolStripMenuItem openMetadataDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         internal System.Windows.Forms.ToolStripMenuItem deployMetadataExamplesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openCoreDirectoryToolStripMenuItem;
     }
 }
 

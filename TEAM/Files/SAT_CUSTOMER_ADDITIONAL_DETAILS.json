@@ -142,21 +142,32 @@
         {
           "sourceDataItems": [
             {
-              "name": "Contact_Number"
+              "name": "Contact_Number",
+              "dataType": "int",
+              "ordinalPosition": 17
             }
           ],
           "targetDataItem": {
-            "name": "CONTACT_NUMBER"
+            "name": "CONTACT_NUMBER",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 7
           }
         },
         {
           "sourceDataItems": [
             {
-              "name": "State"
+              "name": "State",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 12
             }
           ],
           "targetDataItem": {
-            "name": "STATE"
+            "name": "STATE",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 8
           }
         }
       ],
