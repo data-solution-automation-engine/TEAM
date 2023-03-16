@@ -134,12 +134,15 @@ namespace TEAM_Library
                                     {
                                         try
                                         {
+                                            // It must be a DataItem so it can be safely cast.
+                                            DataItem tempDataItem = dataItem.ToObject<DataItem>();
+
                                             // Explicitly type-cast the value as string to avoid issues using dynamic type.
-                                            string dataItemName = dataItem.name;
+                                            string dataItemName = tempDataItem.Name;
 
                                             if (dataItemName.Contains("+"))
                                             {
-                                                businessKeyDefinitionString += $"CONCATENATE({dataItem.Name})".Replace("+", ";");
+                                                businessKeyDefinitionString += $"CONCATENATE({tempDataItem.Name})".Replace("+", ";");
                                             }
                                             else
                                             {
@@ -149,11 +152,8 @@ namespace TEAM_Library
                                             businessKeyDefinitionString += ";";
 
                                             // Evaluate if a Driving Key needs to be set.
-                                            if (dataItem.dataItemClassification != null)
+                                            if (tempDataItem.DataItemClassification != null)
                                             {
-                                                // It must be a DataItem so it can be safely cast.
-                                                DataItem tempDataItem = dataItem.ToObject<DataItem>();
-
                                                 List<DataClassification> classifications = tempDataItem.DataItemClassification;
 
                                                 if (classifications[0].Classification == "DrivingKey")
@@ -164,7 +164,7 @@ namespace TEAM_Library
                                         }
                                         catch (Exception exception)
                                         {
-                                            EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred intepreting a data item: "+exception.Message));
+                                            EventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An error occurred interpreting a data item: "+exception.Message));
                                         }
                                     }
                                 }

@@ -9,7 +9,7 @@
       "characterLength": "4",
       "numericPrecision": "10",
       "numericScale": "0",
-      "ordinalPosition": 3,
+      "ordinalPosition": 5,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -19,7 +19,7 @@
       "characterLength": "100",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 4,
+      "ordinalPosition": 6,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -29,7 +29,7 @@
       "characterLength": "16",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 6,
+      "ordinalPosition": 7,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -39,7 +39,7 @@
       "characterLength": "4",
       "numericPrecision": "10",
       "numericScale": "0",
-      "ordinalPosition": 5,
+      "ordinalPosition": 3,
       "primaryKeyIndicator": "Y",
       "multiActiveIndicator": "Y"
     },
@@ -59,7 +59,7 @@
       "characterLength": "100",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 7,
+      "ordinalPosition": 8,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -72,6 +72,16 @@
       "ordinalPosition": 1,
       "primaryKeyIndicator": "Y",
       "multiActiveIndicator": "Y"
+    },
+    {
+      "name": "STATE_TIMESTAMP",
+      "dataType": "datetime2",
+      "characterLength": "8",
+      "numericPrecision": "27",
+      "numericScale": "7",
+      "ordinalPosition": 4,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
     }
   ]
 }

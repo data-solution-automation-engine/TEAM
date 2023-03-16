@@ -63,6 +63,7 @@
     <StartupObject>TEAM.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Files\PhysicalModel\200_Integration_Layer\bdv\vw_CUSTOMER_DERIVED.json" />
     <None Remove="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER_DERIVED.json" />
     <None Remove="Scripts\generateSampleIntegrationSchemaView.sql" />
   </ItemGroup>
@@ -88,6 +89,9 @@
     <Compile Update="TimedTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\bdv\vw_CUSTOMER_DERIVED.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Files\sample_TEAM_Attribute_Mapping.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

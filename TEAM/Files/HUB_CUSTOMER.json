@@ -448,7 +448,7 @@
       ],
       "sourceDataObjects": [
         {
-          "name": "CUSTOMER_DERIVED",
+          "name": "vw_CUSTOMER_DERIVED",
           "dataObjectConnection": {
             "dataConnectionString": "Derived",
             "extensions": [
@@ -525,7 +525,7 @@
             {
               "sourceDataItems": [
                 {
-                  "name": "CustomerID",
+                  "name": "CUSTOMER_ID",
                   "isHardCodedValue": false
                 }
               ],

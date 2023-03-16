@@ -78,7 +78,8 @@ CREATE TABLE [STG_PROFILER_CUSTOMER_PERSONAL]
   [Gender] nvarchar(100) NULL,
   [DOB] datetime2(7) NULL,
   [Contact_Number] int NULL,
-  [Referee_Offer_Made] int NULL 
+  [Referee_Offer_Made] int NULL,
+  [Valid_From]  datetime2(7) NULL
 )
 
 EXEC sp_addextendedproperty

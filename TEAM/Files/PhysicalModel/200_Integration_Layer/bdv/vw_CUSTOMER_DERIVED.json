@@ -1,10 +1,30 @@
 {
-  "name": "SAT_INCENTIVE_OFFER",
+  "name": "vw_CUSTOMER_DERIVED",
   "database": "200_Integration_Layer",
-  "schema": "dbo",
+  "schema": "bdv",
   "columns": [
     {
-      "name": "AUDIT_TRAIL_ID",
+      "name": "CHANGE_DATA_INDICATOR",
+      "dataType": "varchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 4,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "CUSTOMER_ID",
+      "dataType": "nvarchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 1,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "INSCRIPTION_RECORD_ID",
       "dataType": "int",
       "characterLength": "4",
       "numericPrecision": "10",
@@ -14,9 +34,19 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "CHANGE_DATA_INDICATOR",
+      "name": "INSCRIPTION_TIMESTAMP",
+      "dataType": "datetime2",
+      "characterLength": "8",
+      "numericPrecision": "27",
+      "numericScale": "7",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "REFERRAL_OFFER_CLEAN",
       "dataType": "varchar",
-      "characterLength": "100",
+      "characterLength": "7",
       "numericPrecision": "0",
       "numericScale": "0",
       "ordinalPosition": 6,
@@ -24,62 +54,12 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "CHECKSUM",
-      "dataType": "binary",
-      "characterLength": "16",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 7,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "INCENTIVE_OFFER_SK",
-      "dataType": "binary",
-      "characterLength": "16",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 1,
-      "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "INSCRIPTION_RECORD_ID",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
-      "numericScale": "0",
+      "name": "SOURCE_TIMESTAMP",
+      "dataType": "datetime2",
+      "characterLength": "8",
+      "numericPrecision": "27",
+      "numericScale": "7",
       "ordinalPosition": 3,
-      "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "Y"
-    },
-    {
-      "name": "INSCRIPTION_TIMESTAMP",
-      "dataType": "datetime2",
-      "characterLength": "8",
-      "numericPrecision": "27",
-      "numericScale": "7",
-      "ordinalPosition": 2,
-      "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "OFFER_DESCRIPTION",
-      "dataType": "nvarchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 8,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "STATE_TIMESTAMP",
-      "dataType": "datetime2",
-      "characterLength": "8",
-      "numericPrecision": "27",
-      "numericScale": "7",
-      "ordinalPosition": 4,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     }

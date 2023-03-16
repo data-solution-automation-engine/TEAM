@@ -215,5 +215,21 @@
     "targetTable": "SAT_CUSTOMER_DERIVED",
     "targetAttribute": "REFERRAL_OFFER_CLEAN",
     "notes": ""
+  },
+  {
+    "attributeMappingHash": "83D3D2EE64EC5EC44D421B5DEC80D13F",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "Valid_From",
+    "targetTable": "SAT_CUSTOMER",
+    "targetAttribute": "STATE_TIMESTAMP",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "E851A353E50B811E352110A465004928",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "Valid_From",
+    "targetTable": "SAT_CUSTOMER",
+    "targetAttribute": "VALID_FROM",
+    "notes": ""
   }
 ]

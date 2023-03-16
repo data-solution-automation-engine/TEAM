@@ -9,7 +9,7 @@
       "characterLength": "4",
       "numericPrecision": "10",
       "numericScale": "0",
-      "ordinalPosition": 1,
+      "ordinalPosition": 5,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -19,7 +19,7 @@
       "characterLength": "100",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 5,
+      "ordinalPosition": 4,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -49,7 +49,7 @@
       "characterLength": "4",
       "numericPrecision": "10",
       "numericScale": "0",
-      "ordinalPosition": 4,
+      "ordinalPosition": 2,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -59,7 +59,7 @@
       "characterLength": "8",
       "numericPrecision": "27",
       "numericScale": "7",
-      "ordinalPosition": 2,
+      "ordinalPosition": 1,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },

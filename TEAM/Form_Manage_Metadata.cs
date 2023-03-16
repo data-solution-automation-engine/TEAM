@@ -14,7 +14,6 @@ using System.Windows.Forms;
 using TEAM_Library;
 using static TEAM.DataGridViewDataObjects;
 using DataObject = DataWarehouseAutomation.DataObject;
-using EventLog = TEAM_Library.EventLog;
 using SqlConnection = Microsoft.Data.SqlClient.SqlConnection;
 
 namespace TEAM
