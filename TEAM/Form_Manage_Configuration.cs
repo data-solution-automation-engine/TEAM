@@ -973,23 +973,33 @@ namespace TEAM
             globalParameters.ConfigurationPath = textBoxConfigurationPath.Text;
             globalParameters.MetadataPath = textBoxTeamMetadataPath.Text;
 
-            var localEnvironment = (KeyValuePair<TeamEnvironment, string>)comboBoxEnvironments.SelectedItem;
-            globalParameters.ActiveEnvironmentInternalId = localEnvironment.Key.environmentInternalId;
-            globalParameters.ActiveEnvironmentKey = localEnvironment.Key.environmentKey;
+            if (comboBoxEnvironments.SelectedItem != null)
+            {
+                var localEnvironment = (KeyValuePair<TeamEnvironment, string>)comboBoxEnvironments.SelectedItem;
+                globalParameters.ActiveEnvironmentInternalId = localEnvironment.Key.environmentInternalId;
+                globalParameters.ActiveEnvironmentKey = localEnvironment.Key.environmentKey;
 
-            // Make sure the new paths as updated are available upon save for backup etc.
-            // Check if the paths and files are available, just to be sure.
-            FileHandling.InitialisePath(globalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
-            FileHandling.InitialisePath(globalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
+                // Make sure the new paths as updated are available upon save for backup etc.
+                // Check if the paths and files are available, just to be sure.
+                FileHandling.InitialisePath(globalParameters.ConfigurationPath, TeamPathTypes.ConfigurationPath, TeamEventLog);
+                FileHandling.InitialisePath(globalParameters.MetadataPath, TeamPathTypes.MetadataPath, TeamEventLog);
 
-            TeamConfiguration.CreateDummyTeamConfigurationFile(globalParameters.ConfigurationPath + globalParameters.ConfigFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension);
-            ValidationSetting.CreateDummyValidationFile(globalParameters.ConfigurationPath + globalParameters.ValidationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension);
-            JsonExportSetting.CreateDummyJsonConfigurationFile(globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension, TeamEventLog);
+                TeamConfiguration.CreateDummyTeamConfigurationFile(globalParameters.ConfigurationPath + globalParameters.ConfigFileName + '_' + globalParameters.ActiveEnvironmentKey +
+                                                                   globalParameters.FileExtension);
+                ValidationSetting.CreateDummyValidationFile(globalParameters.ConfigurationPath + globalParameters.ValidationFileName + '_' + globalParameters.ActiveEnvironmentKey +
+                                                            globalParameters.FileExtension);
+                JsonExportSetting.CreateDummyJsonConfigurationFile(
+                    globalParameters.ConfigurationPath + globalParameters.JsonExportConfigurationFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.FileExtension, TeamEventLog);
 
-            // Also updating the environments for paths etc.
-            localEnvironment.Key.metadataPath = globalParameters.MetadataPath;
-            localEnvironment.Key.configurationPath = globalParameters.ConfigurationPath;
-            localEnvironment.Key.SaveTeamEnvironment(globalParameters.CorePath + globalParameters.JsonEnvironmentFileName + globalParameters.JsonExtension);
+                // Also updating the environments for paths etc.
+                localEnvironment.Key.metadataPath = globalParameters.MetadataPath;
+                localEnvironment.Key.configurationPath = globalParameters.ConfigurationPath;
+                localEnvironment.Key.SaveTeamEnvironment(globalParameters.CorePath + globalParameters.JsonEnvironmentFileName + globalParameters.JsonExtension);
+            }
+            else
+            {
+                richTextBoxInformation.Text += "The selected environment has been deleted, and can not be saved.";
+            }
         }
     }
 }
