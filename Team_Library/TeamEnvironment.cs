@@ -26,11 +26,13 @@ namespace TEAM_Library
         public string environmentNotes { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string,TeamModelLayer> Layers
-        {
-            get;
-            set;
-        }
+        public Dictionary<string,TeamModelLayer> Layers { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string outputPath { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string templatePath { get; set; }
 
         public void SaveTeamEnvironment(string fileName)
         {
@@ -74,6 +76,8 @@ namespace TEAM_Library
                 jsonKeyLookup.metadataPath = metadataPath;
                 jsonKeyLookup.environmentNotes = environmentNotes;
                 jsonKeyLookup.Layers = Layers;
+                jsonKeyLookup.outputPath = outputPath;
+                jsonKeyLookup.templatePath = templatePath;
             }
 
             // Save the updated file to disk.
@@ -143,7 +147,7 @@ namespace TEAM_Library
 
                 EnvironmentDictionary = localDictionary;
             }
-            // Load the file if it does exist.
+            // Load the file if it exist.
             else
             {
                 EnvironmentDictionary.Clear();
