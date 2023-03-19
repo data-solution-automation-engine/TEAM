@@ -12,6 +12,48 @@
   "generationSpecificMetadata": {
     "selectedDataObject": {
       "name": "LSAT_CUSTOMER_OFFER",
+      "dataItems": [
+        {
+          "name": "CUSTOMER_OFFER_SK",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 1
+        },
+        {
+          "name": "INSCRIPTION_TIMESTAMP",
+          "dataType": "datetime2",
+          "numericScale": 7,
+          "ordinalPosition": 2
+        },
+        {
+          "name": "INSCRIPTION_RECORD_ID",
+          "dataType": "int",
+          "ordinalPosition": 3
+        },
+        {
+          "name": "STATE_TIMESTAMP",
+          "dataType": "datetime2",
+          "numericScale": 7,
+          "ordinalPosition": 4
+        },
+        {
+          "name": "AUDIT_TRAIL_ID",
+          "dataType": "int",
+          "ordinalPosition": 5
+        },
+        {
+          "name": "CHANGE_DATA_INDICATOR",
+          "dataType": "varchar",
+          "characterLength": 100,
+          "ordinalPosition": 6
+        },
+        {
+          "name": "CHECKSUM",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 7
+        }
+      ],
       "dataObjectConnection": {
         "dataConnectionString": "Integration",
         "extensions": [
@@ -45,6 +87,52 @@
       "sourceDataObjects": [
         {
           "name": "PSA_PROFILER_CUSTOMER_OFFER",
+          "dataItems": [
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "INSCRIPTION_RECORD_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "SOURCE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "CHANGE_DATA_INDICATOR",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 5
+            },
+            {
+              "name": "CHECKSUM",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 6
+            },
+            {
+              "name": "CustomerID",
+              "dataType": "int",
+              "ordinalPosition": 7
+            },
+            {
+              "name": "OfferID",
+              "dataType": "int",
+              "ordinalPosition": 8
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "PSA",
             "extensions": [
@@ -69,6 +157,48 @@
       ],
       "targetDataObject": {
         "name": "LSAT_CUSTOMER_OFFER",
+        "dataItems": [
+          {
+            "name": "CUSTOMER_OFFER_SK",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 1
+          },
+          {
+            "name": "INSCRIPTION_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 2
+          },
+          {
+            "name": "INSCRIPTION_RECORD_ID",
+            "dataType": "int",
+            "ordinalPosition": 3
+          },
+          {
+            "name": "STATE_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 4
+          },
+          {
+            "name": "AUDIT_TRAIL_ID",
+            "dataType": "int",
+            "ordinalPosition": 5
+          },
+          {
+            "name": "CHANGE_DATA_INDICATOR",
+            "dataType": "varchar",
+            "characterLength": 100,
+            "ordinalPosition": 6
+          },
+          {
+            "name": "CHECKSUM",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 7
+          }
+        ],
         "dataObjectConnection": {
           "dataConnectionString": "Integration",
           "extensions": [
@@ -93,6 +223,37 @@
       "relatedDataObjects": [
         {
           "name": "LNK_CUSTOMER_OFFER",
+          "dataItems": [
+            {
+              "name": "CUSTOMER_OFFER_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "[INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "CUSTOMER_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 4
+            },
+            {
+              "name": "INCENTIVE_OFFER_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 5
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "Integration",
             "extensions": [
@@ -113,6 +274,24 @@
               "classification": "NaturalBusinessRelationship"
             }
           ]
+        }
+      ],
+      "dataItemMappings": [
+        {
+          "sourceDataItems": [
+            {
+              "name": "SOURCE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            }
+          ],
+          "targetDataItem": {
+            "name": "STATE_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 4
+          }
         }
       ],
       "businessKeys": [

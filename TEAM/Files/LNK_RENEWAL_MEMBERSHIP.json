@@ -12,6 +12,37 @@
   "generationSpecificMetadata": {
     "selectedDataObject": {
       "name": "LNK_RENEWAL_MEMBERSHIP",
+      "dataItems": [
+        {
+          "name": "RENEWAL_MEMBERSHIP_SK",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 1
+        },
+        {
+          "name": "AUDIT_TRAIL_ID",
+          "dataType": "int",
+          "ordinalPosition": 2
+        },
+        {
+          "name": "INSCRIPTION_TIMESTAMP",
+          "dataType": "datetime2",
+          "numericScale": 7,
+          "ordinalPosition": 3
+        },
+        {
+          "name": "MEMBERSHIP_PLAN_SK",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 4
+        },
+        {
+          "name": "RENEWAL_PLAN_SK",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 5
+        }
+      ],
       "dataObjectConnection": {
         "dataConnectionString": "Integration",
         "extensions": [
@@ -45,6 +76,60 @@
       "sourceDataObjects": [
         {
           "name": "PSA_PROFILER_PLAN",
+          "dataItems": [
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "INSCRIPTION_RECORD_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "SOURCE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "CHANGE_DATA_INDICATOR",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 5
+            },
+            {
+              "name": "CHECKSUM",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 6
+            },
+            {
+              "name": "Plan_Code",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 7
+            },
+            {
+              "name": "Plan_Desc",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 8
+            },
+            {
+              "name": "Renewal_Plan_Code",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 9
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "PSA",
             "extensions": [
@@ -69,6 +154,37 @@
       ],
       "targetDataObject": {
         "name": "LNK_RENEWAL_MEMBERSHIP",
+        "dataItems": [
+          {
+            "name": "RENEWAL_MEMBERSHIP_SK",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 1
+          },
+          {
+            "name": "AUDIT_TRAIL_ID",
+            "dataType": "int",
+            "ordinalPosition": 2
+          },
+          {
+            "name": "INSCRIPTION_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 3
+          },
+          {
+            "name": "MEMBERSHIP_PLAN_SK",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 4
+          },
+          {
+            "name": "RENEWAL_PLAN_SK",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 5
+          }
+        ],
         "dataObjectConnection": {
           "dataConnectionString": "Integration",
           "extensions": [

@@ -12,6 +12,72 @@
   "generationSpecificMetadata": {
     "selectedDataObject": {
       "name": "PSA_PROFILER_PERSONALISED_COSTING",
+      "dataItems": [
+        {
+          "name": "INSCRIPTION_TIMESTAMP",
+          "dataType": "datetime2",
+          "numericScale": 7,
+          "ordinalPosition": 1
+        },
+        {
+          "name": "INSCRIPTION_RECORD_ID",
+          "dataType": "int",
+          "ordinalPosition": 2
+        },
+        {
+          "name": "SOURCE_TIMESTAMP",
+          "dataType": "datetime2",
+          "numericScale": 7,
+          "ordinalPosition": 3
+        },
+        {
+          "name": "CHANGE_DATA_INDICATOR",
+          "dataType": "varchar",
+          "characterLength": 100,
+          "ordinalPosition": 4
+        },
+        {
+          "name": "AUDIT_TRAIL_ID",
+          "dataType": "int",
+          "ordinalPosition": 5
+        },
+        {
+          "name": "CHECKSUM",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 6
+        },
+        {
+          "name": "Member",
+          "dataType": "int",
+          "ordinalPosition": 7
+        },
+        {
+          "name": "Segment",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 8
+        },
+        {
+          "name": "Plan_Code",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 9
+        },
+        {
+          "name": "Date_effective",
+          "dataType": "datetime2",
+          "numericScale": 7,
+          "ordinalPosition": 10
+        },
+        {
+          "name": "Monthly_Cost",
+          "dataType": "numeric",
+          "numericPrecision": 38,
+          "numericScale": 20,
+          "ordinalPosition": 11
+        }
+      ],
       "dataObjectConnection": {
         "dataConnectionString": "PSA",
         "extensions": [
@@ -45,6 +111,72 @@
       "sourceDataObjects": [
         {
           "name": "STG_PROFILER_PERSONALISED_COSTING",
+          "dataItems": [
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "INSCRIPTION_RECORD_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "SOURCE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "CHANGE_DATA_INDICATOR",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 5
+            },
+            {
+              "name": "CHECKSUM",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 6
+            },
+            {
+              "name": "Member",
+              "dataType": "int",
+              "ordinalPosition": 7
+            },
+            {
+              "name": "Segment",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 8
+            },
+            {
+              "name": "Plan_Code",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 9
+            },
+            {
+              "name": "Date_effective",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 10
+            },
+            {
+              "name": "Monthly_Cost",
+              "dataType": "numeric",
+              "numericPrecision": 38,
+              "numericScale": 20,
+              "ordinalPosition": 11
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "Staging",
             "extensions": [
@@ -69,6 +201,72 @@
       ],
       "targetDataObject": {
         "name": "PSA_PROFILER_PERSONALISED_COSTING",
+        "dataItems": [
+          {
+            "name": "INSCRIPTION_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 1
+          },
+          {
+            "name": "INSCRIPTION_RECORD_ID",
+            "dataType": "int",
+            "ordinalPosition": 2
+          },
+          {
+            "name": "SOURCE_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 3
+          },
+          {
+            "name": "CHANGE_DATA_INDICATOR",
+            "dataType": "varchar",
+            "characterLength": 100,
+            "ordinalPosition": 4
+          },
+          {
+            "name": "AUDIT_TRAIL_ID",
+            "dataType": "int",
+            "ordinalPosition": 5
+          },
+          {
+            "name": "CHECKSUM",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 6
+          },
+          {
+            "name": "Member",
+            "dataType": "int",
+            "ordinalPosition": 7
+          },
+          {
+            "name": "Segment",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 8
+          },
+          {
+            "name": "Plan_Code",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 9
+          },
+          {
+            "name": "Date_effective",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 10
+          },
+          {
+            "name": "Monthly_Cost",
+            "dataType": "numeric",
+            "numericPrecision": 38,
+            "numericScale": 20,
+            "ordinalPosition": 11
+          }
+        ],
         "dataObjectConnection": {
           "dataConnectionString": "PSA",
           "extensions": [
@@ -93,6 +291,31 @@
       "relatedDataObjects": [
         {
           "name": "HUB_CUSTOMER",
+          "dataItems": [
+            {
+              "name": "CUSTOMER_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "CUSTOMER_ID",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "Integration",
             "extensions": [
@@ -116,6 +339,37 @@
         },
         {
           "name": "HUB_MEMBERSHIP_PLAN",
+          "dataItems": [
+            {
+              "name": "MEMBERSHIP_PLAN_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "PLAN_CODE",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            },
+            {
+              "name": "PLAN_SUFFIX",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 5
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "Integration",
             "extensions": [
@@ -139,6 +393,31 @@
         },
         {
           "name": "HUB_SEGMENT",
+          "dataItems": [
+            {
+              "name": "SEGMENT_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "SEGMENT_CODE",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "Integration",
             "extensions": [
@@ -162,6 +441,43 @@
         },
         {
           "name": "LNK_CUSTOMER_COSTING",
+          "dataItems": [
+            {
+              "name": "CUSTOMER_COSTING_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "[INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "MEMBERSHIP_PLAN_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 4
+            },
+            {
+              "name": "CUSTOMER_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 5
+            },
+            {
+              "name": "SEGMENT_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 6
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "Integration",
             "extensions": [
@@ -185,6 +501,61 @@
         },
         {
           "name": "LSAT_CUSTOMER_COSTING",
+          "dataItems": [
+            {
+              "name": "CUSTOMER_COSTING_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "COSTING_EFFECTIVE_DATE",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 2
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "INSCRIPTION_RECORD_ID",
+              "dataType": "int",
+              "ordinalPosition": 4
+            },
+            {
+              "name": "STATE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 5
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 6
+            },
+            {
+              "name": "CHANGE_DATA_INDICATOR",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 7
+            },
+            {
+              "name": "CHECKSUM",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 8
+            },
+            {
+              "name": "PERSONAL_MONTHLY_COST",
+              "dataType": "numeric",
+              "numericPrecision": 38,
+              "numericScale": 20,
+              "ordinalPosition": 9
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "Integration",
             "extensions": [
@@ -219,7 +590,7 @@
           "targetDataItem": {
             "name": "Member",
             "dataType": "int",
-            "ordinalPosition": 8,
+            "ordinalPosition": 7,
             "dataItemClassification": [
               {
                 "classification": "MultiActiveKey",
@@ -241,7 +612,7 @@
             "name": "Segment",
             "dataType": "nvarchar",
             "characterLength": 100,
-            "ordinalPosition": 9,
+            "ordinalPosition": 8,
             "dataItemClassification": [
               {
                 "classification": "MultiActiveKey",
@@ -263,7 +634,7 @@
             "name": "Plan_Code",
             "dataType": "nvarchar",
             "characterLength": 100,
-            "ordinalPosition": 10,
+            "ordinalPosition": 9,
             "dataItemClassification": [
               {
                 "classification": "MultiActiveKey",
@@ -285,7 +656,7 @@
             "name": "Date_effective",
             "dataType": "datetime2",
             "numericScale": 7,
-            "ordinalPosition": 11,
+            "ordinalPosition": 10,
             "dataItemClassification": [
               {
                 "classification": "MultiActiveKey",
@@ -309,7 +680,7 @@
             "dataType": "numeric",
             "numericPrecision": 38,
             "numericScale": 20,
-            "ordinalPosition": 12
+            "ordinalPosition": 11
           }
         }
       ],

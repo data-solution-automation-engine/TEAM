@@ -12,6 +12,54 @@
   "generationSpecificMetadata": {
     "selectedDataObject": {
       "name": "SAT_CUSTOMER_DERIVED",
+      "dataItems": [
+        {
+          "name": "CUSTOMER_SK",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 1
+        },
+        {
+          "name": "INSCRIPTION_TIMESTAMP",
+          "dataType": "datetime2",
+          "numericScale": 7,
+          "ordinalPosition": 2
+        },
+        {
+          "name": "INSCRIPTION_RECORD_ID",
+          "dataType": "int",
+          "ordinalPosition": 3
+        },
+        {
+          "name": "STATE_TIMESTAMP",
+          "dataType": "datetime2",
+          "numericScale": 7,
+          "ordinalPosition": 4
+        },
+        {
+          "name": "AUDIT_TRAIL_ID",
+          "dataType": "int",
+          "ordinalPosition": 5
+        },
+        {
+          "name": "CHANGE_DATA_INDICATOR",
+          "dataType": "varchar",
+          "characterLength": 100,
+          "ordinalPosition": 6
+        },
+        {
+          "name": "CHECKSUM",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 7
+        },
+        {
+          "name": "REFERRAL_OFFER_CLEAN",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 8
+        }
+      ],
       "dataObjectConnection": {
         "dataConnectionString": "Integration",
         "extensions": [
@@ -45,6 +93,7 @@
       "sourceDataObjects": [
         {
           "name": "vw_CUSTOMER_DERIVED",
+          "dataItems": [],
           "dataObjectConnection": {
             "dataConnectionString": "Derived",
             "extensions": [
@@ -69,6 +118,54 @@
       ],
       "targetDataObject": {
         "name": "SAT_CUSTOMER_DERIVED",
+        "dataItems": [
+          {
+            "name": "CUSTOMER_SK",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 1
+          },
+          {
+            "name": "INSCRIPTION_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 2
+          },
+          {
+            "name": "INSCRIPTION_RECORD_ID",
+            "dataType": "int",
+            "ordinalPosition": 3
+          },
+          {
+            "name": "STATE_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 4
+          },
+          {
+            "name": "AUDIT_TRAIL_ID",
+            "dataType": "int",
+            "ordinalPosition": 5
+          },
+          {
+            "name": "CHANGE_DATA_INDICATOR",
+            "dataType": "varchar",
+            "characterLength": 100,
+            "ordinalPosition": 6
+          },
+          {
+            "name": "CHECKSUM",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 7
+          },
+          {
+            "name": "REFERRAL_OFFER_CLEAN",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 8
+          }
+        ],
         "dataObjectConnection": {
           "dataConnectionString": "Integration",
           "extensions": [
@@ -93,6 +190,31 @@
       "relatedDataObjects": [
         {
           "name": "HUB_CUSTOMER",
+          "dataItems": [
+            {
+              "name": "CUSTOMER_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "CUSTOMER_ID",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "Integration",
             "extensions": [
@@ -129,7 +251,23 @@
             "name": "REFERRAL_OFFER_CLEAN",
             "dataType": "nvarchar",
             "characterLength": 100,
-            "ordinalPosition": 7
+            "ordinalPosition": 8
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "SOURCE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            }
+          ],
+          "targetDataItem": {
+            "name": "STATE_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 4
           }
         }
       ],

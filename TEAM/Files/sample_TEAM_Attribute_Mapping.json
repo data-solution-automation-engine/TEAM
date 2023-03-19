@@ -129,7 +129,6 @@
   },
   {
     "attributeMappingHash": "D8269A1EA821649D4D25F775A759C13C",
-
     "sourceTable": "PSA_PROFILER_OFFER",
     "sourceAttribute": "Offer_Long_Description",
     "targetTable": "SAT_INCENTIVE_OFFER",
@@ -210,7 +209,7 @@
   },
   {
     "attributeMappingHash": "AC9EA28B74B6D9E58FA00EA908A8CB73",
-    "sourceTable": "CUSTOMER_DERIVED",
+    "sourceTable": "vw_CUSTOMER_DERIVED",
     "sourceAttribute": "REFERRAL_OFFER_CLEAN",
     "targetTable": "SAT_CUSTOMER_DERIVED",
     "targetAttribute": "REFERRAL_OFFER_CLEAN",
@@ -230,6 +229,78 @@
     "sourceAttribute": "Valid_From",
     "targetTable": "SAT_CUSTOMER",
     "targetAttribute": "VALID_FROM",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "AE5A8F8B363D76C683FF7E05C5D8F355",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceAttribute": "Valid_From",
+    "targetTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
+    "targetAttribute": "STATE_TIMESTAMP",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "80126D45074318F639709897C763863A",
+    "sourceTable": "vw_CUSTOMER_DERIVED",
+    "sourceAttribute": "SOURCE_TIMESTAMP",
+    "targetTable": "SAT_CUSTOMER_DERIVED",
+    "targetAttribute": "STATE_TIMESTAMP",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "4813FE55EEABE8603F59D24DEE1ADAE6",
+    "sourceTable": "PSA_PROFILER_OFFER",
+    "sourceAttribute": "SOURCE_TIMESTAMP",
+    "targetTable": "SAT_INCENTIVE_OFFER",
+    "targetAttribute": "STATE_TIMESTAMP",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "0AC3D37FCBD02AB8BB4A50FEA10607BF",
+    "sourceTable": "PSA_PROFILER_PLAN",
+    "sourceAttribute": "SOURCE_TIMESTAMP",
+    "targetTable": "SAT_MEMBERSHIP_PLAN_DETAIL",
+    "targetAttribute": "STATE_TIMESTAMP",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "7678A45F65ECE90A728FF3690DD41F38",
+    "sourceTable": "PSA_PROFILER_ESTIMATED_WORTH",
+    "sourceAttribute": "SOURCE_TIMESTAMP",
+    "targetTable": "SAT_MEMBERSHIP_PLAN_VALUATION",
+    "targetAttribute": "STATE_TIMESTAMP",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "2C26DD7C932F09BA37F2605B2AA5407A",
+    "sourceTable": "PSA_USERMANAGED_SEGMENT",
+    "sourceAttribute": "SOURCE_TIMESTAMP",
+    "targetTable": "SAT_SEGMENT",
+    "targetAttribute": "STATE_TIMESTAMP",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "574F3AB23ADEB9D655137C033EB7F0C5",
+    "sourceTable": "PSA_PROFILER_CUST_MEMBERSHIP",
+    "sourceAttribute": "SOURCE_TIMESTAMP",
+    "targetTable": "LSAT_MEMBERSHIP",
+    "targetAttribute": "STATE_TIMESTAMP",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "CA6F6DA478D6806FAFB7879D47C28506",
+    "sourceTable": "PSA_PROFILER_PERSONALISED_COSTING",
+    "sourceAttribute": "SOURCE_TIMESTAMP",
+    "targetTable": "LSAT_CUSTOMER_COSTING",
+    "targetAttribute": "STATE_TIMESTAMP",
+    "notes": ""
+  },
+  {
+    "attributeMappingHash": "D37CA671BEF7630D0314A5022A1B8F6B",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_OFFER",
+    "sourceAttribute": "SOURCE_TIMESTAMP",
+    "targetTable": "LSAT_CUSTOMER_OFFER",
+    "targetAttribute": "STATE_TIMESTAMP",
     "notes": ""
   }
 ]

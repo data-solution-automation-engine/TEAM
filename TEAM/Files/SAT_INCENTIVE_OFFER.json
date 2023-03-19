@@ -12,6 +12,54 @@
   "generationSpecificMetadata": {
     "selectedDataObject": {
       "name": "SAT_INCENTIVE_OFFER",
+      "dataItems": [
+        {
+          "name": "INCENTIVE_OFFER_SK",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 1
+        },
+        {
+          "name": "INSCRIPTION_TIMESTAMP",
+          "dataType": "datetime2",
+          "numericScale": 7,
+          "ordinalPosition": 2
+        },
+        {
+          "name": "INSCRIPTION_RECORD_ID",
+          "dataType": "int",
+          "ordinalPosition": 3
+        },
+        {
+          "name": "STATE_TIMESTAMP",
+          "dataType": "datetime2",
+          "numericScale": 7,
+          "ordinalPosition": 4
+        },
+        {
+          "name": "AUDIT_TRAIL_ID",
+          "dataType": "int",
+          "ordinalPosition": 5
+        },
+        {
+          "name": "CHANGE_DATA_INDICATOR",
+          "dataType": "varchar",
+          "characterLength": 100,
+          "ordinalPosition": 6
+        },
+        {
+          "name": "CHECKSUM",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 7
+        },
+        {
+          "name": "OFFER_DESCRIPTION",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 8
+        }
+      ],
       "dataObjectConnection": {
         "dataConnectionString": "Integration",
         "extensions": [
@@ -45,6 +93,53 @@
       "sourceDataObjects": [
         {
           "name": "PSA_PROFILER_OFFER",
+          "dataItems": [
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "INSCRIPTION_RECORD_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "SOURCE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "CHANGE_DATA_INDICATOR",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 5
+            },
+            {
+              "name": "CHECKSUM",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 6
+            },
+            {
+              "name": "OfferID",
+              "dataType": "int",
+              "ordinalPosition": 7
+            },
+            {
+              "name": "Offer_Long_Description",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 8
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "PSA",
             "extensions": [
@@ -69,6 +164,54 @@
       ],
       "targetDataObject": {
         "name": "SAT_INCENTIVE_OFFER",
+        "dataItems": [
+          {
+            "name": "INCENTIVE_OFFER_SK",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 1
+          },
+          {
+            "name": "INSCRIPTION_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 2
+          },
+          {
+            "name": "INSCRIPTION_RECORD_ID",
+            "dataType": "int",
+            "ordinalPosition": 3
+          },
+          {
+            "name": "STATE_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 4
+          },
+          {
+            "name": "AUDIT_TRAIL_ID",
+            "dataType": "int",
+            "ordinalPosition": 5
+          },
+          {
+            "name": "CHANGE_DATA_INDICATOR",
+            "dataType": "varchar",
+            "characterLength": 100,
+            "ordinalPosition": 6
+          },
+          {
+            "name": "CHECKSUM",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 7
+          },
+          {
+            "name": "OFFER_DESCRIPTION",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 8
+          }
+        ],
         "dataObjectConnection": {
           "dataConnectionString": "Integration",
           "extensions": [
@@ -93,6 +236,31 @@
       "relatedDataObjects": [
         {
           "name": "HUB_INCENTIVE_OFFER",
+          "dataItems": [
+            {
+              "name": "INCENTIVE_OFFER_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "OFFER_ID",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "Integration",
             "extensions": [
@@ -122,14 +290,30 @@
               "name": "Offer_Long_Description",
               "dataType": "nvarchar",
               "characterLength": 100,
-              "ordinalPosition": 9
+              "ordinalPosition": 8
             }
           ],
           "targetDataItem": {
             "name": "OFFER_DESCRIPTION",
             "dataType": "nvarchar",
             "characterLength": 100,
-            "ordinalPosition": 7
+            "ordinalPosition": 8
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "SOURCE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            }
+          ],
+          "targetDataItem": {
+            "name": "STATE_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 4
           }
         }
       ],

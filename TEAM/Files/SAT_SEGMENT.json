@@ -12,6 +12,54 @@
   "generationSpecificMetadata": {
     "selectedDataObject": {
       "name": "SAT_SEGMENT",
+      "dataItems": [
+        {
+          "name": "SEGMENT_SK ",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 1
+        },
+        {
+          "name": "INSCRIPTION_TIMESTAMP",
+          "dataType": "datetime2",
+          "numericScale": 7,
+          "ordinalPosition": 2
+        },
+        {
+          "name": "INSCRIPTION_RECORD_ID",
+          "dataType": "int",
+          "ordinalPosition": 3
+        },
+        {
+          "name": "STATE_TIMESTAMP",
+          "dataType": "datetime2",
+          "numericScale": 7,
+          "ordinalPosition": 4
+        },
+        {
+          "name": "AUDIT_TRAIL_ID",
+          "dataType": "int",
+          "ordinalPosition": 5
+        },
+        {
+          "name": "CHANGE_DATA_INDICATOR",
+          "dataType": "varchar",
+          "characterLength": 100,
+          "ordinalPosition": 6
+        },
+        {
+          "name": "CHECKSUM",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 7
+        },
+        {
+          "name": "SEGMENT_DESCRIPTION",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 8
+        }
+      ],
       "dataObjectConnection": {
         "dataConnectionString": "Integration",
         "extensions": [
@@ -45,6 +93,54 @@
       "sourceDataObjects": [
         {
           "name": "PSA_USERMANAGED_SEGMENT",
+          "dataItems": [
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "INSCRIPTION_RECORD_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "SOURCE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "CHANGE_DATA_INDICATOR",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 5
+            },
+            {
+              "name": "CHECKSUM",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 6
+            },
+            {
+              "name": "Demographic_Segment_Code",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 7
+            },
+            {
+              "name": "Demographic_Segment_Description",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 8
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "PSA",
             "extensions": [
@@ -69,6 +165,54 @@
       ],
       "targetDataObject": {
         "name": "SAT_SEGMENT",
+        "dataItems": [
+          {
+            "name": "SEGMENT_SK ",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 1
+          },
+          {
+            "name": "INSCRIPTION_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 2
+          },
+          {
+            "name": "INSCRIPTION_RECORD_ID",
+            "dataType": "int",
+            "ordinalPosition": 3
+          },
+          {
+            "name": "STATE_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 4
+          },
+          {
+            "name": "AUDIT_TRAIL_ID",
+            "dataType": "int",
+            "ordinalPosition": 5
+          },
+          {
+            "name": "CHANGE_DATA_INDICATOR",
+            "dataType": "varchar",
+            "characterLength": 100,
+            "ordinalPosition": 6
+          },
+          {
+            "name": "CHECKSUM",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 7
+          },
+          {
+            "name": "SEGMENT_DESCRIPTION",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 8
+          }
+        ],
         "dataObjectConnection": {
           "dataConnectionString": "Integration",
           "extensions": [
@@ -93,6 +237,31 @@
       "relatedDataObjects": [
         {
           "name": "HUB_SEGMENT",
+          "dataItems": [
+            {
+              "name": "SEGMENT_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "SEGMENT_CODE",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "Integration",
             "extensions": [
@@ -122,14 +291,30 @@
               "name": "Demographic_Segment_Description",
               "dataType": "nvarchar",
               "characterLength": 100,
-              "ordinalPosition": 9
+              "ordinalPosition": 8
             }
           ],
           "targetDataItem": {
             "name": "SEGMENT_DESCRIPTION",
             "dataType": "nvarchar",
             "characterLength": 100,
-            "ordinalPosition": 7
+            "ordinalPosition": 8
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "SOURCE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            }
+          ],
+          "targetDataItem": {
+            "name": "STATE_TIMESTAMP",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 4
           }
         }
       ],
