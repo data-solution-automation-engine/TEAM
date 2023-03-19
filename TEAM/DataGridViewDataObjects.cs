@@ -1430,11 +1430,6 @@ namespace TEAM
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the parent data object as a related data object. The message is: {exception.Message}."));
             }
 
-            if (relatedDataObjects.Count > 0)
-            {
-                dataObjectMapping.RelatedDataObjects = relatedDataObjects;
-            }
-
             // Metadata object.
             try
             {
@@ -1458,6 +1453,12 @@ namespace TEAM
             catch (Exception exception)
             {
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the next up data object as a related data object. The message is: {exception.Message}."));
+            }
+
+            // Set the related data objects to the data object mapping.
+            if (relatedDataObjects.Count > 0)
+            {
+                dataObjectMapping.RelatedDataObjects = relatedDataObjects;
             }
 
             #endregion

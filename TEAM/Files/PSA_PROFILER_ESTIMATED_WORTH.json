@@ -255,6 +255,140 @@
           }
         ]
       },
+      "relatedDataObjects": [
+        {
+          "name": "HUB_MEMBERSHIP_PLAN",
+          "dataItems": [
+            {
+              "name": "MEMBERSHIP_PLAN_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "PLAN_CODE",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            },
+            {
+              "name": "PLAN_SUFFIX",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 5
+            }
+          ],
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "200_Integration_Layer",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "CoreBusinessConcept"
+            }
+          ]
+        },
+        {
+          "name": "SAT_MEMBERSHIP_PLAN_VALUATION",
+          "dataItems": [
+            {
+              "name": "MEMBERSHIP_PLAN_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "PLAN_VALUATION_DATE",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 2
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "INSCRIPTION_RECORD_ID",
+              "dataType": "int",
+              "ordinalPosition": 4
+            },
+            {
+              "name": "STATE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 5
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 6
+            },
+            {
+              "name": "CHANGE_DATA_INDICATOR",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 7
+            },
+            {
+              "name": "CHECKSUM",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 8
+            },
+            {
+              "name": "PLAN_VALUATION_AMOUNT",
+              "dataType": "numeric",
+              "numericPrecision": 38,
+              "numericScale": 20,
+              "ordinalPosition": 9
+            }
+          ],
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "200_Integration_Layer",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "Context"
+            }
+          ]
+        }
+      ],
       "dataItemMappings": [
         {
           "sourceDataItems": [

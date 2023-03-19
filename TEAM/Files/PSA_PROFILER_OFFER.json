@@ -231,6 +231,127 @@
           }
         ]
       },
+      "relatedDataObjects": [
+        {
+          "name": "HUB_INCENTIVE_OFFER",
+          "dataItems": [
+            {
+              "name": "INCENTIVE_OFFER_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 2
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "OFFER_ID",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            }
+          ],
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "200_Integration_Layer",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "CoreBusinessConcept"
+            }
+          ]
+        },
+        {
+          "name": "SAT_INCENTIVE_OFFER",
+          "dataItems": [
+            {
+              "name": "INCENTIVE_OFFER_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 2
+            },
+            {
+              "name": "INSCRIPTION_RECORD_ID",
+              "dataType": "int",
+              "ordinalPosition": 3
+            },
+            {
+              "name": "STATE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 4
+            },
+            {
+              "name": "AUDIT_TRAIL_ID",
+              "dataType": "int",
+              "ordinalPosition": 5
+            },
+            {
+              "name": "CHANGE_DATA_INDICATOR",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 6
+            },
+            {
+              "name": "CHECKSUM",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 7
+            },
+            {
+              "name": "OFFER_DESCRIPTION",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 8
+            }
+          ],
+          "dataObjectConnection": {
+            "dataConnectionString": "Integration",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "200_Integration_Layer",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "Context"
+            }
+          ]
+        }
+      ],
       "dataItemMappings": [
         {
           "sourceDataItems": [
