@@ -336,19 +336,20 @@ namespace TEAM
         /// </summary>
         private void SaveTeamCoreFile()
         {
-            // Get the selected environment.
-            var localEnvironment = (KeyValuePair<TeamEnvironment, string>)comboBoxEnvironments.SelectedItem;
-            globalParameters.ActiveEnvironmentInternalId = localEnvironment.Key.environmentInternalId;
-            globalParameters.ActiveEnvironmentKey = localEnvironment.Key.environmentKey;
-
-            // Update the root path file, part of the core solution to be able to store the config and output path
-            var rootPathConfigurationFile = new StringBuilder();
-            rootPathConfigurationFile.AppendLine("/* TEAM Core */");
-            rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + globalParameters.ActiveEnvironmentInternalId + "");
-            rootPathConfigurationFile.AppendLine("/* End of file */");
-
             try
             {
+                // Get the selected environment.
+                var localEnvironment = (KeyValuePair<TeamEnvironment, string>)comboBoxEnvironments.SelectedItem;
+                globalParameters.ActiveEnvironmentInternalId = localEnvironment.Key.environmentInternalId;
+                globalParameters.ActiveEnvironmentKey = localEnvironment.Key.environmentKey;
+
+                // Update the root path file, part of the core solution to be able to store the config and output path
+                var rootPathConfigurationFile = new StringBuilder();
+                rootPathConfigurationFile.AppendLine("/* TEAM Core */");
+                rootPathConfigurationFile.AppendLine("WorkingEnvironment|" + globalParameters.ActiveEnvironmentInternalId + "");
+                rootPathConfigurationFile.AppendLine("/* End of file */");
+
+
                 using (var outfile = new StreamWriter(globalParameters.CorePath + globalParameters.PathFileName + globalParameters.FileExtension))
                 {
                     outfile.Write(rootPathConfigurationFile.ToString());
@@ -357,7 +358,8 @@ namespace TEAM
             }
             catch (Exception exception)
             {
-                var errorMessage = $"The TEAM Core configuration file {globalParameters.CorePath + globalParameters.PathFileName + globalParameters.FileExtension} could not be updated. The error message is: \r\n\r\b\n{exception.Message}";
+                var errorMessage =
+                    $"The TEAM Core configuration file {globalParameters.CorePath + globalParameters.PathFileName + globalParameters.FileExtension} could not be updated. The error message is: \r\n\r\b\n{exception.Message}";
                 richTextBoxInformation.Text += errorMessage;
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, errorMessage));
             }
