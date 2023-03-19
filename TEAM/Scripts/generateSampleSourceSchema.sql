@@ -83,7 +83,7 @@ INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [S
 INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Contact_Number], [Referee_Offer_Made], [Valid_From]) VALUES(683492, N'Mary', N'Smith', N'Bulimba', N'QLD', N'3000', N'Australia', N'F', CAST(N'1977-04-12' AS Date), 41234, 0, CAST(N'2023-01-01' AS Date))
 INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Contact_Number], [Referee_Offer_Made], [Valid_From]) VALUES(885325, N'Michael', N'Evans', N'Bourke', N'NWS', N'2000', N'Australia', N'M', CAST(N'1985-04-19' AS Date), 89235, 0, CAST(N'2023-01-01' AS Date))
 -- Backdated adjustment example, first row
-INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Contact_Number], [Referee_Offer_Made], [Valid_From]) VALUES(100000, N'Jonathan', N'Slimpy', N'London', N'N/A', N'0000', N'UK', N'M', CAST(N'1951-01-04' AS Date), 123, 1, CAST(N'2010-02-01' AS Date))
+INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Contact_Number], [Referee_Offer_Made], [Valid_From]) VALUES(100000, N'Jonathan', NULL, N'London', N'N/A', N'0000', N'UK', N'M', CAST(N'1951-01-04' AS Date), 123, 1, CAST(N'2010-02-01' AS Date))
 --
 INSERT [dbo].[OFFER] ([OfferID], [Offer_Long_Description]) VALUES(450, N'20% off all future purchases')
 INSERT [dbo].[OFFER] ([OfferID], [Offer_Long_Description]) VALUES(462, N'10% off all future purchases')

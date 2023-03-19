@@ -25,7 +25,7 @@
           "ordinalPosition": 2
         },
         {
-          "name": "[INSCRIPTION_TIMESTAMP",
+          "name": "INSCRIPTION_TIMESTAMP",
           "dataType": "datetime2",
           "numericScale": 7,
           "ordinalPosition": 3
@@ -185,7 +185,7 @@
             "ordinalPosition": 2
           },
           {
-            "name": "[INSCRIPTION_TIMESTAMP",
+            "name": "INSCRIPTION_TIMESTAMP",
             "dataType": "datetime2",
             "numericScale": 7,
             "ordinalPosition": 3
@@ -344,7 +344,7 @@
               }
             }
           ],
-          "surrogateKey": "[INSCRIPTION_TIMESTAMP"
+          "surrogateKey": "MEMBERSHIP_PLAN_SK"
         },
         {
           "businessKeyComponentMapping": [
@@ -360,7 +360,7 @@
               }
             }
           ],
-          "surrogateKey": "MEMBERSHIP_PLAN_SK"
+          "surrogateKey": "CUSTOMER_SK"
         }
       ],
       "filterCriterion": "",

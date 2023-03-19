@@ -214,7 +214,7 @@ namespace TEAM_Library
 
                 // Data Object group.
                 validationFile.AppendLine("AddTypeAsClassificationToDataObject|True");
-                validationFile.AppendLine("AddDataItemsToDataObject|False");
+                validationFile.AppendLine("AddDataItemsToDataObject|True");
                 // Connections
                 validationFile.AppendLine("AddDatabaseAsExtensionToConnection|True");
                 validationFile.AppendLine("AddSchemaAsExtensionToConnection|True");
@@ -223,13 +223,13 @@ namespace TEAM_Library
                 validationFile.AppendLine("AddDataTypeToDataItem|True");
                 validationFile.AppendLine("AddParentDataObjectToDataItem|False");
 
+                // Data Vault specific.
+                validationFile.AppendLine("AddDrivingKeyAsBusinessKeyExtension|False");
+
                 // Related Data Objects.
                 validationFile.AppendLine("AddMetadataAsRelatedDataObject|False");
                 validationFile.AppendLine("AddNextUpDataObjectsAsRelatedDataObject|True");
                 validationFile.AppendLine("AddParentDataObjectAsRelatedDataObject|True");
-
-                // Data Vault specific.
-                validationFile.AppendLine("AddDrivingKeyAsBusinessKeyExtension|False");
 
                 validationFile.AppendLine("/* End of file */");
 

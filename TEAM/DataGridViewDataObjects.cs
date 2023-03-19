@@ -1415,6 +1415,26 @@ namespace TEAM
 
             var relatedDataObjects = new List<DataObject>();
 
+            // Parent data objects.
+            try
+            {
+                var parentRelatedDataObjects = JsonOutputHandling.GetParentRelatedDataObjectList(targetDataObjectName, dataObjectMapping.SourceDataObjects[0].Name, dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString(), dataGridViewRowsDataObjects, JsonExportSetting, TeamConfiguration);
+
+                if (parentRelatedDataObjects != null && parentRelatedDataObjects.Count > 0)
+                {
+                    relatedDataObjects.AddRange(parentRelatedDataObjects);
+                }
+            }
+            catch (Exception exception)
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the parent data object as a related data object. The message is: {exception.Message}."));
+            }
+
+            if (relatedDataObjects.Count > 0)
+            {
+                dataObjectMapping.RelatedDataObjects = relatedDataObjects;
+            }
+
             // Metadata object.
             try
             {
@@ -1438,26 +1458,6 @@ namespace TEAM
             catch (Exception exception)
             {
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the next up data object as a related data object. The message is: {exception.Message}."));
-            }
-            
-            // Parent data objects.
-            try
-            {
-                var parentRelatedDataObjects = JsonOutputHandling.GetParentRelatedDataObjectList(targetDataObjectName, dataObjectMapping.SourceDataObjects[0].Name, dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString(), dataGridViewRowsDataObjects, JsonExportSetting, TeamConfiguration);
-
-                if (parentRelatedDataObjects != null && parentRelatedDataObjects.Count > 0)
-                {
-                    relatedDataObjects.AddRange(parentRelatedDataObjects);
-                }
-            }
-            catch (Exception exception)
-            {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the parent data object as a related data object. The message is: {exception.Message}."));
-            }
-
-            if (relatedDataObjects.Count > 0)
-            {
-                dataObjectMapping.RelatedDataObjects = relatedDataObjects;
             }
 
             #endregion
