@@ -25,7 +25,7 @@
           "ordinalPosition": 2
         },
         {
-          "name": "[INSCRIPTION_TIMESTAMP",
+          "name": "INSCRIPTION_TIMESTAMP",
           "dataType": "datetime2",
           "numericScale": 7,
           "ordinalPosition": 3
@@ -159,7 +159,7 @@
             "ordinalPosition": 2
           },
           {
-            "name": "[INSCRIPTION_TIMESTAMP",
+            "name": "INSCRIPTION_TIMESTAMP",
             "dataType": "datetime2",
             "numericScale": 7,
             "ordinalPosition": 3
@@ -338,7 +338,7 @@
               }
             }
           ],
-          "surrogateKey": "[INSCRIPTION_TIMESTAMP"
+          "surrogateKey": "CUSTOMER_SK"
         },
         {
           "businessKeyComponentMapping": [
@@ -354,7 +354,7 @@
               }
             }
           ],
-          "surrogateKey": "CUSTOMER_SK"
+          "surrogateKey": "INCENTIVE_OFFER_SK"
         }
       ],
       "filterCriterion": "",

@@ -4,16 +4,6 @@
   "schema": "dbo",
   "columns": [
     {
-      "name": "[INSCRIPTION_TIMESTAMP",
-      "dataType": "datetime2",
-      "characterLength": "8",
-      "numericPrecision": "27",
-      "numericScale": "7",
-      "ordinalPosition": 3,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
       "name": "AUDIT_TRAIL_ID",
       "dataType": "int",
       "characterLength": "4",
@@ -50,6 +40,16 @@
       "numericPrecision": "0",
       "numericScale": "0",
       "ordinalPosition": 5,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "INSCRIPTION_TIMESTAMP",
+      "dataType": "datetime2",
+      "characterLength": "8",
+      "numericPrecision": "27",
+      "numericScale": "7",
+      "ordinalPosition": 3,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     }

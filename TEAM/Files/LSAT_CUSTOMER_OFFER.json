@@ -236,7 +236,7 @@
               "ordinalPosition": 2
             },
             {
-              "name": "[INSCRIPTION_TIMESTAMP",
+              "name": "INSCRIPTION_TIMESTAMP",
               "dataType": "datetime2",
               "numericScale": 7,
               "ordinalPosition": 3
