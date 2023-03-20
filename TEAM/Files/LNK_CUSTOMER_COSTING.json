@@ -315,6 +315,17 @@
               "targetDataItem": {
                 "name": "CUSTOMER_ID"
               }
+            },
+            {
+              "sourceDataItems": [
+                {
+                  "name": "Segment+'TEST'",
+                  "isHardCodedValue": false
+                }
+              ],
+              "targetDataItem": {
+                "name": "SEGMENT_CODE"
+              }
             }
           ],
           "surrogateKey": "CUSTOMER_COSTING_SK"
@@ -361,6 +372,22 @@
             }
           ],
           "surrogateKey": "CUSTOMER_SK"
+        },
+        {
+          "businessKeyComponentMapping": [
+            {
+              "sourceDataItems": [
+                {
+                  "name": "Segment+'TEST'",
+                  "isHardCodedValue": false
+                }
+              ],
+              "targetDataItem": {
+                "name": "SEGMENT_CODE"
+              }
+            }
+          ],
+          "surrogateKey": "SEGMENT_SK"
         }
       ],
       "filterCriterion": "",

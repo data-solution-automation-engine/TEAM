@@ -184,8 +184,7 @@ namespace TEAM
             openMetadataFormToolStripMenuItem.Enabled = true;
 
             //Startup information
-            richTextBoxInformation.AppendText("\r\nApplication initialised - the Taxonomy of ETL Automation Metadata (TEAM). \r\n");
-            richTextBoxInformation.AppendText($"Welcome to TEAM {versionNumberForTeamApplication}.\r\n\r\n");
+            richTextBoxInformation.AppendText($"\r\nWelcome to the Taxonomy of ETL Automation Metadata (TEAM) - version {versionNumberForTeamApplication}.\r\n\r\n");
         }
 
         public sealed override string Text
