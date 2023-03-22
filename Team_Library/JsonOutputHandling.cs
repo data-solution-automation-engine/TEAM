@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using DataWarehouseAutomation;
+using static TEAM_Library.JsonOutputHandling;
 using static TEAM_Library.MetadataHandling;
 using DataObject = DataWarehouseAutomation.DataObject;
 using Extension = DataWarehouseAutomation.Extension;
@@ -876,7 +877,10 @@ namespace TEAM_Library
 
                             businessKeyComponentList.targetComponentList.Add(localTargetBusinessKeyComponent);
                         }
-
+                    }
+                    else
+                    {
+                        eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"More source business key components ({businessKeyComponentList.sourceComponentList.Count()}) have been found than target business key components ({businessKeyComponentList.targetComponentList.Count()}). Please check the business key mapping for '{sourceDataObjectName}' and definition '{businessKeyDefinition}' if this worked as expected."));
                     }
                 }
                 else
@@ -885,6 +889,7 @@ namespace TEAM_Library
                     businessKeyComponentList.targetComponentList = businessKeyComponentList.sourceComponentList;
                 }
 
+                // Iterating over the source business key components to match them to the target business key components in order.
                 for (int i = 0; i < iterations; i++)
                 {
                     // Exception for Presentation Layer TODO fix as reported issue to add excluded columns in configuration settings
@@ -1169,12 +1174,59 @@ namespace TEAM_Library
 
             foreach (var lookupDataObject in lookupDataObjects)
             {
-                var physicalModelDataGridViewRow = dataGridViewRowsPhysicalModel
-                    .Where(r => !r.IsNewRow)
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(lookupDataObject.Name))
-                    .ToList();
+                var physicalModelDataGridViewRow = new List<DataGridViewRow>();
 
-                // Sorting separately for debugging purposes. Issues were found in string to int conversion when sorting on ordinal position.
+                // Regular known types.
+                if (new[] { DataObjectTypes.Context, DataObjectTypes.CoreBusinessConcept, DataObjectTypes.Derived, DataObjectTypes.NaturalBusinessRelationship, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.PersistentStagingArea, DataObjectTypes.Presentation, DataObjectTypes.StagingArea }.Contains(dataObjectType))
+                {
+                    // Get everything.
+                    if (!physicalModelDataGridViewRow.Any())
+                    {
+                        physicalModelDataGridViewRow = dataGridViewRowsPhysicalModel
+                            .Where(r => !r.IsNewRow)
+                            .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(lookupDataObject.Name))
+                            .ToList();
+                    }
+                }
+                else // 'Source', 'Helper', 'Unknown'
+                {
+                    // Attempt 1 - search for PK values (defined entity types such as Hub, PSA, Link, etc.).
+                    physicalModelDataGridViewRow = dataGridViewRowsPhysicalModel
+                        .Where(r => !r.IsNewRow)
+                        .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(lookupDataObject.Name))
+                        .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Value.ToString().Equals("Y"))
+                        .ToList();
+
+                    // Attempt 2 - search for name similarities using the business key components.
+                    if (!physicalModelDataGridViewRow.Any())
+                    {
+                        var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition, drivingKeyValue);
+
+                        foreach (var businessKeyComponentElement in businessKeyComponentElements)
+                        {
+                            var physicalModelDataGridViewRowIndividualComponent = dataGridViewRowsPhysicalModel
+                                .Where(r => !r.IsNewRow)
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(lookupDataObject.Name))
+                                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(businessKeyComponentElement.businessKeyComponentElement))
+                                .ToList();
+
+                            physicalModelDataGridViewRow.AddRange(physicalModelDataGridViewRowIndividualComponent);
+
+                        }
+                    }
+
+                    // Attempt 3 - get everything.
+                    if (!physicalModelDataGridViewRow.Any())
+                    {
+                        physicalModelDataGridViewRow = dataGridViewRowsPhysicalModel
+                            .Where(r => !r.IsNewRow)
+                            .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(lookupDataObject.Name))
+                            .ToList();
+                    }
+                }
+
+
+                // Sorting separately in ordinal position for debugging purposes. Issues were found in string to int conversion when sorting on ordinal position.
                 var orderedList = physicalModelDataGridViewRow.OrderBy(row => Int32.Parse(row.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value.ToString()));
 
                 if (!orderedList.Any())
@@ -1190,8 +1242,10 @@ namespace TEAM_Library
 
                     // Add if it's not a standard element.
                     var surrogateKey = DeriveSurrogateKey(lookupDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
-                    
-                    if (!column.IsExcludedBusinessKeyDataItem(dataObjectType, surrogateKey, businessKeyDefinition, teamConnection, teamConfiguration))
+
+                    var isExcluded = column.IsExcludedBusinessKeyDataItem(dataObjectType, surrogateKey, businessKeyDefinition, teamConnection, teamConfiguration);
+
+                    if (!isExcluded) // If not excluded.
                     {
                         // Get the corresponding Surrogate Key for the (target) component element.
                         var localSurrogateKey = GetSurrogateKey(lookupDataObject.Name, teamConfiguration, teamConnection);
