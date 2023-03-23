@@ -1654,6 +1654,10 @@ namespace TEAM
                 // DGML part strings - edges.
                 var edgeBuilder = new List<string> { "  <Links>" };
 
+                // Create a filtered list to limit DGML output, if available.
+                var filteredDataObjectGridViewRows = GetFilteredDataObjectMappingDataGridViewRows();
+                List<string> filteredTargetDataObjects = filteredDataObjectGridViewRows.Select(x => (DataObject)x.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value).Select(y => y.Name).ToList();
+                
                 // Create all the nodes and edges.
                 foreach (var fileCombination in teamDataObjectMappingFileCombinations.DataObjectMappingsFileCombinations)
                 {
@@ -1661,6 +1665,7 @@ namespace TEAM
 
                     foreach (var dataObjectMapping in dataObjectMappings)
                     {
+                        // Do not render mappings that are not enabled.
                         if (dataObjectMapping.Enabled==false)
                             continue;
 
@@ -1670,6 +1675,10 @@ namespace TEAM
                             continue;
 
                         if (skipSource && classification.Classification == "StagingArea")
+                            continue;
+
+                        // Do not render if not in filtered list.
+                        if (!filteredTargetDataObjects.Contains(dataObjectMapping.TargetDataObject.Name))
                             continue;
 
                         #region Target node (data object)

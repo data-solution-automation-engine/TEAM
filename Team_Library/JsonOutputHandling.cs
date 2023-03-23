@@ -1402,13 +1402,16 @@ namespace TEAM_Library
             else
             {
                 // If the value is null for the initial lookup, it can be tried with a key part. This supports finding the parent Hub for a Link because it matches on a part of the business key.
-                var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition, "");
+                //var businessKeyComponentElements = GetBusinessKeySourceComponentElements(businessKeyDefinition, "");
+
+                var businessKeyComponentElements = businessKeyDefinition.Split(',').ToList();
 
                 foreach (var businessKeyComponent in businessKeyComponentElements)
                 {
                     var dataObjectGridViewRowKeyComponent = dataGridViewRowsDataObjects
                         .Where(r => !r.IsNewRow)
-                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyComponent.businessKeyComponentElement)) // Match on business key definition
+                        //.Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyComponent.businessKeyComponentElement)) // Match on business key definition
+                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyComponent)) // Match on business key definition
                         .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName)) // Using same source
                         .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName)) // Not the target
                         .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.Context)

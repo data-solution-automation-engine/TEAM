@@ -1415,7 +1415,7 @@ namespace TEAM
 
             var relatedDataObjects = new List<DataObject>();
 
-            // Parent data objects.
+            // Parent (referenced) data objects.
             try
             {
                 var parentRelatedDataObjects = JsonOutputHandling.GetParentRelatedDataObjectList(targetDataObjectName, dataObjectMapping.SourceDataObjects[0].Name, dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString(), dataGridViewRowsDataObjects, JsonExportSetting, TeamConfiguration);

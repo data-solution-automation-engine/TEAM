@@ -358,7 +358,7 @@ namespace TEAM
                     }
                 }
             }
-            catch (Exception exception)
+            catch
             {
                 MessageBox.Show(@"Pasting into the data grid has failed", @"Copy/Paste", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
