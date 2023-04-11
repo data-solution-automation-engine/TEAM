@@ -119,7 +119,9 @@ namespace TEAM_Library
                     environmentName = "Development environment",
                     configurationPath = Application.StartupPath + @"\Configuration\",
                     metadataPath = Application.StartupPath + @"\Metadata\",
-                    environmentNotes = "Environment created as initial / starter environment."
+                    environmentNotes = "Environment created as initial / starter environment.",
+                    outputPath = Application.StartupPath + @"\Output\",
+                    templatePath = Application.StartupPath + @"\Templates\"
                 };
 
                 list.Add(developmentEnvironment);
@@ -131,7 +133,9 @@ namespace TEAM_Library
                     environmentName = "Production environment",
                     configurationPath = Application.StartupPath + @"\ConfigurationProduction\",
                     metadataPath = Application.StartupPath + @"\MetadataProduction\",
-                    environmentNotes = "Environment created as initial / starter environment."
+                    environmentNotes = "Environment created as initial / starter environment.",
+                    outputPath = Application.StartupPath + @"\Output\",
+                    templatePath = Application.StartupPath + @"\Templates\"
                 };
 
                 list.Add(productionEnvironment);
