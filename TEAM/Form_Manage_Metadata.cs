@@ -3185,7 +3185,7 @@ namespace TEAM
 
             var localEventLog = TeamEventLog;
 
-            // Handle multi-threading
+            // Handle multi-threading.
             if (worker != null && worker.CancellationPending)
             {
                 e.Cancel = true;
