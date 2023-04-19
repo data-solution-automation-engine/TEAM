@@ -582,18 +582,27 @@ namespace TEAM
         /// <param name="e"></param>
         private void CommitDataObjectMappingJsonChanges(object sender, Form_Edit_DataObjectMapping.OnSaveEventArgs e)
         {
-            DataObjectMapping dataObjectMapping = JsonConvert.DeserializeObject<DataObjectMapping>(e.RichTextBoxContents);
+            try
+            {
+                DataObjectMapping dataObjectMapping = JsonConvert.DeserializeObject<DataObjectMapping>(e.RichTextBoxContents);
 
-            var currentRow = e.CurrentRow;
+                var currentRow = e.CurrentRow;
 
-            // TODO really needs to store the full object in memory, perhaps in a separate column.
-            // TODO for now, adding individual components to separate columns
+                // TODO really needs to store the full object in memory, perhaps in a separate column.
+                // TODO for now, adding individual components to separate columns
 
-            // Extensions
-            currentRow.Cells[(int)DataObjectMappingGridColumns.DataObjectMappingExtension].Value = JsonConvert.SerializeObject(dataObjectMapping.Extensions);
+                // Extensions
+                currentRow.Cells[(int)DataObjectMappingGridColumns.DataObjectMappingExtension].Value = JsonConvert.SerializeObject(dataObjectMapping.Extensions);
 
-            // Filter
-            currentRow.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value = dataObjectMapping.FilterCriterion;
+                // Filter
+                currentRow.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value = dataObjectMapping.FilterCriterion;
+            }
+            catch (Exception exception)
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"A parsing exception has been encountered: {exception.Message}."));
+                DataObjectsParse($"A parsing issue has been encountered, please review the event log for more details. The changes have not been saved.\r\n");
+
+            }
         }
 
         /// <summary>
