@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
-    <SkipFunctionsDepsCopy>true</SkipFunctionsDepsCopy>    
+    <PreserveCompilationContext>True</PreserveCompilationContext>    
     <OutputType>WinExe</OutputType>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <SccProjectName>SAK</SccProjectName>
@@ -402,10 +402,6 @@
     <ProjectReference Include="..\Team_Library\TEAM_Library.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Costura.Fody">
-      <Version>5.7.0</Version>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="DataWarehouseAutomation">
       <Version>1.2.5</Version>
     </PackageReference>

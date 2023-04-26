@@ -21,6 +21,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_73D07A6400A8434A9C5DFF2678696A11"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A0A9629A9E944B57B30C1C2025978A52"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -99,6 +105,16 @@
                     "Name" = "8:.NET Runtime 7.0.5 (x86)"
                     "ProductCode" = "8:Microsoft.NetCore.CoreRuntime.7.0.x86"
                     }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.DesktopRuntime.7.0.x64"
+                    {
+                    "Name" = "8:.NET Desktop Runtime 7.0.5 (x64)"
+                    "ProductCode" = "8:Microsoft.NetCore.DesktopRuntime.7.0.x64"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.DesktopRuntime.7.0.x86"
+                    {
+                    "Name" = "8:.NET Desktop Runtime 7.0.5 (x86)"
+                    "ProductCode" = "8:Microsoft.NetCore.DesktopRuntime.7.0.x86"
+                    }
                 }
             }
         }
@@ -132,7 +148,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:v4.6.1  "
+                "FrameworkVersion" = "8:v4.6.1   "
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=671728"
                 }
@@ -146,6 +162,26 @@
             "TargetName" = "8:Ravos-logo-small_transparant.ico"
             "Tag" = "8:"
             "Folder" = "8:_42F988944C0B4AF68AF68B8F3879187F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_73D07A6400A8434A9C5DFF2678696A11"
+            {
+            "SourcePath" = "8:..\\TEAM\\TEAM.deps.json"
+            "TargetName" = "8:TEAM.deps.json"
+            "Tag" = "8:"
+            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -228,7 +264,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TEAM"
         "ProductCode" = "8:{25974247-D9C7-45A4-BD75-50499F6BF3DA}"
-        "PackageCode" = "8:{F52F99D7-9542-4B2A-A442-2A8D7E4D40E5}"
+        "PackageCode" = "8:{AC1EF398-61A4-46A8-9CB0-78F38A92A3D0}"
         "UpgradeCode" = "8:{84D8B2E0-7C57-42BC-82B7-D0720CE79944}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
