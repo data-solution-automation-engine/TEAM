@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data.SqlClient;
 using System.IO;
 using System.Windows.Forms;
+using Microsoft.Data.SqlClient;
 using TEAM_Library;
 using Path = System.IO.Path;
 

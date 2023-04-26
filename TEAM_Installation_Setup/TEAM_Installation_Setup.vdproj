@@ -21,44 +21,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_4516C3637A5B44AFB11B6F5FD544E437"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_45C4B36640B74C3CA496F185AB0133A3"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_A0A9629A9E944B57B30C1C2025978A52"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_A868BE6D27794433A5705886D9954376"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_BA9864E9B97FD31543B336A71729FE0D"
-        "OwnerKey" = "8:_A868BE6D27794433A5705886D9954376"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A868BE6D27794433A5705886D9954376"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_BA9864E9B97FD31543B336A71729FE0D"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -90,8 +54,13 @@
                 {
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.CoreRuntime.7.0.x64"
                     {
-                    "Name" = "8:.NET Runtime 7.0.3 (x64)"
+                    "Name" = "8:.NET Runtime 7.0.5 (x64)"
                     "ProductCode" = "8:Microsoft.NetCore.CoreRuntime.7.0.x64"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.CoreRuntime.7.0.x86"
+                    {
+                    "Name" = "8:.NET Runtime 7.0.5 (x86)"
+                    "ProductCode" = "8:Microsoft.NetCore.CoreRuntime.7.0.x86"
                     }
                 }
             }
@@ -120,10 +89,15 @@
             "ComponentsUrl" = "8:"
                 "Items"
                 {
-                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.CoreRuntime.7.0.x64"
                     {
-                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
-                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    "Name" = "8:.NET Runtime 7.0.5 (x64)"
+                    "ProductCode" = "8:Microsoft.NetCore.CoreRuntime.7.0.x64"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.CoreRuntime.7.0.x86"
+                    {
+                    "Name" = "8:.NET Runtime 7.0.5 (x86)"
+                    "ProductCode" = "8:Microsoft.NetCore.CoreRuntime.7.0.x86"
                     }
                 }
             }
@@ -158,7 +132,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:v4.6.1 "
+                "FrameworkVersion" = "8:v4.6.1  "
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=671728"
                 }
@@ -184,108 +158,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4516C3637A5B44AFB11B6F5FD544E437"
-            {
-            "SourcePath" = "8:..\\TEAM\\Libraries\\Microsoft.Data.SqlClient.SNI.x64.dll"
-            "TargetName" = "8:Microsoft.Data.SqlClient.SNI.x64.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_45C4B36640B74C3CA496F185AB0133A3"
-            {
-            "SourcePath" = "8:..\\TEAM\\Libraries\\Microsoft.Data.SqlClient.SNI.x86.dll"
-            "TargetName" = "8:Microsoft.Data.SqlClient.SNI.x86.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A868BE6D27794433A5705886D9954376"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Microsoft.Data.SqlClient, Version=2.0.20168.4, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_A868BE6D27794433A5705886D9954376"
-                    {
-                    "Name" = "8:Microsoft.Data.SqlClient.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:..\\TEAM\\Libraries\\Microsoft.Data.SqlClient.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BA9864E9B97FD31543B336A71729FE0D"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_BA9864E9B97FD31543B336A71729FE0D"
-                    {
-                    "Name" = "8:System.Net.Http.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:System.Net.Http.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
         }
@@ -933,7 +805,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A0A9629A9E944B57B30C1C2025978A52"
             {
-            "SourcePath" = "8:..\\TEAM\\obj\\x64\\Release\\net7.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\TEAM\\obj\\x64\\Debug\\net7.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_05933D7971DD45F2B83C8EDCB2C4458C"
