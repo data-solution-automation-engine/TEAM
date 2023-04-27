@@ -908,7 +908,7 @@ namespace TEAM
             }
             else
             {
-                // Deleting a file that has been renamed, removed or otherwise emptied.
+                //// Deleting a file that has been renamed, removed or otherwise emptied.
                 try
                 {
                     var fileToDelete = globalParameters.GetMetadataFilePath(targetDataObject.Name);
@@ -3064,6 +3064,9 @@ namespace TEAM
                     localDataTable.Columns.Add(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString());
                     localDataTable.Columns.Add(DataObjectMappingGridColumns.DrivingKeyDefinition.ToString());
                     localDataTable.Columns.Add(DataObjectMappingGridColumns.FilterCriterion.ToString());
+                    // The below are hidden in the main table, but can be set via the JSON editor
+                    localDataTable.Columns.Add(DataObjectMappingGridColumns.DataObjectMappingExtension.ToString());
+                    // The below are hidden, for sorting and back-end management only.
                     localDataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObjectName.ToString());
                     localDataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObjectName.ToString());
                     localDataTable.Columns.Add(DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString());
@@ -3096,6 +3099,7 @@ namespace TEAM
                             newRow[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = tableMappingJson.businessKeyDefinition;
                             newRow[(int)DataObjectMappingGridColumns.DrivingKeyDefinition] = tableMappingJson.drivingKeyDefinition;
                             newRow[(int)DataObjectMappingGridColumns.FilterCriterion] = tableMappingJson.filterCriteria;
+                            newRow[(int)DataObjectMappingGridColumns.DataObjectMappingExtension] = "";
                             newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = localSourceDataObject.Name;
                             newRow[(int)DataObjectMappingGridColumns.TargetDataObjectName] = localTargetDataObject.Name;
                             newRow[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName] = localTargetDataObject.Name;

@@ -1214,7 +1214,8 @@ namespace TEAM
             {
                 if (!row.IsNewRow)
                 {
-                    if (row.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()]?.Value.ToString() == targetDataObject.Name)
+                    var rowTargetDataObjectName = row.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()]?.Value.ToString();
+                    if (rowTargetDataObjectName == targetDataObject.Name)
                     {
                         var dataObjectMapping = GetDataObjectMapping(row);
                         dataObjectMappings.Add(dataObjectMapping);
