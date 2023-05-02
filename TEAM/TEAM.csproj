@@ -71,6 +71,7 @@
     <None Remove="Files\PhysicalModel\200_Integration_Layer\bdv\vw_CUSTOMER_DERIVED.json" />
     <None Remove="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER_DERIVED.json" />
     <None Remove="Scripts\generateSampleIntegrationSchemaView.sql" />
+    <None Remove="Support\DataObjectMappingList.sql" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="DataGridViewDataObjects.cs">
@@ -372,6 +373,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\transparent-green-checkmark-hi.png" />
+    <Content Include="Support\DataObjectMappingList.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
