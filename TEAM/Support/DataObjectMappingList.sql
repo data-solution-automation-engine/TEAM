@@ -43,6 +43,7 @@ LEFT JOIN
 								LEFT OUTER JOIN sys.index_columns ixc ON tbl.object_id = ixc.object_id
 								LEFT OUTER JOIN sys.indexes idx ON tbl.object_id = idx.object_id AND ixc.index_id = idx.index_id
 								LEFT OUTER JOIN sys.schemas sch ON tbl.schema_id = sch.schema_id
+								WHERE idx.is_unique=1
 							) US
                            WHERE US.CONSTRAINT_SCHEMA = SS.CONSTRAINT_SCHEMA
                            AND US.TABLE_NAME = SS.TABLE_NAME
@@ -55,10 +56,12 @@ LEFT JOIN
 				sch.name AS [CONSTRAINT_SCHEMA]
 				,tbl.name AS [TABLE_NAME]
 				,COL_NAME(ixc.object_id,ixc.column_id) AS [COLUMN_NAME] 
+				,idx.*
 			FROM sys.tables tbl
 			LEFT OUTER JOIN sys.index_columns ixc ON tbl.object_id = ixc.object_id
 			LEFT OUTER JOIN sys.indexes idx ON tbl.object_id = idx.object_id AND ixc.index_id = idx.index_id
 			LEFT OUTER JOIN sys.schemas sch ON tbl.schema_id = sch.schema_id
+			WHERE idx.is_unique=1
 	   ) SS
        --WHERE CONSTRAINT_SCHEMA='dbo'
        GROUP BY CONSTRAINT_SCHEMA, TABLE_NAME
@@ -70,4 +73,4 @@ AND src.TABLE_SCHEMA = pk.CONSTRAINT_SCHEMA
 --(
 --'<ADD YOUR LIST HERE>'
 --)
-FOR JSON PATH
+--FOR JSON PATH
