@@ -113,6 +113,9 @@ namespace TEAM_Library
                 outputConnectionString = "Server=<undefined>,<undefined>;Initial Catalog=<undefined>;user id=<>; password=<>";
             }
 
+            // Add hard-coded timeout value.
+            outputConnectionString += ";Command Timeout=300";
+
             return outputConnectionString;
         }
 
