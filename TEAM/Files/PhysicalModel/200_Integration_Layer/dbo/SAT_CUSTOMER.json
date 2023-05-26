@@ -39,7 +39,7 @@
       "characterLength": "100",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 12,
+      "ordinalPosition": 13,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -59,7 +59,7 @@
       "characterLength": "8",
       "numericPrecision": "27",
       "numericScale": "7",
-      "ordinalPosition": 14,
+      "ordinalPosition": 15,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -69,7 +69,7 @@
       "characterLength": "100",
       "numericPrecision": "0",
       "numericScale": "0",
-      "ordinalPosition": 13,
+      "ordinalPosition": 14,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -124,6 +124,16 @@
       "multiActiveIndicator": "N"
     },
     {
+      "name": "STATE",
+      "dataType": "nvarchar",
+      "characterLength": "100",
+      "numericPrecision": "0",
+      "numericScale": "0",
+      "ordinalPosition": 12,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
       "name": "STATE_TIMESTAMP",
       "dataType": "datetime2",
       "characterLength": "8",
@@ -150,16 +160,6 @@
       "numericPrecision": "0",
       "numericScale": "0",
       "ordinalPosition": 9,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "VALID_FROM",
-      "dataType": "datetime2",
-      "characterLength": "8",
-      "numericPrecision": "27",
-      "numericScale": "7",
-      "ordinalPosition": 15,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     }

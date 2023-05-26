@@ -1,0 +1,37 @@
+{
+  "name": "CUSTOMER_CONTACT",
+  "database": "000_Source",
+  "schema": "dbo",
+  "columns": [
+    {
+      "name": "Contact_Number",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 2,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    },
+    {
+      "name": "CustomerID",
+      "dataType": "int",
+      "characterLength": "4",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 1,
+      "primaryKeyIndicator": "Y",
+      "multiActiveIndicator": "Y"
+    },
+    {
+      "name": "Valid_From",
+      "dataType": "date",
+      "characterLength": "3",
+      "numericPrecision": "10",
+      "numericScale": "0",
+      "ordinalPosition": 3,
+      "primaryKeyIndicator": "N",
+      "multiActiveIndicator": "N"
+    }
+  ]
+}

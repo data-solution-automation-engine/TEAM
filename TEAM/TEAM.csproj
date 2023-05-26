@@ -70,6 +70,7 @@
   <ItemGroup>
     <None Remove="Files\PhysicalModel\200_Integration_Layer\bdv\vw_CUSTOMER_DERIVED.json" />
     <None Remove="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER_DERIVED.json" />
+    <None Remove="Files\SAT_CUSTOMER_CONTACT_DETAILS.json" />
     <None Remove="Scripts\generateSampleIntegrationSchemaView.sql" />
     <None Remove="Support\DataObjectMappingList.sql" />
   </ItemGroup>
@@ -164,8 +165,8 @@
     <Content Include="Files\SAT_CUSTOMER.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Files\SAT_CUSTOMER_ADDITIONAL_DETAILS.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Files\SAT_CUSTOMER_CONTACT_DETAILS.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Files\SAT_INCENTIVE_OFFER.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -305,9 +306,6 @@
     <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER_ADDITIONAL_DETAILS.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_INCENTIVE_OFFER.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -414,7 +412,7 @@
       <Version>5.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Identity.Client">
-      <Version>4.53.0</Version>
+      <Version>4.54.0</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>

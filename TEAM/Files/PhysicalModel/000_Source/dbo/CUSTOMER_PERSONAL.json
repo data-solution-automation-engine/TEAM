@@ -4,16 +4,6 @@
   "schema": "dbo",
   "columns": [
     {
-      "name": "Contact_Number",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
-      "numericScale": "0",
-      "ordinalPosition": 10,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
       "name": "Country",
       "dataType": "varchar",
       "characterLength": "100",
@@ -79,7 +69,7 @@
       "characterLength": "4",
       "numericPrecision": "10",
       "numericScale": "0",
-      "ordinalPosition": 11,
+      "ordinalPosition": 10,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -119,7 +109,7 @@
       "characterLength": "3",
       "numericPrecision": "10",
       "numericScale": "0",
-      "ordinalPosition": 12,
+      "ordinalPosition": 11,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     }

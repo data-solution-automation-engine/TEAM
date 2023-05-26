@@ -33,9 +33,9 @@
   },
   {
     "attributeMappingHash": "DDBC50F91D3AC63546827D650A46644B",
-    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_CONTACT",
     "sourceAttribute": "Contact_Number",
-    "targetTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
+    "targetTable": "SAT_CUSTOMER_CONTACT_DETAILS",
     "targetAttribute": "CONTACT_NUMBER",
     "notes": ""
   },
@@ -91,7 +91,7 @@
     "attributeMappingHash": "890D69920FC254A262EC7938F8BC9906",
     "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
     "sourceAttribute": "State",
-    "targetTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
+    "targetTable": "SAT_CUSTOMER",
     "targetAttribute": "STATE",
     "notes": ""
   },
@@ -193,7 +193,7 @@
   },
   {
     "attributeMappingHash": "AA0DB92AADB9F6B70BB36B475B9BD4DC",
-    "sourceTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
+    "sourceTable": "SAT_CUSTOMER_CONTACT_DETAILS",
     "sourceAttribute": "CONTACT_NUMBER",
     "targetTable": "DIM_CUSTOMER",
     "targetAttribute": "CONTACT_NUMBER",
@@ -224,18 +224,10 @@
     "notes": ""
   },
   {
-    "attributeMappingHash": "E851A353E50B811E352110A465004928",
-    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
-    "sourceAttribute": "Valid_From",
-    "targetTable": "SAT_CUSTOMER",
-    "targetAttribute": "VALID_FROM",
-    "notes": ""
-  },
-  {
     "attributeMappingHash": "AE5A8F8B363D76C683FF7E05C5D8F355",
-    "sourceTable": "PSA_PROFILER_CUSTOMER_PERSONAL",
+    "sourceTable": "PSA_PROFILER_CUSTOMER_CONTACT",
     "sourceAttribute": "Valid_From",
-    "targetTable": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
+    "targetTable": "SAT_CUSTOMER_CONTACT_DETAILS",
     "targetAttribute": "STATE_TIMESTAMP",
     "notes": ""
   },

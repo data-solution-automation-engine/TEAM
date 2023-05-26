@@ -1,5 +1,5 @@
 {
-  "name": "SAT_CUSTOMER_ADDITIONAL_DETAILS",
+  "name": "SAT_CUSTOMER_CONTACT_DETAILS",
   "database": "200_Integration_Layer",
   "schema": "dbo",
   "columns": [
@@ -71,16 +71,6 @@
       "numericScale": "7",
       "ordinalPosition": 2,
       "primaryKeyIndicator": "Y",
-      "multiActiveIndicator": "N"
-    },
-    {
-      "name": "STATE",
-      "dataType": "nvarchar",
-      "characterLength": "100",
-      "numericPrecision": "0",
-      "numericScale": "0",
-      "ordinalPosition": 9,
-      "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
     {

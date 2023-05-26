@@ -34,16 +34,6 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "Contact_Number",
-      "dataType": "int",
-      "characterLength": "4",
-      "numericPrecision": "10",
-      "numericScale": "0",
-      "ordinalPosition": 16,
-      "primaryKeyIndicator": "N",
-      "multiActiveIndicator": "N"
-    },
-    {
       "name": "Country",
       "dataType": "nvarchar",
       "characterLength": "100",
@@ -129,7 +119,7 @@
       "characterLength": "4",
       "numericPrecision": "10",
       "numericScale": "0",
-      "ordinalPosition": 17,
+      "ordinalPosition": 16,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     },
@@ -179,7 +169,7 @@
       "characterLength": "8",
       "numericPrecision": "27",
       "numericScale": "7",
-      "ordinalPosition": 18,
+      "ordinalPosition": 17,
       "primaryKeyIndicator": "N",
       "multiActiveIndicator": "N"
     }

@@ -338,7 +338,7 @@ namespace TEAM_Library
                 initialConfigurationFile.AppendLine("KeyIdentifier|SK");
                 initialConfigurationFile.AppendLine("KeyPattern|{dataObject.baseName}_{keyIdentifier}");
                 initialConfigurationFile.AppendLine("SchemaName|dbo");
-                initialConfigurationFile.AppendLine("RowID|SOURCE_ROW_ID");
+                initialConfigurationFile.AppendLine("RowID|INSCRIPTION_RECORD_ID");
                 initialConfigurationFile.AppendLine("EventDateTimeStamp|SOURCE_TIMESTAMP");
                 initialConfigurationFile.AppendLine("LoadDateTimeStamp|INSCRIPTION_TIMESTAMP");
                 initialConfigurationFile.AppendLine("ExpiryDateTimeStamp|INSCRIPTION_TO_TIMESTAMP");
