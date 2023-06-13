@@ -114,7 +114,7 @@ namespace TEAM_Library
             }
 
             // Add hard-coded timeout value.
-            outputConnectionString += ";Command Timeout=300";
+            outputConnectionString += ";Command Timeout=800";
 
             return outputConnectionString;
         }
