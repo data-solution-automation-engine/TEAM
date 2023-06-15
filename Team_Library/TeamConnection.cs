@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -234,7 +233,7 @@ namespace TEAM_Library
         /// <summary>
         /// Load in to memory (deserialise) a TEAM connection file.
         /// </summary>
-        public static Dictionary<string, TeamConnection> LoadConnectionFile(string connectionFileName)
+        public static Dictionary<string, TeamConnection> LoadConnectionFile(string connectionFileName, EventLog teamEventLog)
         {
             var localConnectionDictionary = new Dictionary<string, TeamConnection>();
 
@@ -273,11 +272,11 @@ namespace TEAM_Library
                         }
                 }
 
-                //localEvent = Event.CreateNewEvent(EventTypes.Information, $"The connections file {connectionFileName} was loaded successfully.");
+                teamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The connections file {connectionFileName} was loaded successfully."));
             }
-            catch
+            catch (Exception exception)
             {
-                //localEvent = Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered loading the connections file {connectionFileName}.");
+                teamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An issue was encountered loading the connections file {connectionFileName}. The reported error is {exception.Message}."));
             }
 
             return localConnectionDictionary;

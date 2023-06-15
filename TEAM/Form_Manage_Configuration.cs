@@ -792,7 +792,7 @@ namespace TEAM
 
                 var connectionFileName = globalParameters.ConfigurationPath + globalParameters.JsonConnectionFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.JsonExtension;
 
-                TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
+                TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName, TeamEventLog);
 
                 comboBoxMetadataConnection.Items.Clear();
                 AddConnectionTabPages();

@@ -131,7 +131,7 @@ namespace TEAM
             // Load the connections file for the respective environment.
             var connectionFileName = $"{globalParameters.ConfigurationPath}{globalParameters.JsonConnectionFileName}{'_'}{globalParameters.ActiveEnvironmentKey}{globalParameters.JsonExtension}";
 
-            TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName);
+            TeamConfiguration.ConnectionDictionary = TeamConnectionFile.LoadConnectionFile(connectionFileName, TeamEventLog);
 
             #endregion
 
