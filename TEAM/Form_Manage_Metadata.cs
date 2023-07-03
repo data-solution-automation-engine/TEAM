@@ -976,7 +976,6 @@ namespace TEAM
                 {
                     #region Changes and Inserted rows
 
-                    //Changed rows
                     if ((row.RowState & DataRowState.Modified) != 0 || (row.RowState & DataRowState.Added) != 0)
                     {
                         //Grab the attributes into local variables
@@ -1000,10 +999,10 @@ namespace TEAM
                         }
 
                         // Save the file. 
-                        if (!exceptionList.Contains(tableName))
+                        if (!exceptionList.Contains(databaseName+schemaName+tableName))
                         {
                             WritePhysicalModelToFile(databaseName, schemaName, tableName);
-                            exceptionList.Add(tableName);
+                            exceptionList.Add(databaseName + schemaName + tableName);
                         }
                     }
 
