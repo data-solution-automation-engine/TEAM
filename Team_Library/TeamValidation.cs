@@ -629,6 +629,12 @@ namespace TEAM_Library
                     var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", teamConfiguration);
                     var targetFilterCriterion = row[DataObjectMappingGridColumns.FilterCriterion.ToString()].ToString();
 
+                    // Quick fix - replace 1=0 with empty.
+                    if (targetFilterCriterion == "1=0")
+                    {
+                        targetFilterCriterion = string.Empty;
+                    }
+
                     var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
                     var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                     var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, teamConfiguration, eventLog);
@@ -758,6 +764,12 @@ namespace TEAM_Library
                         var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(TargetDataObject, targetConnection).FirstOrDefault();
                         //var targetTableType = MetadataHandling.GetDataObjectType(TargetDataObject, "", FormBase.TeamConfiguration);
                         var filterCriterion = dataObjectMappingRow[DataObjectMappingGridColumns.FilterCriterion.ToString()].ToString();
+
+                        // Quick fix - replace 1=0 with empty.
+                        if (filterCriterion == "1=0")
+                        {
+                            filterCriterion = string.Empty;
+                        }
 
                         var sourceDataObjectName = dataObjectMappingRow[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
                         var sourceConnectionInternalId = dataObjectMappingRow[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
