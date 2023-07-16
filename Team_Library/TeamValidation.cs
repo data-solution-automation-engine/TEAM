@@ -716,11 +716,10 @@ namespace TEAM_Library
                         var sourceConnectionInternalId = dataObjectMappingRow[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                         var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, teamConfiguration, eventLog);
                         var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
-                        //var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", FormBase.TeamConfiguration);
 
                         // Count the number of dependents.
                         if (
-                             dataObjectMappingRow[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True" && // Only active generated objects
+                             //dataObjectMappingRow[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True" && // Only active generated objects
                              sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value == validationObject.Item1 &&
                              (string)dataObjectMappingRow[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
                              targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value != validationObject.Item2 && // Exclude itself
@@ -753,7 +752,7 @@ namespace TEAM_Library
                         //var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", FormBase.TeamConfiguration);
 
                         if (
-                            row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True" && // Only active generated objects
+                            //row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True" && // Only active generated objects
                             sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value == validationObject.Item1 &&
                             (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] == validationObject.Item3.Trim() &&
                             targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value != validationObject.Item2 && // Exclude itself
