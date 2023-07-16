@@ -14,6 +14,8 @@ using DataObject = DataWarehouseAutomation.DataObject;
 using Event = TEAM_Library.Event;
 using static TEAM_Library.MetadataHandling;
 using ComboBox = System.Windows.Forms.ComboBox;
+using System.Security.Cryptography.Xml;
+using System.Xml;
 
 namespace TEAM
 {
@@ -612,15 +614,27 @@ namespace TEAM
         /// <param name="e"></param>
         public void ParseThisRowAsJSONDataObjectMappingCollectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string outputFileName = "";
+
             int selectedRow = Rows.GetFirstRow(DataGridViewElementStates.Selected);
             var generationMetadataRow = ((DataRowView)Rows[selectedRow].DataBoundItem).Row;
             var targetDataObject = (DataObject)generationMetadataRow[DataObjectMappingGridColumns.TargetDataObject.ToString()];
 
+            var schemaExtension = targetDataObject.DataObjectConnection.Extensions.Where(x => x.Key.Equals("schema")).FirstOrDefault();
+            if (schemaExtension != null)
+            {
+                outputFileName = schemaExtension.Value + "." + targetDataObject.Name;
+            }
+            else
+            {
+                outputFileName = targetDataObject.Name;
+            }
+
             var dataObjectMappings = _dataGridViewDataObjects.GetDataObjectMappings(targetDataObject);
             var vdwDataObjectMappingList = FormManageMetadata.GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
-            string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-            File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.Name), output);
+            string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText(globalParameters.GetMetadataFilePath(outputFileName), output);
 
             // Update the original form through the delegate/event handler.
             DataObjectsParse($"A parse action has been called from the context menu. The Data Object Mapping for '{targetDataObject.Name}' has been saved.\r\n");
@@ -640,7 +654,7 @@ namespace TEAM
 
             var dataObjectMappings = GetDataObjectMappings(targetDataObject);
 
-            string output = JsonConvert.SerializeObject(dataObjectMappings, Formatting.Indented);
+            string output = JsonConvert.SerializeObject(dataObjectMappings, Newtonsoft.Json.Formatting.Indented);
 
             FormManageMetadata.ManageFormJsonInteraction(output);
         }
@@ -656,7 +670,7 @@ namespace TEAM
 
             var dataObjectMapping = GetDataObjectMapping(row);
 
-            string output = JsonConvert.SerializeObject(dataObjectMapping, Formatting.Indented);
+            string output = JsonConvert.SerializeObject(dataObjectMapping, Newtonsoft.Json.Formatting.Indented);
 
             FormManageMetadata.ManageFormJsonInteraction(output);
         }
@@ -952,7 +966,7 @@ namespace TEAM
                     try
                     {
                         DataObject fullDataObject = (DataObject)e.Value;
-                        cell.ToolTipText = JsonConvert.SerializeObject(fullDataObject, Formatting.Indented);
+                        cell.ToolTipText = JsonConvert.SerializeObject(fullDataObject, Newtonsoft.Json.Formatting.Indented);
                     }
                     catch (Exception ex)
                     {
@@ -1005,7 +1019,7 @@ namespace TEAM
                     try
                     {
                         DataObject fullDataObject = (DataObject)e.Value;
-                        cell.ToolTipText = JsonConvert.SerializeObject(fullDataObject, Formatting.Indented);
+                        cell.ToolTipText = JsonConvert.SerializeObject(fullDataObject, Newtonsoft.Json.Formatting.Indented);
                     }
                     catch (Exception ex)
                     {

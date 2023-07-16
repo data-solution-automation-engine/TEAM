@@ -890,14 +890,23 @@ namespace TEAM
             {
                 var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
+                string outputFileName = "";
+                var schemaExtension = targetDataObject.DataObjectConnection.Extensions.Where(x => x.Key.Equals("schema")).FirstOrDefault();
+                if (schemaExtension != null)
+                {
+                    outputFileName = schemaExtension.Value + "." + targetDataObject.Name;
+                }
+                else
+                {
+                    outputFileName = targetDataObject.Name;
+                }
+
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                string outputFilePath = globalParameters.GetMetadataFilePath(targetDataObject.Name);
+                string outputFilePath = globalParameters.GetMetadataFilePath(outputFileName);
 
                 try
                 {
                     File.WriteAllText(outputFilePath, output);
-
-                    //((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
                     ThreadHelper.SetText(this, richTextBoxInformation, $"The Data Object Mapping for '{targetDataObject.Name}' has been saved.\r\n");
                 }
@@ -935,8 +944,20 @@ namespace TEAM
                 var targetDataObject = dataObjectMappings[0].TargetDataObject;
                 var vdwDataObjectMappingList = GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
+                string outputFileName = "";
+                var schemaExtension = targetDataObject.DataObjectConnection.Extensions.Where(x => x.Key.Equals("schema")).FirstOrDefault();
+                if (schemaExtension != null)
+                {
+                    outputFileName = schemaExtension.Value + "." + targetDataObject.Name;
+                }
+                else
+                {
+                    outputFileName = targetDataObject.Name;
+                }
+
+
                 string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
-                File.WriteAllText(globalParameters.GetMetadataFilePath(targetDataObject.Name), output);
+                File.WriteAllText(globalParameters.GetMetadataFilePath(outputFileName), output);
 
                 ((DataTable)BindingSourceDataObjectMappings.DataSource).AcceptChanges();
 
