@@ -588,8 +588,9 @@ namespace TEAM_Library
         /// <returns></returns>
         public static DataObject SetDataObjectConnectionSchemaExtension(DataObject dataObject, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
-            // Remove an existing extension, if indeed existing.
             // If no extensions exists, do nothing. Otherwise check if one needs removal.
+
+            // Setting disabled. Remove an existing schema extension, if it exists.
             if (!jsonExportSetting.IsAddSchemaAsExtensionToConnection())
             {
                 if (dataObject.DataObjectConnection?.Extensions != null)
@@ -627,8 +628,7 @@ namespace TEAM_Library
                     localExtensions = dataObject.DataObjectConnection.Extensions;
                 }
 
-                // Check if this particular classification already exists before adding.
-                // Preserve the others.
+                // Preserve any other extensions.
                 foreach (var extension in localExtensions)
                 {
                     if (extension.Key != "schema")
@@ -641,9 +641,23 @@ namespace TEAM_Library
                 var localExtension = new Extension
                 {
                     Key = "schema",
-                    Value = teamConnection.DatabaseServer.SchemaName,
                     Description = "schema name"
                 };
+
+                var schemaExtension = dataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault();
+
+                if (schemaExtension != null)
+                {
+                    if (schemaExtension.Value != teamConnection.DatabaseServer.SchemaName)
+                    {
+
+                        localExtension.Value = schemaExtension.Value;
+                    }
+                    else
+                    {
+                        localExtension.Value = teamConnection.DatabaseServer.SchemaName;
+                    }
+                }
 
                 returnExtensions.Add(localExtension);
 

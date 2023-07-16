@@ -959,7 +959,10 @@ namespace TEAM
                         cell.ToolTipText = $"The value could not be visualised in JSON. The error message is {ex.Message}.";
                     }
 
-                    FormatDataObject(e);
+                    string sourceConnectionInternalId = selectedRow.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
+                    var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
+
+                    FormatDataObject(e, sourceConnection);
 
                     string dataObjectName = e.Value.ToString();
 
@@ -1009,12 +1012,13 @@ namespace TEAM
                         cell.ToolTipText = $"The value could not be visualised in JSON. The error message is {ex.Message}.";
                     }
 
-                    FormatDataObject(e);
+                    var targetConnectionId = selectedRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
+                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionId, TeamConfiguration, TeamEventLog);
+
+                    FormatDataObject(e, targetConnection);
 
                     string dataObjectName = e.Value.ToString();
 
-                    var targetConnectionId = selectedRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
-                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionId, TeamConfiguration, TeamEventLog);
                     KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectName, targetConnection).FirstOrDefault();
 
                     // Only the name (e.g. without the schema) should be evaluated.
@@ -1135,6 +1139,7 @@ namespace TEAM
         private void DataGridViewDataObjects_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
         {
             var selectedColumn = Columns[e.ColumnIndex];
+            var selectedRow = Rows[e.RowIndex];
 
             // Format the name of the data object, for a data object.
             if (selectedColumn.Index.Equals((int)DataObjectMappingGridColumns.SourceDataObject) || selectedColumn.Index.Equals((int)DataObjectMappingGridColumns.TargetDataObject))
@@ -1153,7 +1158,41 @@ namespace TEAM
                     }
 
                     // Update the data object name.
-                    dataObject.Name = e.Value.ToString();
+                    // Try to get the connection, to pass in for formatting.
+                    var connectionInternalId = "";
+
+                    if (selectedColumn.Index.Equals((int)DataObjectMappingGridColumns.SourceDataObject))
+                    {
+                        connectionInternalId = selectedRow.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
+
+                    }
+                    else if (selectedColumn.Index.Equals((int)DataObjectMappingGridColumns.TargetDataObject))
+                    {
+                        connectionInternalId = selectedRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
+                    }
+                    else
+                    {
+                        // Should not happen, everything stays empty.
+                    }
+
+                    var connection = TeamConnection.GetTeamConnectionByConnectionInternalId(connectionInternalId, TeamConfiguration, TeamEventLog);
+
+                    var schemaExtension = dataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault();
+                    Dictionary<string, string> dataObjectFullyQualifiedNameDictionary = GetFullyQualifiedDataObjectName(cell.EditedFormattedValue.ToString(), connection);
+                    var dataObjectFullyQualifiedName = dataObjectFullyQualifiedNameDictionary.FirstOrDefault();
+
+                    // Set the name (must be without the schema extension).
+                    dataObject.Name = dataObjectFullyQualifiedName.Value;
+                    //dataObject.Name = e.Value.ToString();
+
+                    // Set the schema, updating schema extension, if there is any.
+                    if (dataObject.DataObjectConnection != null)
+                    {
+                        if (schemaExtension != null)
+                        {
+                            schemaExtension.Value = dataObjectFullyQualifiedName.Key;
+                        }
+                    }
 
                     // Set the updated value.
                     e.Value = dataObject;
@@ -1182,7 +1221,7 @@ namespace TEAM
         /// Ensure only the name of the DataObject is shown in the grid view.
         /// </summary>
         /// <param name="formatting"></param>
-        private static void FormatDataObject(DataGridViewCellFormattingEventArgs formatting)
+        private static void FormatDataObject(DataGridViewCellFormattingEventArgs formatting, TeamConnection connection)
         {
             if (formatting.Value != DBNull.Value)
             {
@@ -1190,8 +1229,40 @@ namespace TEAM
                 {
                     var dataObject = (DataObject)formatting.Value;
 
-                    formatting.Value = dataObject.Name;
-                    formatting.FormattingApplied = true;
+                    // Evaluate the schema, so that it can be checked if it should be shown.
+                    var connectionSchema = "dbo"; // Hard-coded default
+                    if (connection != null)
+                    {
+                        connectionSchema = connection.DatabaseServer.SchemaName;
+                    }
+
+                    if (dataObject != null)
+                    {
+                        formatting.FormattingApplied = true;
+
+                        // Just shown the name property in the grid under the data object.
+                        formatting.Value = dataObject.Name;
+
+                        // Exception if the schema is provided specifically.
+                        // See if there is a schema extension provided, if so it can be shown in the name.
+                        if (dataObject.DataObjectConnection != null)
+                        {
+                            var schemaExtension = dataObject.DataObjectConnection.Extensions.Where(x => x.Key.Equals("schema")).FirstOrDefault();
+                            if (schemaExtension != null)
+                            {
+                                if (schemaExtension.Value != connectionSchema)
+                                {
+                                    formatting.Value = schemaExtension.Value + '.' + dataObject.Name;
+                                }
+                            }
+                        }
+
+                        formatting.FormattingApplied = true;
+                    }
+                    else
+                    {
+                        formatting.FormattingApplied = false;
+                    }
                 }
                 catch (FormatException)
                 {
@@ -1257,13 +1328,7 @@ namespace TEAM
         /// <returns></returns>
         public DataObjectMapping GetDataObjectMapping(DataGridViewRow dataObjectMappingGridViewRow)
         {
-            var targetDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
-
-            // Initial setting of the new object. Details will likely be overwritten by copying the full object.
-            DataObjectMapping dataObjectMapping = new DataObjectMapping
-            {
-                MappingName = targetDataObjectName
-            };
+            DataObjectMapping dataObjectMapping = new DataObjectMapping();
 
             #region Enabled
 
@@ -1320,6 +1385,29 @@ namespace TEAM
             JsonOutputHandling.SetDataObjectDataItems(targetDataObject, targetConnection, TeamConfiguration, JsonExportSetting, dataGridViewRowsPhysicalModel);
 
             #endregion
+
+            #region Mapping Name
+
+            // Initial name, might be overwritten by schema exceptions (see schema extension).
+            // If there is a specific schema, this requires to be added to the name.
+            var targetDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].Value.ToString();
+            dataObjectMapping.MappingName = targetDataObjectName;
+
+            // Exception if the schema is provided specifically.
+            // See if there is a schema extension provided, if so it can be shown in the name.
+            if (targetDataObject.DataObjectConnection != null)
+            {
+                var schemaExtension = targetDataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault();
+                if (schemaExtension != null)
+                {
+                    if (schemaExtension.Value != targetConnection.DatabaseServer.SchemaName)
+                    {
+                        dataObjectMapping.MappingName = schemaExtension.Value + "." + targetDataObjectName;
+                    }
+                }
+            }
+
+            #endregion 
 
             #region Mapping Extensions
 

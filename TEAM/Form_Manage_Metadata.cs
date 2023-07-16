@@ -2804,22 +2804,19 @@ namespace TEAM
                 _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateAttributeDataObjectsForTableMappings(filteredDataItemDataRows, dataObjectMappingDataRows, ref metadataValidations));
                 worker?.ReportProgress(70);
 
-                _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateSchemaConfiguration(filteredDataObjectMappingDataRows, TeamConfiguration, TeamEventLog, ref metadataValidations));
-                worker?.ReportProgress(80);
-
                 // Validate basic Data Vault settings
                 if (ValidationSetting.BasicDataVaultValidation == "True")
                 {
                     _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateBasicDataVaultAttributeExistence(filteredDataObjectMappingDataRows, TeamConfiguration, TeamEventLog, ref metadataValidations));
                 }
-                worker?.ReportProgress(90);
+                worker?.ReportProgress(80);
 
                 // Check for duplicate data item mappings
                 if (ValidationSetting.DuplicateDataObjectMappings == "True")
                 {
                     _alertValidation.SetTextLoggingMultiple(TeamValidation.ValidateDuplicateDataItemMappings(filteredDataItemDataRows, ref metadataValidations));
                 }
-                worker?.ReportProgress(95);
+                worker?.ReportProgress(90);
 
                 // Check for duplicate data object mappings.
                 if (ValidationSetting.DuplicateDataObjectMappings == "True")

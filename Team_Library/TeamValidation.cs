@@ -90,65 +90,6 @@ namespace TEAM_Library
         }
 
         /// <summary>
-        /// This method runs a check against the Column Mappings DataGrid to assert if model metadata is available for the attributes. The column needs to exist somewhere, either in the physical model or in the model metadata in order for activation to run successfully.
-        /// </summary>
-        public static List<string> ValidateSchemaConfiguration(List<DataRow> dataRows, TeamConfiguration teamConfiguration, EventLog eventLog, ref MetadataValidations metadataValidations)
-        {
-            List<string> resultList = new List<string>();
-
-            // Informing the user.
-            resultList.Add("\r\n--> Commencing the validation to check if connection settings align with schemas entered in the Data Object mapping grid.\r\n");
-
-            int resultCounter = 0;
-
-            foreach (DataRow row in dataRows)
-            {
-                // Skip deleted rows.
-                if (row.RowState == DataRowState.Deleted)
-                    continue;
-
-                if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True") // If row is enabled
-                {
-                    string localSourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                    string localTargetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
-
-                    TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(localSourceConnectionInternalId, teamConfiguration, eventLog);
-                    TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(localTargetConnectionInternalId, teamConfiguration, eventLog);
-
-                    // The values in the data grid, fully qualified. This means the default schema is added if necessary.
-                    var sourceDataObject = MetadataHandling.GetFullyQualifiedDataObjectName(row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString(), sourceConnection).FirstOrDefault();
-                    var targetDataObject = MetadataHandling.GetFullyQualifiedDataObjectName(row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString(), targetConnection).FirstOrDefault();
-
-                    // The values as defined in the associated connections
-                    var sourceSchemaNameForConnection = TeamConfiguration.GetTeamConnectionByInternalId(localSourceConnectionInternalId, teamConfiguration.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "").Replace("]", "");
-                    var targetSchemaNameForConnection = TeamConfiguration.GetTeamConnectionByInternalId(localTargetConnectionInternalId, teamConfiguration.ConnectionDictionary).DatabaseServer.SchemaName.Replace("[", "").Replace("]", "");
-
-
-                    if (sourceDataObject.Key.Replace("[", "").Replace("]", "") != sourceSchemaNameForConnection)
-                    {
-                        resultList.Add($"--> Inconsistency detected for '{sourceDataObject.Key}.{sourceDataObject.Value}' between the schema definition in the table grid '{sourceDataObject.Key}' and its assigned connection '{sourceConnection.ConnectionName}' which has been configured as '{sourceSchemaNameForConnection}'.\r\n");
-                        resultCounter++;
-                        metadataValidations.ValidationIssues++;
-                    }
-
-                    if (targetDataObject.Key.Replace("[", "").Replace("]", "") != targetSchemaNameForConnection)
-                    {
-                        resultList.Add($"--> Inconsistency for '{sourceDataObject.Key}.{sourceDataObject.Value}' detected between the schema definition in the table grid {targetDataObject.Key} and its assigned connection ''{targetConnection.ConnectionName}'' which has been configured as '{targetSchemaNameForConnection}'.\r\n");
-                        resultCounter++;
-                        metadataValidations.ValidationIssues++;
-                    }
-                }
-            }
-
-            if (resultCounter == 0)
-            {
-                resultList.Add("     There were no validation issues related to schema configuration.\r\n");
-            }
-
-            return resultList;
-        }
-
-        /// <summary>
         /// Hard-coded fields in Staging Layer data objects are not supported. Instead, an attribute mapping should be created.
         /// </summary>
         public static List<string> ValidateHardcodedFields(List<DataRow> dataRows, TeamConfiguration teamConfiguration, ref MetadataValidations metadataValidations)
