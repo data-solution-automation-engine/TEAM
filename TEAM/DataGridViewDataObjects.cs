@@ -1414,7 +1414,7 @@ namespace TEAM
                 var schemaExtension = targetDataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault();
                 if (schemaExtension != null)
                 {
-                    if (schemaExtension.Value != targetConnection.DatabaseServer.SchemaName)
+                    if (schemaExtension.Value != null && schemaExtension.Value != targetConnection.DatabaseServer.SchemaName)
                     {
                         dataObjectMapping.MappingName = schemaExtension.Value + "." + targetDataObjectName;
                     }

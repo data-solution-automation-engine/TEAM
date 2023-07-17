@@ -646,18 +646,16 @@ namespace TEAM_Library
 
                 var schemaExtension = dataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault();
 
-                if (schemaExtension != null)
+                if (schemaExtension != null && schemaExtension.Value != teamConnection.DatabaseServer.SchemaName)
                 {
-                    if (schemaExtension.Value != teamConnection.DatabaseServer.SchemaName)
-                    {
 
-                        localExtension.Value = schemaExtension.Value;
-                    }
-                    else
-                    {
-                        localExtension.Value = teamConnection.DatabaseServer.SchemaName;
-                    }
+                    localExtension.Value = schemaExtension.Value;
                 }
+                else
+                {
+                    localExtension.Value = teamConnection.DatabaseServer.SchemaName;
+                }
+                
 
                 returnExtensions.Add(localExtension);
 
