@@ -225,43 +225,52 @@ namespace TEAM_Library
         }
 
         /// <summary>
-        /// Add a classification at data object mapping level, derived from the target data object.
+        /// Add a classification at data object mapping level.
         /// </summary>
         /// <param name="dataObjectName"></param>
         /// <param name="jsonExportSetting"></param>
         /// <param name="teamConfiguration"></param>
+        /// <param name="classifications"></param>
         /// <returns></returns>
-        public static List<DataClassification> MappingClassification(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration,TeamConnection connection, string drivingKeyValue)
+        public static List<DataClassification> MappingClassification(string dataObjectName, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration,TeamConnection connection, string drivingKeyValue, List<DataClassification> classifications)
         {
-            var dataObjectType = GetDataObjectType(dataObjectName, "", teamConfiguration);
+            List<DataClassification> dataObjectsMappingClassifications = new List<DataClassification>();
 
-            // Override for driving key.
-            if (drivingKeyValue != null && !string.IsNullOrEmpty(drivingKeyValue))
+            // Keep existing classifications.
+            if (classifications != null)
             {
-                dataObjectType = DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey;
+                dataObjectsMappingClassifications = classifications;
             }
-
-            var stringDataObjectType = "Unknown";
-
-            if (dataObjectType == DataObjectTypes.Source || dataObjectType == DataObjectTypes.Unknown)
-            {
-                stringDataObjectType = connection.ConnectionKey;
-            }
+            // Create new classifications.
             else
             {
-                stringDataObjectType = dataObjectType.ToString();
+                var dataObjectType = GetDataObjectType(dataObjectName, "", teamConfiguration);
+
+                // Override for driving key.
+                if (drivingKeyValue != null && !string.IsNullOrEmpty(drivingKeyValue))
+                {
+                    dataObjectType = DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey;
+                }
+
+                var stringDataObjectType = "Unknown";
+
+                if (dataObjectType == DataObjectTypes.Source || dataObjectType == DataObjectTypes.Unknown)
+                {
+                    stringDataObjectType = connection.ConnectionKey;
+                }
+                else
+                {
+                    stringDataObjectType = dataObjectType.ToString();
+                }
+
+                // Work around for unknowns - replace with connection information.
+                var dataObjectMappingClassification = new DataClassification
+                {
+                    Classification = stringDataObjectType
+                };
+
+                dataObjectsMappingClassifications.Add(dataObjectMappingClassification);
             }
-
-
-            // Work around for unknowns - replace with connection information.
-
-            List<DataClassification> dataObjectsMappingClassifications = new List<DataClassification>();
-            var dataObjectMappingClassification = new DataClassification
-            {
-                Classification = stringDataObjectType
-            };
-
-            dataObjectsMappingClassifications.Add(dataObjectMappingClassification);
 
             return dataObjectsMappingClassifications;
         }

@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Data;
 using System.Windows.Forms;
 using DataWarehouseAutomation;
 
@@ -9,7 +8,7 @@ namespace TEAM
     public partial class Form_Edit_DataObjectMapping : FormBase
     {
         public DataGridViewRow EditedRow { get; set; }
-        public DataWarehouseAutomation.DataObjectMapping EditedDataObjectMapping { get; set; }
+        public DataObjectMapping EditedDataObjectMapping { get; set; }
 
         public Form_Edit_DataObjectMapping()
         {

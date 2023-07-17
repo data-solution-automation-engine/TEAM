@@ -198,6 +198,14 @@ namespace TEAM
             previousTargetDataObjectName.Visible = false;
             Columns.Add(previousTargetDataObjectName);
 
+            // Hidden columns.
+            DataGridViewTextBoxColumn dataObjectMappingClassification = new DataGridViewTextBoxColumn();
+            dataObjectMappingClassification.Name = DataObjectMappingGridColumns.DataObjectMappingClassification.ToString();
+            dataObjectMappingClassification.HeaderText = @"dataObjectMappingClassification";
+            dataObjectMappingClassification.DataPropertyName = DataObjectMappingGridColumns.DataObjectMappingClassification.ToString();
+            dataObjectMappingClassification.Visible = false;
+            Columns.Add(dataObjectMappingClassification);
+
             #endregion
 
             #region Context menu
@@ -596,6 +604,9 @@ namespace TEAM
                 // Extensions
                 currentRow.Cells[(int)DataObjectMappingGridColumns.DataObjectMappingExtension].Value = JsonConvert.SerializeObject(dataObjectMapping.Extensions);
 
+                // Classifications
+                currentRow.Cells[13].Value = JsonConvert.SerializeObject(dataObjectMapping.MappingClassifications);
+
                 // Filter
                 currentRow.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value = dataObjectMapping.FilterCriterion;
             }
@@ -603,7 +614,6 @@ namespace TEAM
             {
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"A parsing exception has been encountered: {exception.Message}."));
                 DataObjectsParse($"A parsing issue has been encountered, please review the event log for more details. The changes have not been saved.\r\n");
-
             }
         }
 
@@ -1453,13 +1463,14 @@ namespace TEAM
             try
             {
                 var drivingKeyValue = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value.ToString();
+                var availableMappingClassifications = JsonConvert.DeserializeObject<List<DataClassification>>(dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DataObjectMappingClassification.ToString()].Value.ToString());
 
-                var mappingClassification = JsonOutputHandling.MappingClassification(targetDataObjectName, JsonExportSetting, TeamConfiguration, targetConnection, drivingKeyValue);
+                var mappingClassification = JsonOutputHandling.MappingClassification(targetDataObjectName, JsonExportSetting, TeamConfiguration, targetConnection, drivingKeyValue, availableMappingClassifications);
                 dataObjectMapping.MappingClassifications = mappingClassification;
             }
             catch (Exception exception)
             {
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The data object classification for a Driving Key could not be correctly defined. The message is: {exception.Message}."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The data object classification could not be correctly defined. The message is: {exception.Message}."));
             }
 
             #endregion

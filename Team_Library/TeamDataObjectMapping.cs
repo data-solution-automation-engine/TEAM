@@ -22,13 +22,15 @@ namespace TEAM_Library
         BusinessKeyDefinition = 6,
         DrivingKeyDefinition = 7,
         FilterCriterion = 8,
-        // The below are hidden in the main table, but can be set via the JSON editor
+        // Hidden in the main table, but can be set via the JSON editor
         DataObjectMappingExtension = 9,
         // The below are hidden, for sorting and back-end management only.
         SourceDataObjectName = 10,
         TargetDataObjectName = 11,
         PreviousTargetDataObjectName = 12,
-        SurrogateKey = 13
+        SurrogateKey = 13,
+        // Hidden in the main table, but can be set via the JSON editor
+        DataObjectMappingClassification = 14,
     }
 
     public class TeamDataObjectMappings
@@ -56,15 +58,15 @@ namespace TEAM_Library
             DataTable.Columns.Add(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.DrivingKeyDefinition.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.FilterCriterion.ToString());
-
             // Hidden, but editable.
             DataTable.Columns.Add(DataObjectMappingGridColumns.DataObjectMappingExtension.ToString());
-
             // For sorting purposes only.
             DataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObjectName.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObjectName.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.SurrogateKey.ToString());
+            // Hidden, but editable.
+            DataTable.Columns.Add(DataObjectMappingGridColumns.DataObjectMappingClassification.ToString());
         }
 
         /// <summary>
@@ -83,6 +85,17 @@ namespace TEAM_Library
                     if (dataObjectMapping.Extensions != null)
                     {
                         dataObjectMappingExtension = JsonConvert.SerializeObject(dataObjectMapping.Extensions, Formatting.Indented);
+                    }
+
+                    #endregion
+
+                    #region Data Object Mapping level classification
+
+                    string dataObjectMappingClassification = "";
+
+                    if (dataObjectMapping.MappingClassifications != null)
+                    {
+                        dataObjectMappingClassification = JsonConvert.SerializeObject(dataObjectMapping.MappingClassifications, Formatting.Indented);
                     }
 
                     #endregion
@@ -249,14 +262,15 @@ namespace TEAM_Library
                         newRow[(int)DataObjectMappingGridColumns.BusinessKeyDefinition] = businessKeyDefinitionString;
                         newRow[(int)DataObjectMappingGridColumns.DrivingKeyDefinition] = drivingKeyDefinition;
                         newRow[(int)DataObjectMappingGridColumns.FilterCriterion] = filterCriterion;
-                        // Hidden columns.
+                        // Hidden column
                         newRow[(int)DataObjectMappingGridColumns.DataObjectMappingExtension] = dataObjectMappingExtension;
                         // Sorting only.
                         newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = singleSourceDataObject.Name;
                         newRow[(int)DataObjectMappingGridColumns.TargetDataObjectName] = targetDataObject.Name;
                         newRow[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName] = targetDataObject.Name;
                         newRow[(int)DataObjectMappingGridColumns.SurrogateKey] = surrogateKey;
-
+                        // Hidden column
+                        newRow[(int)DataObjectMappingGridColumns.DataObjectMappingClassification] = dataObjectMappingClassification;
                         DataTable.Rows.Add(newRow);
                     }
                 }
@@ -320,13 +334,15 @@ namespace TEAM_Library
                 dataTable.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].ColumnName = DataObjectMappingGridColumns.BusinessKeyDefinition.ToString();
                 dataTable.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ColumnName = DataObjectMappingGridColumns.DrivingKeyDefinition.ToString();
                 dataTable.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].ColumnName = DataObjectMappingGridColumns.FilterCriterion.ToString();
-                // The below are hidden in the main table, but can be set via the JSON editor
+                // Hidden in the main table, but can be set via the JSON editor
                 dataTable.Columns[(int)DataObjectMappingGridColumns.DataObjectMappingExtension].ColumnName = DataObjectMappingGridColumns.DataObjectMappingExtension.ToString();
                 // The below are hidden, for sorting and back-end management only.
                 dataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObjectName].ColumnName = DataObjectMappingGridColumns.SourceDataObjectName.ToString();
                 dataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObjectName].ColumnName = DataObjectMappingGridColumns.TargetDataObjectName.ToString();
                 dataTable.Columns[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName].ColumnName = DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString();
                 dataTable.Columns[(int)DataObjectMappingGridColumns.SurrogateKey].ColumnName = DataObjectMappingGridColumns.SurrogateKey.ToString();
+                // Hidden in the main table, but can be set via the JSON editor
+                dataTable.Columns[(int)DataObjectMappingGridColumns.DataObjectMappingClassification].ColumnName = DataObjectMappingGridColumns.DataObjectMappingClassification.ToString();
             }
             catch (Exception ex)
             {

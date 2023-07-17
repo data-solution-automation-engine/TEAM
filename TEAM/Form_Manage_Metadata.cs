@@ -3083,6 +3083,7 @@ namespace TEAM
                     localDataTable.Columns.Add(DataObjectMappingGridColumns.FilterCriterion.ToString());
                     // The below are hidden in the main table, but can be set via the JSON editor
                     localDataTable.Columns.Add(DataObjectMappingGridColumns.DataObjectMappingExtension.ToString());
+                    localDataTable.Columns.Add(DataObjectMappingGridColumns.DataObjectMappingClassification.ToString());
                     // The below are hidden, for sorting and back-end management only.
                     localDataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObjectName.ToString());
                     localDataTable.Columns.Add(DataObjectMappingGridColumns.TargetDataObjectName.ToString());
@@ -3117,6 +3118,7 @@ namespace TEAM
                             newRow[(int)DataObjectMappingGridColumns.DrivingKeyDefinition] = tableMappingJson.drivingKeyDefinition;
                             newRow[(int)DataObjectMappingGridColumns.FilterCriterion] = tableMappingJson.filterCriteria;
                             newRow[(int)DataObjectMappingGridColumns.DataObjectMappingExtension] = "";
+                            newRow[(int)DataObjectMappingGridColumns.DataObjectMappingClassification] = "";
                             newRow[(int)DataObjectMappingGridColumns.SourceDataObjectName] = localSourceDataObject.Name;
                             newRow[(int)DataObjectMappingGridColumns.TargetDataObjectName] = localTargetDataObject.Name;
                             newRow[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName] = localTargetDataObject.Name;
