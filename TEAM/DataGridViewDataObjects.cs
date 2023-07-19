@@ -631,9 +631,12 @@ namespace TEAM
             var targetDataObject = (DataObject)generationMetadataRow[DataObjectMappingGridColumns.TargetDataObject.ToString()];
 
             var schemaExtension = targetDataObject.DataObjectConnection.Extensions.Where(x => x.Key.Equals("schema")).FirstOrDefault();
+
             if (schemaExtension != null)
             {
-                outputFileName = schemaExtension.Value + "." + targetDataObject.Name;
+                //TODO - set this up at a suitable time, just before release.
+                //outputFileName = schemaExtension.Value + "." + targetDataObject.Name;
+                outputFileName = targetDataObject.Name;
             }
             else
             {
