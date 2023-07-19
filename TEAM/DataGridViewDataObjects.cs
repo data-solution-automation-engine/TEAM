@@ -1216,6 +1216,24 @@ namespace TEAM
                         {
                             schemaExtension.Value = dataObjectFullyQualifiedName.Key;
                         }
+                        else
+                        {
+                            var newExtension = new Extension();
+                            newExtension.Key = "schema";
+                            newExtension.Value=dataObjectFullyQualifiedName.Key;
+
+                            // Create a new extension list if empty, otherwise add.
+                            if (dataObject.DataObjectConnection.Extensions == null)
+                            {
+                                var newExtensionList = new List<Extension>();
+                                newExtensionList.Add(newExtension);
+                                dataObject.DataObjectConnection.Extensions = newExtensionList;
+                            }
+                            else
+                            {
+                                dataObject.DataObjectConnection.Extensions.Add(newExtension);
+                            }
+                        }
                     }
 
                     // Set the updated value.
