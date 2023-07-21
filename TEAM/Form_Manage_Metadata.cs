@@ -2579,7 +2579,8 @@ namespace TEAM
                 sqlStatementForDataItems.AppendLine("  AND");
                 sqlStatementForDataItems.AppendLine("   (");
 
-                var filterList = new List<Tuple<string, TeamConnection>>();
+                // Name, connection, schema
+                var filterList = new List<Tuple<string, TeamConnection, string>>();
 
                 foreach (DataRow row in filterDataObjects)
                 {
@@ -2593,9 +2594,16 @@ namespace TEAM
                     string localInternalConnectionIdTarget = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     TeamConnection localConnectionTarget = TeamConnection.GetTeamConnectionByConnectionInternalId(localInternalConnectionIdTarget, TeamConfiguration, TeamEventLog);
 
-                    var localTupleSource = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], localConnectionSource);
+                    DataObject sourceDataObject = (DataObject)row[(int)DataObjectMappingGridColumns.SourceDataObject];
+                    var sourceSchema = "dbo";
+                    sourceSchema = sourceDataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault().Value;
 
-                    var localTupleTarget = new Tuple<string, TeamConnection>((string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], localConnectionTarget);
+                    DataObject targetDataObject = (DataObject)row[(int)DataObjectMappingGridColumns.TargetDataObject];
+                    var targetSchema = "dbo";
+                    targetSchema = targetDataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault().Value;
+
+                    var localTupleSource = new Tuple<string, TeamConnection, string>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], localConnectionSource, sourceSchema);
+                    var localTupleTarget = new Tuple<string, TeamConnection, string>((string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], localConnectionTarget, targetSchema);
 
                     if (!filterList.Contains(localTupleSource))
                     {
@@ -2611,9 +2619,20 @@ namespace TEAM
                 foreach (var filter in filterList)
                 {
                     var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2).FirstOrDefault();
+                    
+                    // Override the schema, if required.
+                    var schema = "dbo";
+                    if (fullyQualifiedName.Key != filter.Item3)
+                    {
+                        schema = filter.Item3;
+                    }
+                    else
+                    {
+                        schema = fullyQualifiedName.Key;
+                    }
 
                     // Always add the 'regular' mapping.
-                    sqlStatementForDataItems.AppendLine($"     ([{tableColumnName}] = '{fullyQualifiedName.Value}' AND [{schemaColumnName}] = '{fullyQualifiedName.Key}')");
+                    sqlStatementForDataItems.AppendLine($"     ([{tableColumnName}] = '{fullyQualifiedName.Value}' AND [{schemaColumnName}] = '{schema}')");
                     sqlStatementForDataItems.AppendLine("     OR");
                 }
 
