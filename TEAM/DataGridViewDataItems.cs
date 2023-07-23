@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TEAM_Library;
+using static Azure.Core.HttpHeader;
 using static TEAM.DataGridViewDataObjects;
 using static TEAM.FormBase;
 using Utility = TEAM_Library.Utility;
@@ -120,7 +121,7 @@ namespace TEAM
             {
                 DataGridViewTextBoxColumn targetColumn = new DataGridViewTextBoxColumn();
                 targetColumn.Name = DataItemMappingGridColumns.TargetDataItem.ToString();
-                targetColumn.HeaderText = DataItemMappingGridColumns.TargetDataItem.ToString();
+                targetColumn.HeaderText = @"Target Data Item";
                 targetColumn.DataPropertyName = DataItemMappingGridColumns.TargetDataItem.ToString();
                 targetColumn.Visible = true;
                 Columns.Add(targetColumn);
@@ -131,7 +132,7 @@ namespace TEAM
             {
                 DataGridViewTextBoxColumn notes = new DataGridViewTextBoxColumn();
                 notes.Name = DataItemMappingGridColumns.Notes.ToString();
-                notes.HeaderText = @"Target Data Item";
+                notes.HeaderText = @"Notes";
                 notes.DataPropertyName = DataItemMappingGridColumns.Notes.ToString();
                 notes.Visible = false;
                 Columns.Add(notes);
