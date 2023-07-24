@@ -12,7 +12,7 @@ CREATE TABLE [dbo].[DIM_CUSTOMER](
 	[CUSTOMER_ID] [nvarchar](100) NOT NULL,
 	[GIVEN_NAME] [nvarchar](100) NOT NULL,
 	[SURNAME] [nvarchar](100) NOT NULL,
-	[GENDER] [nvarchar](100) NOT NULL,
+	[PREF_GENDER_PRONOUN] [nvarchar](100) NOT NULL,
 	[SUBURB] [nvarchar](100) NOT NULL,
 	[POSTCODE] [nvarchar](100) NOT NULL,
 	[COUNTRY] [nvarchar](100) NOT NULL,

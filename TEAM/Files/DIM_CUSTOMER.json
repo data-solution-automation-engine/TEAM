@@ -76,7 +76,7 @@
           "ordinalPosition": 11
         },
         {
-          "name": "GENDER",
+          "name": "PREF_GENDER_PRONOUN",
           "dataType": "nvarchar",
           "characterLength": 100,
           "ordinalPosition": 12
@@ -264,7 +264,7 @@
             "ordinalPosition": 11
           },
           {
-            "name": "GENDER",
+            "name": "PREF_GENDER_PRONOUN",
             "dataType": "nvarchar",
             "characterLength": 100,
             "ordinalPosition": 12
@@ -454,7 +454,7 @@
               "ordinalPosition": 13
             },
             {
-              "name": "GENDER",
+              "name": "PREF_GENDER_PRONOUN",
               "dataType": "nvarchar",
               "characterLength": 100,
               "ordinalPosition": 14
@@ -560,7 +560,7 @@
             "ordinalPosition": 11
           },
           {
-            "name": "GENDER",
+            "name": "PREF_GENDER_PRONOUN",
             "dataType": "nvarchar",
             "characterLength": 100,
             "ordinalPosition": 12
@@ -840,7 +840,7 @@
             "ordinalPosition": 11
           },
           {
-            "name": "GENDER",
+            "name": "PREF_GENDER_PRONOUN",
             "dataType": "nvarchar",
             "characterLength": 100,
             "ordinalPosition": 12

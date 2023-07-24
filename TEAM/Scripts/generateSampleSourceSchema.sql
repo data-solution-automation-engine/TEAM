@@ -36,7 +36,7 @@ CREATE TABLE [CUSTOMER_PERSONAL]
   [State] varchar(3) NULL,
   [Postcode] varchar(6) NULL,
   [Country] varchar(100) NULL,
-  [Gender] varchar(1) NULL,
+  [Pronoun] varchar(1) NULL,
   [DOB] date NULL,
   [Referee_Offer_Made] integer NULL,
   [Valid_From] date NULL,
@@ -85,13 +85,13 @@ CREATE TABLE [PLAN]
 )
 
 /* Create the sample content */
-INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Referee_Offer_Made], [Valid_From]) VALUES(235892, N'Simon', N'Someone', N'Sydney', N'NSW', N'1000', N'Australia', N'M', CAST(N'1960-12-10' AS Date), 1, CAST(N'2023-01-01' AS Date))
-INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Referee_Offer_Made], [Valid_From]) VALUES(258279, N'Jason', N'Doe', N'Indooropilly', N'QLD', N'4000', N'Australia', N'M', CAST(N'1980-01-04' AS Date), 1, CAST(N'2023-01-01' AS Date))
-INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Referee_Offer_Made], [Valid_From]) VALUES(321799, N'Julie', N'Sray', N'London', N'N/A', N'0000', N'UK', N'M', CAST(N'1951-01-04' AS Date), 1, CAST(N'2023-01-01' AS Date))
-INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Referee_Offer_Made], [Valid_From]) VALUES(683492, N'Mary', N'Smith', N'Bulimba', N'QLD', N'3000', N'Australia', N'F', CAST(N'1977-04-12' AS Date), 0, CAST(N'2023-01-01' AS Date))
-INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Referee_Offer_Made], [Valid_From]) VALUES(885325, N'Michael', N'Evans', N'Bourke', N'NWS', N'2000', N'Australia', N'M', CAST(N'1985-04-19' AS Date), 0, CAST(N'2023-01-01' AS Date))
+INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Pronoun], [DOB], [Referee_Offer_Made], [Valid_From]) VALUES(235892, N'Simon', N'Someone', N'Sydney', N'NSW', N'1000', N'Australia', N'M', CAST(N'1960-12-10' AS Date), 1, CAST(N'2023-01-01' AS Date))
+INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Pronoun], [DOB], [Referee_Offer_Made], [Valid_From]) VALUES(258279, N'Jason', N'Doe', N'Indooropilly', N'QLD', N'4000', N'Australia', N'M', CAST(N'1980-01-04' AS Date), 1, CAST(N'2023-01-01' AS Date))
+INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Pronoun], [DOB], [Referee_Offer_Made], [Valid_From]) VALUES(321799, N'Julie', N'Sray', N'London', N'N/A', N'0000', N'UK', N'M', CAST(N'1951-01-04' AS Date), 1, CAST(N'2023-01-01' AS Date))
+INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Pronoun], [DOB], [Referee_Offer_Made], [Valid_From]) VALUES(683492, N'Mary', N'Smith', N'Bulimba', N'QLD', N'3000', N'Australia', N'F', CAST(N'1977-04-12' AS Date), 0, CAST(N'2023-01-01' AS Date))
+INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Pronoun], [DOB], [Referee_Offer_Made], [Valid_From]) VALUES(885325, N'Michael', N'Evans', N'Bourke', N'NWS', N'2000', N'Australia', N'M', CAST(N'1985-04-19' AS Date), 0, CAST(N'2023-01-01' AS Date))
 -- Backdated adjustment example, first row
---INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Gender], [DOB], [Contact_Number], [Referee_Offer_Made], [Valid_From]) VALUES(100000, N'Jonathan', NULL, N'London', N'N/A', N'0000', N'UK', N'M', CAST(N'1951-01-04' AS Date), 123, 1, CAST(N'2010-02-01' AS Date))
+--INSERT [dbo].[CUSTOMER_PERSONAL] ([CustomerID], [Given], [Surname], [Suburb], [State], [Postcode], [Country], [Pronoun], [DOB], [Contact_Number], [Referee_Offer_Made], [Valid_From]) VALUES(100000, N'Jonathan', NULL, N'London', N'N/A', N'0000', N'UK', N'M', CAST(N'1951-01-04' AS Date), 123, 1, CAST(N'2010-02-01' AS Date))
 --
 INSERT [dbo].[CUSTOMER_CONTACT] ([CustomerID], [Contact_Number], [Valid_From]) VALUES(235892, 9874634,CAST(N'2023-01-01' AS Date))
 INSERT [dbo].[CUSTOMER_CONTACT] ([CustomerID], [Contact_Number], [Valid_From]) VALUES(258279, 41234, CAST(N'2023-01-01' AS Date))

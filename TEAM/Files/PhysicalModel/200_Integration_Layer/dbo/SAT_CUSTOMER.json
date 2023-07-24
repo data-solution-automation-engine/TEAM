@@ -64,7 +64,7 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "GENDER",
+      "name": "PREF_GENDER_PRONOUN",
       "dataType": "nvarchar",
       "characterLength": "100",
       "numericPrecision": "0",

@@ -76,7 +76,7 @@ CREATE TABLE [STG_PROFILER_CUSTOMER_PERSONAL]
   [State] nvarchar(100) NULL,
   [Postcode] nvarchar(100) NULL,
   [Country] nvarchar(100) NULL,
-  [Gender] nvarchar(100) NULL,
+  [Pronoun] nvarchar(100) NULL,
   [DOB] datetime2(7) NULL,
   [Referee_Offer_Made] int NULL,
   [Valid_From]  datetime2(7) NULL

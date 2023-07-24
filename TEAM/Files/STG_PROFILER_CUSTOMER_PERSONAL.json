@@ -89,7 +89,7 @@
           "ordinalPosition": 13
         },
         {
-          "name": "Gender",
+          "name": "Pronoun",
           "dataType": "nvarchar",
           "characterLength": 100,
           "ordinalPosition": 14
@@ -188,7 +188,7 @@
               "ordinalPosition": 7
             },
             {
-              "name": "Gender",
+              "name": "Pronoun",
               "dataType": "varchar",
               "characterLength": 1,
               "ordinalPosition": 8
@@ -312,7 +312,7 @@
             "ordinalPosition": 13
           },
           {
-            "name": "Gender",
+            "name": "Pronoun",
             "dataType": "nvarchar",
             "characterLength": 100,
             "ordinalPosition": 14
@@ -436,7 +436,7 @@
               "ordinalPosition": 13
             },
             {
-              "name": "Gender",
+              "name": "Pronoun",
               "dataType": "nvarchar",
               "characterLength": 100,
               "ordinalPosition": 14
@@ -595,14 +595,14 @@
         {
           "sourceDataItems": [
             {
-              "name": "Gender",
+              "name": "Pronoun",
               "dataType": "varchar",
               "characterLength": 1,
               "ordinalPosition": 8
             }
           ],
           "targetDataItem": {
-            "name": "Gender",
+            "name": "Pronoun",
             "dataType": "nvarchar",
             "characterLength": 100,
             "ordinalPosition": 14

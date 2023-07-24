@@ -34,7 +34,7 @@
       "multiActiveIndicator": "N"
     },
     {
-      "name": "Gender",
+      "name": "Pronoun",
       "dataType": "varchar",
       "characterLength": "1",
       "numericPrecision": "0",
