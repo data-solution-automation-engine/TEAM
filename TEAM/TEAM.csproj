@@ -70,7 +70,9 @@
   <ItemGroup>
     <None Remove="Files\PhysicalModel\200_Integration_Layer\bdv\vw_CUSTOMER_DERIVED.json" />
     <None Remove="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER_DERIVED.json" />
+    <None Remove="Files\PSA_PROFILER_CUSTOMER_CONTACT.json" />
     <None Remove="Files\SAT_CUSTOMER_CONTACT_DETAILS.json" />
+    <None Remove="Files\STG_PROFILER_CUSTOMER_CONTACT.json" />
     <None Remove="Scripts\generateSampleIntegrationSchemaView.sql" />
     <None Remove="Support\DataObjectMappingList.sql" />
   </ItemGroup>
@@ -97,6 +99,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Content Include="Files\PhysicalModel\200_Integration_Layer\bdv\vw_CUSTOMER_DERIVED.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PSA_PROFILER_CUSTOMER_CONTACT.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Files\sample_TEAM_Attribute_Mapping.json">
@@ -373,6 +378,11 @@
     <Content Include="Resources\transparent-green-checkmark-hi.png" />
     <Content Include="Support\DataObjectMappingList.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Files\STG_PROFILER_CUSTOMER_CONTACT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
