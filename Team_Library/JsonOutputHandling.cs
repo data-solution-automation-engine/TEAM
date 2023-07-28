@@ -181,43 +181,47 @@ namespace TEAM_Library
             }
             else if (jsonExportSetting.IsAddDataTypeToDataItem())
             {
-                var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject.Name, teamConnection).FirstOrDefault();
-
-                // Find the matching physical model row.
-                DataGridViewRow physicalModelRow = dataGridViewRowsPhysicalModel
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.schemaName].Value.ToString().Equals(fullyQualifiedName.Key))
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(fullyQualifiedName.Value))
-                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(dataItem.Name))
-                    .First();
-
-                if (physicalModelRow != null)
+                // Only continue if the physical model is there.
+                if (dataGridViewRowsPhysicalModel.Any())
                 {
-                    var dataType = physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.dataType].Value.ToString();
+                    var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject.Name, teamConnection).FirstOrDefault();
 
-                    dataItem.DataType = dataType;
+                    // Find the matching physical model row.
+                    DataGridViewRow physicalModelRow = dataGridViewRowsPhysicalModel
+                        .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.schemaName].Value.ToString().Equals(fullyQualifiedName.Key))
+                        .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(fullyQualifiedName.Value))
+                        .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(dataItem.Name))
+                        .First();
 
-                    switch (dataType)
+                    if (physicalModelRow != null)
                     {
-                        case "varchar":
-                        case "nvarchar":
-                        case "binary":
-                            dataItem.CharacterLength = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.characterLength].Value.ToString());
-                            break;
-                        case "numeric":
-                            dataItem.NumericPrecision = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericPrecision].Value.ToString());
-                            dataItem.NumericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
-                            break;
-                        case "int":
-                            // No length etc.
-                            break;
-                        case "datetime":
-                        case "datetime2":
-                        case "date":
-                            dataItem.NumericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
-                            break;
-                    }
+                        var dataType = physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.dataType].Value.ToString();
 
-                    dataItem.OrdinalPosition = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value.ToString());
+                        dataItem.DataType = dataType;
+
+                        switch (dataType)
+                        {
+                            case "varchar":
+                            case "nvarchar":
+                            case "binary":
+                                dataItem.CharacterLength = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.characterLength].Value.ToString());
+                                break;
+                            case "numeric":
+                                dataItem.NumericPrecision = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericPrecision].Value.ToString());
+                                dataItem.NumericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
+                                break;
+                            case "int":
+                                // No length etc.
+                                break;
+                            case "datetime":
+                            case "datetime2":
+                            case "date":
+                                dataItem.NumericScale = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.numericScale].Value.ToString());
+                                break;
+                        }
+
+                        dataItem.OrdinalPosition = int.Parse(physicalModelRow.Cells[(int)PhysicalModelMappingMetadataColumns.ordinalPosition].Value.ToString());
+                    }
                 }
             }
 
