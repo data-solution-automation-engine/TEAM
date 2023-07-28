@@ -668,12 +668,39 @@ namespace TEAM_Library
                 {
                     localExtension.Value = teamConnection.DatabaseServer.SchemaName;
                 }
-                
 
                 returnExtensions.Add(localExtension);
 
                 // Apply all the extensions back to the connection object.
                 dataObject.DataObjectConnection.Extensions = returnExtensions;
+
+                // Addition for backwards compatibility, also adding the schema an extension at dataObject level.
+                if (dataObject.Extensions == null)
+                {
+                    List<Extension> extensions = new List<Extension>();
+                    extensions.Add(localExtension);
+                    dataObject.Extensions = extensions;
+                }
+                else
+                {
+                    // Temporary extension list
+                    List<Extension> extensions = new List<Extension>();
+
+                    // Check if the schema extension already exists, replace if so.
+                    foreach (var extension in dataObject.Extensions)
+                    {
+                        if (extension.Key != "schema")
+                        {
+                            extensions.Add(extension);
+                        }
+                        else
+                        {
+                            extensions.Add(localExtension);
+                        }
+                    }
+
+                    dataObject.Extensions = extensions;
+                }
             }
 
             return dataObject;
