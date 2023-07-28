@@ -68,8 +68,12 @@
     <StartupObject>TEAM.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Files\PhysicalModel\100_Staging_Area\dbo\STG_PROFILER_CUSTOMER_CONTACT.json" />
+    <None Remove="Files\PhysicalModel\150_Persistent_Staging_Area\dbo\PSA_PROFILER_CUSTOMER_CONTACT.json" />
     <None Remove="Files\PhysicalModel\200_Integration_Layer\bdv\vw_CUSTOMER_DERIVED.json" />
+    <None Remove="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER_CONTACT_DETAILS.json" />
     <None Remove="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER_DERIVED.json" />
+    <None Remove="Files\PhysicalModel\200_Integration_Layer\dbo\vw_CUSTOMER_DERIVED.json" />
     <None Remove="Files\PSA_PROFILER_CUSTOMER_CONTACT.json" />
     <None Remove="Files\SAT_CUSTOMER_CONTACT_DETAILS.json" />
     <None Remove="Files\STG_PROFILER_CUSTOMER_CONTACT.json" />
@@ -98,7 +102,19 @@
     <Compile Update="TimedTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Content Include="Files\PhysicalModel\100_Staging_Area\dbo\STG_PROFILER_CUSTOMER_CONTACT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\150_Persistent_Staging_Area\dbo\PSA_PROFILER_CUSTOMER_CONTACT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Files\PhysicalModel\200_Integration_Layer\bdv\vw_CUSTOMER_DERIVED.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\SAT_CUSTOMER_CONTACT_DETAILS.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\PhysicalModel\200_Integration_Layer\dbo\vw_CUSTOMER_DERIVED.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Files\PSA_PROFILER_CUSTOMER_CONTACT.json">
@@ -171,7 +187,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Files\SAT_CUSTOMER_CONTACT_DETAILS.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Files\SAT_INCENTIVE_OFFER.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
