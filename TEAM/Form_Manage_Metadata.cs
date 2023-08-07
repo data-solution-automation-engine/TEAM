@@ -1711,7 +1711,7 @@ namespace TEAM
                         DataObject targetDataObject = dataObjectMapping.TargetDataObject;
                         var targetConnectionKey = targetDataObject.DataObjectConnection.DataConnectionString;
                         var targetConnection = TeamConnection.GetTeamConnectionByConnectionKey(targetConnectionKey, TeamConfiguration, TeamEventLog);
-                        KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.Name, targetConnection).FirstOrDefault();
+                        KeyValuePair<string, string> fullyQualifiedObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject, targetConnection).FirstOrDefault();
 
                         var targetNodeName = fullyQualifiedObjectTarget.Key + '.' + fullyQualifiedObjectTarget.Value;
 
@@ -1794,7 +1794,7 @@ namespace TEAM
 
                                         var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
 
-                                        Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(singleSourceDataObject.Name, sourceConnection);
+                                        Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(singleSourceDataObject, sourceConnection);
 
                                         var uniqueValue = fullyQualifiedObjectSource.FirstOrDefault();
                                         var sourceNodeNameFullyQualified = uniqueValue.Key + '.' + uniqueValue.Value;
@@ -1856,7 +1856,7 @@ namespace TEAM
                                             var relatedDataObjectConnectionKey = relatedDataObject.DataObjectConnection.DataConnectionString;
                                             var relatedDataObjectConnection = TeamConnection.GetTeamConnectionByConnectionKey(relatedDataObjectConnectionKey, TeamConfiguration, TeamEventLog);
                                             KeyValuePair<string, string> fullyQualifiedRelatedDataObjectName =
-                                                MetadataHandling.GetFullyQualifiedDataObjectName(relatedDataObject.Name, relatedDataObjectConnection).FirstOrDefault();
+                                                MetadataHandling.GetFullyQualifiedDataObjectName(relatedDataObject, relatedDataObjectConnection).FirstOrDefault();
 
                                             var fullyQualifiedRelatedDataObjectNodeName = fullyQualifiedRelatedDataObjectName.Key + '.' + fullyQualifiedRelatedDataObjectName.Value;
 
@@ -1899,12 +1899,11 @@ namespace TEAM
                                         // It's an object.
                                         var singleSourceDataObject = (DataObject)JsonConvert.DeserializeObject<DataObject>(intermediateJson);
 
-                                        sourceDataObjectName = singleSourceDataObject.Name;
                                         string sourceConnectionString = singleSourceDataObject.DataObjectConnection.DataConnectionString;
                                         var sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, TeamConfiguration, TeamEventLog).ConnectionInternalId;
                                         var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
 
-                                        Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection);
+                                        Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(singleSourceDataObject, sourceConnection);
                                         var uniqueValue = fullyQualifiedObjectSource.FirstOrDefault();
                                         sourceDataObjectFullyQualified = uniqueValue.Key + '.' + uniqueValue.Value;
                                     }
@@ -1990,8 +1989,6 @@ namespace TEAM
                             if (dataObjectMapping.BusinessKeys != null)
                             {
                                 var sourceDataObject = dataObjectMapping.SourceDataObjects.FirstOrDefault();
-
-                                var sourceDataObjectName = "";
                                 var sourceDataObjectFullyQualified = "";
 
                                 // Check if the source data object is a query, or a data object.
@@ -2002,12 +1999,11 @@ namespace TEAM
                                     // It's an object.
                                     var singleSourceDataObject = (DataObject)JsonConvert.DeserializeObject<DataObject>(intermediateJson);
 
-                                    sourceDataObjectName = singleSourceDataObject.Name;
                                     string sourceConnectionString = singleSourceDataObject.DataObjectConnection.DataConnectionString;
                                     var sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, TeamConfiguration, TeamEventLog).ConnectionInternalId;
                                     var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
 
-                                    Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection);
+                                    Dictionary<string, string> fullyQualifiedObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(singleSourceDataObject, sourceConnection);
                                     var uniqueValue = fullyQualifiedObjectSource.FirstOrDefault();
                                     sourceDataObjectFullyQualified = uniqueValue.Key + '.' + uniqueValue.Value;
                                 }
@@ -2534,7 +2530,7 @@ namespace TEAM
                     sqlStatementForDataItems.AppendLine("  ON OBJECT_NAME(main.OBJECT_ID) = keysub.TABLE_NAME");
                     sqlStatementForDataItems.AppendLine("  AND main.[name] = keysub.COLUMN_NAME");
 
-                    //Multi-active
+                    // Multi-active
 
                     var effectiveDateTimeAttribute =
                         TeamConfiguration.EnableAlternativeSatelliteLoadDateTimeAttribute == "True"
@@ -2572,15 +2568,13 @@ namespace TEAM
                     sqlStatementForDataItems.AppendLine(") customSubQuery");
                 }
 
-                // Shared / generic.
-
                 // Add the filtered objects.
                 sqlStatementForDataItems.AppendLine("WHERE 1=1");
                 sqlStatementForDataItems.AppendLine("  AND");
                 sqlStatementForDataItems.AppendLine("   (");
 
-                // Name, connection, schema
-                var filterList = new List<Tuple<string, TeamConnection, string>>();
+                // Object, connection, schema
+                var filterList = new List<Tuple<DataObject, TeamConnection, string>>();
 
                 foreach (DataRow row in filterDataObjects)
                 {
@@ -2602,8 +2596,8 @@ namespace TEAM
                     var targetSchema = "dbo";
                     targetSchema = targetDataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault().Value;
 
-                    var localTupleSource = new Tuple<string, TeamConnection, string>((string)row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()], localConnectionSource, sourceSchema);
-                    var localTupleTarget = new Tuple<string, TeamConnection, string>((string)row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()], localConnectionTarget, targetSchema);
+                    var localTupleSource = new Tuple<DataObject, TeamConnection, string>(sourceDataObject, localConnectionSource, sourceSchema);
+                    var localTupleTarget = new Tuple<DataObject, TeamConnection, string>(targetDataObject, localConnectionTarget, targetSchema);
 
                     if (!filterList.Contains(localTupleSource))
                     {
@@ -3367,7 +3361,7 @@ namespace TEAM
                     TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionId, TeamConfiguration, TeamEventLog);
 
                     DataObject sourceDataObject = (DataObject)dataObjectRow.Cells[(int)DataObjectMappingGridColumns.SourceDataObject].Value;
-                    var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObject.Name, sourceConnection).FirstOrDefault();
+                    var sourceDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObject, sourceConnection).FirstOrDefault();
 
                     var sourceColumnsDataTable = physicalModelDataTable.AsEnumerable()
                         .Where(row => row[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString() == sourceConnection.DatabaseServer.DatabaseName &&
@@ -3391,7 +3385,7 @@ namespace TEAM
                     var targetConnectionId = dataObjectRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
                     TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionId, TeamConfiguration, TeamEventLog);
 
-                    var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject.Name, targetConnection).FirstOrDefault();
+                    var targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject, targetConnection).FirstOrDefault();
 
                     var targetColumnDataTable = physicalModelDataTable.AsEnumerable()
                         .Where(row => row[(int)PhysicalModelMappingMetadataColumns.databaseName].ToString() == targetConnection.DatabaseServer.DatabaseName &&

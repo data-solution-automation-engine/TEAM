@@ -72,7 +72,7 @@ namespace TEAM_Library
             }
             else if (jsonExportSetting.IsAddDataItemsToDataObject())
             {
-                var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject.Name, teamConnection).FirstOrDefault();
+                var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject, teamConnection).FirstOrDefault();
 
                 List<dynamic> dataItems = new List<dynamic>();
 
@@ -184,7 +184,7 @@ namespace TEAM_Library
                 // Only continue if the physical model is there.
                 if (dataGridViewRowsPhysicalModel.Any())
                 {
-                    var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject.Name, teamConnection).FirstOrDefault();
+                    var fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject, teamConnection).FirstOrDefault();
 
                     // Find the matching physical model row.
                     DataGridViewRow physicalModelRow = dataGridViewRowsPhysicalModel
@@ -1052,7 +1052,7 @@ namespace TEAM_Library
                 tempComponent.ordinal = ordinal;
 
                 // Link surrogate key
-                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.TargetDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
+                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.TargetDataObject, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
                 tempComponent.surrogateKey = surrogateKey;
 
                 // Add individual key parts (the individual keys) as well.
@@ -1139,7 +1139,7 @@ namespace TEAM_Library
 
                 tempComponent.ordinal = ordinal;
 
-                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.TargetDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
+                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.TargetDataObject, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
                 tempComponent.surrogateKey = surrogateKey;
 
                 businessKeyComponents.Add(tempComponent);
@@ -1293,14 +1293,14 @@ namespace TEAM_Library
                     var column = row.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString();
 
                     // Add if it's not a standard element.
-                    var surrogateKey = DeriveSurrogateKey(lookupDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
+                    var surrogateKey = DeriveSurrogateKey(lookupDataObject, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
 
                     var isExcluded = column.IsExcludedBusinessKeyDataItem(dataObjectType, surrogateKey, businessKeyDefinition, teamConnection, teamConfiguration);
 
                     if (!isExcluded) // If not excluded.
                     {
                         // Get the corresponding Surrogate Key for the (target) component element.
-                        var localSurrogateKey = GetSurrogateKey(lookupDataObject.Name, teamConfiguration, teamConnection);
+                        var localSurrogateKey = GetSurrogateKey(lookupDataObject, teamConfiguration, teamConnection);
 
                         var localBusinessKeyTargetComponentElement = new BusinessKeyComponentElement();
                         localBusinessKeyTargetComponentElement.businessKeyComponentElement = column;
@@ -1484,37 +1484,37 @@ namespace TEAM_Library
         /// <summary>
         /// Evaluate which data object to find the surrogate key for, and then get it.
         /// </summary>
-        /// <param name="targetDataObjectName"></param>
+        /// <param name="targetDataObject"></param>
         /// <param name="businessKeyDefinition"></param>
         /// <param name="teamConnection"></param>
         /// <param name="teamConfiguration"></param>
         /// <param name="sourceDataObjectName"></param>
         /// <param name="dataGridViewRowsDataObjects"></param>
         /// <returns>surrogateKey</returns>
-        public static string DeriveSurrogateKey(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, EventLog eventLog)
+        public static string DeriveSurrogateKey(DataObject targetDataObject, string sourceDataObjectName, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, EventLog eventLog)
         {
             // Get the type
-            var dataObjectType = GetDataObjectType(targetDataObjectName, "", teamConfiguration);
+            var dataObjectType = GetDataObjectType(targetDataObject.Name, "", teamConfiguration);
 
             // If a data object has been evaluated to be a Satellite (or Link-Satellite), replace the data object to query with the parent Hub or Link.
             if (new [] { DataObjectTypes.Context, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey}.Contains(dataObjectType))
             {
                 try
                 {
-                    var parentDataObject = GetParentDataObjects(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects).FirstOrDefault();
+                    var parentDataObject = GetParentDataObjects(targetDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects).FirstOrDefault();
 
                     if (parentDataObject != null)
                     {
-                        targetDataObjectName = parentDataObject.Name;
+                        targetDataObject.Name = parentDataObject.Name;
                     }
                 }
                 catch (Exception exception)
                 {
-                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The parent data object, and therefore the surrogate key could not be identified for '{targetDataObjectName}'. The reported error is {exception.Message}."));
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The parent data object, and therefore the surrogate key could not be identified for '{targetDataObject.Name}'. The reported error is {exception.Message}."));
                 }
             }
 
-            var surrogateKey = GetSurrogateKey(targetDataObjectName, teamConfiguration, teamConnection);
+            var surrogateKey = GetSurrogateKey(targetDataObject, teamConfiguration, teamConnection);
 
             return surrogateKey;
         }
@@ -1526,16 +1526,16 @@ namespace TEAM_Library
         /// <param name="teamConfiguration"></param>
         /// <param name="teamConnection"></param>
         /// <returns></returns>
-        private static string GetSurrogateKey(string dataObjectName, TeamConfiguration teamConfiguration, TeamConnection teamConnection)
+        private static string GetSurrogateKey(DataObject dataObject, TeamConfiguration teamConfiguration, TeamConnection teamConnection)
         {
             string returnValue = teamConfiguration.KeyPattern;
 
             // Get the fully qualified name.
-            KeyValuePair<string, string> fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObjectName, teamConnection).FirstOrDefault();
+            KeyValuePair<string, string> fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject, teamConnection).FirstOrDefault();
 
-            dataObjectName = fullyQualifiedName.Value;
+            dataObject.Name = fullyQualifiedName.Value;
 
-            var dataObjectType = GetDataObjectType(dataObjectName, "", teamConfiguration);
+            var dataObjectType = GetDataObjectType(dataObject.Name, "", teamConfiguration);
 
             if (returnValue.Contains("{dataObjectType}"))
             {
@@ -1577,35 +1577,35 @@ namespace TEAM_Library
             {
                 if (dataObjectType == DataObjectTypes.StagingArea)
                 {
-                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.StgTablePrefixValue,""));
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObject.Name.Replace(teamConfiguration.StgTablePrefixValue,""));
                 }
                 else if (dataObjectType == DataObjectTypes.PersistentStagingArea)
                 {
-                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.PsaTablePrefixValue, ""));
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObject.Name.Replace(teamConfiguration.PsaTablePrefixValue, ""));
                 }
                 else if (dataObjectType == DataObjectTypes.CoreBusinessConcept)
                 {
-                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.HubTablePrefixValue,""));
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObject.Name.Replace(teamConfiguration.HubTablePrefixValue,""));
                 }
                 else if (dataObjectType == DataObjectTypes.Context)
                 {
-                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.SatTablePrefixValue,""));
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObject.Name.Replace(teamConfiguration.SatTablePrefixValue,""));
                 }
                 else if (dataObjectType == DataObjectTypes.NaturalBusinessRelationship)
                 {
-                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.LinkTablePrefixValue, ""));
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObject.Name.Replace(teamConfiguration.LinkTablePrefixValue, ""));
                 }
                 else if (dataObjectType == DataObjectTypes.NaturalBusinessRelationshipContext)
                 {
-                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.LsatTablePrefixValue,""));
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObject.Name.Replace(teamConfiguration.LsatTablePrefixValue,""));
                 }
                 else if (dataObjectType == DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey)
                 {
-                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName.Replace(teamConfiguration.LsatTablePrefixValue,""));
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObject.Name.Replace(teamConfiguration.LsatTablePrefixValue,""));
                 }
                 else
                 {
-                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObjectName);
+                    returnValue = returnValue.Replace("{dataObject.baseName}", dataObject.Name);
                 }
             }
 

@@ -1027,11 +1027,11 @@ namespace TEAM
                 {
                     // Current cell
                     DataGridViewCell cell = Rows[e.RowIndex].Cells[e.ColumnIndex];
+                    DataObject fullDataObject = (DataObject)e.Value;
 
                     // Set the tooltip.
                     try
                     {
-                        DataObject fullDataObject = (DataObject)e.Value;
                         cell.ToolTipText = JsonConvert.SerializeObject(fullDataObject, Newtonsoft.Json.Formatting.Indented);
                     }
                     catch (Exception ex)
@@ -1046,7 +1046,7 @@ namespace TEAM
 
                     string dataObjectName = e.Value.ToString();
 
-                    KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(dataObjectName, targetConnection).FirstOrDefault();
+                    KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(fullDataObject, targetConnection).FirstOrDefault();
 
                     // Only the name (e.g. without the schema) should be evaluated.
                     string targetDataObjectNonQualifiedName = targetDataObjectFullyQualifiedKeyValuePair.Value;
@@ -1205,7 +1205,7 @@ namespace TEAM
                     var connection = TeamConnection.GetTeamConnectionByConnectionInternalId(connectionInternalId, TeamConfiguration, TeamEventLog);
 
                     var schemaExtension = dataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault();
-                    Dictionary<string, string> dataObjectFullyQualifiedNameDictionary = GetFullyQualifiedDataObjectName(cell.EditedFormattedValue.ToString(), connection);
+                    Dictionary<string, string> dataObjectFullyQualifiedNameDictionary = GetFullyQualifiedDataObjectName(dataObject, connection);
                     var dataObjectFullyQualifiedName = dataObjectFullyQualifiedNameDictionary.FirstOrDefault();
 
                     // Set the name (must be without the schema extension).
@@ -1750,7 +1750,7 @@ namespace TEAM
 
                             var dataObjectType = GetDataObjectType(targetDataObject.Name, "", FormBase.TeamConfiguration);
 
-                            var surrogateKey = JsonOutputHandling.DeriveSurrogateKey(targetDataObject.Name, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration, dataGridViewRowsDataObjects, TeamEventLog);
+                            var surrogateKey = JsonOutputHandling.DeriveSurrogateKey(targetDataObject, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration, dataGridViewRowsDataObjects, TeamEventLog);
 
                             if (!autoMappedTargetDataItemName.IsIncludedDataItem(dataObjectType, surrogateKey, targetDataItemConnection, TeamConfiguration))
                                 continue;
@@ -1800,7 +1800,7 @@ namespace TEAM
                         }
                         catch (Exception exception)
                         {
-                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {exception.Message}."));
+                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {exception.Message}. This is associated with data object mapping {dataObjectMapping.MappingName}."));
                         }
                     }
                 }

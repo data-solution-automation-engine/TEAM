@@ -188,7 +188,7 @@ namespace TEAM_Library
                 }
                 else
                 {
-                    resultList.Add($"     Data Object {localSource} in the attribute mappings (source) does not seem to exist in the table mappings for an enabled mapping. Please check if this name is mapped at table level in the grid also.\r\n");
+                    resultList.Add($"     Data Object '{localSource}' in the attribute mappings (source) does not seem to exist in the table mappings for an enabled mapping. Please check if this name is mapped at table level in the grid as well. This concerns data item mapping '{(string)row[DataItemMappingGridColumns.HashKey.ToString()]}'.\r\n");
                     metadataValidations.ValidationIssues++;
                     localValidationIssues++;
                 }
@@ -203,7 +203,7 @@ namespace TEAM_Library
                 }
                 else
                 {
-                    resultList.Add($"     Data Object {localTarget}, as used as a target object in the data item (column) mappings has encountered a validation issue. This object does not seem to exist in the data object mappings for an enabled mapping. Please check if this name is mapped at data object level in the grid.\r\n");
+                    resultList.Add($"     Data Object '{localTarget}', as used as a target object in the data item (column) mappings has encountered a validation issue. This object does not seem to exist in the data object mappings for an enabled mapping. Please check if this name is mapped at data object level in the grid. This concerns data item mapping '{(string)row[DataItemMappingGridColumns.HashKey.ToString()]}'.\r\n");
                     metadataValidations.ValidationIssues++;
                     localValidationIssues++;
                 }
@@ -337,7 +337,7 @@ namespace TEAM_Library
 
             var localConnectionDictionary = LocalConnectionDictionary.GetLocalConnectionDictionary(teamConfiguration.ConnectionDictionary);
 
-            var objectList = new List<Tuple<string, string, string, string>>();
+            var objectList = new List<Tuple<DataWarehouseAutomation.DataObject, DataWarehouseAutomation.DataObject, string, string>>();
 
             foreach (DataRow row in dataRows)
             {
@@ -356,10 +356,10 @@ namespace TEAM_Library
                         // Derive the connection
                         localConnectionDictionary.TryGetValue(row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString(), out var connectionValue);
 
-                        var newValidationObject = new Tuple<string, string, string, string>
+                        var newValidationObject = new Tuple<DataWarehouseAutomation.DataObject, DataWarehouseAutomation.DataObject, string, string>
                         (
-                            row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString(),
-                            row[DataObjectMappingGridColumns.TargetDataObject.ToString()].ToString(),
+                            (DataWarehouseAutomation.DataObject)row[DataObjectMappingGridColumns.SourceDataObject.ToString()],
+                            (DataWarehouseAutomation.DataObject)row[DataObjectMappingGridColumns.TargetDataObject.ToString()],
                             businessKey,
                             connectionValue
                         );
@@ -424,7 +424,7 @@ namespace TEAM_Library
         /// <param name="dataObjectMappingDataTable"></param>
         /// <param name="physicalModelDataTable"></param>
         /// <returns></returns>
-        internal static Dictionary<string, bool> ValidateLinkKeyOrder(Tuple<string, string, string, string> validationObject, DataTable dataObjectMappingDataTable, DataTable physicalModelDataTable, List<DataGridViewRow> dataGridViewRowsDataObjects, TeamConfiguration teamConfiguration, EventLog eventLog)
+        internal static Dictionary<string, bool> ValidateLinkKeyOrder(Tuple<DataWarehouseAutomation.DataObject, DataWarehouseAutomation.DataObject, string, string> validationObject, DataTable dataObjectMappingDataTable, DataTable physicalModelDataTable, List<DataGridViewRow> dataGridViewRowsDataObjects, TeamConfiguration teamConfiguration, EventLog eventLog)
         {
             // First, the Hubs need to be identified using the Business Key information. This, for the Link, is the combination of Business keys separated by a comma.
             // Every business key needs to be iterated over to query the individual Hub information
@@ -449,7 +449,7 @@ namespace TEAM_Library
                     string hubTableConnectionId = selectionRows[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var hubTableConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(hubTableConnectionId, teamConfiguration, eventLog);
 
-                    string hubSurrogateKeyName = JsonOutputHandling.DeriveSurrogateKey(validationObject.Item2, validationObject.Item1, validationObject.Item3, hubTableConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
+                    string hubSurrogateKeyName = JsonOutputHandling.DeriveSurrogateKey(validationObject.Item2, validationObject.Item1.Name, validationObject.Item3, hubTableConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
 
                     // Add to the dictionary that contains the keys in order.
                     hubKeyOrder.Add(businessKeyOrder, hubSurrogateKeyName);
@@ -536,7 +536,7 @@ namespace TEAM_Library
 
             // return the result of the test;
             Dictionary<string, bool> result = new Dictionary<string, bool>();
-            result.Add(validationObject.Item2, equal);
+            result.Add(validationObject.Item2.Name, equal);
             return result;
         }
 
@@ -563,11 +563,11 @@ namespace TEAM_Library
 
                 if (row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True")
                 {
-                    var targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
+                    var validationTargetDataObject = (DataWarehouseAutomation.DataObject)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
                     var targetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionInternalId, teamConfiguration, eventLog);
-                    var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-                    var targetTableType = MetadataHandling.GetDataObjectType(targetDataObjectName, "", teamConfiguration);
+                    var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(validationTargetDataObject, targetConnection).FirstOrDefault();
+                    var targetTableType = MetadataHandling.GetDataObjectType(validationTargetDataObject.Name, "", teamConfiguration);
                     var targetFilterCriterion = row[DataObjectMappingGridColumns.FilterCriterion.ToString()].ToString();
 
                     // Quick fix - replace 1=0 with empty.
@@ -576,10 +576,10 @@ namespace TEAM_Library
                         targetFilterCriterion = string.Empty;
                     }
 
-                    var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
+                    var validationSourceDataObject = (DataWarehouseAutomation.DataObject)row[DataObjectMappingGridColumns.SourceDataObject.ToString()];
                     var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                     var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, teamConfiguration, eventLog);
-                    var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
+                    var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(validationSourceDataObject, sourceConnection).FirstOrDefault();
 
                     if (targetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationship || targetTableType == MetadataHandling.DataObjectTypes.Context || targetTableType == MetadataHandling.DataObjectTypes.NaturalBusinessRelationshipContext)
                     {
@@ -699,11 +699,10 @@ namespace TEAM_Library
                         if (dataObjectMappingRow.RowState == DataRowState.Deleted)
                             continue;
 
-                        var TargetDataObject = dataObjectMappingRow[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
+                        var validationTargetDataObject = (DataWarehouseAutomation.DataObject)dataObjectMappingRow[DataObjectMappingGridColumns.TargetDataObject.ToString()];
                         var targetConnectionInternalId = dataObjectMappingRow[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                         var targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionInternalId, teamConfiguration, eventLog);
-                        var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(TargetDataObject, targetConnection).FirstOrDefault();
-                        //var targetTableType = MetadataHandling.GetDataObjectType(TargetDataObject, "", FormBase.TeamConfiguration);
+                        var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(validationTargetDataObject, targetConnection).FirstOrDefault();
                         var filterCriterion = dataObjectMappingRow[DataObjectMappingGridColumns.FilterCriterion.ToString()].ToString();
 
                         // Quick fix - replace 1=0 with empty.
@@ -712,14 +711,13 @@ namespace TEAM_Library
                             filterCriterion = string.Empty;
                         }
 
-                        var sourceDataObjectName = dataObjectMappingRow[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
+                        var validationSourceDataObject = (DataWarehouseAutomation.DataObject)dataObjectMappingRow[DataObjectMappingGridColumns.SourceDataObject.ToString()];
                         var sourceConnectionInternalId = dataObjectMappingRow[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                         var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, teamConfiguration, eventLog);
-                        var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
+                        var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(validationSourceDataObject, sourceConnection).FirstOrDefault();
 
                         // Count the number of dependents.
                         if (
-                             //dataObjectMappingRow[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True" && // Only active generated objects
                              sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value == validationObject.Item1 &&
                              (string)dataObjectMappingRow[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
                              targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value != validationObject.Item2 && // Exclude itself
@@ -739,20 +737,18 @@ namespace TEAM_Library
                 {
                     try
                     {
-                        var targetDataObjectName = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
+                        var validationTargetDataObject = (DataWarehouseAutomation.DataObject)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
                         var targetConnectionInternalId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                         var targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionInternalId, teamConfiguration, eventLog);
-                        var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObjectName, targetConnection).FirstOrDefault();
-                        //var targetTableType = MetadataHandling.GetDataObjectType(TargetDataObject, "", FormBase.TeamConfiguration);
+                        var targetFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(validationTargetDataObject, targetConnection).FirstOrDefault();
 
-                        var sourceDataObjectName = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
+                        var validationSourceDataObject = (DataWarehouseAutomation.DataObject)row[DataObjectMappingGridColumns.SourceDataObject.ToString()];
                         var sourceConnectionInternalId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                         var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, teamConfiguration, eventLog);
-                        var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(sourceDataObjectName, sourceConnection).FirstOrDefault();
-                        //var sourceTableType = MetadataHandling.GetDataObjectType(sourceDataObjectName, "", FormBase.TeamConfiguration);
+                        var sourceFullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(validationSourceDataObject, sourceConnection).FirstOrDefault();
 
-                        if (
-                            //row[DataObjectMappingGridColumns.Enabled.ToString()].ToString() == "True" && // Only active generated objects
+                        if
+                        (
                             sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value == validationObject.Item1 &&
                             (string)row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] == validationObject.Item3.Trim() &&
                             targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value != validationObject.Item2 && // Exclude itself
@@ -810,33 +806,33 @@ namespace TEAM_Library
 
                 if (dataObjectRow.Item1 == "True") //If the corresponding Data Object is enabled
                 {
-                    var validationObjectSource = row[DataItemMappingGridColumns.SourceDataObject.ToString()].ToString();
+                    var validationSourceDataObject = dataObjectRow.Item2;
                     TeamConnection sourceConnection = dataObjectRow.Item3;
                     var validationAttributeSource = row[DataItemMappingGridColumns.SourceDataItem.ToString()].ToString();
 
-                    var validationObjectTarget = row[DataItemMappingGridColumns.TargetDataObject.ToString()].ToString();
+                    var validationTargetDataObject = dataObjectRow.Item4;
                     TeamConnection targetConnection = dataObjectRow.Item5;
                     var validationAttributeTarget = row[DataItemMappingGridColumns.TargetDataItem.ToString()].ToString();
 
-                    var sourceDataObjectType = MetadataHandling.GetDataObjectType(validationObjectSource, "", teamConfiguration).ToString();
+                    var sourceDataObjectType = MetadataHandling.GetDataObjectType(validationSourceDataObject.Name, "", teamConfiguration).ToString();
 
                     // No need to evaluate the operational system (real sources), or if the source is a data query (logic).
                     if (sourceDataObjectType != MetadataHandling.DataObjectTypes.Source.ToString() && !validationAttributeSource.IsDataQuery())
                     {
-                        var objectValidated = ValidateAttributeExistence(validationObjectSource, validationAttributeSource, sourceConnection, physicalModelDataTable);
+                        var objectValidated = ValidateAttributeExistence(validationSourceDataObject, validationAttributeSource, sourceConnection, physicalModelDataTable);
 
                         // Add negative results to dictionary
                         if (objectValidated == "False" && !resultDictionary.ContainsKey(validationAttributeSource))
                         {
-                            resultDictionary.Add(validationAttributeSource, validationObjectSource); // Add objects that did not pass the test
+                            resultDictionary.Add(validationAttributeSource, validationSourceDataObject.Name); // Add objects that did not pass the test
                         }
 
-                        objectValidated = ValidateAttributeExistence(validationObjectTarget, validationAttributeTarget, targetConnection, physicalModelDataTable);
+                        objectValidated = ValidateAttributeExistence(validationTargetDataObject, validationAttributeTarget, targetConnection, physicalModelDataTable);
 
                         // Add negative results to dictionary
                         if (objectValidated == "False" && !resultDictionary.ContainsKey(validationAttributeTarget))
                         {
-                            resultDictionary.Add(validationAttributeTarget, validationObjectTarget); // Add objects that did not pass the test
+                            resultDictionary.Add(validationAttributeTarget, validationTargetDataObject.Name); // Add objects that did not pass the test
                         }
                     }
                 }
@@ -861,22 +857,24 @@ namespace TEAM_Library
         }
 
         /// <summary>
-        /// Returns the source, and target connection for a given input source and target mapping.
+        /// Returns the source, and target connection for a given input data item source- and target mapping.
         /// Item 1 is the enabled flag, item 2 is the source, item 3 the source connection, item 4 the target and Item 5 is the target connection.
         /// </summary>
         /// <param name="dataObjectMappingDataTable"></param>
         /// <param name="sourceTable"></param>
         /// <param name="targetTable"></param>
+        /// <param name="teamConfiguration"></param>
+        /// <param name="eventLog"></param>
         /// <returns></returns>
-        private static Tuple<string, string, TeamConnection, string, TeamConnection> GetDataObjectMappingFromDataItemMapping(DataTable dataObjectMappingDataTable, string sourceTable, string targetTable, TeamConfiguration teamConfiguration, EventLog eventLog)
+        private static Tuple<string, DataWarehouseAutomation.DataObject, TeamConnection, DataWarehouseAutomation.DataObject, TeamConnection> GetDataObjectMappingFromDataItemMapping(DataTable dataObjectMappingDataTable, string sourceTable, string targetTable, TeamConfiguration teamConfiguration, EventLog eventLog)
         {
             // Default return value
-            Tuple<string, string, TeamConnection, string, TeamConnection> returnTuple = new Tuple<string, string, TeamConnection, string, TeamConnection>
+            Tuple<string, DataWarehouseAutomation.DataObject, TeamConnection, DataWarehouseAutomation.DataObject, TeamConnection> returnTuple = new Tuple<string, DataWarehouseAutomation.DataObject, TeamConnection, DataWarehouseAutomation.DataObject, TeamConnection>
                 (
                     "False",
-                    sourceTable,
                     null,
-                    targetTable,
+                    null,
+                    null,
                     null
                 );
 
@@ -896,18 +894,21 @@ namespace TEAM_Library
             }
             else
             {
+                var sourceDataObject = (DataWarehouseAutomation.DataObject)DataObjectMappings[0][DataObjectMappingGridColumns.SourceDataObject.ToString()];
                 var connectionInternalIdSource = DataObjectMappings[0][DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
-                var connectionInternalIdTarget = DataObjectMappings[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                 TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(connectionInternalIdSource, teamConfiguration, eventLog);
+
+                var targetDataObject = (DataWarehouseAutomation.DataObject)DataObjectMappings[0][DataObjectMappingGridColumns.TargetDataObject.ToString()];
+                var connectionInternalIdTarget = DataObjectMappings[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                 TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(connectionInternalIdTarget, teamConfiguration, eventLog);
 
                 // Set the right values
-                returnTuple = new Tuple<string, string, TeamConnection, string, TeamConnection>
+                returnTuple = new Tuple<string, DataWarehouseAutomation.DataObject, TeamConnection, DataWarehouseAutomation.DataObject, TeamConnection>
                 (
                     DataObjectMappings[0][DataObjectMappingGridColumns.Enabled.ToString()].ToString(),
-                    sourceTable,
+                    sourceDataObject,
                     sourceConnection,
-                    targetTable,
+                    targetDataObject,
                     targetConnection
                 );
 
@@ -925,7 +926,7 @@ namespace TEAM_Library
         /// <param name="teamConnection"></param>
         /// <param name="physicalModelDataTable"></param>
         /// <returns></returns>
-        internal static string ValidateAttributeExistence(string validationObject, string validationAttribute, TeamConnection teamConnection, DataTable physicalModelDataTable)
+        internal static string ValidateAttributeExistence(DataWarehouseAutomation.DataObject validationObject, string validationAttribute, TeamConnection teamConnection, DataTable physicalModelDataTable)
         {
             string returnExistenceEvaluation = "False";
 
@@ -974,13 +975,13 @@ namespace TEAM_Library
                     Dictionary<Tuple<string, string>, bool> objectValidated = new Dictionary<Tuple<string, string>, bool>();
 
                     // Source table and business key definitions.
-                    string validationObject = row[DataObjectMappingGridColumns.SourceDataObject.ToString()].ToString();
+                    var validationObject = (DataWarehouseAutomation.DataObject)row[DataObjectMappingGridColumns.SourceDataObject.ToString()];
                     string validationConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                     TeamConnection validationConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(validationConnectionId, teamConfiguration, eventLog);
                     string businessKeyDefinition = row[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].ToString();
 
                     // Exclude a lookup to the source
-                    if (MetadataHandling.GetDataObjectType(validationObject, "", teamConfiguration).ToString() != MetadataHandling.DataObjectTypes.Source.ToString())
+                    if (MetadataHandling.GetDataObjectType(validationObject.Name, "", teamConfiguration).ToString() != MetadataHandling.DataObjectTypes.Source.ToString())
                     {
                         objectValidated = ValidateSourceBusinessKeyExistenceVirtual(validationObject, businessKeyDefinition, validationConnection, physicalModelDataTable);
                     }
@@ -1022,7 +1023,7 @@ namespace TEAM_Library
         /// <param name="inputDataTable"></param>
         /// <returns></returns>
         /// 
-        internal static Dictionary<Tuple<string, string>, bool> ValidateSourceBusinessKeyExistenceVirtual(string validationObject, string businessKeyDefinition, TeamConnection teamConnection, DataTable inputDataTable)
+        internal static Dictionary<Tuple<string, string>, bool> ValidateSourceBusinessKeyExistenceVirtual(DataWarehouseAutomation.DataObject validationObject, string businessKeyDefinition, TeamConnection teamConnection, DataTable inputDataTable)
         {
             // First, the Business Keys for each table need to be identified information. This can be the combination of Business keys separated by a comma.
             // Every business key needs to be iterated over to validate if the attribute exists in that table.
@@ -1073,7 +1074,7 @@ namespace TEAM_Library
                             returnExistenceEvaluation = true;
                         }
 
-                        result.Add(Tuple.Create(validationObject, businessKeyPart.Trim()), returnExistenceEvaluation);
+                        result.Add(Tuple.Create(validationObject.Name, businessKeyPart.Trim()), returnExistenceEvaluation);
                     }
                 }
             }
@@ -1103,29 +1104,30 @@ namespace TEAM_Library
 
                 if (row[(int)DataObjectMappingGridColumns.Enabled] != DBNull.Value && (string)row[(int)DataObjectMappingGridColumns.Enabled] == "True")
                 {
-                    // Sources
-                    var validationObjectSource = row[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].ToString();
+                    // Source
+                    var validationSourceDataObject = (DataWarehouseAutomation.DataObject)row[DataObjectMappingGridColumns.SourceDataObject.ToString()];
                     var validationObjectSourceConnectionId = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
+
                     var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(validationObjectSourceConnectionId, teamConfiguration, eventLog);
-                    KeyValuePair<string, string> fullyQualifiedValidationObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectSource, sourceConnection).FirstOrDefault();
+                    KeyValuePair<string, string> fullyQualifiedValidationObjectSource = MetadataHandling.GetFullyQualifiedDataObjectName(validationSourceDataObject, sourceConnection).FirstOrDefault();
 
                     // Targets
-                    var validationObjectTarget = row[DataObjectMappingGridColumns.TargetDataObjectName.ToString()].ToString();
+                    var validationTargetDataObject = (DataWarehouseAutomation.DataObject)row[DataObjectMappingGridColumns.TargetDataObject.ToString()];
                     var validationObjectTargetConnectionId = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     var targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(validationObjectTargetConnectionId, teamConfiguration, eventLog);
-                    KeyValuePair<string, string> fullyQualifiedValidationObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(validationObjectTarget, targetConnection).FirstOrDefault();
+                    KeyValuePair<string, string> fullyQualifiedValidationObjectTarget = MetadataHandling.GetFullyQualifiedDataObjectName(validationTargetDataObject, targetConnection).FirstOrDefault();
 
                     // No need to evaluate the operational system (real sources))
-                    if (MetadataHandling.GetDataObjectType(validationObjectSource, "", teamConfiguration).ToString() != MetadataHandling.DataObjectTypes.Source.ToString())
+                    if (MetadataHandling.GetDataObjectType(validationSourceDataObject.Name, "", teamConfiguration).ToString() != MetadataHandling.DataObjectTypes.Source.ToString())
                     {
-                        var objectValidated = ValidateObjectExistence(validationObjectSource, sourceConnection, physicalModelDataTable);
+                        var objectValidated = ValidateObjectExistence(validationSourceDataObject, sourceConnection, physicalModelDataTable);
 
                         if (objectValidated == "False" && !resultDictionary.ContainsKey(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value))
                         {
                             resultDictionary.Add(fullyQualifiedValidationObjectSource.Key + '.' + fullyQualifiedValidationObjectSource.Value, objectValidated); // Add objects that did not pass the test
                         }
 
-                        objectValidated = ValidateObjectExistence(validationObjectTarget, targetConnection, physicalModelDataTable);
+                        objectValidated = ValidateObjectExistence(validationTargetDataObject, targetConnection, physicalModelDataTable);
 
                         if (objectValidated == "False" && !resultDictionary.ContainsKey(fullyQualifiedValidationObjectTarget.Key + '.' + fullyQualifiedValidationObjectTarget.Value))
                         {
@@ -1159,7 +1161,7 @@ namespace TEAM_Library
         /// <param name="teamConnection"></param>
         /// <param name="inputDataTable"></param>
         /// <returns></returns>
-        internal static string ValidateObjectExistence(string validationObject, TeamConnection teamConnection, DataTable inputDataTable)
+        internal static string ValidateObjectExistence(DataWarehouseAutomation.DataObject validationObject, TeamConnection teamConnection, DataTable inputDataTable)
         {
             string returnExistenceEvaluation = "False";
 

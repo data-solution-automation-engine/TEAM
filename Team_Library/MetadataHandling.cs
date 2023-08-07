@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DataWarehouseAutomation;
 
 namespace TEAM_Library
 {
@@ -144,43 +145,53 @@ namespace TEAM_Library
 
         /// <summary>
         /// Separates the schema from the table name (if available), and returns both as individual values in a Dictionary key/value pair (key schema/ value table).
-        /// If no schema is defined, the connection information will be used to determine the schema. If all else fails 'dbo' will set as default.
+        /// If no schema is defined, the schema property from the data object will be used, otherwise the connection information will be used to determine the schema. If all else fails 'dbo' will set as default.
         /// </summary>
-        /// <param name="tableName"></param>
+        /// <param name="dataObject"></param>
         /// <param name="teamConnection"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> GetFullyQualifiedDataObjectName(string tableName, TeamConnection teamConnection)
+        public static Dictionary<string, string> GetFullyQualifiedDataObjectName(DataObject dataObject, TeamConnection teamConnection)
         {
             Dictionary<string, string> fullyQualifiedTableName = new Dictionary<string, string>();
             string schemaName = "";
-            string returnTableName = "";
+            string returnDataObjectName = "";
 
-            if (tableName.Contains('.')) // Split the string
+            if (dataObject.Name.Contains('.')) // Split the string
             {
-                var splitName = tableName.Split('.').ToList();
+                var splitName = dataObject.Name.Split('.').ToList();
 
                 schemaName = splitName[0];
-                returnTableName = splitName[1];
+                returnDataObjectName = splitName[1];
 
-                fullyQualifiedTableName.Add(schemaName, returnTableName);
+                fullyQualifiedTableName.Add(schemaName, returnDataObjectName);
 
             }
-            else // Return the default (e.g. [dbo])
+            else if (!dataObject.Name.Contains('.'))
             {
-                if (teamConnection is null)
+                returnDataObjectName = dataObject.Name;
+
+                var schemaExtension = dataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault();
+
+                if (schemaExtension != null)
                 {
-                    schemaName = "dbo";
+                    schemaName = schemaExtension.Value;
                 }
                 else
                 {
-                    schemaName = teamConnection.DatabaseServer.SchemaName ?? "dbo";
+                    if (teamConnection is null)
+                    {
+                        schemaName = "dbo";
+                    }
+                    else
+                    {
+                        schemaName = teamConnection.DatabaseServer.SchemaName ?? "dbo";
+                    }
+
+                    returnDataObjectName = dataObject.Name;
                 }
-
-                returnTableName = tableName;
-
-                fullyQualifiedTableName.Add(schemaName, returnTableName);
             }
 
+            fullyQualifiedTableName.Add(schemaName, returnDataObjectName);
             return fullyQualifiedTableName;
         }
     }

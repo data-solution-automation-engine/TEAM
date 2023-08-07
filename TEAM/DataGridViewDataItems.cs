@@ -553,11 +553,11 @@ namespace TEAM
 
                         if (dataObjectGridViewRow != null)
                         {
+                            var targetDataObject = (DataWarehouseAutomation.DataObject)dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value;
                             var targetConnectionId = dataObjectGridViewRow.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
                             TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionId, TeamConfiguration, TeamEventLog);
 
-                            KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair =
-                                MetadataHandling.GetFullyQualifiedDataObjectName(targetdataObjectName, targetConnection).FirstOrDefault();
+                            KeyValuePair<string, string> targetDataObjectFullyQualifiedKeyValuePair = MetadataHandling.GetFullyQualifiedDataObjectName(targetDataObject, targetConnection).FirstOrDefault();
 
                             // Only the name (e.g. without the schema) should be evaluated.
                             string targetDataObjectNonQualifiedName = targetDataObjectFullyQualifiedKeyValuePair.Value;
