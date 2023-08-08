@@ -64,7 +64,7 @@ namespace TEAM_Library
 
         public int ReportErrors(EventLog eventLog)
         {
-            // Report the events (including errors) back to the user
+            // Report the events (including errors) back to the user.
             int errorCounter = 0;
             int highWaterMarkCounter = errorReportedHighWaterMark;
             int eventCounter = 1;

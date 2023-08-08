@@ -1493,8 +1493,9 @@ namespace TEAM_Library
         /// <returns>surrogateKey</returns>
         public static string DeriveSurrogateKey(DataObject targetDataObject, string sourceDataObjectName, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, EventLog eventLog)
         {
-            // Get the type
+            // Get the type.
             var dataObjectType = GetDataObjectType(targetDataObject.Name, "", teamConfiguration);
+            var surrogateKey = "";
 
             // If a data object has been evaluated to be a Satellite (or Link-Satellite), replace the data object to query with the parent Hub or Link.
             if (new [] { DataObjectTypes.Context, DataObjectTypes.NaturalBusinessRelationshipContext, DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey}.Contains(dataObjectType))
@@ -1505,7 +1506,7 @@ namespace TEAM_Library
 
                     if (parentDataObject != null)
                     {
-                        targetDataObject.Name = parentDataObject.Name;
+                        surrogateKey = GetSurrogateKey(parentDataObject, teamConfiguration, teamConnection);
                     }
                 }
                 catch (Exception exception)
@@ -1513,8 +1514,11 @@ namespace TEAM_Library
                     eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The parent data object, and therefore the surrogate key could not be identified for '{targetDataObject.Name}'. The reported error is {exception.Message}."));
                 }
             }
-
-            var surrogateKey = GetSurrogateKey(targetDataObject, teamConfiguration, teamConnection);
+            else
+            {
+                // If it's no context table, just get the SK based on the target object itself.
+                surrogateKey = GetSurrogateKey(targetDataObject, teamConfiguration, teamConnection);
+            }
 
             return surrogateKey;
         }
@@ -1522,7 +1526,7 @@ namespace TEAM_Library
         /// <summary>
         /// Return the Surrogate Key for a given table using the TEAM settings (key pattern).
         /// </summary>
-        /// <param name="dataObjectName"></param>
+        /// <param name="dataObject"></param>
         /// <param name="teamConfiguration"></param>
         /// <param name="teamConnection"></param>
         /// <returns></returns>
@@ -1533,7 +1537,7 @@ namespace TEAM_Library
             // Get the fully qualified name.
             KeyValuePair<string, string> fullyQualifiedName = GetFullyQualifiedDataObjectName(dataObject, teamConnection).FirstOrDefault();
 
-            dataObject.Name = fullyQualifiedName.Value;
+            //dataObject.Name = fullyQualifiedName.Value;
 
             var dataObjectType = GetDataObjectType(dataObject.Name, "", teamConfiguration);
 

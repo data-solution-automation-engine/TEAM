@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 namespace TEAM_Library
 {
+    
     /// <summary>
     /// Convenience class to capture the data object mappings for each file (since a file may contain one or more mappings in a mapping list).
     /// </summary>
@@ -53,6 +54,8 @@ namespace TEAM_Library
         public EventLog EventLog { get; set; }
 
         public string MetadataPath { get; set; }
+
+        public bool hasReportedMissingSchema { get; set; } = false;
 
         /// <summary>
         /// A list of the filename / data object mapping list combinations.
@@ -120,7 +123,11 @@ namespace TEAM_Library
                                 }
                                 else
                                 {
-                                    EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The Data Warehouse Automation schema definition can not be found. Does the schema file exist?. The expected file is '{schemaDefinitionFileName}'."));
+                                    if (!hasReportedMissingSchema)
+                                    {
+                                        EventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The Data Warehouse Automation schema definition can not be found. Does the schema file exist?. The expected file is '{schemaDefinitionFileName}'."));
+                                        hasReportedMissingSchema = true;
+                                    }
                                 }
 
                                 #endregion

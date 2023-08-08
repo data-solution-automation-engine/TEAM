@@ -890,7 +890,7 @@ namespace TEAM_Library
             else if (DataObjectMappings.Length > 1)
             {
                 // There are too many entries! There should be only a single mapping from source to target
-                eventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"While processing the Data Item mappings, to many (more than 1) matching Data Object mapping were found."));
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"While processing the Data Item mappings, to many (more than 1) matching Data Object mapping were found. This applies to '{targetTable}'."));
             }
             else
             {

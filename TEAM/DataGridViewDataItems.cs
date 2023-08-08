@@ -802,7 +802,7 @@ namespace TEAM
             }
             catch (Exception exception)
             {
-                var exceptionMessage = $"Copy/paste has failed.";
+                var exceptionMessage = $"Copy/paste has failed with exception '{exception.Message}'.";
                 var targetControl = Parent.Controls.Find("richTextBoxInformation", true).FirstOrDefault() as RichTextBox;
 
                 ThreadHelper.SetText(Parent, targetControl, $"{exceptionMessage}\r\n");

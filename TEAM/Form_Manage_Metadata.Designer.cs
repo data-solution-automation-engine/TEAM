@@ -7,7 +7,7 @@ namespace TEAM
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -58,6 +58,7 @@ namespace TEAM
             metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openCoreDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,6 +69,7 @@ namespace TEAM
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             automapDataItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             generatePhysicalModelGridQueryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             validationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             manageValidationRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             validateMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,12 +77,12 @@ namespace TEAM
             manageJsonExportRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             displayEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            clearEventLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             toolTipMetadata = new System.Windows.Forms.ToolTip(components);
             backgroundWorkerValidationOnly = new BackgroundWorker();
             backgroundWorkerEventLog = new BackgroundWorker();
             groupBoxPhysicalModel = new System.Windows.Forms.GroupBox();
             labelConnections = new System.Windows.Forms.Label();
-            openCoreDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             groupBox2.SuspendLayout();
             groupBoxMetadataCounts.SuspendLayout();
             MetadataGenerationGroupBox.SuspendLayout();
@@ -359,7 +361,7 @@ namespace TEAM
             openMetadataDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
             openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
             openMetadataDirectoryToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
-            openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             openMetadataDirectoryToolStripMenuItem.Text = "Open Metadata Directory";
             openMetadataDirectoryToolStripMenuItem.Click += openMetadataDirectoryToolStripMenuItem_Click;
             // 
@@ -367,20 +369,28 @@ namespace TEAM
             // 
             openConfigurationDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
             openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
-            openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
             openConfigurationDirectoryToolStripMenuItem.Click += openConfigurationDirectoryToolStripMenuItem_Click;
+            // 
+            // openCoreDirectoryToolStripMenuItem
+            // 
+            openCoreDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
+            openCoreDirectoryToolStripMenuItem.Name = "openCoreDirectoryToolStripMenuItem";
+            openCoreDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
+            openCoreDirectoryToolStripMenuItem.Text = "Open Core Directory";
+            openCoreDirectoryToolStripMenuItem.Click += openCoreDirectoryToolStripMenuItem_Click;
             // 
             // toolStripSeparator5
             // 
             toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new System.Drawing.Size(355, 6);
+            toolStripSeparator5.Size = new System.Drawing.Size(347, 6);
             // 
             // saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem
             // 
             saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Image = Properties.Resources.SaveFile;
             saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Name = "saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem";
-            saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Text = "&Save as Directional Graph Markup Language (DGML)";
             saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Click += saveAsDirectionalGraphMarkupLanguageDgmlToolStripMenuItem_Click;
             // 
@@ -388,13 +398,13 @@ namespace TEAM
             // 
             closeToolStripMenuItem.Image = Properties.Resources.ExitApplication;
             closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            closeToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            closeToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             closeToolStripMenuItem.Text = "&Close Window";
             closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
             // businessKeyMetadataToolStripMenuItem
             // 
-            businessKeyMetadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openMetadataFileToolStripMenuItem, openAttributeMappingFileToolStripMenuItem, importPhysicalModelGridFileToolStripMenuItem, toolStripSeparator1, automapDataItemsToolStripMenuItem, generatePhysicalModelGridQueryToolStripMenuItem });
+            businessKeyMetadataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openMetadataFileToolStripMenuItem, openAttributeMappingFileToolStripMenuItem, importPhysicalModelGridFileToolStripMenuItem, toolStripSeparator1, automapDataItemsToolStripMenuItem, generatePhysicalModelGridQueryToolStripMenuItem, refreshToolStripMenuItem });
             businessKeyMetadataToolStripMenuItem.Name = "businessKeyMetadataToolStripMenuItem";
             businessKeyMetadataToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
             businessKeyMetadataToolStripMenuItem.Text = "Metadata";
@@ -430,7 +440,7 @@ namespace TEAM
             // 
             // automapDataItemsToolStripMenuItem
             // 
-            automapDataItemsToolStripMenuItem.Image = Properties.Resources.CogIcon;
+            automapDataItemsToolStripMenuItem.Image = Properties.Resources.DocumentationIcon;
             automapDataItemsToolStripMenuItem.Name = "automapDataItemsToolStripMenuItem";
             automapDataItemsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M;
             automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
@@ -445,6 +455,15 @@ namespace TEAM
             generatePhysicalModelGridQueryToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
             generatePhysicalModelGridQueryToolStripMenuItem.Text = "&Generate Physical Model Grid Query";
             generatePhysicalModelGridQueryToolStripMenuItem.Click += generatePhysicalModelGridQueryToolStripMenuItem_Click;
+            // 
+            // refreshToolStripMenuItem
+            // 
+            refreshToolStripMenuItem.Image = Properties.Resources.CogIcon;
+            refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
+            refreshToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R;
+            refreshToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
+            refreshToolStripMenuItem.Text = "Refresh";
+            refreshToolStripMenuItem.Click += refreshToolStripMenuItem_Click;
             // 
             // validationToolStripMenuItem
             // 
@@ -463,7 +482,7 @@ namespace TEAM
             // 
             // validateMetadataToolStripMenuItem
             // 
-            validateMetadataToolStripMenuItem.Image = Properties.Resources.CogIcon;
+            validateMetadataToolStripMenuItem.Image = Properties.Resources.transparent_green_checkmark_hi;
             validateMetadataToolStripMenuItem.Name = "validateMetadataToolStripMenuItem";
             validateMetadataToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q;
             validateMetadataToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
@@ -487,7 +506,7 @@ namespace TEAM
             // 
             // helpToolStripMenuItem
             // 
-            helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { displayEventLogToolStripMenuItem });
+            helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { displayEventLogToolStripMenuItem, clearEventLogToolStripMenuItem });
             helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             helpToolStripMenuItem.Text = "&Help";
@@ -500,6 +519,14 @@ namespace TEAM
             displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             displayEventLogToolStripMenuItem.Text = "Display &Event Log";
             displayEventLogToolStripMenuItem.Click += displayEventLogToolStripMenuItem_Click;
+            // 
+            // clearEventLogToolStripMenuItem
+            // 
+            clearEventLogToolStripMenuItem.Image = Properties.Resources.log_file;
+            clearEventLogToolStripMenuItem.Name = "clearEventLogToolStripMenuItem";
+            clearEventLogToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            clearEventLogToolStripMenuItem.Text = "Clear Event Log";
+            clearEventLogToolStripMenuItem.Click += clearEventLogToolStripMenuItem_Click;
             // 
             // backgroundWorkerValidationOnly
             // 
@@ -540,14 +567,6 @@ namespace TEAM
             labelConnections.Size = new System.Drawing.Size(74, 15);
             labelConnections.TabIndex = 24;
             labelConnections.Text = "Connections";
-            // 
-            // openCoreDirectoryToolStripMenuItem
-            // 
-            openCoreDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
-            openCoreDirectoryToolStripMenuItem.Name = "openCoreDirectoryToolStripMenuItem";
-            openCoreDirectoryToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
-            openCoreDirectoryToolStripMenuItem.Text = "Open Core Directory";
-            openCoreDirectoryToolStripMenuItem.Click += openCoreDirectoryToolStripMenuItem_Click;
             // 
             // FormManageMetadata
             // 
@@ -610,7 +629,7 @@ namespace TEAM
         private System.Windows.Forms.ToolStripMenuItem openMetadataFileToolStripMenuItem;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Label labelResult;
-        private System.ComponentModel.BackgroundWorker backgroundWorkerParse;
+        private BackgroundWorker backgroundWorkerParse;
         private System.Windows.Forms.ToolStripMenuItem saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox2;
         private TimedTextBox textBoxFilterCriterion;
@@ -620,7 +639,7 @@ namespace TEAM
 
 
         private System.Windows.Forms.ToolTip toolTipMetadata;
-        private System.ComponentModel.BackgroundWorker backgroundWorkerValidationOnly;
+        private BackgroundWorker backgroundWorkerValidationOnly;
 
         private System.Windows.Forms.ContextMenuStrip contextMenuStripModel;
 
@@ -649,5 +668,7 @@ namespace TEAM
         private System.Windows.Forms.CheckBox checkBoxShowStaging;
         private System.Windows.Forms.ToolStripMenuItem importPhysicalModelGridFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openCoreDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearEventLogToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
     }
 }

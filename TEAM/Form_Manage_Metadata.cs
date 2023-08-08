@@ -45,6 +45,8 @@ namespace TEAM
 
         private MetadataValidations metadataValidations;
 
+        private bool isStartUp = true;
+
         public FormManageMetadata()
         {
             // Placeholder.
@@ -75,6 +77,13 @@ namespace TEAM
             //  Load the grids from the repository.
             richTextBoxInformation.Clear();
 
+            LoadMetadata();
+
+            isStartUp = false;
+        }
+
+        private void LoadMetadata()
+        {
             // Load the data grids.
             PopulateDataObjectMappingGrid();
             PopulateDataItemMappingGrid();
@@ -96,7 +105,12 @@ namespace TEAM
 
             if (errors > 0)
             {
-                richTextBoxInformation.AppendText($"\r\n{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
+                richTextBoxInformation.AppendText($"\r\nPlease note: {errors} error(s) have been found! Please check the Event Log in the menu.\r\n\r\n");
+            }
+
+            if (!isStartUp)
+            {
+                ApplyDataGridViewFiltering();
             }
         }
 
@@ -116,6 +130,7 @@ namespace TEAM
         private void SetDataObjectGridView()
         {
             // Use custom grid view override class.
+            _dataGridViewDataObjects = null;
             _dataGridViewDataObjects = new DataGridViewDataObjects(TeamConfiguration, JsonExportSetting);
             ((ISupportInitialize)(_dataGridViewDataObjects)).BeginInit();
 
@@ -259,6 +274,7 @@ namespace TEAM
             checkedListBoxReverseEngineeringAreas.CheckOnClick = true;
             checkedListBoxReverseEngineeringAreas.ValueMember = "Key";
             checkedListBoxReverseEngineeringAreas.DisplayMember = "Value";
+            checkedListBoxReverseEngineeringAreas.Items.Clear();
 
             // Load the checkboxes for the reverse-engineering tab.
             foreach (var connection in TeamConfiguration.ConnectionDictionary)
@@ -411,13 +427,11 @@ namespace TEAM
         /// </summary>
         private void PopulatePhysicalModelGrid()
         {
-            //var physicalModelFileName = TeamJsonHandling.JsonFileConfiguration.PhysicalModelJsonFileName();
             var physicalModelDirectory = globalParameters.MetadataPath + globalParameters.PhysicalModelDirectory;
 
             if (!Directory.Exists(physicalModelDirectory))
             {
                 richTextBoxInformation.AppendText("\r\nA new physical model directory is created, because it did not exist yet.");
-                //TeamDataItemMapping.CreateEmptyDataItemMappingJson(physicalModelFileName, TeamEventLog);
                 Directory.CreateDirectory(physicalModelDirectory);
             }
 
@@ -1024,7 +1038,7 @@ namespace TEAM
                         }
 
                         // Save the file. 
-                        if (!exceptionList.Contains(databaseName+schemaName+tableName))
+                        if (!exceptionList.Contains(databaseName + schemaName + tableName))
                         {
                             WritePhysicalModelToFile(databaseName, schemaName, tableName);
                             exceptionList.Add(databaseName + schemaName + tableName);
@@ -1297,12 +1311,6 @@ namespace TEAM
 
         private void ButtonParse_Click(object sender, EventArgs e)
         {
-            //if (backgroundWorkerReverseEngineering.IsBusy)
-            //{
-            //    MessageBox.Show(@"The reverse engineer process is running, please wait for this to be completed before starting a parse process.", @"Process is running", MessageBoxButtons.OK);
-            //}
-            //else
-            //{
             richTextBoxInformation.Clear();
 
             #region Preparation
@@ -1389,9 +1397,8 @@ namespace TEAM
             {
                 richTextBoxInformation.AppendText("Validation found issues which should be investigated.");
             }
-
+            
             #endregion
-            // }
         }
 
         /// <summary>
@@ -1433,6 +1440,8 @@ namespace TEAM
                 labelResult.Text = @"Done!";
                 richTextBoxInformation.Text = @"The metadata was processed successfully!";
             }
+
+            ApplyDataGridViewFiltering();
         }
 
         // This event handler updates the progress.
@@ -1681,7 +1690,7 @@ namespace TEAM
                 // Create a filtered list to limit DGML output, if available.
                 var filteredDataObjectGridViewRows = GetFilteredDataObjectMappingDataGridViewRows();
                 List<string> filteredTargetDataObjects = filteredDataObjectGridViewRows.Select(x => (DataObject)x.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value).Select(y => y.Name).ToList();
-                
+
                 // Create all the nodes and edges.
                 foreach (var fileCombination in teamDataObjectMappingFileCombinations.DataObjectMappingsFileCombinations)
                 {
@@ -1690,7 +1699,7 @@ namespace TEAM
                     foreach (var dataObjectMapping in dataObjectMappings)
                     {
                         // Do not render mappings that are not enabled.
-                        if (dataObjectMapping.Enabled==false)
+                        if (dataObjectMapping.Enabled == false)
                             continue;
 
                         DataClassification classification = dataObjectMapping.MappingClassifications.FirstOrDefault();
@@ -2058,7 +2067,7 @@ namespace TEAM
 
                                         var targetBusinessKeyDataItemName = businessKeyComponentMapping.TargetDataItem.Name;
                                         var targetBusinessKeyDataItemNameFullyQualified = targetNodeName + "." + targetBusinessKeyDataItemName;
-                                        
+
                                         // Add the source node, if not existing already.
                                         var localSourceDataItemNode = "     <Node Id=\"" + sourceBusinessKeyDataItemNameFullyQualified + "\" Label=\"" + sourceBusinessKeyDataItem.Name + "\" />";
                                         if (!nodeBuilder.Contains(localSourceDataItemNode))
@@ -2613,7 +2622,7 @@ namespace TEAM
                 foreach (var filter in filterList)
                 {
                     var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2).FirstOrDefault();
-                    
+
                     // Override the schema, if required.
                     var schema = "dbo";
                     if (fullyQualifiedName.Key != filter.Item3)
@@ -2892,6 +2901,14 @@ namespace TEAM
             {
                 labelResult.Text = @"Done!";
                 richTextBoxInformation.Text += "\r\nThe metadata was validated successfully!\r\n";
+
+                // Notify the user of any errors that were detected.
+                var errors = TeamEventLog.ReportErrors(TeamEventLog);
+
+                if (errors > 0)
+                {
+                    richTextBoxInformation.AppendText($"\r\nPlease note: {errors} error(s) have been found! Please check the Event Log in the menu.\r\n\r\n");
+                }
             }
         }
 
@@ -3862,6 +3879,16 @@ namespace TEAM
                     richTextBoxInformation.Text = $@"An error has occurred while attempting to open the directory. The error message is: {ex.Message}.";
                 }
             }
+        }
+
+        private void clearEventLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TeamEventLog.Clear();
+        }
+
+        private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadMetadata();
         }
     }
 }

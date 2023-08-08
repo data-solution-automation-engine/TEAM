@@ -148,7 +148,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:v4.6.1    "
+                "FrameworkVersion" = "8:v4.6.1     "
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=671728"
                 }
@@ -263,15 +263,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TEAM"
-        "ProductCode" = "8:{3C9E898A-E185-49BA-927E-95F8EEE34170}"
-        "PackageCode" = "8:{7CF3DC37-5A50-4522-A539-9BE2E4F7652C}"
+        "ProductCode" = "8:{061B0A81-EA67-4AD2-A937-979D096049C4}"
+        "PackageCode" = "8:{3849670F-F65C-4A1B-A648-F785C539B3C4}"
         "UpgradeCode" = "8:{84D8B2E0-7C57-42BC-82B7-D0720CE79944}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.6.10"
+        "ProductVersion" = "8:1.6.11"
         "Manufacturer" = "8:RoelantVos"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.roelantvos.com/blog"

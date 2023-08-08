@@ -344,7 +344,7 @@ namespace TEAM_Library
                 // Hidden in the main table, but can be set via the JSON editor
                 dataTable.Columns[(int)DataObjectMappingGridColumns.DataObjectMappingClassification].ColumnName = DataObjectMappingGridColumns.DataObjectMappingClassification.ToString();
             }
-            catch (Exception ex)
+            catch
             {
                 // TODO: return event log issue
             }

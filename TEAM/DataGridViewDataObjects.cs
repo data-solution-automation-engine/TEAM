@@ -14,8 +14,6 @@ using DataObject = DataWarehouseAutomation.DataObject;
 using Event = TEAM_Library.Event;
 using static TEAM_Library.MetadataHandling;
 using ComboBox = System.Windows.Forms.ComboBox;
-using System.Security.Cryptography.Xml;
-using System.Xml;
 
 namespace TEAM
 {
