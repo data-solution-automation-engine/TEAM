@@ -100,17 +100,24 @@ namespace TEAM
             // Ensure that the count of object types is updated based on whatever is in the data grid.
             ContentCounter();
 
-            // Notify the user of any errors that were detected.
+            DisplayErrors();
+
+            if (!isStartUp)
+            {
+                ApplyDataGridViewFiltering();
+            }
+        }
+
+        /// <summary>
+        /// Notify the user of any errors that were detected in the Event Log.
+        /// </summary>
+        private void DisplayErrors()
+        {
             var errors = TeamEventLog.ReportErrors(TeamEventLog);
 
             if (errors > 0)
             {
                 richTextBoxInformation.AppendText($"\r\nPlease note: {errors} error(s) have been found! Please check the Event Log in the menu.\r\n\r\n");
-            }
-
-            if (!isStartUp)
-            {
-                ApplyDataGridViewFiltering();
             }
         }
 
@@ -2902,13 +2909,7 @@ namespace TEAM
                 labelResult.Text = @"Done!";
                 richTextBoxInformation.Text += "\r\nThe metadata was validated successfully!\r\n";
 
-                // Notify the user of any errors that were detected.
-                var errors = TeamEventLog.ReportErrors(TeamEventLog);
-
-                if (errors > 0)
-                {
-                    richTextBoxInformation.AppendText($"\r\nPlease note: {errors} error(s) have been found! Please check the Event Log in the menu.\r\n\r\n");
-                }
+                DisplayErrors();
             }
         }
 
@@ -3211,13 +3212,7 @@ namespace TEAM
                     //Load the grids from the repository after being updated. This resets everything.
                     PopulateDataObjectMappingGrid();
 
-                    // Notify the user of any errors that were detected.
-                    var errors = TeamEventLog.ReportErrors(TeamEventLog);
-
-                    if (errors > 0)
-                    {
-                        richTextBoxInformation.AppendText($"\r\n{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
-                    }
+                    DisplayErrors();
 
                     #endregion
                 }
@@ -3725,13 +3720,7 @@ namespace TEAM
                     //Load the grids from the repository after being updated. This resets everything.
                     PopulatePhysicalModelGrid();
 
-                    // Notify the user of any errors that were detected.
-                    var errors = TeamEventLog.ReportErrors(TeamEventLog);
-
-                    if (errors > 0)
-                    {
-                        richTextBoxInformation.AppendText($"\r\n{errors} error(s) have been found. Please check the Event Log in the menu.\r\n\r\n");
-                    }
+                    DisplayErrors();
 
                     #endregion
                 }

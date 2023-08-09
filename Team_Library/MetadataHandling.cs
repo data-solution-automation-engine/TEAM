@@ -163,7 +163,7 @@ namespace TEAM_Library
                 schemaName = splitName[0];
                 returnDataObjectName = splitName[1];
 
-                fullyQualifiedTableName.Add(schemaName, returnDataObjectName);
+                //fullyQualifiedTableName.Add(schemaName, returnDataObjectName);
 
             }
             else if (!dataObject.Name.Contains('.'))

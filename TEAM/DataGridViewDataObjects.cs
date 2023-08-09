@@ -1180,6 +1180,9 @@ namespace TEAM
                     if (cell.Value != DBNull.Value)
                     {
                         dataObject = (DataObject)cell.Value;
+
+                        // And update the name
+                        dataObject.Name = e.Value.ToString();
                     }
 
                     // Update the data object name.
@@ -1210,7 +1213,7 @@ namespace TEAM
                     dataObject.Name = dataObjectFullyQualifiedName.Value;
                     //dataObject.Name = e.Value.ToString();
 
-                    // Set the schema, updating schema extension, if there is any.
+                    // Set the schema, updating schema extension, if there is any.a
                     if (dataObject.DataObjectConnection != null)
                     {
                         if (schemaExtension != null)
@@ -1642,7 +1645,7 @@ namespace TEAM
 
                             #region Multi-Active Key
 
-                            JsonOutputHandling.AddMultiActiveKeyClassificationToDataItem(targetDataItem, localTargetDataObjectName, _dataGridViewPhysicalModel);
+                            JsonOutputHandling.AddMultiActiveKeyClassificationToDataItem(targetDataItem, localTargetDataObjectName, _dataGridViewPhysicalModel, TeamEventLog);
 
                             #endregion
 
@@ -1704,7 +1707,7 @@ namespace TEAM
 
                 #region Auto map
 
-                // For presentation layer, Hubs and Links, only manual mappings are supported.
+                // For presentation layer, Hubs and Links, ONLY manual mappings are supported.
                 if (dataObjectMapping.MappingClassifications[0].Classification != DataObjectTypes.Presentation.ToString() && 
                     dataObjectMapping.MappingClassifications[0].Classification != DataObjectTypes.CoreBusinessConcept.ToString() && 
                     dataObjectMapping.MappingClassifications[0].Classification != DataObjectTypes.NaturalBusinessRelationship.ToString())
@@ -1778,7 +1781,7 @@ namespace TEAM
 
                             #region Multi-Active Key
 
-                            JsonOutputHandling.AddMultiActiveKeyClassificationToDataItem(autoMappedTargetDataItem, targetDataObject.Name,  _dataGridViewPhysicalModel);
+                            JsonOutputHandling.AddMultiActiveKeyClassificationToDataItem(autoMappedTargetDataItem, targetDataObject.Name,  _dataGridViewPhysicalModel, TeamEventLog);
 
                             #endregion
 

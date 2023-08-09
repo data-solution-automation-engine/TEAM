@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using DataWarehouseAutomation;
-using static TEAM_Library.JsonOutputHandling;
 using static TEAM_Library.MetadataHandling;
 using DataObject = DataWarehouseAutomation.DataObject;
 using Extension = DataWarehouseAutomation.Extension;
@@ -1803,27 +1802,34 @@ namespace TEAM_Library
         /// <param name="targetDataItem"></param>
         /// <param name="targetDataObjectName"></param>
         /// <param name="physicalModelGridView"></param>
-        public static void AddMultiActiveKeyClassificationToDataItem(DataItem targetDataItem, string targetDataObjectName, DataGridView physicalModelGridView)
+        public static void AddMultiActiveKeyClassificationToDataItem(DataItem targetDataItem, string targetDataObjectName, DataGridView physicalModelGridView, EventLog eventLog)
         {
-            // If the source data item is part of the key, a MAK classification can be added.
-            // This is done using a lookup against the physical model.
-
-            var physicalModelGridViewRow = physicalModelGridView.Rows
-                .Cast<DataGridViewRow>()
-                .Where(r => !r.IsNewRow)
-                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(targetDataItem.Name))
-                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(targetDataObjectName))
-                .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Value.ToString().Equals("Y"))
-                .FirstOrDefault();
-
-            if (physicalModelGridViewRow != null)
+            try
             {
-                List<DataClassification> classificationList = new List<DataClassification>();
-                DataClassification classification = new DataClassification();
-                classification.Classification = "MultiActiveKey";
-                classification.Notes = "The attribute that supports granularity shift in describing context.";
-                classificationList.Add(classification);
-                targetDataItem.DataItemClassification = classificationList;
+                // If the source data item is part of the key, a MAK classification can be added.
+                // This is done using a lookup against the physical model.
+
+                var physicalModelGridViewRow = physicalModelGridView.Rows
+                    .Cast<DataGridViewRow>()
+                    .Where(r => !r.IsNewRow)
+                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(targetDataItem.Name))
+                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(targetDataObjectName))
+                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.primaryKeyIndicator].Value.ToString().Equals("Y"))
+                    .FirstOrDefault();
+
+                if (physicalModelGridViewRow != null)
+                {
+                    List<DataClassification> classificationList = new List<DataClassification>();
+                    DataClassification classification = new DataClassification();
+                    classification.Classification = "MultiActiveKey";
+                    classification.Notes = "The attribute that supports granularity shift in describing context.";
+                    classificationList.Add(classification);
+                    targetDataItem.DataItemClassification = classificationList;
+                }
+            }
+            catch (Exception ex)
+            {
+                eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"An error was encountered: '{ex.Message}'."));
             }
         }
     }
