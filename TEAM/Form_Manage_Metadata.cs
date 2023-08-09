@@ -146,7 +146,7 @@ namespace TEAM
 
             _dataGridViewDataObjects.OnDataObjectParse += InformOnDataObjectsResult;
             _dataGridViewDataObjects.OnHeaderSort += ApplyFilterOnHeaderSort;
-            _dataGridViewDataObjects.OnRowExit += ApplyFilter;
+            //_dataGridViewDataObjects.OnRowExit += ApplyFilter;
             _dataGridViewDataObjects.DoubleBuffered(true);
 
             // Add tab page.
