@@ -146,6 +146,7 @@ namespace TEAM
 
             _dataGridViewDataObjects.OnDataObjectParse += InformOnDataObjectsResult;
             _dataGridViewDataObjects.OnHeaderSort += ApplyFilterOnHeaderSort;
+            // TODO This attempt to re-apply the filter on sorted rows failed. Additional rows are still visible in the grid when adding a row to a filtered grid.
             //_dataGridViewDataObjects.OnRowExit += ApplyFilter;
             _dataGridViewDataObjects.DoubleBuffered(true);
 
