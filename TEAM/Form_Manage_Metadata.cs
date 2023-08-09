@@ -47,6 +47,9 @@ namespace TEAM
 
         private bool isStartUp = true;
 
+        private bool isFiltered = false;
+
+        private bool isSorted = false;
         public FormManageMetadata()
         {
             // Placeholder.
@@ -142,7 +145,8 @@ namespace TEAM
             ((ISupportInitialize)(_dataGridViewDataObjects)).BeginInit();
 
             _dataGridViewDataObjects.OnDataObjectParse += InformOnDataObjectsResult;
-            _dataGridViewDataObjects.OnHeaderSort += ApplyFilter;
+            _dataGridViewDataObjects.OnHeaderSort += ApplyFilterOnHeaderSort;
+            _dataGridViewDataObjects.OnRowExit += ApplyFilter;
             _dataGridViewDataObjects.DoubleBuffered(true);
 
             // Add tab page.
@@ -162,6 +166,17 @@ namespace TEAM
 
             tabPageDataObjectMapping.ResumeLayout(false);
             ((ISupportInitialize)(_dataGridViewDataObjects)).EndInit();
+        }
+        
+        private void ApplyFilterOnHeaderSort(object sender, FilterEventArgs e)
+        {
+            if (e.DoFilter)
+            {
+                ApplyDataGridViewFiltering();
+
+                // Set a sorted flag, all kinds of weird things happen when sorted in the data grid.
+                isSorted = true;
+            }
         }
 
         private void ApplyFilter(object sender, FilterEventArgs e)

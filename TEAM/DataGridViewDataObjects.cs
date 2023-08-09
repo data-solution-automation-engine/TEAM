@@ -35,6 +35,9 @@ namespace TEAM
         public delegate void HeaderSortHandler(object sender, FilterEventArgs e);
         public event HeaderSortHandler OnHeaderSort;
 
+        public delegate void RowExitHandler(object sender, FilterEventArgs e);
+        public event RowExitHandler OnRowExit;
+
         /// <summary>
         /// The definition of the Data Grid View for table mappings (DataObject mappings).
         /// </summary>
@@ -311,6 +314,15 @@ namespace TEAM
             #endregion
         }
 
+        //private void OnRowLeave(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    var selectedRow = Rows[e.RowIndex];
+        //    if (OnRowExit == null) return;
+
+        //    FilterEventArgs args = new FilterEventArgs(true);
+        //    OnRowExit(this, args);
+        //}
+
         private void ModifyDataObjectMappingJson_Click(object sender, EventArgs e)
         {
             // Get the current mapping for the selected row.
@@ -403,6 +415,7 @@ namespace TEAM
             ParseEventArgs args = new ParseEventArgs(text);
             OnDataObjectParse(this, args);
         }
+
         internal void HeaderSort()
         {
             // Make sure something is listening to the event.
