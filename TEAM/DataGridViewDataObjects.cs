@@ -38,13 +38,18 @@ namespace TEAM
         public delegate void RowExitHandler(object sender, FilterEventArgs e);
         public event RowExitHandler OnRowExit;
 
+        private bool _isStartup { get; set; } = true;
+
+        private bool _hasUserAddedRow { get; set; } = false;
+
         /// <summary>
         /// The definition of the Data Grid View for table mappings (DataObject mappings).
         /// </summary>
-        public DataGridViewDataObjects(TeamConfiguration teamConfiguration, JsonExportSetting jsonExportSetting)
+        public DataGridViewDataObjects(TeamConfiguration teamConfiguration, JsonExportSetting jsonExportSetting, bool isStartUp)
         {
             TeamConfiguration = teamConfiguration;
             JsonExportSetting = jsonExportSetting;
+            _isStartup = isStartUp;
 
             #region Basic properties
 
@@ -85,6 +90,8 @@ namespace TEAM
             DefaultValuesNeeded += DataGridViewDataObjectMapping_DefaultValuesNeeded;
             CellValueChanged += OnCheckBoxValueChanged;
             RowPostPaint += OnRowPostPaint;
+            UserAddedRow += UserRowAddedHandling;
+            RowLeave += RowLeaveHandling;
 
             #endregion
 
@@ -312,16 +319,28 @@ namespace TEAM
             #endregion
 
             #endregion
+
+            _isStartup = false;
         }
 
-        //private void OnRowLeave(object sender, DataGridViewCellEventArgs e)
-        //{
-        //    var selectedRow = Rows[e.RowIndex];
-        //    if (OnRowExit == null) return;
+        private void RowLeaveHandling(object sender, DataGridViewCellEventArgs e)
+        {
+            if (_hasUserAddedRow)
+            {
+                if (OnRowExit == null) return;
+                FilterEventArgs args = new FilterEventArgs(true);
+                OnRowExit(this, args);
 
-        //    FilterEventArgs args = new FilterEventArgs(true);
-        //    OnRowExit(this, args);
-        //}
+                _hasUserAddedRow = false;
+            }
+        }
+
+        private void UserRowAddedHandling(object sender, DataGridViewRowEventArgs e)
+        {
+            if (_isStartup) return;
+
+            _hasUserAddedRow = true;
+        }
 
         private void ModifyDataObjectMappingJson_Click(object sender, EventArgs e)
         {

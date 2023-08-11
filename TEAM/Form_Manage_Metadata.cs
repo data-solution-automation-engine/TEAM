@@ -141,13 +141,13 @@ namespace TEAM
         {
             // Use custom grid view override class.
             _dataGridViewDataObjects = null;
-            _dataGridViewDataObjects = new DataGridViewDataObjects(TeamConfiguration, JsonExportSetting);
+            _dataGridViewDataObjects = new DataGridViewDataObjects(TeamConfiguration, JsonExportSetting, isStartUp);
             ((ISupportInitialize)(_dataGridViewDataObjects)).BeginInit();
 
             _dataGridViewDataObjects.OnDataObjectParse += InformOnDataObjectsResult;
             _dataGridViewDataObjects.OnHeaderSort += ApplyFilterOnHeaderSort;
             // TODO This attempt to re-apply the filter on sorted rows failed. Additional rows are still visible in the grid when adding a row to a filtered grid.
-            //_dataGridViewDataObjects.OnRowExit += ApplyFilter;
+            _dataGridViewDataObjects.OnRowExit += ApplyFilterOnRowExit;
             _dataGridViewDataObjects.DoubleBuffered(true);
 
             // Add tab page.
@@ -177,6 +177,14 @@ namespace TEAM
 
                 // Set a sorted flag, all kinds of weird things happen when sorted in the data grid.
                 isSorted = true;
+            }
+        }
+
+        private void ApplyFilterOnRowExit(object sender, FilterEventArgs e)
+        {
+            if (e.DoFilter)
+            {
+                ApplyDataGridViewFiltering();
             }
         }
 
@@ -2689,107 +2697,121 @@ namespace TEAM
 
         private void ApplyDataGridViewFiltering()
         {
-            var filterCriterion = textBoxFilterCriterion.Text;
-
-            // Only update the grid view on the visible tab.
-            if (tabControlDataMappings.SelectedIndex == 0)
+            try
             {
-                foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
-                {
-                    row.Visible = true;
+                if (isStartUp == true) return;
 
-                    if (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
+                var filterCriterion = textBoxFilterCriterion.Text;
+
+                // Only update the grid view on the visible tab.
+                if (tabControlDataMappings.SelectedIndex == 0)
+                {
+                    foreach (DataGridViewRow row in _dataGridViewDataObjects.Rows)
                     {
-                        if (!row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase) &&
-                            !row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase))
+                        row.Visible = true;
+
+                        if (row.Cells[(int)DataObjectMappingGridColumns.TargetDataObject].Value != null)
                         {
-                            CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataObjects.DataSource];
-                            currencyManager.SuspendBinding();
-                            row.Visible = false;
-                            currencyManager.ResumeBinding();
+                            if (!row.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase) &&
+                                !row.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase))
+                            {
+                                CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataObjects.DataSource];
+                                currencyManager.SuspendBinding();
+                                row.Visible = false;
+                                currencyManager.ResumeBinding();
+                            }
                         }
                     }
-                }
 
-                // Reset the physical model filter. This is important because some checks need access to all the information.
-                var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
-                inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
-            }
-            else if (tabControlDataMappings.SelectedIndex == 1)
-            {
-                foreach (DataGridViewRow row in _dataGridViewDataItems.Rows)
-                {
-                    row.Visible = true;
-
-                    if (row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value != null)
-                    {
-                        if (!row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase) &&
-                            !row.Cells[(int)DataItemMappingGridColumns.SourceDataItem].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase) &&
-                            !row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase) &&
-                            !row.Cells[(int)DataItemMappingGridColumns.TargetDataItem].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase))
-                        {
-                            CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataItems.DataSource];
-                            currencyManager.SuspendBinding();
-                            row.Visible = false;
-                            currencyManager.ResumeBinding();
-                        }
-                    }
-                }
-
-                // Reset the physical model filter. This is important because some checks need access to all the information.
-                var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
-                inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
-            }
-            else if (tabControlDataMappings.SelectedIndex == 2) // Physical model
-            {
-                var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
-                var currentFilter = inputTableMappingPhysicalModel.DefaultView.RowFilter;
-
-                // Build the filter.
-                if (string.IsNullOrEmpty(filterCriterion) && checkBoxShowStaging.Checked)
-                {
-                    // Don't worry about it. There's not filters to set, everything needs to be shown.
-                    // Reset the filter.
+                    // Reset the physical model filter. This is important because some checks need access to all the information.
+                    var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
                     inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
+                }
+                else if (tabControlDataMappings.SelectedIndex == 1)
+                {
+                    foreach (DataGridViewRow row in _dataGridViewDataItems.Rows)
+                    {
+                        row.Visible = true;
+
+                        if (row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value != null)
+                        {
+                            if (!row.Cells[(int)DataItemMappingGridColumns.SourceDataObject].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase) &&
+                                !row.Cells[(int)DataItemMappingGridColumns.SourceDataItem].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase) &&
+                                !row.Cells[(int)DataItemMappingGridColumns.TargetDataObject].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase) &&
+                                !row.Cells[(int)DataItemMappingGridColumns.TargetDataItem].Value.ToString().Contains(filterCriterion, StringComparison.OrdinalIgnoreCase))
+                            {
+                                CurrencyManager currencyManager = (CurrencyManager)BindingContext[_dataGridViewDataItems.DataSource];
+                                currencyManager.SuspendBinding();
+                                row.Visible = false;
+                                currencyManager.ResumeBinding();
+                            }
+                        }
+                    }
+
+                    // Reset the physical model filter. This is important because some checks need access to all the information.
+                    var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
+                    inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
+                }
+                else if (tabControlDataMappings.SelectedIndex == 2) // Physical model
+                {
+                    var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
+                    var currentFilter = inputTableMappingPhysicalModel.DefaultView.RowFilter;
+
+                    // Build the filter.
+                    if (string.IsNullOrEmpty(filterCriterion) && checkBoxShowStaging.Checked)
+                    {
+                        // Don't worry about it. There's not filters to set, everything needs to be shown.
+                        // Reset the filter.
+                        inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
+                    }
+                    else
+                    {
+                        var filterCriterionPhysicalModel = "";
+
+                        if (!string.IsNullOrEmpty(filterCriterion) && string.IsNullOrEmpty(currentFilter))
+                        {
+                            // There is no broad filter, but a user filter has been set.
+                            // Apply text box filter to support user filtering.
+                            filterCriterionPhysicalModel =
+                                $"[{PhysicalModelMappingMetadataColumns.databaseName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.tableName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.columnName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.schemaName}] LIKE '%{filterCriterion}%'";
+                            inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
+                        }
+                        else if (!string.IsNullOrEmpty(currentFilter) && !string.IsNullOrEmpty(filterCriterion))
+                        {
+                            // There is already a broad filter, and a user filter has also been set.
+
+                            // Re-evaluate the need for the filter.
+                            if (checkBoxShowStaging.Checked)
+                            {
+                                // Show everything - reset the filter.
+                                currentFilter = "1=1 ";
+                            }
+                            else
+                            {
+                                // The target is not a STG process and not a PSA process.
+                                currentFilter =
+                                    $"[{PhysicalModelMappingMetadataColumns.tableName}] NOT LIKE '%{TeamConfiguration.StgTablePrefixValue}%' AND [{PhysicalModelMappingMetadataColumns.tableName}] NOT LIKE '%{TeamConfiguration.PsaTablePrefixValue}%'";
+                            }
+
+                            // Merge with existing filter.
+                            filterCriterionPhysicalModel = currentFilter +
+                                                           $"AND [{PhysicalModelMappingMetadataColumns.databaseName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.tableName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.columnName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.schemaName}] LIKE '%{filterCriterion}%'";
+                        }
+
+                        inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
+                    }
                 }
                 else
                 {
-                    var filterCriterionPhysicalModel = "";
-
-                    if (!string.IsNullOrEmpty(filterCriterion) && string.IsNullOrEmpty(currentFilter))
-                    {
-                        // There is no broad filter, but a user filter has been set.
-                        // Apply text box filter to support user filtering.
-                        filterCriterionPhysicalModel = $"[{PhysicalModelMappingMetadataColumns.databaseName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.tableName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.columnName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.schemaName}] LIKE '%{filterCriterion}%'";
-                        inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
-                    }
-                    else if (!string.IsNullOrEmpty(currentFilter) && !string.IsNullOrEmpty(filterCriterion))
-                    {
-                        // There is already a broad filter, and a user filter has also been set.
-
-                        // Re-evaluate the need for the filter.
-                        if (checkBoxShowStaging.Checked)
-                        {
-                            // Show everything - reset the filter.
-                            currentFilter = "1=1 ";
-                        }
-                        else
-                        {
-                            // The target is not a STG process and not a PSA process.
-                            currentFilter = $"[{PhysicalModelMappingMetadataColumns.tableName}] NOT LIKE '%{TeamConfiguration.StgTablePrefixValue}%' AND [{PhysicalModelMappingMetadataColumns.tableName}] NOT LIKE '%{TeamConfiguration.PsaTablePrefixValue}%'";
-                        }
-
-                        // Merge with existing filter.
-                        filterCriterionPhysicalModel = currentFilter + $"AND [{PhysicalModelMappingMetadataColumns.databaseName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.tableName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.columnName}] LIKE '%{filterCriterion}%' OR [{PhysicalModelMappingMetadataColumns.schemaName}] LIKE '%{filterCriterion}%'";
-                    }
-
-                    inputTableMappingPhysicalModel.DefaultView.RowFilter = filterCriterionPhysicalModel;
+                    // Exception - cannot happen.
+                    richTextBoxInformation.Text =
+                        $@"An incorrect data grid view was provided: '{tabControlDataMappings.TabPages[tabControlDataMappings.SelectedIndex]}'. This is a bug, please raise a Github issue.";
                 }
             }
-            else
+            catch (Exception ex)
             {
-                // Exception - cannot happen.
-                richTextBoxInformation.Text = $@"An incorrect data grid view was provided: '{tabControlDataMappings.TabPages[tabControlDataMappings.SelectedIndex]}'. This is a bug, please raise a Github issue.";
+                richTextBoxInformation.Text = $@"An error occurred when displaying the filter: '{ex.Message}'.";
+
             }
         }
 
