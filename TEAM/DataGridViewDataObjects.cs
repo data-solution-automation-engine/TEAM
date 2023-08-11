@@ -1744,7 +1744,7 @@ namespace TEAM
                     }
                     catch (Exception ex)
                     {
-                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}. This is associated with data object mapping {dataObjectMapping.MappingName}."));
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}. This is associated with data object mapping {dataObjectMapping.MappingName}. This is probably because a column does not yet exist in the physical model snapshot."));
                     }
                 }
 
