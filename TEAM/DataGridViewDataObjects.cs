@@ -38,6 +38,9 @@ namespace TEAM
         public delegate void RowExitHandler(object sender, FilterEventArgs e);
         public event RowExitHandler OnRowExit;
 
+        public delegate void ErrorReportingHandler();
+        public event ErrorReportingHandler OnErrorReporting;
+
         private bool _isStartup { get; set; } = true;
 
         private bool _hasUserAddedRow { get; set; } = false;
@@ -681,6 +684,9 @@ namespace TEAM
 
             // Update the original form through the delegate/event handler.
             DataObjectsParse($"A parse action has been called from the context menu. The Data Object Mapping for '{targetDataObject.Name}' has been saved.\r\n");
+
+            // Callback to parent for error reporting.
+            OnErrorReporting();
         }
 
         /// <summary>
@@ -1653,85 +1659,92 @@ namespace TEAM
                 // Manually mapped data items (from the grid).
                 foreach (DataGridViewRow dataItemMappingRow in _dataGridViewDataItems.Rows)
                 {
-                    if (!dataItemMappingRow.IsNewRow)
+                    try
                     {
-                        dynamic sourceDataObject = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
-
-                        var localSourceDataObjectName = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataObject.ToString()].Value.ToString();
-                        var localTargetDataObjectName = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataObject.ToString()].Value.ToString();
-
-                        if (localSourceDataObjectName == sourceDataObject.Name && localTargetDataObjectName == targetDataObject.Name)
+                        if (!dataItemMappingRow.IsNewRow)
                         {
-                            var localSourceDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataItem.ToString()].Value.ToString();
-                            var localTargetDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataItem.ToString()].Value.ToString();
+                            dynamic sourceDataObject = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
 
-                            // Creating a single source-to-target Data Item mapping.
-                            List<dynamic> sourceDataItems = new List<dynamic>();
+                            var localSourceDataObjectName = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataObject.ToString()].Value.ToString();
+                            var localTargetDataObjectName = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataObject.ToString()].Value.ToString();
 
-                            #region Target Data Item
-
-                            var targetDataItem = new DataItem
+                            if (localSourceDataObjectName == sourceDataObject.Name && localTargetDataObjectName == targetDataObject.Name)
                             {
-                                Name = localTargetDataItem
-                            };
+                                var localSourceDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.SourceDataItem.ToString()].Value.ToString();
+                                var localTargetDataItem = dataItemMappingRow.Cells[DataItemMappingGridColumns.TargetDataItem.ToString()].Value.ToString();
 
-                            #region Multi-Active Key
+                                // Creating a single source-to-target Data Item mapping.
+                                List<dynamic> sourceDataItems = new List<dynamic>();
 
-                            JsonOutputHandling.AddMultiActiveKeyClassificationToDataItem(targetDataItem, localTargetDataObjectName, _dataGridViewPhysicalModel, TeamEventLog);
+                                #region Target Data Item
 
-                            #endregion
+                                var targetDataItem = new DataItem
+                                {
+                                    Name = localTargetDataItem
+                                };
 
-                            // Add data types to Data Item that are part of a data item mapping.
-                            var targetDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
-                            var targetDataItemConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
-                            JsonOutputHandling.SetDataItemMappingDataType(targetDataItem, targetDataObject, targetDataItemConnection, JsonExportSetting, dataGridViewRowsPhysicalModel);
+                                #region Multi-Active Key
 
-                            // Add parent Data Object to the Data Item.
-                            JsonOutputHandling.SetParentDataObjectToDataItem(targetDataItem, dataObjectMapping.TargetDataObject, JsonExportSetting);
+                                JsonOutputHandling.AddMultiActiveKeyClassificationToDataItem(targetDataItem, localTargetDataObjectName, _dataGridViewPhysicalModel, TeamEventLog);
 
-                            #endregion
-
-                            #region Source Data Item or Query
-
-                            if (localSourceDataItem.IsDataQuery())
-                            {
-                                var sourceDataItem = new DataQuery();
-                                sourceDataItem.DataQueryCode = localSourceDataItem.Replace("`", "");
-
-                                sourceDataItems.Add(sourceDataItem);
-                            }
-                            else
-                            {
-                                var sourceDataItem = new DataItem();
-                                sourceDataItem.Name = localSourceDataItem;
+                                #endregion
 
                                 // Add data types to Data Item that are part of a data item mapping.
-                                var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
-                                var sourceDataItemConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
-                                JsonOutputHandling.SetDataItemMappingDataType(sourceDataItem, sourceDataObject, sourceDataItemConnection, JsonExportSetting, dataGridViewRowsPhysicalModel);
+                                var targetDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
+                                var targetDataItemConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
+                                JsonOutputHandling.SetDataItemMappingDataType(targetDataItem, targetDataObject, targetDataItemConnection, JsonExportSetting, dataGridViewRowsPhysicalModel);
 
                                 // Add parent Data Object to the Data Item.
-                                JsonOutputHandling.SetParentDataObjectToDataItem(sourceDataItem, sourceDataObject, JsonExportSetting);
+                                JsonOutputHandling.SetParentDataObjectToDataItem(targetDataItem, dataObjectMapping.TargetDataObject, JsonExportSetting);
 
-                                // Populate the list of source Data Items.
-                                sourceDataItems.Add(sourceDataItem);
+                                #endregion
+
+                                #region Source Data Item or Query
+
+                                if (localSourceDataItem.IsDataQuery())
+                                {
+                                    var sourceDataItem = new DataQuery();
+                                    sourceDataItem.DataQueryCode = localSourceDataItem.Replace("`", "");
+
+                                    sourceDataItems.Add(sourceDataItem);
+                                }
+                                else
+                                {
+                                    var sourceDataItem = new DataItem();
+                                    sourceDataItem.Name = localSourceDataItem;
+
+                                    // Add data types to Data Item that are part of a data item mapping.
+                                    var sourceDataItemConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
+                                    var sourceDataItemConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceDataItemConnectionInternalId, TeamConfiguration, TeamEventLog);
+                                    JsonOutputHandling.SetDataItemMappingDataType(sourceDataItem, sourceDataObject, sourceDataItemConnection, JsonExportSetting, dataGridViewRowsPhysicalModel);
+
+                                    // Add parent Data Object to the Data Item.
+                                    JsonOutputHandling.SetParentDataObjectToDataItem(sourceDataItem, sourceDataObject, JsonExportSetting);
+
+                                    // Populate the list of source Data Items.
+                                    sourceDataItems.Add(sourceDataItem);
+                                }
+
+                                #endregion
+
+                                // Create a Data Item Mapping.
+                                DataItemMapping dataItemMapping = new DataItemMapping
+                                {
+                                    SourceDataItems = sourceDataItems,
+                                    TargetDataItem = targetDataItem
+                                };
+
+                                // Add to a list that is more easily searched.
+                                targetDataItemNames.Add(targetDataItem.Name);
+
+                                // Add the Data Items Mapping to the list of mappings.
+                                dataItemMappings.Add(dataItemMapping);
                             }
-
-                            #endregion
-
-                            // Create a Data Item Mapping.
-                            DataItemMapping dataItemMapping = new DataItemMapping
-                            {
-                                SourceDataItems = sourceDataItems,
-                                TargetDataItem = targetDataItem
-                            };
-
-                            // Add to a list that is more easily searched.
-                            targetDataItemNames.Add(targetDataItem.Name);
-
-                            // Add the Data Items Mapping to the list of mappings.
-                            dataItemMappings.Add(dataItemMapping);
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An exception has been encountered: {ex.Message}. This is associated with data object mapping {dataObjectMapping.MappingName}."));
                     }
                 }
 

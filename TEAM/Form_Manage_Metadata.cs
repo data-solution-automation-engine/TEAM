@@ -148,6 +148,7 @@ namespace TEAM
             _dataGridViewDataObjects.OnHeaderSort += ApplyFilterOnHeaderSort;
             // TODO This attempt to re-apply the filter on sorted rows failed. Additional rows are still visible in the grid when adding a row to a filtered grid.
             _dataGridViewDataObjects.OnRowExit += ApplyFilterOnRowExit;
+            _dataGridViewDataObjects.OnErrorReporting += DisplayErrors;
             _dataGridViewDataObjects.DoubleBuffered(true);
 
             // Add tab page.
@@ -1473,6 +1474,7 @@ namespace TEAM
             }
 
             ApplyDataGridViewFiltering();
+            DisplayErrors();
         }
 
         // This event handler updates the progress.
@@ -3911,6 +3913,7 @@ namespace TEAM
         private void clearEventLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TeamEventLog.Clear();
+            TeamEventLog.errorReportedHighWaterMark = 0;
         }
 
         private void refreshToolStripMenuItem_Click(object sender, EventArgs e)

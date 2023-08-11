@@ -10,7 +10,7 @@ namespace TEAM_Library
     /// </summary>
     public class EventLog : List<Event>
     {
-        internal int errorReportedHighWaterMark { get; set; } = 0;
+        public int errorReportedHighWaterMark { get; set; } = 0;
 
         /// <summary>
         /// Default constructor.
@@ -66,7 +66,7 @@ namespace TEAM_Library
         {
             // Report the events (including errors) back to the user.
             int errorCounter = 0;
-            int highWaterMarkCounter = errorReportedHighWaterMark;
+            int highWaterMarkCounter = errorReportedHighWaterMark-1;
             int eventCounter = 1;
 
             foreach (Event individualEvent in eventLog)
