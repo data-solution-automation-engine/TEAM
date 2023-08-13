@@ -163,7 +163,7 @@ namespace TEAM
             tabPageDataObjectMapping.Padding = new Padding(3);
             tabPageDataObjectMapping.Size = new Size(1106, 545);
             tabPageDataObjectMapping.TabIndex = 0;
-            tabPageDataObjectMapping.Text = @"Data Object (Table) Mappings";
+            tabPageDataObjectMapping.Text = @"Data Object Mappings";
             tabPageDataObjectMapping.UseVisualStyleBackColor = true;
 
             tabPageDataObjectMapping.ResumeLayout(false);
@@ -221,7 +221,7 @@ namespace TEAM
             tabPageDataItemMapping.Padding = new Padding(3);
             tabPageDataItemMapping.Size = new Size(1106, 545);
             tabPageDataItemMapping.TabIndex = 2;
-            tabPageDataItemMapping.Text = @"Data Item (Column) Mappings";
+            tabPageDataItemMapping.Text = @"Data Item Mappings";
             tabPageDataItemMapping.UseVisualStyleBackColor = true;
 
             tabPageDataItemMapping.ResumeLayout(false);
