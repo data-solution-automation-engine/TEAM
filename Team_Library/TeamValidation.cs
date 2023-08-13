@@ -1074,7 +1074,10 @@ namespace TEAM_Library
                             returnExistenceEvaluation = true;
                         }
 
-                        result.Add(Tuple.Create(validationObject.Name, businessKeyPart.Trim()), returnExistenceEvaluation);
+                        if (!result.ContainsKey(Tuple.Create(validationObject.Name, businessKeyPart.Trim())))
+                        {
+                            result.Add(Tuple.Create(validationObject.Name, businessKeyPart.Trim()), returnExistenceEvaluation);
+                        }
                     }
                 }
             }
