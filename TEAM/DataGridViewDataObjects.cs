@@ -1243,7 +1243,23 @@ namespace TEAM
 
                     var connection = TeamConnection.GetTeamConnectionByConnectionInternalId(connectionInternalId, TeamConfiguration, TeamEventLog);
 
-                    var schemaExtension = dataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault();
+                    // Clear out the schema if there is none specified.
+                    if (!cell.EditedFormattedValue.ToString().Contains("."))
+                    {
+                        if (dataObject.DataObjectConnection != null)
+                        {
+                            if (dataObject.DataObjectConnection.Extensions != null)
+                            {
+                                dataObject.DataObjectConnection.Extensions = dataObject.DataObjectConnection?.Extensions?.Where(x => x.Key != "schema").ToList();
+                            }
+                        }
+
+                        if (dataObject.Extensions != null)
+                        {
+                            dataObject.Extensions = dataObject.Extensions?.Where(x => x.Key != "schema").ToList();
+                        }
+                    }
+
                     Dictionary<string, string> dataObjectFullyQualifiedNameDictionary = GetFullyQualifiedDataObjectName(dataObject, connection);
                     var dataObjectFullyQualifiedName = dataObjectFullyQualifiedNameDictionary.FirstOrDefault();
 
@@ -1251,12 +1267,13 @@ namespace TEAM
                     dataObject.Name = dataObjectFullyQualifiedName.Value;
                     //dataObject.Name = e.Value.ToString();
 
-                    // Set the schema, updating schema extension, if there is any.a
+                    // Set the schema, updating schema extension, if there is any.
+                    var schemaExtensionForConnection = dataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault();
                     if (dataObject.DataObjectConnection != null)
                     {
-                        if (schemaExtension != null)
+                        if (schemaExtensionForConnection != null)
                         {
-                            schemaExtension.Value = dataObjectFullyQualifiedName.Key;
+                            schemaExtensionForConnection.Value = dataObjectFullyQualifiedName.Key;
                         }
                         else
                         {
@@ -1274,6 +1291,34 @@ namespace TEAM
                             else
                             {
                                 dataObject.DataObjectConnection.Extensions.Add(newExtension);
+                            }
+                        }
+                    }
+
+                    // Set the schema for the data object, updating schema extension, if there is any.
+                    var schemaExtensionForDataObject = dataObject?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault();
+                    if (dataObject != null)
+                    {
+                        if (schemaExtensionForDataObject != null)
+                        {
+                            schemaExtensionForDataObject.Value = dataObjectFullyQualifiedName.Key;
+                        }
+                        else
+                        {
+                            var newExtension = new Extension();
+                            newExtension.Key = "schema";
+                            newExtension.Value = dataObjectFullyQualifiedName.Key;
+
+                            // Create a new extension list if empty, otherwise add.
+                            if (dataObject.Extensions == null)
+                            {
+                                var newExtensionList = new List<Extension>();
+                                newExtensionList.Add(newExtension);
+                                dataObject.Extensions = newExtensionList;
+                            }
+                            else
+                            {
+                                dataObject.Extensions.Add(newExtension);
                             }
                         }
                     }
