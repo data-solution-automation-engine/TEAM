@@ -207,6 +207,7 @@ namespace TEAM
 
             _dataGridViewDataItems.OnDataObjectParse += InformOnDataObjectsResult;
             _dataGridViewDataItems.OnHeaderSort += ApplyFilter;
+            _dataGridViewDataItems.OnErrorReporting += DisplayErrors;
             _dataGridViewDataItems.DoubleBuffered(true);
 
             // Add tab page.

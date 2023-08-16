@@ -26,6 +26,9 @@ namespace TEAM
         public delegate void HeaderSortHandler(object sender, FilterEventArgs e);
         public event HeaderSortHandler OnHeaderSort;
 
+        public delegate void ErrorReportingHandler();
+        public event ErrorReportingHandler OnErrorReporting;
+
         internal Form Parent;
 
         public DataGridViewDataItems(TeamConfiguration teamConfiguration, Form parent)
@@ -247,6 +250,9 @@ namespace TEAM
 
                 // Update the original form through the delegate/event handler.
                 DataObjectsParse($"A parse action has been called from the context menu. The Data Object Mapping for '{targetDataObject.Name}' has been saved.\r\n");
+
+                // Callback to parent for error reporting.
+                OnErrorReporting();
             }
 
             catch (Exception exception)

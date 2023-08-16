@@ -190,7 +190,7 @@ namespace TEAM_Library
                         .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.schemaName].Value.ToString().Equals(fullyQualifiedName.Key))
                         .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(fullyQualifiedName.Value))
                         .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(dataItem.Name))
-                        .First();
+                        .FirstOrDefault();
 
                     if (physicalModelRow != null)
                     {
