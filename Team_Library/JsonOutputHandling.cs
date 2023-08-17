@@ -1029,7 +1029,12 @@ namespace TEAM_Library
 
             int ordinal = 1;
 
-            var mappingType = dataObjectMapping.MappingClassifications[0].Classification;
+            var mappingType = "Unknown";
+
+            if (dataObjectMapping.MappingClassifications != null)
+            {
+                mappingType = dataObjectMapping.MappingClassifications[0].Classification;
+            }
 
             if (mappingType == DataObjectTypes.NaturalBusinessRelationship.ToString())
             {
