@@ -1571,7 +1571,16 @@ namespace TEAM
                 var availableMappingClassifications = JsonConvert.DeserializeObject<List<DataClassification>>(dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DataObjectMappingClassification.ToString()].Value.ToString());
 
                 var mappingClassification = JsonOutputHandling.MappingClassification(targetDataObjectName, JsonExportSetting, TeamConfiguration, targetConnection, drivingKeyValue, availableMappingClassifications);
-                dataObjectMapping.MappingClassifications = mappingClassification;
+
+                if (mappingClassification != null)
+                {
+                    dataObjectMapping.MappingClassifications = mappingClassification;
+                }
+                else
+                {
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"The data object classification could not be correctly defined, and is left blank."));
+                }
+
             }
             catch (Exception exception)
             {
