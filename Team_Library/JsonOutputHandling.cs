@@ -427,9 +427,11 @@ namespace TEAM_Library
                 tempExtensions = dataObject.DataObjectConnection.Extensions;
             }
 
-            var dataObjectConnection = new DataConnection
+            var dataObjectConnection = new DataConnection();
+
+            if (teamConnection!=null)
             {
-                DataConnectionString = teamConnection.ConnectionKey
+                dataObjectConnection.DataConnectionString = teamConnection.ConnectionKey;
             };
 
             // Re-add extensions, if available.
@@ -510,11 +512,13 @@ namespace TEAM_Library
                     }
                 }
 
-                var localExtension = new Extension
+                var localExtension = new Extension();
+
+                if (teamConnection != null)
                 {
-                    Key = "database",
-                    Value = teamConnection.DatabaseServer.DatabaseName,
-                    Description = "database name"
+                    localExtension.Key = "database";
+                    localExtension.Value = teamConnection.DatabaseServer.DatabaseName;
+                    localExtension.Description = "database name";
                 };
 
                 returnExtensions.Add(localExtension);
@@ -664,7 +668,10 @@ namespace TEAM_Library
                 }
                 else
                 {
-                    localExtension.Value = teamConnection.DatabaseServer.SchemaName;
+                    if (teamConnection != null)
+                    {
+                        localExtension.Value = teamConnection.DatabaseServer.SchemaName;
+                    }
                 }
 
                 returnExtensions.Add(localExtension);
@@ -947,7 +954,7 @@ namespace TEAM_Library
 
                     DataItemMapping businessKeyDataItemMapping = new DataItemMapping();
 
-                    if (new[] { DataObjectTypes.Presentation.ToString(), DataObjectTypes.StagingArea.ToString(), DataObjectTypes.PersistentStagingArea.ToString() }.Contains(dataObjectMapping.MappingClassifications[0].Classification))
+                    if (dataObjectMapping.MappingClassifications != null && new[] { DataObjectTypes.Presentation.ToString(), DataObjectTypes.StagingArea.ToString(), DataObjectTypes.PersistentStagingArea.ToString() }.Contains(dataObjectMapping.MappingClassifications[0].Classification))
                     {
                         // Map the key to itself (workaround as above).
                         businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, drivingKeyValue);
@@ -966,7 +973,7 @@ namespace TEAM_Library
                 businessKey.SurrogateKey = businessKeyComponentList.surrogateKey;
 
                 // If the mapping is for a driving key AND the extension setting is enabled, add the surrogate key as extension.
-                if (jsonExportSetting.IsAddDrivingKeyAsBusinessKeyExtension() && dataObjectMapping.MappingClassifications[0].Classification == DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey.ToString())
+                if (dataObjectMapping.MappingClassifications != null && jsonExportSetting.IsAddDrivingKeyAsBusinessKeyExtension() && dataObjectMapping.MappingClassifications[0].Classification == DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey.ToString())
                 {
                     var businessKeyExtensions = new List<Extension>();
 

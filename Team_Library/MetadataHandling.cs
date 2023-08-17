@@ -172,6 +172,12 @@ namespace TEAM_Library
 
                 var schemaExtension = dataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault();
 
+                // Keep the enxtension blank if the schema returns NULL.
+                if (schemaExtension!= null && schemaExtension.Value == null)
+                {
+                    schemaExtension = null;
+                }
+
                 if (schemaExtension != null)
                 {
                     schemaName = schemaExtension.Value;

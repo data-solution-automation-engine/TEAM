@@ -334,19 +334,41 @@ namespace TEAM_Library
                 dataTable.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].ColumnName = DataObjectMappingGridColumns.BusinessKeyDefinition.ToString();
                 dataTable.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ColumnName = DataObjectMappingGridColumns.DrivingKeyDefinition.ToString();
                 dataTable.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].ColumnName = DataObjectMappingGridColumns.FilterCriterion.ToString();
+
                 // Hidden in the main table, but can be set via the JSON editor
                 dataTable.Columns[(int)DataObjectMappingGridColumns.DataObjectMappingExtension].ColumnName = DataObjectMappingGridColumns.DataObjectMappingExtension.ToString();
+
                 // The below are hidden, for sorting and back-end management only.
-                dataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObjectName].ColumnName = DataObjectMappingGridColumns.SourceDataObjectName.ToString();
-                dataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObjectName].ColumnName = DataObjectMappingGridColumns.TargetDataObjectName.ToString();
-                dataTable.Columns[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName].ColumnName = DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString();
-                dataTable.Columns[(int)DataObjectMappingGridColumns.SurrogateKey].ColumnName = DataObjectMappingGridColumns.SurrogateKey.ToString();
+                if (!dataTable.Columns.Contains(DataObjectMappingGridColumns.SourceDataObjectName.ToString()))
+                {
+                    dataTable.Columns[(int)DataObjectMappingGridColumns.SourceDataObjectName].ColumnName = DataObjectMappingGridColumns.SourceDataObjectName.ToString();
+                }
+
+                if (!dataTable.Columns.Contains(DataObjectMappingGridColumns.TargetDataObjectName.ToString()))
+                {
+                    dataTable.Columns[(int)DataObjectMappingGridColumns.TargetDataObjectName].ColumnName = DataObjectMappingGridColumns.TargetDataObjectName.ToString();
+                }
+
+                if (!dataTable.Columns.Contains(DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString()))
+                {
+                    dataTable.Columns[(int)DataObjectMappingGridColumns.PreviousTargetDataObjectName].ColumnName = DataObjectMappingGridColumns.PreviousTargetDataObjectName.ToString();
+                }
+
+                if (!dataTable.Columns.Contains(DataObjectMappingGridColumns.SurrogateKey.ToString()))
+                {
+                    dataTable.Columns[(int)DataObjectMappingGridColumns.SurrogateKey].ColumnName = DataObjectMappingGridColumns.SurrogateKey.ToString();
+                }
+
                 // Hidden in the main table, but can be set via the JSON editor
-                dataTable.Columns[(int)DataObjectMappingGridColumns.DataObjectMappingClassification].ColumnName = DataObjectMappingGridColumns.DataObjectMappingClassification.ToString();
+                if (!dataTable.Columns.Contains(DataObjectMappingGridColumns.DataObjectMappingClassification.ToString()))
+                {
+                    dataTable.Columns[(int)DataObjectMappingGridColumns.DataObjectMappingClassification].ColumnName = DataObjectMappingGridColumns.DataObjectMappingClassification.ToString();
+                }
             }
-            catch
+            catch (Exception exception)
             {
                 // TODO: return event log issue
+
             }
         }
 
