@@ -585,7 +585,7 @@ namespace TEAM
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStripMetadata;
             Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            MinimumSize = new System.Drawing.Size(1806, 1004);
+            MinimumSize = new System.Drawing.Size(800, 600);
             Name = "FormManageMetadata";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "Manage the automation metadata";

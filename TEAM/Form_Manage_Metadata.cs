@@ -169,7 +169,7 @@ namespace TEAM
             tabPageDataObjectMapping.ResumeLayout(false);
             ((ISupportInitialize)(_dataGridViewDataObjects)).EndInit();
         }
-        
+
         private void ApplyFilterOnHeaderSort(object sender, FilterEventArgs e)
         {
             if (e.DoFilter)
@@ -1430,7 +1430,7 @@ namespace TEAM
             {
                 richTextBoxInformation.AppendText("Validation found issues which should be investigated.");
             }
-            
+
             #endregion
         }
 
