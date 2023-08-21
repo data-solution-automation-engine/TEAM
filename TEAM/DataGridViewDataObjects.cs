@@ -1376,12 +1376,15 @@ namespace TEAM
                         // See if there is a schema extension provided, if so it can be shown in the name.
                         if (dataObject.DataObjectConnection != null)
                         {
-                            var schemaExtension = dataObject.DataObjectConnection.Extensions.Where(x => x.Key.Equals("schema")).FirstOrDefault();
-                            if (schemaExtension != null)
+                            if (dataObject.DataObjectConnection.Extensions != null && dataObject.DataObjectConnection.Extensions.Any())
                             {
-                                if (schemaExtension.Value != connectionSchema)
+                                var schemaExtension = dataObject.DataObjectConnection.Extensions.Where(x => x.Key.Equals("schema")).FirstOrDefault();
+                                if (schemaExtension != null)
                                 {
-                                    formatting.Value = schemaExtension.Value + '.' + dataObject.Name;
+                                    if (schemaExtension.Value != connectionSchema)
+                                    {
+                                        formatting.Value = schemaExtension.Value + '.' + dataObject.Name;
+                                    }
                                 }
                             }
                         }
