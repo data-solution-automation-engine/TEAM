@@ -1602,17 +1602,17 @@ namespace TEAM
 
                 if (sourceDataObjectName.IsDataQuery())
                 {
-                    // Create a data query
+                    // Create a data query.
                     DataQuery sourceDataQuery = new DataQuery();
                     sourceDataQuery.DataQueryCode = sourceDataObjectName.Replace("`", "");
 
-                    // Manage connections
+                    // Manage connections.
                     var sourceConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
                     var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
 
                     JsonOutputHandling.SetDataQueryConnection(sourceDataQuery, sourceConnection, JsonExportSetting);
 
-                    // Manage connection extensions
+                    // Manage connection extensions.
                     JsonOutputHandling.SetDataQueryConnectionDatabaseExtension(sourceDataQuery, sourceConnection, JsonExportSetting);
                     JsonOutputHandling.SetDataQueryConnectionSchemaExtension(sourceDataQuery, sourceConnection, JsonExportSetting);
 
@@ -1623,19 +1623,19 @@ namespace TEAM
                     // Get the data item info.
                     dynamic sourceDataObject = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObject.ToString()].Value;
 
-                    // Manage classifications
+                    // Manage classifications.
                     JsonOutputHandling.SetDataObjectTypeClassification(sourceDataObject, JsonExportSetting, TeamConfiguration);
 
-                    // Data items
+                    // Data items.
                     JsonOutputHandling.SetDataObjectDataItems(sourceDataObject, targetConnection, TeamConfiguration, JsonExportSetting, dataGridViewRowsPhysicalModel);
 
-                    // Manage connections
+                    // Manage connections.
                     var sourceConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceConnection.ToString()].Value.ToString();
                     var sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionInternalId, TeamConfiguration, TeamEventLog);
 
                     JsonOutputHandling.SetDataObjectConnection(sourceDataObject, sourceConnection, JsonExportSetting);
 
-                    // Manage connection extensions
+                    // Manage connection extensions.
                     JsonOutputHandling.SetDataObjectConnectionDatabaseExtension(sourceDataObject, sourceConnection, JsonExportSetting);
                     JsonOutputHandling.SetDataObjectConnectionSchemaExtension(sourceDataObject, sourceConnection, JsonExportSetting);
 
