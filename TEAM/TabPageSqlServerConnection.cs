@@ -14,7 +14,7 @@ namespace TEAM
     /// <summary>
     /// Derived Custom Connection TabPage inherited from the TabPage class.
     /// </summary>
-    internal class TabPageConnections : TabPage
+    internal class TabPageSqlServerConnection : TabPage
     {
         // Startup flag, disabled in constructor. Used to prevent some events from firing twice (creation and value setting).
         internal bool StartUpIndicator = true;
@@ -55,7 +55,7 @@ namespace TEAM
         /// <summary>
         /// Constructor to instantiate a new Custom Tab Page.
         /// </summary>
-        public TabPageConnections(object input)
+        public TabPageSqlServerConnection(object input)
         {
             _localConnection = (TeamConnection) input;
 
@@ -84,19 +84,7 @@ namespace TEAM
 
             #region Database connection controls
 
-            // Add ConnectionString TextBox
-            _textBoxConnectionString = new TextBox();
-            localPanel.Controls.Add(_textBoxConnectionString);
-            _textBoxConnectionString.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxConnectionString.Location = new Point(6, 245);
-            _textBoxConnectionString.Size = new Size(850, 21);
-            _textBoxConnectionString.BorderStyle = BorderStyle.None;
-            _textBoxConnectionString.BackColor = Color.Snow;
-            _textBoxConnectionString.Name = "textBoxConnectionString";
-            _textBoxConnectionString.ReadOnly = true;
-            _textBoxConnectionString.TabStop = false;
-
-            // Add GroupBox for Database content
+            // GroupBox for Database content
             var groupBoxDatabase = new GroupBox();
             localPanel.Controls.Add(groupBoxDatabase);
             groupBoxDatabase.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
@@ -106,7 +94,7 @@ namespace TEAM
             groupBoxDatabase.Text = @"Database";
             groupBoxDatabase.TabStop = false;
             
-            // Add Database Label
+            // Database Label
             var labelDatabase = new Label();
             groupBoxDatabase.Controls.Add(labelDatabase);
             labelDatabase.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
@@ -116,7 +104,7 @@ namespace TEAM
             labelDatabase.Text = @"Database name";
             labelDatabase.TabStop = false;
 
-            // Add Server Label
+            // Server Label
             var labelServer = new Label();
             groupBoxDatabase.Controls.Add(labelServer);
             labelServer.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
@@ -289,6 +277,19 @@ namespace TEAM
             _textBoxPassword.Text = _localConnection.DatabaseServer.NamedUserPassword;
             _textBoxPassword.TextChanged += UpdateConnectionStringWithPassword;
             _textBoxPassword.TabIndex = 8;
+
+            // ConnectionString TextBox
+            _textBoxConnectionString = new TextBox();
+            localPanel.Controls.Add(_textBoxConnectionString);
+            _textBoxConnectionString.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _textBoxConnectionString.Location = new Point(6, 245);
+            _textBoxConnectionString.Size = new Size(850, 21);
+            _textBoxConnectionString.BorderStyle = BorderStyle.None;
+            _textBoxConnectionString.BackColor = Color.Snow;
+            _textBoxConnectionString.Name = "textBoxConnectionString";
+            _textBoxConnectionString.ReadOnly = true;
+            _textBoxConnectionString.TabStop = false;
+
             #endregion
 
             #region MFA panel
@@ -468,7 +469,7 @@ namespace TEAM
 
             #endregion
             
-            // Add Save Button
+            // Save Button
             Button saveButton = new Button();
             localPanel.Controls.Add(saveButton);
             saveButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
@@ -479,7 +480,7 @@ namespace TEAM
             saveButton.Click += SaveConnection;
             saveButton.TabIndex = 60;
 
-            // Add Delete Button
+            // Delete Button
             Button deleteButton = new Button();
             localPanel.Controls.Add(deleteButton);
             deleteButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
@@ -490,7 +491,7 @@ namespace TEAM
             deleteButton.Click += DeleteConnection;
             deleteButton.TabIndex = 70;
 
-            // Add test Button
+            // Test Button
             Button testButton = new Button();
             localPanel.Controls.Add(testButton);
             testButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);

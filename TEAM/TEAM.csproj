@@ -90,7 +90,7 @@
     <Compile Update="TabPageEnvironments.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="TabPageConnections.cs">
+    <Compile Update="TabPageSqlServerConnection.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="DataGridViewDataItems.cs">

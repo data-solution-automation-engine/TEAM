@@ -516,54 +516,82 @@ namespace TEAM
         private void tabControlConnections_MouseDown(object sender, MouseEventArgs e)
         {
             var lastIndex = tabControlConnections.TabCount - 1;
+
+            // Only do something when someone actually clicks the last tab.
             if (tabControlConnections.GetTabRect(lastIndex).Contains(e.Location))
             {
-                //tabControlConnections.TabPages.Insert(lastIndex, "New Tab");
-                TeamConnection connectionProfile = new TeamConnection();
-                connectionProfile.ConnectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100) }, " % $@");
-                connectionProfile.ConnectionName = "New connection";
-                connectionProfile.ConnectionKey = "New";
-                connectionProfile.ConnectionType = ConnectionTypes.Catalog;
+                var connectionDialog = new Form_Connection_Selection();
+                var selectedConnectionType = "";
 
-                TeamDatabaseConnection connectionDatabase = new TeamDatabaseConnection();
-                connectionDatabase.SchemaName = "<Schema Name>";
-                connectionDatabase.ServerName = "<Server Name>";
-                connectionDatabase.DatabaseName = "<Database Name>";
-                connectionDatabase.NamedUserName = "<User Name>";
-                connectionDatabase.NamedUserPassword = "<Password>";
-                connectionDatabase.authenticationType = ServerAuthenticationTypes.NamedUser;
-
-                connectionProfile.DatabaseServer = connectionDatabase;
-
-                bool newTabExists = false;
-                foreach (TabPage customTabPage in tabControlConnections.TabPages)
+                if (connectionDialog.ShowDialog(this) == DialogResult.OK)
                 {
-                    if (customTabPage.Name == "New")
+                    selectedConnectionType = connectionDialog.GetValue();
+
+                    connectionDialog.Dispose();
+
+                    #region SQL Server
+
+                    if (selectedConnectionType == "sqlserver")
                     {
-                        newTabExists = true;
+                        TeamConnection connectionProfile = new TeamConnection();
+                        connectionProfile.ConnectionInternalId = Utility.CreateMd5(new[] { Utility.GetRandomString(100) }, " % $@");
+                        connectionProfile.ConnectionName = "New connection";
+                        connectionProfile.ConnectionKey = "New";
+                        connectionProfile.ConnectionType = ConnectionTypes.Catalog;
+
+                        TeamDatabaseConnection connectionDatabase = new TeamDatabaseConnection();
+                        connectionDatabase.SchemaName = "<Schema Name>";
+                        connectionDatabase.ServerName = "<Server Name>";
+                        connectionDatabase.DatabaseName = "<Database Name>";
+                        connectionDatabase.NamedUserName = "<User Name>";
+                        connectionDatabase.NamedUserPassword = "<Password>";
+                        connectionDatabase.authenticationType = ServerAuthenticationTypes.NamedUser;
+
+                        connectionProfile.DatabaseServer = connectionDatabase;
+
+                        bool newTabExists = false;
+                        foreach (TabPage customTabPage in tabControlConnections.TabPages)
+                        {
+                            if (customTabPage.Name == "New")
+                            {
+                                newTabExists = true;
+                            }
+                            else
+                            {
+                                // Do nothing
+                            }
+                        }
+
+                        if (!newTabExists)
+                        {
+                            // Create a new tab page using the connection profile (a TeamConnection class object) as input.
+                            TabPageConnections localCustomTabPage = new TabPageConnections(connectionProfile);
+                            localCustomTabPage.OnDeleteConnection += DeleteConnection;
+                            localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
+                            localCustomTabPage.OnSaveConnection += SaveConnection;
+                            tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
+                            tabControlConnections.SelectedIndex = lastIndex;
+
+                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new connection was created."));
+                        }
+                        else
+                        {
+                            richTextBoxInformation.AppendText("There is already a 'new connection' tab open. Please close or save this first.\r\n");
+                        }
                     }
+
+                    #endregion
+
                     else
                     {
-                        // Do nothing
+                        richTextBoxInformation.AppendText("No valid connection type was selected.\r\n");
                     }
-                }
-
-                if (newTabExists == false)
-                {
-                    // Create a new tab page using the connection profile (a TeamConnection class object) as input.
-                    TabPageConnections localCustomTabPage = new TabPageConnections(connectionProfile);
-                    localCustomTabPage.OnDeleteConnection += DeleteConnection;
-                    localCustomTabPage.OnChangeMainText += UpdateMainInformationTextBox;
-                    localCustomTabPage.OnSaveConnection += SaveConnection;
-                    tabControlConnections.TabPages.Insert(lastIndex, localCustomTabPage);
-                    tabControlConnections.SelectedIndex = lastIndex;
-
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"A new connection was created."));
                 }
                 else
                 {
-                    richTextBoxInformation.AppendText("There is already a 'new connection' tab open. Please close or save this first.\r\n");
+                    richTextBoxInformation.AppendText("The creation of a new connection was cancelled.\r\n");
                 }
+
             }
         }
         

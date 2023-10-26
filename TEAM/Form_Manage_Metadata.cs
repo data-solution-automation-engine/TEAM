@@ -73,10 +73,9 @@ namespace TEAM
             // Default setting and start setting of validation counters etc.
             metadataValidations = new MetadataValidations();
 
-            labelHubCount.Text = @"0 Core Business Concepts";
+            labelHubCount.Text = @"0 Business Concepts";
             labelSatCount.Text = @"0 Context entities";
             labelLnkCount.Text = @"0 Relationships";
-            labelLsatCount.Text = @"0 Relationship context entities";
 
             //  Load the grids from the repository.
             richTextBoxInformation.Clear();
@@ -616,10 +615,9 @@ namespace TEAM
                 counter++;
             }
 
-            labelHubCount.Text = $@"{hubSet.Count} Core Business Concepts";
-            labelSatCount.Text = satSet.Count + @" Context";
+            labelHubCount.Text = $@"{hubSet.Count} Business Concepts";
+            labelSatCount.Text = (satSet.Count+lsatSet.Count) + @" Context";
             labelLnkCount.Text = lnkSet.Count + @" Relationships";
-            labelLsatCount.Text = lsatSet.Count + @" Relationship Context";
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)

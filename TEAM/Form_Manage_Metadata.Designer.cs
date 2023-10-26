@@ -40,7 +40,6 @@ namespace TEAM
             buttonStart = new System.Windows.Forms.Button();
             buttonSaveMetadata = new System.Windows.Forms.Button();
             groupBoxMetadataCounts = new System.Windows.Forms.GroupBox();
-            labelLsatCount = new System.Windows.Forms.Label();
             labelLnkCount = new System.Windows.Forms.Label();
             labelSatCount = new System.Windows.Forms.Label();
             labelHubCount = new System.Windows.Forms.Label();
@@ -103,7 +102,7 @@ namespace TEAM
             groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             groupBox2.Controls.Add(checkBoxShowStaging);
             groupBox2.Controls.Add(textBoxFilterCriterion);
-            groupBox2.Location = new System.Drawing.Point(16, 739);
+            groupBox2.Location = new System.Drawing.Point(14, 739);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new System.Drawing.Size(299, 85);
             groupBox2.TabIndex = 25;
@@ -170,7 +169,6 @@ namespace TEAM
             // groupBoxMetadataCounts
             // 
             groupBoxMetadataCounts.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            groupBoxMetadataCounts.Controls.Add(labelLsatCount);
             groupBoxMetadataCounts.Controls.Add(labelLnkCount);
             groupBoxMetadataCounts.Controls.Add(labelSatCount);
             groupBoxMetadataCounts.Controls.Add(labelHubCount);
@@ -179,16 +177,7 @@ namespace TEAM
             groupBoxMetadataCounts.Size = new System.Drawing.Size(140, 85);
             groupBoxMetadataCounts.TabIndex = 16;
             groupBoxMetadataCounts.TabStop = false;
-            groupBoxMetadataCounts.Text = "This metadata contains:";
-            // 
-            // labelLsatCount
-            // 
-            labelLsatCount.AutoSize = true;
-            labelLsatCount.Location = new System.Drawing.Point(6, 59);
-            labelLsatCount.Name = "labelLsatCount";
-            labelLsatCount.Size = new System.Drawing.Size(84, 13);
-            labelLsatCount.TabIndex = 3;
-            labelLsatCount.Text = "labelLsatCount";
+            groupBoxMetadataCounts.Text = "This metadata has:";
             // 
             // labelLnkCount
             // 
@@ -237,12 +226,13 @@ namespace TEAM
             // 
             // checkedListBoxReverseEngineeringAreas
             // 
+            checkedListBoxReverseEngineeringAreas.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             checkedListBoxReverseEngineeringAreas.BackColor = System.Drawing.SystemColors.Control;
             checkedListBoxReverseEngineeringAreas.BorderStyle = System.Windows.Forms.BorderStyle.None;
             checkedListBoxReverseEngineeringAreas.FormattingEnabled = true;
             checkedListBoxReverseEngineeringAreas.Location = new System.Drawing.Point(8, 85);
             checkedListBoxReverseEngineeringAreas.Name = "checkedListBoxReverseEngineeringAreas";
-            checkedListBoxReverseEngineeringAreas.Size = new System.Drawing.Size(120, 391);
+            checkedListBoxReverseEngineeringAreas.Size = new System.Drawing.Size(126, 425);
             checkedListBoxReverseEngineeringAreas.TabIndex = 0;
             // 
             // buttonReverseEngineer
@@ -299,7 +289,7 @@ namespace TEAM
             // 
             labelInformation.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             labelInformation.AutoSize = true;
-            labelInformation.Location = new System.Drawing.Point(321, 739);
+            labelInformation.Location = new System.Drawing.Point(322, 739);
             labelInformation.Name = "labelInformation";
             labelInformation.Size = new System.Drawing.Size(68, 13);
             labelInformation.TabIndex = 5;
@@ -339,7 +329,7 @@ namespace TEAM
             openMetadataDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
             openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
             openMetadataDirectoryToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
-            openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             openMetadataDirectoryToolStripMenuItem.Text = "Open Metadata Directory";
             openMetadataDirectoryToolStripMenuItem.Click += openMetadataDirectoryToolStripMenuItem_Click;
             // 
@@ -347,7 +337,7 @@ namespace TEAM
             // 
             openConfigurationDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
             openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
-            openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
             openConfigurationDirectoryToolStripMenuItem.Click += openConfigurationDirectoryToolStripMenuItem_Click;
             // 
@@ -355,20 +345,20 @@ namespace TEAM
             // 
             openCoreDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
             openCoreDirectoryToolStripMenuItem.Name = "openCoreDirectoryToolStripMenuItem";
-            openCoreDirectoryToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            openCoreDirectoryToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             openCoreDirectoryToolStripMenuItem.Text = "Open Core Directory";
             openCoreDirectoryToolStripMenuItem.Click += openCoreDirectoryToolStripMenuItem_Click;
             // 
             // toolStripSeparator5
             // 
             toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new System.Drawing.Size(355, 6);
+            toolStripSeparator5.Size = new System.Drawing.Size(347, 6);
             // 
             // saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem
             // 
             saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Image = Properties.Resources.SaveFile;
             saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Name = "saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem";
-            saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Text = "&Save as Directional Graph Markup Language (DGML)";
             saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem.Click += saveAsDirectionalGraphMarkupLanguageDgmlToolStripMenuItem_Click;
             // 
@@ -376,7 +366,7 @@ namespace TEAM
             // 
             closeToolStripMenuItem.Image = Properties.Resources.ExitApplication;
             closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            closeToolStripMenuItem.Size = new System.Drawing.Size(358, 30);
+            closeToolStripMenuItem.Size = new System.Drawing.Size(350, 22);
             closeToolStripMenuItem.Text = "&Close Window";
             closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
@@ -391,7 +381,7 @@ namespace TEAM
             // 
             openMetadataFileToolStripMenuItem.Image = Properties.Resources.OpenFileIcon;
             openMetadataFileToolStripMenuItem.Name = "openMetadataFileToolStripMenuItem";
-            openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(314, 30);
+            openMetadataFileToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
             openMetadataFileToolStripMenuItem.Text = "Import Data Object Mapping Grid File";
             openMetadataFileToolStripMenuItem.Click += openMetadataFileToolStripMenuItem_Click_1;
             // 
@@ -399,7 +389,7 @@ namespace TEAM
             // 
             openAttributeMappingFileToolStripMenuItem.Image = Properties.Resources.OpenFileIcon;
             openAttributeMappingFileToolStripMenuItem.Name = "openAttributeMappingFileToolStripMenuItem";
-            openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(314, 30);
+            openAttributeMappingFileToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
             openAttributeMappingFileToolStripMenuItem.Text = "Import Data Item Mapping Grid File";
             openAttributeMappingFileToolStripMenuItem.Click += openDataItemMappingFileToolStripMenuItem_Click;
             // 
@@ -407,21 +397,21 @@ namespace TEAM
             // 
             importPhysicalModelGridFileToolStripMenuItem.Image = Properties.Resources.OpenFileIcon;
             importPhysicalModelGridFileToolStripMenuItem.Name = "importPhysicalModelGridFileToolStripMenuItem";
-            importPhysicalModelGridFileToolStripMenuItem.Size = new System.Drawing.Size(314, 30);
+            importPhysicalModelGridFileToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
             importPhysicalModelGridFileToolStripMenuItem.Text = "Import Physical Model Grid File";
             importPhysicalModelGridFileToolStripMenuItem.Click += importPhysicalModelGridFileToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(311, 6);
+            toolStripSeparator1.Size = new System.Drawing.Size(303, 6);
             // 
             // automapDataItemsToolStripMenuItem
             // 
             automapDataItemsToolStripMenuItem.Image = Properties.Resources.DocumentationIcon;
             automapDataItemsToolStripMenuItem.Name = "automapDataItemsToolStripMenuItem";
             automapDataItemsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M;
-            automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(314, 30);
+            automapDataItemsToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
             automapDataItemsToolStripMenuItem.Text = "Automap Data Items";
             automapDataItemsToolStripMenuItem.Click += AutoMapDataItemsToolStripMenuItem_Click;
             // 
@@ -430,7 +420,7 @@ namespace TEAM
             generatePhysicalModelGridQueryToolStripMenuItem.Image = Properties.Resources.ETLIcon;
             generatePhysicalModelGridQueryToolStripMenuItem.Name = "generatePhysicalModelGridQueryToolStripMenuItem";
             generatePhysicalModelGridQueryToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G;
-            generatePhysicalModelGridQueryToolStripMenuItem.Size = new System.Drawing.Size(314, 30);
+            generatePhysicalModelGridQueryToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
             generatePhysicalModelGridQueryToolStripMenuItem.Text = "&Generate Physical Model Grid Query";
             generatePhysicalModelGridQueryToolStripMenuItem.Click += generatePhysicalModelGridQueryToolStripMenuItem_Click;
             // 
@@ -439,7 +429,7 @@ namespace TEAM
             refreshToolStripMenuItem.Image = Properties.Resources.CogIcon;
             refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
             refreshToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R;
-            refreshToolStripMenuItem.Size = new System.Drawing.Size(314, 30);
+            refreshToolStripMenuItem.Size = new System.Drawing.Size(306, 22);
             refreshToolStripMenuItem.Text = "Refresh";
             refreshToolStripMenuItem.Click += refreshToolStripMenuItem_Click;
             // 
@@ -454,7 +444,7 @@ namespace TEAM
             // 
             manageValidationRulesToolStripMenuItem.Image = Properties.Resources.DocumentationIcon;
             manageValidationRulesToolStripMenuItem.Name = "manageValidationRulesToolStripMenuItem";
-            manageValidationRulesToolStripMenuItem.Size = new System.Drawing.Size(219, 30);
+            manageValidationRulesToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             manageValidationRulesToolStripMenuItem.Text = "Manage Validation Rules";
             manageValidationRulesToolStripMenuItem.Click += manageValidationRulesToolStripMenuItem_Click;
             // 
@@ -463,7 +453,7 @@ namespace TEAM
             validateMetadataToolStripMenuItem.Image = Properties.Resources.transparent_green_checkmark_hi;
             validateMetadataToolStripMenuItem.Name = "validateMetadataToolStripMenuItem";
             validateMetadataToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q;
-            validateMetadataToolStripMenuItem.Size = new System.Drawing.Size(219, 30);
+            validateMetadataToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             validateMetadataToolStripMenuItem.Text = "&Validate Metadata";
             validateMetadataToolStripMenuItem.Click += validateMetadataToolStripMenuItem_Click;
             // 
@@ -478,7 +468,7 @@ namespace TEAM
             // 
             manageJsonExportRulesToolStripMenuItem.Image = Properties.Resources.DocumentationIcon;
             manageJsonExportRulesToolStripMenuItem.Name = "manageJsonExportRulesToolStripMenuItem";
-            manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(224, 30);
+            manageJsonExportRulesToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
             manageJsonExportRulesToolStripMenuItem.Text = "Manage JSON Export Rules";
             manageJsonExportRulesToolStripMenuItem.Click += manageJsonExportRulesToolStripMenuItem_Click;
             // 
@@ -494,7 +484,7 @@ namespace TEAM
             displayEventLogToolStripMenuItem.Image = Properties.Resources.log_file;
             displayEventLogToolStripMenuItem.Name = "displayEventLogToolStripMenuItem";
             displayEventLogToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E;
-            displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(215, 30);
+            displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             displayEventLogToolStripMenuItem.Text = "Display &Event Log";
             displayEventLogToolStripMenuItem.Click += displayEventLogToolStripMenuItem_Click;
             // 
@@ -502,7 +492,7 @@ namespace TEAM
             // 
             clearEventLogToolStripMenuItem.Image = Properties.Resources.log_file;
             clearEventLogToolStripMenuItem.Name = "clearEventLogToolStripMenuItem";
-            clearEventLogToolStripMenuItem.Size = new System.Drawing.Size(215, 30);
+            clearEventLogToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             clearEventLogToolStripMenuItem.Text = "Clear Event Log";
             clearEventLogToolStripMenuItem.Click += clearEventLogToolStripMenuItem_Click;
             // 
@@ -556,7 +546,6 @@ namespace TEAM
             Controls.Add(labelInformation);
             Controls.Add(richTextBoxInformation);
             Controls.Add(menuStripMetadata);
-            Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             HelpButton = true;
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStripMetadata;
@@ -597,7 +586,6 @@ namespace TEAM
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         private System.Windows.Forms.GroupBox groupBoxMetadataCounts;
         private System.Windows.Forms.Label labelHubCount;
-        private System.Windows.Forms.Label labelLsatCount;
         private System.Windows.Forms.Label labelLnkCount;
         private System.Windows.Forms.Label labelSatCount;
         private System.Windows.Forms.Button buttonSaveMetadata;
