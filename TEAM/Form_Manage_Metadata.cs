@@ -61,6 +61,7 @@ namespace TEAM
         /// <param name="parent"></param>
         public FormManageMetadata(FormMain parent) : base(parent)
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             // Standard call to get the designer controls in place.
             InitializeComponent();
 

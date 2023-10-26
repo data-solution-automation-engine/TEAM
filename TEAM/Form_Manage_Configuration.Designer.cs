@@ -29,1375 +29,1303 @@
         /// 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormManageConfiguration));
-            this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
-            this.menuStripMainMenu = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.openRootPathFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openActiveConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.tabPagePaths = new System.Windows.Forms.TabPage();
-            this.pictureBox4 = new System.Windows.Forms.PictureBox();
-            this.textBoxTeamMetadataPath = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBoxConfigurationPath = new System.Windows.Forms.TextBox();
-            this.label45 = new System.Windows.Forms.Label();
-            this.tabPageDataObjectTypes = new System.Windows.Forms.TabPage();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.textBoxHubTablePrefix = new System.Windows.Forms.TextBox();
-            this.textBoxSatPrefix = new System.Windows.Forms.TextBox();
-            this.textBoxLinkTablePrefix = new System.Windows.Forms.TextBox();
-            this.textBoxLinkSatPrefix = new System.Windows.Forms.TextBox();
-            this.groupBoxDataObjectIdentification = new System.Windows.Forms.GroupBox();
-            this.labelPresentationLayerLabels = new System.Windows.Forms.Label();
-            this.labelStagingAreaLabel = new System.Windows.Forms.Label();
-            this.labelTranformationObjectLabel = new System.Windows.Forms.Label();
-            this.textBoxStagingAreaPrefix = new System.Windows.Forms.TextBox();
-            this.textBoxTransformationLabels = new System.Windows.Forms.TextBox();
-            this.textBoxPSAPrefix = new System.Windows.Forms.TextBox();
-            this.labelPSAlabel = new System.Windows.Forms.Label();
-            this.textBoxPresentationLayerLabels = new System.Windows.Forms.TextBox();
-            this.groupBoxPrefixSuffix = new System.Windows.Forms.GroupBox();
-            this.tableSuffixRadiobutton = new System.Windows.Forms.RadioButton();
-            this.tablePrefixRadiobutton = new System.Windows.Forms.RadioButton();
-            this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.radioButtonPSABusinessKeyPK = new System.Windows.Forms.RadioButton();
-            this.radioButtonPSABusinessKeyIndex = new System.Windows.Forms.RadioButton();
-            this.tabPageDataWarehouse = new System.Windows.Forms.TabPage();
-            this.groupBoxDataVaultSpecific = new System.Windows.Forms.GroupBox();
-            this.textBoxExpiryDateTimeName = new System.Windows.Forms.TextBox();
-            this.textBoxRecordSource = new System.Windows.Forms.TextBox();
-            this.textBoxLDST = new System.Windows.Forms.TextBox();
-            this.label18 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label35 = new System.Windows.Forms.Label();
-            this.groupBoxAlternativeColumns = new System.Windows.Forms.GroupBox();
-            this.checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
-            this.label36 = new System.Windows.Forms.Label();
-            this.label41 = new System.Windows.Forms.Label();
-            this.checkBoxAlternativeRecordSource = new System.Windows.Forms.CheckBox();
-            this.textBoxSatelliteAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
-            this.label37 = new System.Windows.Forms.Label();
-            this.textBoxHubAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
-            this.checkBoxAlternativeHubLDTS = new System.Windows.Forms.CheckBox();
-            this.textBoxAlternativeRecordSource = new System.Windows.Forms.TextBox();
-            this.groupBoxSurrogateKeyDefinition = new System.Windows.Forms.GroupBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.textBoxKeyIdentifier = new System.Windows.Forms.TextBox();
-            this.textBoxKeyPattern = new System.Windows.Forms.TextBox();
-            this.labelSurrogateKeyPattern = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.labelOtherExceptionColumns = new System.Windows.Forms.Label();
-            this.textBoxOtherExceptionColumns = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.label46 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.textBoxLogicalDeleteAttributeName = new System.Windows.Forms.TextBox();
-            this.label32 = new System.Windows.Forms.Label();
-            this.textBoxETLUpdateProcessID = new System.Windows.Forms.TextBox();
-            this.label42 = new System.Windows.Forms.Label();
-            this.textBoxCurrentRecordAttributeName = new System.Windows.Forms.TextBox();
-            this.label43 = new System.Windows.Forms.Label();
-            this.textBoxRecordChecksum = new System.Windows.Forms.TextBox();
-            this.textBoxChangeDataCaptureIndicator = new System.Windows.Forms.TextBox();
-            this.textBoxSourceRowId = new System.Windows.Forms.TextBox();
-            this.textBoxETLProcessID = new System.Windows.Forms.TextBox();
-            this.textBoxEventDateTime = new System.Windows.Forms.TextBox();
-            this.tabPageConnections = new System.Windows.Forms.TabPage();
-            this.tabControlConnections = new System.Windows.Forms.TabControl();
-            this.tabPageConnectionMain = new System.Windows.Forms.TabPage();
-            this.labelMetadataConnectionKey = new System.Windows.Forms.Label();
-            this.comboBoxMetadataConnection = new System.Windows.Forms.ComboBox();
-            this.richTextBoxConnectionMain = new System.Windows.Forms.RichTextBox();
-            this.tabPageConnectionNewTab = new System.Windows.Forms.TabPage();
-            this.tabPageEnvironments = new System.Windows.Forms.TabPage();
-            this.tabControlEnvironments = new System.Windows.Forms.TabControl();
-            this.tabPageEnvironmentMain = new System.Windows.Forms.TabPage();
-            this.labelEnvironmentKey = new System.Windows.Forms.Label();
-            this.comboBoxEnvironments = new System.Windows.Forms.ComboBox();
-            this.richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
-            this.tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
-            this.tabControlDefaultDetails = new System.Windows.Forms.TabControl();
-            this.toolTipConfigurationSettings = new System.Windows.Forms.ToolTip(this.components);
-            this.menuStripMainMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.tabPagePaths.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
-            this.tabPageDataObjectTypes.SuspendLayout();
-            this.groupBox4.SuspendLayout();
-            this.groupBoxDataObjectIdentification.SuspendLayout();
-            this.groupBoxPrefixSuffix.SuspendLayout();
-            this.groupBox8.SuspendLayout();
-            this.tabPageDataWarehouse.SuspendLayout();
-            this.groupBoxDataVaultSpecific.SuspendLayout();
-            this.groupBoxAlternativeColumns.SuspendLayout();
-            this.groupBoxSurrogateKeyDefinition.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.tabPageConnections.SuspendLayout();
-            this.tabControlConnections.SuspendLayout();
-            this.tabPageConnectionMain.SuspendLayout();
-            this.tabPageEnvironments.SuspendLayout();
-            this.tabControlEnvironments.SuspendLayout();
-            this.tabPageEnvironmentMain.SuspendLayout();
-            this.tabControlDefaultDetails.SuspendLayout();
-            this.SuspendLayout();
+            richTextBoxInformation = new System.Windows.Forms.RichTextBox();
+            menuStripMainMenu = new System.Windows.Forms.MenuStrip();
+            fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            openRootPathFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openActiveConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            pictureBox1 = new System.Windows.Forms.PictureBox();
+            tabPagePaths = new System.Windows.Forms.TabPage();
+            pictureBox4 = new System.Windows.Forms.PictureBox();
+            textBoxTeamMetadataPath = new System.Windows.Forms.TextBox();
+            label2 = new System.Windows.Forms.Label();
+            pictureBox3 = new System.Windows.Forms.PictureBox();
+            label1 = new System.Windows.Forms.Label();
+            textBoxConfigurationPath = new System.Windows.Forms.TextBox();
+            label45 = new System.Windows.Forms.Label();
+            tabPageDataObjectTypes = new System.Windows.Forms.TabPage();
+            groupBox4 = new System.Windows.Forms.GroupBox();
+            label17 = new System.Windows.Forms.Label();
+            label15 = new System.Windows.Forms.Label();
+            label16 = new System.Windows.Forms.Label();
+            label14 = new System.Windows.Forms.Label();
+            textBoxHubTablePrefix = new System.Windows.Forms.TextBox();
+            textBoxSatPrefix = new System.Windows.Forms.TextBox();
+            textBoxLinkTablePrefix = new System.Windows.Forms.TextBox();
+            textBoxLinkSatPrefix = new System.Windows.Forms.TextBox();
+            groupBoxDataObjectIdentification = new System.Windows.Forms.GroupBox();
+            labelPresentationLayerLabels = new System.Windows.Forms.Label();
+            labelStagingAreaLabel = new System.Windows.Forms.Label();
+            labelTranformationObjectLabel = new System.Windows.Forms.Label();
+            textBoxStagingAreaPrefix = new System.Windows.Forms.TextBox();
+            textBoxTransformationLabels = new System.Windows.Forms.TextBox();
+            textBoxPSAPrefix = new System.Windows.Forms.TextBox();
+            labelPSAlabel = new System.Windows.Forms.Label();
+            textBoxPresentationLayerLabels = new System.Windows.Forms.TextBox();
+            groupBoxPrefixSuffix = new System.Windows.Forms.GroupBox();
+            tableSuffixRadiobutton = new System.Windows.Forms.RadioButton();
+            tablePrefixRadiobutton = new System.Windows.Forms.RadioButton();
+            groupBox8 = new System.Windows.Forms.GroupBox();
+            radioButtonPSABusinessKeyPK = new System.Windows.Forms.RadioButton();
+            radioButtonPSABusinessKeyIndex = new System.Windows.Forms.RadioButton();
+            tabPageDataWarehouse = new System.Windows.Forms.TabPage();
+            groupBoxDataVaultSpecific = new System.Windows.Forms.GroupBox();
+            textBoxExpiryDateTimeName = new System.Windows.Forms.TextBox();
+            textBoxRecordSource = new System.Windows.Forms.TextBox();
+            textBoxLDST = new System.Windows.Forms.TextBox();
+            label18 = new System.Windows.Forms.Label();
+            label11 = new System.Windows.Forms.Label();
+            label35 = new System.Windows.Forms.Label();
+            groupBoxAlternativeColumns = new System.Windows.Forms.GroupBox();
+            checkBoxAlternativeSatLDTS = new System.Windows.Forms.CheckBox();
+            label36 = new System.Windows.Forms.Label();
+            label41 = new System.Windows.Forms.Label();
+            checkBoxAlternativeRecordSource = new System.Windows.Forms.CheckBox();
+            textBoxSatelliteAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
+            label37 = new System.Windows.Forms.Label();
+            textBoxHubAlternativeLDTSAttribute = new System.Windows.Forms.TextBox();
+            checkBoxAlternativeHubLDTS = new System.Windows.Forms.CheckBox();
+            textBoxAlternativeRecordSource = new System.Windows.Forms.TextBox();
+            groupBoxSurrogateKeyDefinition = new System.Windows.Forms.GroupBox();
+            label13 = new System.Windows.Forms.Label();
+            textBoxKeyIdentifier = new System.Windows.Forms.TextBox();
+            textBoxKeyPattern = new System.Windows.Forms.TextBox();
+            labelSurrogateKeyPattern = new System.Windows.Forms.Label();
+            groupBox2 = new System.Windows.Forms.GroupBox();
+            labelOtherExceptionColumns = new System.Windows.Forms.Label();
+            textBoxOtherExceptionColumns = new System.Windows.Forms.TextBox();
+            label10 = new System.Windows.Forms.Label();
+            label21 = new System.Windows.Forms.Label();
+            label29 = new System.Windows.Forms.Label();
+            label46 = new System.Windows.Forms.Label();
+            label30 = new System.Windows.Forms.Label();
+            textBoxLogicalDeleteAttributeName = new System.Windows.Forms.TextBox();
+            label32 = new System.Windows.Forms.Label();
+            textBoxETLUpdateProcessID = new System.Windows.Forms.TextBox();
+            label42 = new System.Windows.Forms.Label();
+            textBoxCurrentRecordAttributeName = new System.Windows.Forms.TextBox();
+            label43 = new System.Windows.Forms.Label();
+            textBoxRecordChecksum = new System.Windows.Forms.TextBox();
+            textBoxChangeDataCaptureIndicator = new System.Windows.Forms.TextBox();
+            textBoxSourceRowId = new System.Windows.Forms.TextBox();
+            textBoxETLProcessID = new System.Windows.Forms.TextBox();
+            textBoxEventDateTime = new System.Windows.Forms.TextBox();
+            tabPageConnections = new System.Windows.Forms.TabPage();
+            tabControlConnections = new System.Windows.Forms.TabControl();
+            tabPageConnectionMain = new System.Windows.Forms.TabPage();
+            labelMetadataConnectionKey = new System.Windows.Forms.Label();
+            comboBoxMetadataConnection = new System.Windows.Forms.ComboBox();
+            richTextBoxConnectionMain = new System.Windows.Forms.RichTextBox();
+            tabPageConnectionNewTab = new System.Windows.Forms.TabPage();
+            tabPageEnvironments = new System.Windows.Forms.TabPage();
+            tabControlEnvironments = new System.Windows.Forms.TabControl();
+            tabPageEnvironmentMain = new System.Windows.Forms.TabPage();
+            labelEnvironmentKey = new System.Windows.Forms.Label();
+            comboBoxEnvironments = new System.Windows.Forms.ComboBox();
+            richTextBoxEnvironmentsInformation = new System.Windows.Forms.RichTextBox();
+            tabPageEnvironmentNewTab = new System.Windows.Forms.TabPage();
+            tabControlDefaultDetails = new System.Windows.Forms.TabControl();
+            toolTipConfigurationSettings = new System.Windows.Forms.ToolTip(components);
+            menuStripMainMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            tabPagePaths.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox4).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
+            tabPageDataObjectTypes.SuspendLayout();
+            groupBox4.SuspendLayout();
+            groupBoxDataObjectIdentification.SuspendLayout();
+            groupBoxPrefixSuffix.SuspendLayout();
+            groupBox8.SuspendLayout();
+            tabPageDataWarehouse.SuspendLayout();
+            groupBoxDataVaultSpecific.SuspendLayout();
+            groupBoxAlternativeColumns.SuspendLayout();
+            groupBoxSurrogateKeyDefinition.SuspendLayout();
+            groupBox2.SuspendLayout();
+            tabPageConnections.SuspendLayout();
+            tabControlConnections.SuspendLayout();
+            tabPageConnectionMain.SuspendLayout();
+            tabPageEnvironments.SuspendLayout();
+            tabControlEnvironments.SuspendLayout();
+            tabPageEnvironmentMain.SuspendLayout();
+            tabControlDefaultDetails.SuspendLayout();
+            SuspendLayout();
             // 
             // richTextBoxInformation
             // 
-            this.richTextBoxInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBoxInformation.BackColor = System.Drawing.SystemColors.Control;
-            this.richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxInformation.Location = new System.Drawing.Point(12, 685);
-            this.richTextBoxInformation.Name = "richTextBoxInformation";
-            this.richTextBoxInformation.ReadOnly = true;
-            this.richTextBoxInformation.Size = new System.Drawing.Size(997, 100);
-            this.richTextBoxInformation.TabIndex = 2;
-            this.richTextBoxInformation.TabStop = false;
-            this.richTextBoxInformation.Text = "";
+            richTextBoxInformation.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            richTextBoxInformation.BackColor = System.Drawing.SystemColors.Control;
+            richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            richTextBoxInformation.Location = new System.Drawing.Point(12, 685);
+            richTextBoxInformation.Name = "richTextBoxInformation";
+            richTextBoxInformation.ReadOnly = true;
+            richTextBoxInformation.Size = new System.Drawing.Size(997, 100);
+            richTextBoxInformation.TabIndex = 2;
+            richTextBoxInformation.TabStop = false;
+            richTextBoxInformation.Text = "";
             // 
             // menuStripMainMenu
             // 
-            this.menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
-            this.menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
-            this.menuStripMainMenu.Name = "menuStripMainMenu";
-            this.menuStripMainMenu.Size = new System.Drawing.Size(1136, 24);
-            this.menuStripMainMenu.TabIndex = 4;
-            this.menuStripMainMenu.Text = "menuStrip1";
+            menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem });
+            menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
+            menuStripMainMenu.Name = "menuStripMainMenu";
+            menuStripMainMenu.Size = new System.Drawing.Size(1136, 24);
+            menuStripMainMenu.TabIndex = 4;
+            menuStripMainMenu.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openConfigurationFileToolStripMenuItem,
-            this.toolStripMenuItem2,
-            this.saveAllToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.openConfigurationDirectoryToolStripMenuItem,
-            this.openMetadataDirectoryToolStripMenuItem,
-            this.toolStripSeparator3,
-            this.openRootPathFileToolStripMenuItem,
-            this.openActiveConfigurationFileToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.exitToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "&File";
+            fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openConfigurationFileToolStripMenuItem, toolStripMenuItem2, saveAllToolStripMenuItem, toolStripSeparator2, openConfigurationDirectoryToolStripMenuItem, openMetadataDirectoryToolStripMenuItem, toolStripSeparator3, openRootPathFileToolStripMenuItem, openActiveConfigurationFileToolStripMenuItem, toolStripSeparator1, exitToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            fileToolStripMenuItem.Text = "&File";
             // 
             // openConfigurationFileToolStripMenuItem
             // 
-            this.openConfigurationFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
-            this.openConfigurationFileToolStripMenuItem.Name = "openConfigurationFileToolStripMenuItem";
-            this.openConfigurationFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.openConfigurationFileToolStripMenuItem.Text = "&Open Configuration File";
-            this.openConfigurationFileToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationFileToolStripMenuItem_Click);
+            openConfigurationFileToolStripMenuItem.Image = Properties.Resources.OpenFileIcon;
+            openConfigurationFileToolStripMenuItem.Name = "openConfigurationFileToolStripMenuItem";
+            openConfigurationFileToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
+            openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            openConfigurationFileToolStripMenuItem.Text = "&Open Configuration File";
+            openConfigurationFileToolStripMenuItem.Click += openConfigurationFileToolStripMenuItem_Click;
             // 
             // toolStripMenuItem2
             // 
-            this.toolStripMenuItem2.Image = global::TEAM.Properties.Resources.SaveFile;
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(271, 22);
-            this.toolStripMenuItem2.Text = "&Save Current Tab";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.SaveConfigurationFileToolStripMenuItem_Click);
+            toolStripMenuItem2.Image = Properties.Resources.SaveFile;
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
+            toolStripMenuItem2.Size = new System.Drawing.Size(271, 22);
+            toolStripMenuItem2.Text = "&Save Current Tab";
+            toolStripMenuItem2.Click += SaveConfigurationFileToolStripMenuItem_Click;
             // 
             // saveAllToolStripMenuItem
             // 
-            this.saveAllToolStripMenuItem.Image = global::TEAM.Properties.Resources.SaveFile;
-            this.saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
-            this.saveAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.S)));
-            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.saveAllToolStripMenuItem.Text = "Save All";
-            this.saveAllToolStripMenuItem.Click += new System.EventHandler(this.saveAllToolStripMenuItem_Click);
+            saveAllToolStripMenuItem.Image = Properties.Resources.SaveFile;
+            saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
+            saveAllToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.S;
+            saveAllToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            saveAllToolStripMenuItem.Text = "Save All";
+            saveAllToolStripMenuItem.Click += saveAllToolStripMenuItem_Click;
             // 
             // toolStripSeparator2
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(268, 6);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new System.Drawing.Size(268, 6);
             // 
             // openConfigurationDirectoryToolStripMenuItem
             // 
-            this.openConfigurationDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
-            this.openConfigurationDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
-            this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
+            openConfigurationDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
+            openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
+            openConfigurationDirectoryToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E;
+            openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
+            openConfigurationDirectoryToolStripMenuItem.Click += openConfigurationDirectoryToolStripMenuItem_Click;
             // 
             // openMetadataDirectoryToolStripMenuItem
             // 
-            this.openMetadataDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
-            this.openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.openMetadataDirectoryToolStripMenuItem.Text = "Open Metadata Directory";
-            this.openMetadataDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openMetadataDirectoryToolStripMenuItem_Click);
+            openMetadataDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
+            openMetadataDirectoryToolStripMenuItem.Name = "openMetadataDirectoryToolStripMenuItem";
+            openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            openMetadataDirectoryToolStripMenuItem.Text = "Open Metadata Directory";
+            openMetadataDirectoryToolStripMenuItem.Click += openMetadataDirectoryToolStripMenuItem_Click;
             // 
             // toolStripSeparator3
             // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(268, 6);
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new System.Drawing.Size(268, 6);
             // 
             // openRootPathFileToolStripMenuItem
             // 
-            this.openRootPathFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
-            this.openRootPathFileToolStripMenuItem.Name = "openRootPathFileToolStripMenuItem";
-            this.openRootPathFileToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.openRootPathFileToolStripMenuItem.Text = "Open Root Path File";
-            this.openRootPathFileToolStripMenuItem.Click += new System.EventHandler(this.openRootPathFileToolStripMenuItem_Click);
+            openRootPathFileToolStripMenuItem.Image = Properties.Resources.OpenFileIcon;
+            openRootPathFileToolStripMenuItem.Name = "openRootPathFileToolStripMenuItem";
+            openRootPathFileToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            openRootPathFileToolStripMenuItem.Text = "Open Root Path File";
+            openRootPathFileToolStripMenuItem.Click += openRootPathFileToolStripMenuItem_Click;
             // 
             // openActiveConfigurationFileToolStripMenuItem
             // 
-            this.openActiveConfigurationFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
-            this.openActiveConfigurationFileToolStripMenuItem.Name = "openActiveConfigurationFileToolStripMenuItem";
-            this.openActiveConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.openActiveConfigurationFileToolStripMenuItem.Text = "Open Active Configuration File";
-            this.openActiveConfigurationFileToolStripMenuItem.Click += new System.EventHandler(this.openActiveConfigurationFileToolStripMenuItem_Click);
+            openActiveConfigurationFileToolStripMenuItem.Image = Properties.Resources.OpenFileIcon;
+            openActiveConfigurationFileToolStripMenuItem.Name = "openActiveConfigurationFileToolStripMenuItem";
+            openActiveConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            openActiveConfigurationFileToolStripMenuItem.Text = "Open Active Configuration File";
+            openActiveConfigurationFileToolStripMenuItem.Click += openActiveConfigurationFileToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(268, 6);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new System.Drawing.Size(268, 6);
             // 
             // exitToolStripMenuItem
             // 
-            this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.exitToolStripMenuItem.Text = "Close Window";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            exitToolStripMenuItem.Image = Properties.Resources.ExitApplication;
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            exitToolStripMenuItem.Text = "Close Window";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.Image = global::TEAM.Properties.Resources.RavosLogo;
-            this.pictureBox1.Location = new System.Drawing.Point(1015, 685);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(109, 100);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 15;
-            this.pictureBox1.TabStop = false;
+            pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            pictureBox1.Image = Properties.Resources.RavosLogo;
+            pictureBox1.Location = new System.Drawing.Point(1015, 685);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new System.Drawing.Size(109, 100);
+            pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            pictureBox1.TabIndex = 15;
+            pictureBox1.TabStop = false;
             // 
             // tabPagePaths
             // 
-            this.tabPagePaths.AutoScroll = true;
-            this.tabPagePaths.Controls.Add(this.pictureBox4);
-            this.tabPagePaths.Controls.Add(this.textBoxTeamMetadataPath);
-            this.tabPagePaths.Controls.Add(this.label2);
-            this.tabPagePaths.Controls.Add(this.pictureBox3);
-            this.tabPagePaths.Controls.Add(this.label1);
-            this.tabPagePaths.Controls.Add(this.textBoxConfigurationPath);
-            this.tabPagePaths.Controls.Add(this.label45);
-            this.tabPagePaths.Location = new System.Drawing.Point(4, 22);
-            this.tabPagePaths.Name = "tabPagePaths";
-            this.tabPagePaths.Size = new System.Drawing.Size(1108, 621);
-            this.tabPagePaths.TabIndex = 4;
-            this.tabPagePaths.Text = "Paths";
-            this.tabPagePaths.UseVisualStyleBackColor = true;
+            tabPagePaths.AutoScroll = true;
+            tabPagePaths.Controls.Add(pictureBox4);
+            tabPagePaths.Controls.Add(textBoxTeamMetadataPath);
+            tabPagePaths.Controls.Add(label2);
+            tabPagePaths.Controls.Add(pictureBox3);
+            tabPagePaths.Controls.Add(label1);
+            tabPagePaths.Controls.Add(textBoxConfigurationPath);
+            tabPagePaths.Controls.Add(label45);
+            tabPagePaths.Location = new System.Drawing.Point(4, 22);
+            tabPagePaths.Name = "tabPagePaths";
+            tabPagePaths.Size = new System.Drawing.Size(1108, 621);
+            tabPagePaths.TabIndex = 4;
+            tabPagePaths.Text = "Paths";
+            tabPagePaths.UseVisualStyleBackColor = true;
             // 
             // pictureBox4
             // 
-            this.pictureBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox4.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.pictureBox4.Location = new System.Drawing.Point(1081, 56);
-            this.pictureBox4.Name = "pictureBox4";
-            this.pictureBox4.Size = new System.Drawing.Size(19, 20);
-            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox4.TabIndex = 100;
-            this.pictureBox4.TabStop = false;
-            this.pictureBox4.Click += new System.EventHandler(this.pictureBoxMetadataPath_Click);
+            pictureBox4.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            pictureBox4.Image = Properties.Resources.OpenDirectoryIcon;
+            pictureBox4.Location = new System.Drawing.Point(1081, 56);
+            pictureBox4.Name = "pictureBox4";
+            pictureBox4.Size = new System.Drawing.Size(19, 20);
+            pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            pictureBox4.TabIndex = 100;
+            pictureBox4.TabStop = false;
+            pictureBox4.Click += pictureBoxMetadataPath_Click;
             // 
             // textBoxTeamMetadataPath
             // 
-            this.textBoxTeamMetadataPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxTeamMetadataPath.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxTeamMetadataPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxTeamMetadataPath.Location = new System.Drawing.Point(108, 56);
-            this.textBoxTeamMetadataPath.Multiline = true;
-            this.textBoxTeamMetadataPath.Name = "textBoxTeamMetadataPath";
-            this.textBoxTeamMetadataPath.Size = new System.Drawing.Size(966, 20);
-            this.textBoxTeamMetadataPath.TabIndex = 98;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxTeamMetadataPath, "The output path is where TEAM saves any output generated by the application.\r\nFor" +
-        " example, where the Json metadata files are placed after succesfull validation a" +
-        "nd activation.");
+            textBoxTeamMetadataPath.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxTeamMetadataPath.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxTeamMetadataPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            textBoxTeamMetadataPath.Location = new System.Drawing.Point(122, 56);
+            textBoxTeamMetadataPath.Multiline = true;
+            textBoxTeamMetadataPath.Name = "textBoxTeamMetadataPath";
+            textBoxTeamMetadataPath.Size = new System.Drawing.Size(952, 20);
+            textBoxTeamMetadataPath.TabIndex = 98;
+            toolTipConfigurationSettings.SetToolTip(textBoxTeamMetadataPath, "The output path is where TEAM saves any output generated by the application.\r\nFor example, where the Json metadata files are placed after succesfull validation and activation.");
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 59);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(76, 13);
-            this.label2.TabIndex = 99;
-            this.label2.Text = "Metadata path";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(9, 59);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(83, 13);
+            label2.TabIndex = 99;
+            label2.Text = "Metadata path";
             // 
             // pictureBox3
             // 
-            this.pictureBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox3.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.pictureBox3.Location = new System.Drawing.Point(1081, 30);
-            this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(19, 20);
-            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox3.TabIndex = 96;
-            this.pictureBox3.TabStop = false;
-            this.pictureBox3.Click += new System.EventHandler(this.pictureBoxConfigurationPath_Click);
+            pictureBox3.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            pictureBox3.Image = Properties.Resources.OpenDirectoryIcon;
+            pictureBox3.Location = new System.Drawing.Point(1081, 30);
+            pictureBox3.Name = "pictureBox3";
+            pictureBox3.Size = new System.Drawing.Size(19, 20);
+            pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            pictureBox3.TabIndex = 96;
+            pictureBox3.TabStop = false;
+            pictureBox3.Click += pictureBoxConfigurationPath_Click;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 33);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(93, 13);
-            this.label1.TabIndex = 74;
-            this.label1.Text = "Configuration path";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(9, 33);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(107, 13);
+            label1.TabIndex = 74;
+            label1.Text = "Configuration path";
             // 
             // textBoxConfigurationPath
             // 
-            this.textBoxConfigurationPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxConfigurationPath.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.textBoxConfigurationPath.Location = new System.Drawing.Point(108, 30);
-            this.textBoxConfigurationPath.Multiline = true;
-            this.textBoxConfigurationPath.Name = "textBoxConfigurationPath";
-            this.textBoxConfigurationPath.Size = new System.Drawing.Size(966, 20);
-            this.textBoxConfigurationPath.TabIndex = 41;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxConfigurationPath, resources.GetString("textBoxConfigurationPath.ToolTip"));
+            textBoxConfigurationPath.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxConfigurationPath.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxConfigurationPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            textBoxConfigurationPath.Location = new System.Drawing.Point(122, 30);
+            textBoxConfigurationPath.Multiline = true;
+            textBoxConfigurationPath.Name = "textBoxConfigurationPath";
+            textBoxConfigurationPath.Size = new System.Drawing.Size(952, 20);
+            textBoxConfigurationPath.TabIndex = 41;
+            toolTipConfigurationSettings.SetToolTip(textBoxConfigurationPath, resources.GetString("textBoxConfigurationPath.ToolTip"));
             // 
             // label45
             // 
-            this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(-6, -23);
-            this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(289, 13);
-            this.label45.TabIndex = 72;
-            this.label45.Text = "Paths and connections used for debugging and automation.\r\n";
+            label45.AutoSize = true;
+            label45.Location = new System.Drawing.Point(-6, -23);
+            label45.Name = "label45";
+            label45.Size = new System.Drawing.Size(320, 13);
+            label45.TabIndex = 72;
+            label45.Text = "Paths and connections used for debugging and automation.\r\n";
             // 
             // tabPageDataObjectTypes
             // 
-            this.tabPageDataObjectTypes.AutoScroll = true;
-            this.tabPageDataObjectTypes.Controls.Add(this.groupBox4);
-            this.tabPageDataObjectTypes.Controls.Add(this.groupBoxDataObjectIdentification);
-            this.tabPageDataObjectTypes.Controls.Add(this.groupBoxPrefixSuffix);
-            this.tabPageDataObjectTypes.Controls.Add(this.groupBox8);
-            this.tabPageDataObjectTypes.Location = new System.Drawing.Point(4, 22);
-            this.tabPageDataObjectTypes.Name = "tabPageDataObjectTypes";
-            this.tabPageDataObjectTypes.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageDataObjectTypes.Size = new System.Drawing.Size(1108, 621);
-            this.tabPageDataObjectTypes.TabIndex = 2;
-            this.tabPageDataObjectTypes.Text = "Data Object Types";
-            this.tabPageDataObjectTypes.UseVisualStyleBackColor = true;
+            tabPageDataObjectTypes.AutoScroll = true;
+            tabPageDataObjectTypes.Controls.Add(groupBox4);
+            tabPageDataObjectTypes.Controls.Add(groupBoxDataObjectIdentification);
+            tabPageDataObjectTypes.Controls.Add(groupBoxPrefixSuffix);
+            tabPageDataObjectTypes.Controls.Add(groupBox8);
+            tabPageDataObjectTypes.Location = new System.Drawing.Point(4, 22);
+            tabPageDataObjectTypes.Name = "tabPageDataObjectTypes";
+            tabPageDataObjectTypes.Padding = new System.Windows.Forms.Padding(3);
+            tabPageDataObjectTypes.Size = new System.Drawing.Size(1108, 621);
+            tabPageDataObjectTypes.TabIndex = 2;
+            tabPageDataObjectTypes.Text = "Data Object Types";
+            tabPageDataObjectTypes.UseVisualStyleBackColor = true;
             // 
             // groupBox4
             // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox4.Controls.Add(this.label17);
-            this.groupBox4.Controls.Add(this.label15);
-            this.groupBox4.Controls.Add(this.label16);
-            this.groupBox4.Controls.Add(this.label14);
-            this.groupBox4.Controls.Add(this.textBoxHubTablePrefix);
-            this.groupBox4.Controls.Add(this.textBoxSatPrefix);
-            this.groupBox4.Controls.Add(this.textBoxLinkTablePrefix);
-            this.groupBox4.Controls.Add(this.textBoxLinkSatPrefix);
-            this.groupBox4.Location = new System.Drawing.Point(3, 143);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(1099, 133);
-            this.groupBox4.TabIndex = 82;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Identification of data objects - Data Vault specific";
+            groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBox4.Controls.Add(label17);
+            groupBox4.Controls.Add(label15);
+            groupBox4.Controls.Add(label16);
+            groupBox4.Controls.Add(label14);
+            groupBox4.Controls.Add(textBoxHubTablePrefix);
+            groupBox4.Controls.Add(textBoxSatPrefix);
+            groupBox4.Controls.Add(textBoxLinkTablePrefix);
+            groupBox4.Controls.Add(textBoxLinkSatPrefix);
+            groupBox4.Location = new System.Drawing.Point(3, 143);
+            groupBox4.Name = "groupBox4";
+            groupBox4.Size = new System.Drawing.Size(1099, 133);
+            groupBox4.TabIndex = 82;
+            groupBox4.TabStop = false;
+            groupBox4.Text = "Identification of data objects - Data Vault specific";
             // 
             // label17
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 26);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(147, 13);
-            this.label17.TabIndex = 31;
-            this.label17.Text = "Core Business Concept (CBC)";
+            label17.AutoSize = true;
+            label17.Location = new System.Drawing.Point(6, 26);
+            label17.Name = "label17";
+            label17.Size = new System.Drawing.Size(153, 13);
+            label17.TabIndex = 31;
+            label17.Text = "Core Business Concept (CBC)";
             // 
             // label15
             // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(6, 78);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(147, 13);
-            this.label15.TabIndex = 33;
-            this.label15.Text = "Natural Business Relationship";
+            label15.AutoSize = true;
+            label15.Location = new System.Drawing.Point(6, 78);
+            label15.Name = "label15";
+            label15.Size = new System.Drawing.Size(160, 13);
+            label15.TabIndex = 33;
+            label15.Text = "Natural Business Relationship";
             // 
             // label16
             // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(6, 52);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(69, 13);
-            this.label16.TabIndex = 32;
-            this.label16.Text = "Context table";
+            label16.AutoSize = true;
+            label16.Location = new System.Drawing.Point(6, 52);
+            label16.Name = "label16";
+            label16.Size = new System.Drawing.Size(76, 13);
+            label16.TabIndex = 32;
+            label16.Text = "Context table";
             // 
             // label14
             // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(6, 104);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(130, 13);
-            this.label14.TabIndex = 34;
-            this.label14.Text = "Relationship Context table";
+            label14.AutoSize = true;
+            label14.Location = new System.Drawing.Point(6, 104);
+            label14.Name = "label14";
+            label14.Size = new System.Drawing.Size(144, 13);
+            label14.TabIndex = 34;
+            label14.Text = "Relationship Context table";
             // 
             // textBoxHubTablePrefix
             // 
-            this.textBoxHubTablePrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxHubTablePrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxHubTablePrefix.Location = new System.Drawing.Point(234, 23);
-            this.textBoxHubTablePrefix.Name = "textBoxHubTablePrefix";
-            this.textBoxHubTablePrefix.Size = new System.Drawing.Size(859, 20);
-            this.textBoxHubTablePrefix.TabIndex = 27;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxHubTablePrefix, resources.GetString("textBoxHubTablePrefix.ToolTip"));
+            textBoxHubTablePrefix.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxHubTablePrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxHubTablePrefix.Location = new System.Drawing.Point(234, 23);
+            textBoxHubTablePrefix.Name = "textBoxHubTablePrefix";
+            textBoxHubTablePrefix.Size = new System.Drawing.Size(859, 22);
+            textBoxHubTablePrefix.TabIndex = 27;
+            toolTipConfigurationSettings.SetToolTip(textBoxHubTablePrefix, resources.GetString("textBoxHubTablePrefix.ToolTip"));
             // 
             // textBoxSatPrefix
             // 
-            this.textBoxSatPrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxSatPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxSatPrefix.Location = new System.Drawing.Point(234, 49);
-            this.textBoxSatPrefix.Name = "textBoxSatPrefix";
-            this.textBoxSatPrefix.Size = new System.Drawing.Size(859, 20);
-            this.textBoxSatPrefix.TabIndex = 28;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSatPrefix, resources.GetString("textBoxSatPrefix.ToolTip"));
+            textBoxSatPrefix.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxSatPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxSatPrefix.Location = new System.Drawing.Point(234, 49);
+            textBoxSatPrefix.Name = "textBoxSatPrefix";
+            textBoxSatPrefix.Size = new System.Drawing.Size(859, 22);
+            textBoxSatPrefix.TabIndex = 28;
+            toolTipConfigurationSettings.SetToolTip(textBoxSatPrefix, resources.GetString("textBoxSatPrefix.ToolTip"));
             // 
             // textBoxLinkTablePrefix
             // 
-            this.textBoxLinkTablePrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxLinkTablePrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxLinkTablePrefix.Location = new System.Drawing.Point(234, 75);
-            this.textBoxLinkTablePrefix.Name = "textBoxLinkTablePrefix";
-            this.textBoxLinkTablePrefix.Size = new System.Drawing.Size(859, 20);
-            this.textBoxLinkTablePrefix.TabIndex = 29;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLinkTablePrefix, resources.GetString("textBoxLinkTablePrefix.ToolTip"));
+            textBoxLinkTablePrefix.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxLinkTablePrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxLinkTablePrefix.Location = new System.Drawing.Point(234, 75);
+            textBoxLinkTablePrefix.Name = "textBoxLinkTablePrefix";
+            textBoxLinkTablePrefix.Size = new System.Drawing.Size(859, 22);
+            textBoxLinkTablePrefix.TabIndex = 29;
+            toolTipConfigurationSettings.SetToolTip(textBoxLinkTablePrefix, resources.GetString("textBoxLinkTablePrefix.ToolTip"));
             // 
             // textBoxLinkSatPrefix
             // 
-            this.textBoxLinkSatPrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxLinkSatPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxLinkSatPrefix.Location = new System.Drawing.Point(234, 101);
-            this.textBoxLinkSatPrefix.Name = "textBoxLinkSatPrefix";
-            this.textBoxLinkSatPrefix.Size = new System.Drawing.Size(859, 20);
-            this.textBoxLinkSatPrefix.TabIndex = 30;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLinkSatPrefix, resources.GetString("textBoxLinkSatPrefix.ToolTip"));
+            textBoxLinkSatPrefix.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxLinkSatPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxLinkSatPrefix.Location = new System.Drawing.Point(234, 101);
+            textBoxLinkSatPrefix.Name = "textBoxLinkSatPrefix";
+            textBoxLinkSatPrefix.Size = new System.Drawing.Size(859, 22);
+            textBoxLinkSatPrefix.TabIndex = 30;
+            toolTipConfigurationSettings.SetToolTip(textBoxLinkSatPrefix, resources.GetString("textBoxLinkSatPrefix.ToolTip"));
             // 
             // groupBoxDataObjectIdentification
             // 
-            this.groupBoxDataObjectIdentification.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxDataObjectIdentification.Controls.Add(this.labelPresentationLayerLabels);
-            this.groupBoxDataObjectIdentification.Controls.Add(this.labelStagingAreaLabel);
-            this.groupBoxDataObjectIdentification.Controls.Add(this.labelTranformationObjectLabel);
-            this.groupBoxDataObjectIdentification.Controls.Add(this.textBoxStagingAreaPrefix);
-            this.groupBoxDataObjectIdentification.Controls.Add(this.textBoxTransformationLabels);
-            this.groupBoxDataObjectIdentification.Controls.Add(this.textBoxPSAPrefix);
-            this.groupBoxDataObjectIdentification.Controls.Add(this.labelPSAlabel);
-            this.groupBoxDataObjectIdentification.Controls.Add(this.textBoxPresentationLayerLabels);
-            this.groupBoxDataObjectIdentification.Location = new System.Drawing.Point(6, 6);
-            this.groupBoxDataObjectIdentification.Name = "groupBoxDataObjectIdentification";
-            this.groupBoxDataObjectIdentification.Size = new System.Drawing.Size(1096, 131);
-            this.groupBoxDataObjectIdentification.TabIndex = 81;
-            this.groupBoxDataObjectIdentification.TabStop = false;
-            this.groupBoxDataObjectIdentification.Text = "Identification of data objects";
+            groupBoxDataObjectIdentification.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBoxDataObjectIdentification.Controls.Add(labelPresentationLayerLabels);
+            groupBoxDataObjectIdentification.Controls.Add(labelStagingAreaLabel);
+            groupBoxDataObjectIdentification.Controls.Add(labelTranformationObjectLabel);
+            groupBoxDataObjectIdentification.Controls.Add(textBoxStagingAreaPrefix);
+            groupBoxDataObjectIdentification.Controls.Add(textBoxTransformationLabels);
+            groupBoxDataObjectIdentification.Controls.Add(textBoxPSAPrefix);
+            groupBoxDataObjectIdentification.Controls.Add(labelPSAlabel);
+            groupBoxDataObjectIdentification.Controls.Add(textBoxPresentationLayerLabels);
+            groupBoxDataObjectIdentification.Location = new System.Drawing.Point(6, 6);
+            groupBoxDataObjectIdentification.Name = "groupBoxDataObjectIdentification";
+            groupBoxDataObjectIdentification.Size = new System.Drawing.Size(1096, 131);
+            groupBoxDataObjectIdentification.TabIndex = 81;
+            groupBoxDataObjectIdentification.TabStop = false;
+            groupBoxDataObjectIdentification.Text = "Identification of data objects";
             // 
             // labelPresentationLayerLabels
             // 
-            this.labelPresentationLayerLabels.AutoSize = true;
-            this.labelPresentationLayerLabels.Location = new System.Drawing.Point(6, 100);
-            this.labelPresentationLayerLabels.Name = "labelPresentationLayerLabels";
-            this.labelPresentationLayerLabels.Size = new System.Drawing.Size(95, 13);
-            this.labelPresentationLayerLabels.TabIndex = 77;
-            this.labelPresentationLayerLabels.Text = "Presentation Layer";
+            labelPresentationLayerLabels.AutoSize = true;
+            labelPresentationLayerLabels.Location = new System.Drawing.Point(6, 100);
+            labelPresentationLayerLabels.Name = "labelPresentationLayerLabels";
+            labelPresentationLayerLabels.Size = new System.Drawing.Size(101, 13);
+            labelPresentationLayerLabels.TabIndex = 77;
+            labelPresentationLayerLabels.Text = "Presentation Layer";
             // 
             // labelStagingAreaLabel
             // 
-            this.labelStagingAreaLabel.AutoSize = true;
-            this.labelStagingAreaLabel.Location = new System.Drawing.Point(5, 22);
-            this.labelStagingAreaLabel.Name = "labelStagingAreaLabel";
-            this.labelStagingAreaLabel.Size = new System.Drawing.Size(117, 13);
-            this.labelStagingAreaLabel.TabIndex = 69;
-            this.labelStagingAreaLabel.Text = "Staging / Landing Area";
+            labelStagingAreaLabel.AutoSize = true;
+            labelStagingAreaLabel.Location = new System.Drawing.Point(5, 22);
+            labelStagingAreaLabel.Name = "labelStagingAreaLabel";
+            labelStagingAreaLabel.Size = new System.Drawing.Size(125, 13);
+            labelStagingAreaLabel.TabIndex = 69;
+            labelStagingAreaLabel.Text = "Staging / Landing Area";
             // 
             // labelTranformationObjectLabel
             // 
-            this.labelTranformationObjectLabel.AutoSize = true;
-            this.labelTranformationObjectLabel.Location = new System.Drawing.Point(6, 74);
-            this.labelTranformationObjectLabel.Name = "labelTranformationObjectLabel";
-            this.labelTranformationObjectLabel.Size = new System.Drawing.Size(161, 13);
-            this.labelTranformationObjectLabel.TabIndex = 79;
-            this.labelTranformationObjectLabel.Text = "Transformation object (e.g. BDV)";
+            labelTranformationObjectLabel.AutoSize = true;
+            labelTranformationObjectLabel.Location = new System.Drawing.Point(6, 74);
+            labelTranformationObjectLabel.Name = "labelTranformationObjectLabel";
+            labelTranformationObjectLabel.Size = new System.Drawing.Size(172, 13);
+            labelTranformationObjectLabel.TabIndex = 79;
+            labelTranformationObjectLabel.Text = "Transformation object (e.g. BDV)";
             // 
             // textBoxStagingAreaPrefix
             // 
-            this.textBoxStagingAreaPrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxStagingAreaPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxStagingAreaPrefix.Location = new System.Drawing.Point(233, 19);
-            this.textBoxStagingAreaPrefix.Name = "textBoxStagingAreaPrefix";
-            this.textBoxStagingAreaPrefix.Size = new System.Drawing.Size(857, 20);
-            this.textBoxStagingAreaPrefix.TabIndex = 22;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxStagingAreaPrefix, resources.GetString("textBoxStagingAreaPrefix.ToolTip"));
+            textBoxStagingAreaPrefix.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxStagingAreaPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxStagingAreaPrefix.Location = new System.Drawing.Point(233, 19);
+            textBoxStagingAreaPrefix.Name = "textBoxStagingAreaPrefix";
+            textBoxStagingAreaPrefix.Size = new System.Drawing.Size(857, 22);
+            textBoxStagingAreaPrefix.TabIndex = 22;
+            toolTipConfigurationSettings.SetToolTip(textBoxStagingAreaPrefix, resources.GetString("textBoxStagingAreaPrefix.ToolTip"));
             // 
             // textBoxTransformationLabels
             // 
-            this.textBoxTransformationLabels.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxTransformationLabels.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxTransformationLabels.Location = new System.Drawing.Point(233, 71);
-            this.textBoxTransformationLabels.Name = "textBoxTransformationLabels";
-            this.textBoxTransformationLabels.Size = new System.Drawing.Size(857, 20);
-            this.textBoxTransformationLabels.TabIndex = 78;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxTransformationLabels, "A comma-separated list of prefixes/suffixes that indicate a delivery object (Pres" +
-        "entation Layer). For example \'DIM\'_ or \'FACT_\'.");
+            textBoxTransformationLabels.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxTransformationLabels.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxTransformationLabels.Location = new System.Drawing.Point(233, 71);
+            textBoxTransformationLabels.Name = "textBoxTransformationLabels";
+            textBoxTransformationLabels.Size = new System.Drawing.Size(857, 22);
+            textBoxTransformationLabels.TabIndex = 78;
+            toolTipConfigurationSettings.SetToolTip(textBoxTransformationLabels, "A comma-separated list of prefixes/suffixes that indicate a delivery object (Presentation Layer). For example 'DIM'_ or 'FACT_'.");
             // 
             // textBoxPSAPrefix
             // 
-            this.textBoxPSAPrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxPSAPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxPSAPrefix.Location = new System.Drawing.Point(233, 45);
-            this.textBoxPSAPrefix.Name = "textBoxPSAPrefix";
-            this.textBoxPSAPrefix.Size = new System.Drawing.Size(857, 20);
-            this.textBoxPSAPrefix.TabIndex = 23;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxPSAPrefix, resources.GetString("textBoxPSAPrefix.ToolTip"));
+            textBoxPSAPrefix.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxPSAPrefix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxPSAPrefix.Location = new System.Drawing.Point(233, 45);
+            textBoxPSAPrefix.Name = "textBoxPSAPrefix";
+            textBoxPSAPrefix.Size = new System.Drawing.Size(857, 22);
+            textBoxPSAPrefix.TabIndex = 23;
+            toolTipConfigurationSettings.SetToolTip(textBoxPSAPrefix, resources.GetString("textBoxPSAPrefix.ToolTip"));
             // 
             // labelPSAlabel
             // 
-            this.labelPSAlabel.AutoSize = true;
-            this.labelPSAlabel.Location = new System.Drawing.Point(5, 48);
-            this.labelPSAlabel.Name = "labelPSAlabel";
-            this.labelPSAlabel.Size = new System.Drawing.Size(150, 13);
-            this.labelPSAlabel.TabIndex = 71;
-            this.labelPSAlabel.Text = "Persistent Staging Area (PSA) ";
+            labelPSAlabel.AutoSize = true;
+            labelPSAlabel.Location = new System.Drawing.Point(5, 48);
+            labelPSAlabel.Name = "labelPSAlabel";
+            labelPSAlabel.Size = new System.Drawing.Size(157, 13);
+            labelPSAlabel.TabIndex = 71;
+            labelPSAlabel.Text = "Persistent Staging Area (PSA) ";
             // 
             // textBoxPresentationLayerLabels
             // 
-            this.textBoxPresentationLayerLabels.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxPresentationLayerLabels.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxPresentationLayerLabels.Location = new System.Drawing.Point(233, 97);
-            this.textBoxPresentationLayerLabels.Name = "textBoxPresentationLayerLabels";
-            this.textBoxPresentationLayerLabels.Size = new System.Drawing.Size(857, 20);
-            this.textBoxPresentationLayerLabels.TabIndex = 76;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxPresentationLayerLabels, "A comma-separated list of prefixes/suffixes that indicate a delivery object (Pres" +
-        "entation Layer). For example \'DIM\'_ or \'FACT_\'.");
+            textBoxPresentationLayerLabels.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxPresentationLayerLabels.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxPresentationLayerLabels.Location = new System.Drawing.Point(233, 97);
+            textBoxPresentationLayerLabels.Name = "textBoxPresentationLayerLabels";
+            textBoxPresentationLayerLabels.Size = new System.Drawing.Size(857, 22);
+            textBoxPresentationLayerLabels.TabIndex = 76;
+            toolTipConfigurationSettings.SetToolTip(textBoxPresentationLayerLabels, "A comma-separated list of prefixes/suffixes that indicate a delivery object (Presentation Layer). For example 'DIM'_ or 'FACT_'.");
             // 
             // groupBoxPrefixSuffix
             // 
-            this.groupBoxPrefixSuffix.Controls.Add(this.tableSuffixRadiobutton);
-            this.groupBoxPrefixSuffix.Controls.Add(this.tablePrefixRadiobutton);
-            this.groupBoxPrefixSuffix.Location = new System.Drawing.Point(6, 282);
-            this.groupBoxPrefixSuffix.Name = "groupBoxPrefixSuffix";
-            this.groupBoxPrefixSuffix.Size = new System.Drawing.Size(178, 69);
-            this.groupBoxPrefixSuffix.TabIndex = 80;
-            this.groupBoxPrefixSuffix.TabStop = false;
-            this.groupBoxPrefixSuffix.Text = "Data object type evaluation";
+            groupBoxPrefixSuffix.Controls.Add(tableSuffixRadiobutton);
+            groupBoxPrefixSuffix.Controls.Add(tablePrefixRadiobutton);
+            groupBoxPrefixSuffix.Location = new System.Drawing.Point(6, 282);
+            groupBoxPrefixSuffix.Name = "groupBoxPrefixSuffix";
+            groupBoxPrefixSuffix.Size = new System.Drawing.Size(178, 69);
+            groupBoxPrefixSuffix.TabIndex = 80;
+            groupBoxPrefixSuffix.TabStop = false;
+            groupBoxPrefixSuffix.Text = "Data object type evaluation";
             // 
             // tableSuffixRadiobutton
             // 
-            this.tableSuffixRadiobutton.AutoSize = true;
-            this.tableSuffixRadiobutton.Location = new System.Drawing.Point(9, 42);
-            this.tableSuffixRadiobutton.Name = "tableSuffixRadiobutton";
-            this.tableSuffixRadiobutton.Size = new System.Drawing.Size(51, 17);
-            this.tableSuffixRadiobutton.TabIndex = 26;
-            this.tableSuffixRadiobutton.Text = "Suffix";
-            this.tableSuffixRadiobutton.UseVisualStyleBackColor = true;
+            tableSuffixRadiobutton.AutoSize = true;
+            tableSuffixRadiobutton.Location = new System.Drawing.Point(9, 42);
+            tableSuffixRadiobutton.Name = "tableSuffixRadiobutton";
+            tableSuffixRadiobutton.Size = new System.Drawing.Size(54, 17);
+            tableSuffixRadiobutton.TabIndex = 26;
+            tableSuffixRadiobutton.Text = "Suffix";
+            tableSuffixRadiobutton.UseVisualStyleBackColor = true;
             // 
             // tablePrefixRadiobutton
             // 
-            this.tablePrefixRadiobutton.AutoSize = true;
-            this.tablePrefixRadiobutton.Location = new System.Drawing.Point(9, 19);
-            this.tablePrefixRadiobutton.Name = "tablePrefixRadiobutton";
-            this.tablePrefixRadiobutton.Size = new System.Drawing.Size(51, 17);
-            this.tablePrefixRadiobutton.TabIndex = 25;
-            this.tablePrefixRadiobutton.Text = "Prefix";
-            this.tablePrefixRadiobutton.UseVisualStyleBackColor = true;
+            tablePrefixRadiobutton.AutoSize = true;
+            tablePrefixRadiobutton.Location = new System.Drawing.Point(9, 19);
+            tablePrefixRadiobutton.Name = "tablePrefixRadiobutton";
+            tablePrefixRadiobutton.Size = new System.Drawing.Size(53, 17);
+            tablePrefixRadiobutton.TabIndex = 25;
+            tablePrefixRadiobutton.Text = "Prefix";
+            tablePrefixRadiobutton.UseVisualStyleBackColor = true;
             // 
             // groupBox8
             // 
-            this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyPK);
-            this.groupBox8.Controls.Add(this.radioButtonPSABusinessKeyIndex);
-            this.groupBox8.Location = new System.Drawing.Point(190, 282);
-            this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(181, 70);
-            this.groupBox8.TabIndex = 74;
-            this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "PSA natural key location";
-            this.toolTipConfigurationSettings.SetToolTip(this.groupBox8, resources.GetString("groupBox8.ToolTip"));
+            groupBox8.Controls.Add(radioButtonPSABusinessKeyPK);
+            groupBox8.Controls.Add(radioButtonPSABusinessKeyIndex);
+            groupBox8.Location = new System.Drawing.Point(190, 282);
+            groupBox8.Name = "groupBox8";
+            groupBox8.Size = new System.Drawing.Size(218, 70);
+            groupBox8.TabIndex = 74;
+            groupBox8.TabStop = false;
+            groupBox8.Text = "PSA natural key location";
+            toolTipConfigurationSettings.SetToolTip(groupBox8, resources.GetString("groupBox8.ToolTip"));
             // 
             // radioButtonPSABusinessKeyPK
             // 
-            this.radioButtonPSABusinessKeyPK.AutoSize = true;
-            this.radioButtonPSABusinessKeyPK.Location = new System.Drawing.Point(12, 42);
-            this.radioButtonPSABusinessKeyPK.Name = "radioButtonPSABusinessKeyPK";
-            this.radioButtonPSABusinessKeyPK.Size = new System.Drawing.Size(165, 17);
-            this.radioButtonPSABusinessKeyPK.TabIndex = 28;
-            this.radioButtonPSABusinessKeyPK.Text = "Primary Key constraint / index";
-            this.radioButtonPSABusinessKeyPK.UseVisualStyleBackColor = true;
+            radioButtonPSABusinessKeyPK.AutoSize = true;
+            radioButtonPSABusinessKeyPK.Location = new System.Drawing.Point(12, 42);
+            radioButtonPSABusinessKeyPK.Name = "radioButtonPSABusinessKeyPK";
+            radioButtonPSABusinessKeyPK.Size = new System.Drawing.Size(175, 17);
+            radioButtonPSABusinessKeyPK.TabIndex = 28;
+            radioButtonPSABusinessKeyPK.Text = "Primary Key constraint / index";
+            radioButtonPSABusinessKeyPK.UseVisualStyleBackColor = true;
             // 
             // radioButtonPSABusinessKeyIndex
             // 
-            this.radioButtonPSABusinessKeyIndex.AutoSize = true;
-            this.radioButtonPSABusinessKeyIndex.Location = new System.Drawing.Point(12, 19);
-            this.radioButtonPSABusinessKeyIndex.Name = "radioButtonPSABusinessKeyIndex";
-            this.radioButtonPSABusinessKeyIndex.Size = new System.Drawing.Size(88, 17);
-            this.radioButtonPSABusinessKeyIndex.TabIndex = 27;
-            this.radioButtonPSABusinessKeyIndex.Text = "Unique Index";
-            this.radioButtonPSABusinessKeyIndex.UseVisualStyleBackColor = true;
+            radioButtonPSABusinessKeyIndex.AutoSize = true;
+            radioButtonPSABusinessKeyIndex.Location = new System.Drawing.Point(12, 19);
+            radioButtonPSABusinessKeyIndex.Name = "radioButtonPSABusinessKeyIndex";
+            radioButtonPSABusinessKeyIndex.Size = new System.Drawing.Size(94, 17);
+            radioButtonPSABusinessKeyIndex.TabIndex = 27;
+            radioButtonPSABusinessKeyIndex.Text = "Unique Index";
+            radioButtonPSABusinessKeyIndex.UseVisualStyleBackColor = true;
             // 
             // tabPageDataWarehouse
             // 
-            this.tabPageDataWarehouse.AutoScroll = true;
-            this.tabPageDataWarehouse.Controls.Add(this.groupBoxDataVaultSpecific);
-            this.tabPageDataWarehouse.Controls.Add(this.groupBoxAlternativeColumns);
-            this.tabPageDataWarehouse.Controls.Add(this.groupBoxSurrogateKeyDefinition);
-            this.tabPageDataWarehouse.Controls.Add(this.groupBox2);
-            this.tabPageDataWarehouse.Location = new System.Drawing.Point(4, 22);
-            this.tabPageDataWarehouse.Name = "tabPageDataWarehouse";
-            this.tabPageDataWarehouse.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageDataWarehouse.Size = new System.Drawing.Size(1108, 621);
-            this.tabPageDataWarehouse.TabIndex = 1;
-            this.tabPageDataWarehouse.Text = "Data Warehouse";
-            this.tabPageDataWarehouse.UseVisualStyleBackColor = true;
+            tabPageDataWarehouse.AutoScroll = true;
+            tabPageDataWarehouse.Controls.Add(groupBoxDataVaultSpecific);
+            tabPageDataWarehouse.Controls.Add(groupBoxAlternativeColumns);
+            tabPageDataWarehouse.Controls.Add(groupBoxSurrogateKeyDefinition);
+            tabPageDataWarehouse.Controls.Add(groupBox2);
+            tabPageDataWarehouse.Location = new System.Drawing.Point(4, 22);
+            tabPageDataWarehouse.Name = "tabPageDataWarehouse";
+            tabPageDataWarehouse.Padding = new System.Windows.Forms.Padding(3);
+            tabPageDataWarehouse.Size = new System.Drawing.Size(1108, 621);
+            tabPageDataWarehouse.TabIndex = 1;
+            tabPageDataWarehouse.Text = "Data Warehouse";
+            tabPageDataWarehouse.UseVisualStyleBackColor = true;
             // 
             // groupBoxDataVaultSpecific
             // 
-            this.groupBoxDataVaultSpecific.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxExpiryDateTimeName);
-            this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxRecordSource);
-            this.groupBoxDataVaultSpecific.Controls.Add(this.textBoxLDST);
-            this.groupBoxDataVaultSpecific.Controls.Add(this.label18);
-            this.groupBoxDataVaultSpecific.Controls.Add(this.label11);
-            this.groupBoxDataVaultSpecific.Controls.Add(this.label35);
-            this.groupBoxDataVaultSpecific.Location = new System.Drawing.Point(6, 384);
-            this.groupBoxDataVaultSpecific.Name = "groupBoxDataVaultSpecific";
-            this.groupBoxDataVaultSpecific.Size = new System.Drawing.Size(1096, 112);
-            this.groupBoxDataVaultSpecific.TabIndex = 73;
-            this.groupBoxDataVaultSpecific.TabStop = false;
-            this.groupBoxDataVaultSpecific.Text = "Data Vault special columns";
+            groupBoxDataVaultSpecific.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBoxDataVaultSpecific.Controls.Add(textBoxExpiryDateTimeName);
+            groupBoxDataVaultSpecific.Controls.Add(textBoxRecordSource);
+            groupBoxDataVaultSpecific.Controls.Add(textBoxLDST);
+            groupBoxDataVaultSpecific.Controls.Add(label18);
+            groupBoxDataVaultSpecific.Controls.Add(label11);
+            groupBoxDataVaultSpecific.Controls.Add(label35);
+            groupBoxDataVaultSpecific.Location = new System.Drawing.Point(6, 384);
+            groupBoxDataVaultSpecific.Name = "groupBoxDataVaultSpecific";
+            groupBoxDataVaultSpecific.Size = new System.Drawing.Size(1096, 112);
+            groupBoxDataVaultSpecific.TabIndex = 73;
+            groupBoxDataVaultSpecific.TabStop = false;
+            groupBoxDataVaultSpecific.Text = "Data Vault special columns";
             // 
             // textBoxExpiryDateTimeName
             // 
-            this.textBoxExpiryDateTimeName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxExpiryDateTimeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxExpiryDateTimeName.Location = new System.Drawing.Point(234, 49);
-            this.textBoxExpiryDateTimeName.Name = "textBoxExpiryDateTimeName";
-            this.textBoxExpiryDateTimeName.Size = new System.Drawing.Size(856, 20);
-            this.textBoxExpiryDateTimeName.TabIndex = 5;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxExpiryDateTimeName, "This attribute label captures the name of the expiry date/time attribute, if used" +
-        ". \r\n\r\nIn most deployments a technical expiry/end date is superfluous but if used" +
-        " it can be set here.");
+            textBoxExpiryDateTimeName.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxExpiryDateTimeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxExpiryDateTimeName.Location = new System.Drawing.Point(255, 49);
+            textBoxExpiryDateTimeName.Name = "textBoxExpiryDateTimeName";
+            textBoxExpiryDateTimeName.Size = new System.Drawing.Size(835, 22);
+            textBoxExpiryDateTimeName.TabIndex = 5;
+            toolTipConfigurationSettings.SetToolTip(textBoxExpiryDateTimeName, "This attribute label captures the name of the expiry date/time attribute, if used. \r\n\r\nIn most deployments a technical expiry/end date is superfluous but if used it can be set here.");
             // 
             // textBoxRecordSource
             // 
-            this.textBoxRecordSource.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxRecordSource.Location = new System.Drawing.Point(234, 75);
-            this.textBoxRecordSource.Name = "textBoxRecordSource";
-            this.textBoxRecordSource.Size = new System.Drawing.Size(856, 20);
-            this.textBoxRecordSource.TabIndex = 6;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxRecordSource, resources.GetString("textBoxRecordSource.ToolTip"));
+            textBoxRecordSource.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxRecordSource.Location = new System.Drawing.Point(255, 75);
+            textBoxRecordSource.Name = "textBoxRecordSource";
+            textBoxRecordSource.Size = new System.Drawing.Size(835, 22);
+            textBoxRecordSource.TabIndex = 6;
+            toolTipConfigurationSettings.SetToolTip(textBoxRecordSource, resources.GetString("textBoxRecordSource.ToolTip"));
             // 
             // textBoxLDST
             // 
-            this.textBoxLDST.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxLDST.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxLDST.Location = new System.Drawing.Point(234, 23);
-            this.textBoxLDST.Name = "textBoxLDST";
-            this.textBoxLDST.Size = new System.Drawing.Size(856, 20);
-            this.textBoxLDST.TabIndex = 4;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLDST, resources.GetString("textBoxLDST.ToolTip"));
+            textBoxLDST.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxLDST.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxLDST.Location = new System.Drawing.Point(255, 23);
+            textBoxLDST.Name = "textBoxLDST";
+            textBoxLDST.Size = new System.Drawing.Size(835, 22);
+            textBoxLDST.TabIndex = 4;
+            toolTipConfigurationSettings.SetToolTip(textBoxLDST, resources.GetString("textBoxLDST.ToolTip"));
             // 
             // label18
             // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(6, 26);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(221, 13);
-            this.label18.TabIndex = 53;
-            this.label18.Text = "Load Date/Time Stamp (LDTS) column name";
+            label18.AutoSize = true;
+            label18.Location = new System.Drawing.Point(6, 26);
+            label18.Name = "label18";
+            label18.Size = new System.Drawing.Size(228, 13);
+            label18.TabIndex = 53;
+            label18.Text = "Load Date/Time Stamp (LDTS) column name";
             // 
             // label11
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 78);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(145, 13);
-            this.label11.TabIndex = 55;
-            this.label11.Text = "Record Source column name";
+            label11.AutoSize = true;
+            label11.Location = new System.Drawing.Point(6, 78);
+            label11.Name = "label11";
+            label11.Size = new System.Drawing.Size(153, 13);
+            label11.TabIndex = 55;
+            label11.Text = "Record Source column name";
             // 
             // label35
             // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(6, 52);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(155, 13);
-            this.label35.TabIndex = 57;
-            this.label35.Text = "Expiry Date/Time column name";
+            label35.AutoSize = true;
+            label35.Location = new System.Drawing.Point(6, 52);
+            label35.Name = "label35";
+            label35.Size = new System.Drawing.Size(164, 13);
+            label35.TabIndex = 57;
+            label35.Text = "Expiry Date/Time column name";
             // 
             // groupBoxAlternativeColumns
             // 
-            this.groupBoxAlternativeColumns.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeSatLDTS);
-            this.groupBoxAlternativeColumns.Controls.Add(this.label36);
-            this.groupBoxAlternativeColumns.Controls.Add(this.label41);
-            this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeRecordSource);
-            this.groupBoxAlternativeColumns.Controls.Add(this.textBoxSatelliteAlternativeLDTSAttribute);
-            this.groupBoxAlternativeColumns.Controls.Add(this.label37);
-            this.groupBoxAlternativeColumns.Controls.Add(this.textBoxHubAlternativeLDTSAttribute);
-            this.groupBoxAlternativeColumns.Controls.Add(this.checkBoxAlternativeHubLDTS);
-            this.groupBoxAlternativeColumns.Controls.Add(this.textBoxAlternativeRecordSource);
-            this.groupBoxAlternativeColumns.Location = new System.Drawing.Point(6, 502);
-            this.groupBoxAlternativeColumns.Name = "groupBoxAlternativeColumns";
-            this.groupBoxAlternativeColumns.Size = new System.Drawing.Size(1096, 113);
-            this.groupBoxAlternativeColumns.TabIndex = 72;
-            this.groupBoxAlternativeColumns.TabStop = false;
-            this.groupBoxAlternativeColumns.Text = "Data Vault alternative columns";
-            this.toolTipConfigurationSettings.SetToolTip(this.groupBoxAlternativeColumns, "In some models you may want to use specific alternative names depending on the en" +
-        "tity type. \r\nIf diabled the default conventions as entered in the above fields w" +
-        "ill be used.");
+            groupBoxAlternativeColumns.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBoxAlternativeColumns.Controls.Add(checkBoxAlternativeSatLDTS);
+            groupBoxAlternativeColumns.Controls.Add(label36);
+            groupBoxAlternativeColumns.Controls.Add(label41);
+            groupBoxAlternativeColumns.Controls.Add(checkBoxAlternativeRecordSource);
+            groupBoxAlternativeColumns.Controls.Add(textBoxSatelliteAlternativeLDTSAttribute);
+            groupBoxAlternativeColumns.Controls.Add(label37);
+            groupBoxAlternativeColumns.Controls.Add(textBoxHubAlternativeLDTSAttribute);
+            groupBoxAlternativeColumns.Controls.Add(checkBoxAlternativeHubLDTS);
+            groupBoxAlternativeColumns.Controls.Add(textBoxAlternativeRecordSource);
+            groupBoxAlternativeColumns.Location = new System.Drawing.Point(6, 502);
+            groupBoxAlternativeColumns.Name = "groupBoxAlternativeColumns";
+            groupBoxAlternativeColumns.Size = new System.Drawing.Size(1096, 113);
+            groupBoxAlternativeColumns.TabIndex = 72;
+            groupBoxAlternativeColumns.TabStop = false;
+            groupBoxAlternativeColumns.Text = "Data Vault alternative columns";
+            toolTipConfigurationSettings.SetToolTip(groupBoxAlternativeColumns, "In some models you may want to use specific alternative names depending on the entity type. \r\nIf diabled the default conventions as entered in the above fields will be used.");
             // 
             // checkBoxAlternativeSatLDTS
             // 
-            this.checkBoxAlternativeSatLDTS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.checkBoxAlternativeSatLDTS.AutoSize = true;
-            this.checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(1021, 77);
-            this.checkBoxAlternativeSatLDTS.Name = "checkBoxAlternativeSatLDTS";
-            this.checkBoxAlternativeSatLDTS.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeSatLDTS.TabIndex = 12;
-            this.checkBoxAlternativeSatLDTS.Text = "Enable";
-            this.checkBoxAlternativeSatLDTS.UseVisualStyleBackColor = true;
-            this.checkBoxAlternativeSatLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeSatLDTS_CheckedChanged);
+            checkBoxAlternativeSatLDTS.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            checkBoxAlternativeSatLDTS.AutoSize = true;
+            checkBoxAlternativeSatLDTS.Location = new System.Drawing.Point(1019, 77);
+            checkBoxAlternativeSatLDTS.Name = "checkBoxAlternativeSatLDTS";
+            checkBoxAlternativeSatLDTS.Size = new System.Drawing.Size(61, 17);
+            checkBoxAlternativeSatLDTS.TabIndex = 12;
+            checkBoxAlternativeSatLDTS.Text = "Enable";
+            checkBoxAlternativeSatLDTS.UseVisualStyleBackColor = true;
+            checkBoxAlternativeSatLDTS.CheckedChanged += checkBoxAlternativeSatLDTS_CheckedChanged;
             // 
             // label36
             // 
-            this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(6, 26);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(187, 13);
-            this.label36.TabIndex = 59;
-            this.label36.Text = "Alternative Record Source ID or name";
-            this.toolTipConfigurationSettings.SetToolTip(this.label36, "In some scenarios, it may be required to provide an alternative record source fie" +
-        "ld or identifier.");
+            label36.AutoSize = true;
+            label36.Location = new System.Drawing.Point(6, 26);
+            label36.Name = "label36";
+            label36.Size = new System.Drawing.Size(198, 13);
+            label36.TabIndex = 59;
+            label36.Text = "Alternative Record Source ID or name";
+            toolTipConfigurationSettings.SetToolTip(label36, "In some scenarios, it may be required to provide an alternative record source field or identifier.");
             // 
             // label41
             // 
-            this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(6, 78);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(193, 13);
-            this.label41.TabIndex = 69;
-            this.label41.Text = "Alternative Context LDTS column name";
-            this.toolTipConfigurationSettings.SetToolTip(this.label41, "In some scenarios, it may be required to provide an name of the load date/time st" +
-        "amp (LDTS) for a Context (\'Satellite\') type Data Object.");
+            label41.AutoSize = true;
+            label41.Location = new System.Drawing.Point(6, 78);
+            label41.Name = "label41";
+            label41.Size = new System.Drawing.Size(205, 13);
+            label41.TabIndex = 69;
+            label41.Text = "Alternative Context LDTS column name";
+            toolTipConfigurationSettings.SetToolTip(label41, "In some scenarios, it may be required to provide an name of the load date/time stamp (LDTS) for a Context ('Satellite') type Data Object.");
             // 
             // checkBoxAlternativeRecordSource
             // 
-            this.checkBoxAlternativeRecordSource.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.checkBoxAlternativeRecordSource.AutoSize = true;
-            this.checkBoxAlternativeRecordSource.Location = new System.Drawing.Point(1021, 25);
-            this.checkBoxAlternativeRecordSource.Name = "checkBoxAlternativeRecordSource";
-            this.checkBoxAlternativeRecordSource.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeRecordSource.TabIndex = 8;
-            this.checkBoxAlternativeRecordSource.Text = "Enable";
-            this.checkBoxAlternativeRecordSource.UseVisualStyleBackColor = true;
-            this.checkBoxAlternativeRecordSource.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeRecordSource_CheckedChanged);
+            checkBoxAlternativeRecordSource.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            checkBoxAlternativeRecordSource.AutoSize = true;
+            checkBoxAlternativeRecordSource.Location = new System.Drawing.Point(1019, 25);
+            checkBoxAlternativeRecordSource.Name = "checkBoxAlternativeRecordSource";
+            checkBoxAlternativeRecordSource.Size = new System.Drawing.Size(61, 17);
+            checkBoxAlternativeRecordSource.TabIndex = 8;
+            checkBoxAlternativeRecordSource.Text = "Enable";
+            checkBoxAlternativeRecordSource.UseVisualStyleBackColor = true;
+            checkBoxAlternativeRecordSource.CheckedChanged += checkBoxAlternativeRecordSource_CheckedChanged;
             // 
             // textBoxSatelliteAlternativeLDTSAttribute
             // 
-            this.textBoxSatelliteAlternativeLDTSAttribute.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxSatelliteAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxSatelliteAlternativeLDTSAttribute.Location = new System.Drawing.Point(235, 75);
-            this.textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
-            this.textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(777, 20);
-            this.textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 11;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSatelliteAlternativeLDTSAttribute, resources.GetString("textBoxSatelliteAlternativeLDTSAttribute.ToolTip"));
+            textBoxSatelliteAlternativeLDTSAttribute.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxSatelliteAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxSatelliteAlternativeLDTSAttribute.Location = new System.Drawing.Point(256, 75);
+            textBoxSatelliteAlternativeLDTSAttribute.Name = "textBoxSatelliteAlternativeLDTSAttribute";
+            textBoxSatelliteAlternativeLDTSAttribute.Size = new System.Drawing.Size(756, 22);
+            textBoxSatelliteAlternativeLDTSAttribute.TabIndex = 11;
+            toolTipConfigurationSettings.SetToolTip(textBoxSatelliteAlternativeLDTSAttribute, resources.GetString("textBoxSatelliteAlternativeLDTSAttribute.ToolTip"));
             // 
             // label37
             // 
-            this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(6, 52);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(178, 13);
-            this.label37.TabIndex = 62;
-            this.label37.Text = "Alternative CBC LDTS column name";
-            this.toolTipConfigurationSettings.SetToolTip(this.label37, "In some scenarios, it may be required to provide an name of the load date/time st" +
-        "amp (LDTS) for a Core Business Concept (CBC) type Data Object.");
+            label37.AutoSize = true;
+            label37.Location = new System.Drawing.Point(6, 52);
+            label37.Name = "label37";
+            label37.Size = new System.Drawing.Size(185, 13);
+            label37.TabIndex = 62;
+            label37.Text = "Alternative CBC LDTS column name";
+            toolTipConfigurationSettings.SetToolTip(label37, "In some scenarios, it may be required to provide an name of the load date/time stamp (LDTS) for a Core Business Concept (CBC) type Data Object.");
             // 
             // textBoxHubAlternativeLDTSAttribute
             // 
-            this.textBoxHubAlternativeLDTSAttribute.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxHubAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxHubAlternativeLDTSAttribute.Location = new System.Drawing.Point(235, 49);
-            this.textBoxHubAlternativeLDTSAttribute.Name = "textBoxHubAlternativeLDTSAttribute";
-            this.textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(777, 20);
-            this.textBoxHubAlternativeLDTSAttribute.TabIndex = 9;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxHubAlternativeLDTSAttribute, resources.GetString("textBoxHubAlternativeLDTSAttribute.ToolTip"));
+            textBoxHubAlternativeLDTSAttribute.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxHubAlternativeLDTSAttribute.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxHubAlternativeLDTSAttribute.Location = new System.Drawing.Point(256, 49);
+            textBoxHubAlternativeLDTSAttribute.Name = "textBoxHubAlternativeLDTSAttribute";
+            textBoxHubAlternativeLDTSAttribute.Size = new System.Drawing.Size(756, 22);
+            textBoxHubAlternativeLDTSAttribute.TabIndex = 9;
+            toolTipConfigurationSettings.SetToolTip(textBoxHubAlternativeLDTSAttribute, resources.GetString("textBoxHubAlternativeLDTSAttribute.ToolTip"));
             // 
             // checkBoxAlternativeHubLDTS
             // 
-            this.checkBoxAlternativeHubLDTS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.checkBoxAlternativeHubLDTS.AutoSize = true;
-            this.checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(1021, 51);
-            this.checkBoxAlternativeHubLDTS.Name = "checkBoxAlternativeHubLDTS";
-            this.checkBoxAlternativeHubLDTS.Size = new System.Drawing.Size(59, 17);
-            this.checkBoxAlternativeHubLDTS.TabIndex = 10;
-            this.checkBoxAlternativeHubLDTS.Text = "Enable";
-            this.checkBoxAlternativeHubLDTS.UseVisualStyleBackColor = true;
-            this.checkBoxAlternativeHubLDTS.CheckedChanged += new System.EventHandler(this.checkBoxAlternativeHubLDTS_CheckedChanged);
+            checkBoxAlternativeHubLDTS.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            checkBoxAlternativeHubLDTS.AutoSize = true;
+            checkBoxAlternativeHubLDTS.Location = new System.Drawing.Point(1019, 51);
+            checkBoxAlternativeHubLDTS.Name = "checkBoxAlternativeHubLDTS";
+            checkBoxAlternativeHubLDTS.Size = new System.Drawing.Size(61, 17);
+            checkBoxAlternativeHubLDTS.TabIndex = 10;
+            checkBoxAlternativeHubLDTS.Text = "Enable";
+            checkBoxAlternativeHubLDTS.UseVisualStyleBackColor = true;
+            checkBoxAlternativeHubLDTS.CheckedChanged += checkBoxAlternativeHubLDTS_CheckedChanged;
             // 
             // textBoxAlternativeRecordSource
             // 
-            this.textBoxAlternativeRecordSource.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxAlternativeRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxAlternativeRecordSource.Location = new System.Drawing.Point(235, 23);
-            this.textBoxAlternativeRecordSource.Name = "textBoxAlternativeRecordSource";
-            this.textBoxAlternativeRecordSource.Size = new System.Drawing.Size(777, 20);
-            this.textBoxAlternativeRecordSource.TabIndex = 7;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxAlternativeRecordSource, resources.GetString("textBoxAlternativeRecordSource.ToolTip"));
+            textBoxAlternativeRecordSource.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxAlternativeRecordSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxAlternativeRecordSource.Location = new System.Drawing.Point(256, 23);
+            textBoxAlternativeRecordSource.Name = "textBoxAlternativeRecordSource";
+            textBoxAlternativeRecordSource.Size = new System.Drawing.Size(756, 22);
+            textBoxAlternativeRecordSource.TabIndex = 7;
+            toolTipConfigurationSettings.SetToolTip(textBoxAlternativeRecordSource, resources.GetString("textBoxAlternativeRecordSource.ToolTip"));
             // 
             // groupBoxSurrogateKeyDefinition
             // 
-            this.groupBoxSurrogateKeyDefinition.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxSurrogateKeyDefinition.Controls.Add(this.label13);
-            this.groupBoxSurrogateKeyDefinition.Controls.Add(this.textBoxKeyIdentifier);
-            this.groupBoxSurrogateKeyDefinition.Controls.Add(this.textBoxKeyPattern);
-            this.groupBoxSurrogateKeyDefinition.Controls.Add(this.labelSurrogateKeyPattern);
-            this.groupBoxSurrogateKeyDefinition.Location = new System.Drawing.Point(6, 6);
-            this.groupBoxSurrogateKeyDefinition.Name = "groupBoxSurrogateKeyDefinition";
-            this.groupBoxSurrogateKeyDefinition.Size = new System.Drawing.Size(1096, 88);
-            this.groupBoxSurrogateKeyDefinition.TabIndex = 70;
-            this.groupBoxSurrogateKeyDefinition.TabStop = false;
-            this.groupBoxSurrogateKeyDefinition.Text = "Surrogate Key definition";
+            groupBoxSurrogateKeyDefinition.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBoxSurrogateKeyDefinition.Controls.Add(label13);
+            groupBoxSurrogateKeyDefinition.Controls.Add(textBoxKeyIdentifier);
+            groupBoxSurrogateKeyDefinition.Controls.Add(textBoxKeyPattern);
+            groupBoxSurrogateKeyDefinition.Controls.Add(labelSurrogateKeyPattern);
+            groupBoxSurrogateKeyDefinition.Location = new System.Drawing.Point(6, 6);
+            groupBoxSurrogateKeyDefinition.Name = "groupBoxSurrogateKeyDefinition";
+            groupBoxSurrogateKeyDefinition.Size = new System.Drawing.Size(1096, 88);
+            groupBoxSurrogateKeyDefinition.TabIndex = 70;
+            groupBoxSurrogateKeyDefinition.TabStop = false;
+            groupBoxSurrogateKeyDefinition.Text = "Surrogate Key definition";
             // 
             // label13
             // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(5, 22);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(191, 13);
-            this.label13.TabIndex = 44;
-            this.label13.Text = "Data Platform (Surrogate) key identifyer";
+            label13.AutoSize = true;
+            label13.Location = new System.Drawing.Point(5, 22);
+            label13.Name = "label13";
+            label13.Size = new System.Drawing.Size(209, 13);
+            label13.TabIndex = 44;
+            label13.Text = "Data Platform (Surrogate) key identifyer";
             // 
             // textBoxKeyIdentifier
             // 
-            this.textBoxKeyIdentifier.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxKeyIdentifier.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxKeyIdentifier.Location = new System.Drawing.Point(233, 20);
-            this.textBoxKeyIdentifier.Name = "textBoxKeyIdentifier";
-            this.textBoxKeyIdentifier.Size = new System.Drawing.Size(857, 20);
-            this.textBoxKeyIdentifier.TabIndex = 13;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxKeyIdentifier, resources.GetString("textBoxKeyIdentifier.ToolTip"));
+            textBoxKeyIdentifier.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxKeyIdentifier.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxKeyIdentifier.Location = new System.Drawing.Point(254, 20);
+            textBoxKeyIdentifier.Name = "textBoxKeyIdentifier";
+            textBoxKeyIdentifier.Size = new System.Drawing.Size(836, 22);
+            textBoxKeyIdentifier.TabIndex = 13;
+            toolTipConfigurationSettings.SetToolTip(textBoxKeyIdentifier, resources.GetString("textBoxKeyIdentifier.ToolTip"));
             // 
             // textBoxKeyPattern
             // 
-            this.textBoxKeyPattern.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxKeyPattern.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxKeyPattern.Location = new System.Drawing.Point(233, 46);
-            this.textBoxKeyPattern.Name = "textBoxKeyPattern";
-            this.textBoxKeyPattern.Size = new System.Drawing.Size(857, 20);
-            this.textBoxKeyPattern.TabIndex = 67;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxKeyPattern, resources.GetString("textBoxKeyPattern.ToolTip"));
+            textBoxKeyPattern.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxKeyPattern.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxKeyPattern.Location = new System.Drawing.Point(254, 46);
+            textBoxKeyPattern.Name = "textBoxKeyPattern";
+            textBoxKeyPattern.Size = new System.Drawing.Size(836, 22);
+            textBoxKeyPattern.TabIndex = 67;
+            toolTipConfigurationSettings.SetToolTip(textBoxKeyPattern, resources.GetString("textBoxKeyPattern.ToolTip"));
             // 
             // labelSurrogateKeyPattern
             // 
-            this.labelSurrogateKeyPattern.AutoSize = true;
-            this.labelSurrogateKeyPattern.Location = new System.Drawing.Point(5, 47);
-            this.labelSurrogateKeyPattern.Name = "labelSurrogateKeyPattern";
-            this.labelSurrogateKeyPattern.Size = new System.Drawing.Size(182, 13);
-            this.labelSurrogateKeyPattern.TabIndex = 68;
-            this.labelSurrogateKeyPattern.Text = "Data Platform (Surrogate) key pattern";
+            labelSurrogateKeyPattern.AutoSize = true;
+            labelSurrogateKeyPattern.Location = new System.Drawing.Point(5, 47);
+            labelSurrogateKeyPattern.Name = "labelSurrogateKeyPattern";
+            labelSurrogateKeyPattern.Size = new System.Drawing.Size(198, 13);
+            labelSurrogateKeyPattern.TabIndex = 68;
+            labelSurrogateKeyPattern.Text = "Data Platform (Surrogate) key pattern";
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.labelOtherExceptionColumns);
-            this.groupBox2.Controls.Add(this.textBoxOtherExceptionColumns);
-            this.groupBox2.Controls.Add(this.label10);
-            this.groupBox2.Controls.Add(this.label21);
-            this.groupBox2.Controls.Add(this.label29);
-            this.groupBox2.Controls.Add(this.label46);
-            this.groupBox2.Controls.Add(this.label30);
-            this.groupBox2.Controls.Add(this.textBoxLogicalDeleteAttributeName);
-            this.groupBox2.Controls.Add(this.label32);
-            this.groupBox2.Controls.Add(this.textBoxETLUpdateProcessID);
-            this.groupBox2.Controls.Add(this.label42);
-            this.groupBox2.Controls.Add(this.textBoxCurrentRecordAttributeName);
-            this.groupBox2.Controls.Add(this.label43);
-            this.groupBox2.Controls.Add(this.textBoxRecordChecksum);
-            this.groupBox2.Controls.Add(this.textBoxChangeDataCaptureIndicator);
-            this.groupBox2.Controls.Add(this.textBoxSourceRowId);
-            this.groupBox2.Controls.Add(this.textBoxETLProcessID);
-            this.groupBox2.Controls.Add(this.textBoxEventDateTime);
-            this.groupBox2.Location = new System.Drawing.Point(9, 100);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1093, 278);
-            this.groupBox2.TabIndex = 69;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Data Warehouse special columns";
+            groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBox2.Controls.Add(labelOtherExceptionColumns);
+            groupBox2.Controls.Add(textBoxOtherExceptionColumns);
+            groupBox2.Controls.Add(label10);
+            groupBox2.Controls.Add(label21);
+            groupBox2.Controls.Add(label29);
+            groupBox2.Controls.Add(label46);
+            groupBox2.Controls.Add(label30);
+            groupBox2.Controls.Add(textBoxLogicalDeleteAttributeName);
+            groupBox2.Controls.Add(label32);
+            groupBox2.Controls.Add(textBoxETLUpdateProcessID);
+            groupBox2.Controls.Add(label42);
+            groupBox2.Controls.Add(textBoxCurrentRecordAttributeName);
+            groupBox2.Controls.Add(label43);
+            groupBox2.Controls.Add(textBoxRecordChecksum);
+            groupBox2.Controls.Add(textBoxChangeDataCaptureIndicator);
+            groupBox2.Controls.Add(textBoxSourceRowId);
+            groupBox2.Controls.Add(textBoxETLProcessID);
+            groupBox2.Controls.Add(textBoxEventDateTime);
+            groupBox2.Location = new System.Drawing.Point(9, 100);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new System.Drawing.Size(1093, 278);
+            groupBox2.TabIndex = 69;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Data Warehouse special columns";
             // 
             // labelOtherExceptionColumns
             // 
-            this.labelOtherExceptionColumns.AutoSize = true;
-            this.labelOtherExceptionColumns.Location = new System.Drawing.Point(6, 234);
-            this.labelOtherExceptionColumns.Name = "labelOtherExceptionColumns";
-            this.labelOtherExceptionColumns.Size = new System.Drawing.Size(126, 13);
-            this.labelOtherExceptionColumns.TabIndex = 68;
-            this.labelOtherExceptionColumns.Text = "Other Exception Columns";
+            labelOtherExceptionColumns.AutoSize = true;
+            labelOtherExceptionColumns.Location = new System.Drawing.Point(6, 234);
+            labelOtherExceptionColumns.Name = "labelOtherExceptionColumns";
+            labelOtherExceptionColumns.Size = new System.Drawing.Size(138, 13);
+            labelOtherExceptionColumns.TabIndex = 68;
+            labelOtherExceptionColumns.Text = "Other Exception Columns";
             // 
             // textBoxOtherExceptionColumns
             // 
-            this.textBoxOtherExceptionColumns.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxOtherExceptionColumns.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxOtherExceptionColumns.Location = new System.Drawing.Point(230, 232);
-            this.textBoxOtherExceptionColumns.Name = "textBoxOtherExceptionColumns";
-            this.textBoxOtherExceptionColumns.Size = new System.Drawing.Size(857, 20);
-            this.textBoxOtherExceptionColumns.TabIndex = 67;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxOtherExceptionColumns, resources.GetString("textBoxOtherExceptionColumns.ToolTip"));
+            textBoxOtherExceptionColumns.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxOtherExceptionColumns.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxOtherExceptionColumns.Location = new System.Drawing.Point(251, 232);
+            textBoxOtherExceptionColumns.Name = "textBoxOtherExceptionColumns";
+            textBoxOtherExceptionColumns.Size = new System.Drawing.Size(836, 22);
+            textBoxOtherExceptionColumns.TabIndex = 67;
+            toolTipConfigurationSettings.SetToolTip(textBoxOtherExceptionColumns, resources.GetString("textBoxOtherExceptionColumns.ToolTip"));
             // 
             // label10
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 25);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(220, 13);
-            this.label10.TabIndex = 49;
-            this.label10.Text = "Change Data Capture Indicator column name";
+            label10.AutoSize = true;
+            label10.Location = new System.Drawing.Point(6, 25);
+            label10.Name = "label10";
+            label10.Size = new System.Drawing.Size(239, 13);
+            label10.TabIndex = 49;
+            label10.Text = "Change Data Capture Indicator column name";
             // 
             // label21
             // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(6, 51);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(177, 13);
-            this.label21.TabIndex = 54;
-            this.label21.Text = "ETL Insert Process ID column name";
+            label21.AutoSize = true;
+            label21.Location = new System.Drawing.Point(6, 51);
+            label21.Name = "label21";
+            label21.Size = new System.Drawing.Size(183, 13);
+            label21.TabIndex = 54;
+            label21.Text = "ETL Insert Process ID column name";
             // 
             // label29
             // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(6, 103);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(155, 13);
-            this.label29.TabIndex = 56;
-            this.label29.Text = "Event Date/Time column name";
+            label29.AutoSize = true;
+            label29.Location = new System.Drawing.Point(6, 103);
+            label29.Name = "label29";
+            label29.Size = new System.Drawing.Size(162, 13);
+            label29.TabIndex = 56;
+            label29.Text = "Event Date/Time column name";
             // 
             // label46
             // 
-            this.label46.AutoSize = true;
-            this.label46.Location = new System.Drawing.Point(6, 207);
-            this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(141, 13);
-            this.label46.TabIndex = 66;
-            this.label46.Text = "Logical Delete column name";
+            label46.AutoSize = true;
+            label46.Location = new System.Drawing.Point(6, 207);
+            label46.Name = "label46";
+            label46.Size = new System.Drawing.Size(151, 13);
+            label46.TabIndex = 66;
+            label46.Text = "Logical Delete column name";
             // 
             // label30
             // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(6, 129);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(109, 13);
-            this.label30.TabIndex = 58;
-            this.label30.Text = "Row ID column name";
+            label30.AutoSize = true;
+            label30.Location = new System.Drawing.Point(6, 129);
+            label30.Name = "label30";
+            label30.Size = new System.Drawing.Size(116, 13);
+            label30.TabIndex = 58;
+            label30.Text = "Row ID column name";
             // 
             // textBoxLogicalDeleteAttributeName
             // 
-            this.textBoxLogicalDeleteAttributeName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxLogicalDeleteAttributeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxLogicalDeleteAttributeName.Location = new System.Drawing.Point(230, 205);
-            this.textBoxLogicalDeleteAttributeName.Name = "textBoxLogicalDeleteAttributeName";
-            this.textBoxLogicalDeleteAttributeName.Size = new System.Drawing.Size(857, 20);
-            this.textBoxLogicalDeleteAttributeName.TabIndex = 21;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxLogicalDeleteAttributeName, "The (optional) name of a logical delete attribute can be provided here. \r\n\r\nThis " +
-        "is a flag to label a record as deleted in the originating / feeding sytem.");
+            textBoxLogicalDeleteAttributeName.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxLogicalDeleteAttributeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxLogicalDeleteAttributeName.Location = new System.Drawing.Point(251, 205);
+            textBoxLogicalDeleteAttributeName.Name = "textBoxLogicalDeleteAttributeName";
+            textBoxLogicalDeleteAttributeName.Size = new System.Drawing.Size(836, 22);
+            textBoxLogicalDeleteAttributeName.TabIndex = 21;
+            toolTipConfigurationSettings.SetToolTip(textBoxLogicalDeleteAttributeName, "The (optional) name of a logical delete attribute can be provided here. \r\n\r\nThis is a flag to label a record as deleted in the originating / feeding sytem.");
             // 
             // label32
             // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(6, 155);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(161, 13);
-            this.label32.TabIndex = 60;
-            this.label32.Text = "Record Checksum column name";
+            label32.AutoSize = true;
+            label32.Location = new System.Drawing.Point(6, 155);
+            label32.Name = "label32";
+            label32.Size = new System.Drawing.Size(170, 13);
+            label32.TabIndex = 60;
+            label32.Text = "Record Checksum column name";
             // 
             // textBoxETLUpdateProcessID
             // 
-            this.textBoxETLUpdateProcessID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxETLUpdateProcessID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxETLUpdateProcessID.Location = new System.Drawing.Point(230, 75);
-            this.textBoxETLUpdateProcessID.Name = "textBoxETLUpdateProcessID";
-            this.textBoxETLUpdateProcessID.Size = new System.Drawing.Size(857, 20);
-            this.textBoxETLUpdateProcessID.TabIndex = 16;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxETLUpdateProcessID, "A pointer to the data logistics framework, in case in-place updates are made on r" +
-        "ows.");
+            textBoxETLUpdateProcessID.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxETLUpdateProcessID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxETLUpdateProcessID.Location = new System.Drawing.Point(251, 75);
+            textBoxETLUpdateProcessID.Name = "textBoxETLUpdateProcessID";
+            textBoxETLUpdateProcessID.Size = new System.Drawing.Size(836, 22);
+            textBoxETLUpdateProcessID.TabIndex = 16;
+            toolTipConfigurationSettings.SetToolTip(textBoxETLUpdateProcessID, "A pointer to the data logistics framework, in case in-place updates are made on rows.");
             // 
             // label42
             // 
-            this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(6, 181);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(145, 13);
-            this.label42.TabIndex = 62;
-            this.label42.Text = "Current Record column name";
+            label42.AutoSize = true;
+            label42.Location = new System.Drawing.Point(6, 181);
+            label42.Name = "label42";
+            label42.Size = new System.Drawing.Size(157, 13);
+            label42.TabIndex = 62;
+            label42.Text = "Current Record column name";
             // 
             // textBoxCurrentRecordAttributeName
             // 
-            this.textBoxCurrentRecordAttributeName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxCurrentRecordAttributeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxCurrentRecordAttributeName.Location = new System.Drawing.Point(230, 179);
-            this.textBoxCurrentRecordAttributeName.Name = "textBoxCurrentRecordAttributeName";
-            this.textBoxCurrentRecordAttributeName.Size = new System.Drawing.Size(857, 20);
-            this.textBoxCurrentRecordAttributeName.TabIndex = 20;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxCurrentRecordAttributeName, "An optional attribute name for the \'current row\', if used.");
+            textBoxCurrentRecordAttributeName.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxCurrentRecordAttributeName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxCurrentRecordAttributeName.Location = new System.Drawing.Point(251, 179);
+            textBoxCurrentRecordAttributeName.Name = "textBoxCurrentRecordAttributeName";
+            textBoxCurrentRecordAttributeName.Size = new System.Drawing.Size(836, 22);
+            textBoxCurrentRecordAttributeName.TabIndex = 20;
+            toolTipConfigurationSettings.SetToolTip(textBoxCurrentRecordAttributeName, "An optional attribute name for the 'current row', if used.");
             // 
             // label43
             // 
-            this.label43.AutoSize = true;
-            this.label43.Location = new System.Drawing.Point(6, 77);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(186, 13);
-            this.label43.TabIndex = 64;
-            this.label43.Text = "ETL Update Process ID column name";
+            label43.AutoSize = true;
+            label43.Location = new System.Drawing.Point(6, 77);
+            label43.Name = "label43";
+            label43.Size = new System.Drawing.Size(192, 13);
+            label43.TabIndex = 64;
+            label43.Text = "ETL Update Process ID column name";
             // 
             // textBoxRecordChecksum
             // 
-            this.textBoxRecordChecksum.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxRecordChecksum.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxRecordChecksum.Location = new System.Drawing.Point(230, 153);
-            this.textBoxRecordChecksum.Name = "textBoxRecordChecksum";
-            this.textBoxRecordChecksum.Size = new System.Drawing.Size(857, 20);
-            this.textBoxRecordChecksum.TabIndex = 19;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxRecordChecksum, "This is the name of the attribute that holds the full row checksum across all att" +
-        "ribute values.");
+            textBoxRecordChecksum.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxRecordChecksum.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxRecordChecksum.Location = new System.Drawing.Point(251, 153);
+            textBoxRecordChecksum.Name = "textBoxRecordChecksum";
+            textBoxRecordChecksum.Size = new System.Drawing.Size(836, 22);
+            textBoxRecordChecksum.TabIndex = 19;
+            toolTipConfigurationSettings.SetToolTip(textBoxRecordChecksum, "This is the name of the attribute that holds the full row checksum across all attribute values.");
             // 
             // textBoxChangeDataCaptureIndicator
             // 
-            this.textBoxChangeDataCaptureIndicator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxChangeDataCaptureIndicator.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxChangeDataCaptureIndicator.Location = new System.Drawing.Point(230, 23);
-            this.textBoxChangeDataCaptureIndicator.Name = "textBoxChangeDataCaptureIndicator";
-            this.textBoxChangeDataCaptureIndicator.Size = new System.Drawing.Size(857, 20);
-            this.textBoxChangeDataCaptureIndicator.TabIndex = 14;
+            textBoxChangeDataCaptureIndicator.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxChangeDataCaptureIndicator.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxChangeDataCaptureIndicator.Location = new System.Drawing.Point(251, 23);
+            textBoxChangeDataCaptureIndicator.Name = "textBoxChangeDataCaptureIndicator";
+            textBoxChangeDataCaptureIndicator.Size = new System.Drawing.Size(836, 22);
+            textBoxChangeDataCaptureIndicator.TabIndex = 14;
             // 
             // textBoxSourceRowId
             // 
-            this.textBoxSourceRowId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxSourceRowId.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxSourceRowId.Location = new System.Drawing.Point(230, 127);
-            this.textBoxSourceRowId.Name = "textBoxSourceRowId";
-            this.textBoxSourceRowId.Size = new System.Drawing.Size(857, 20);
-            this.textBoxSourceRowId.TabIndex = 18;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxSourceRowId, resources.GetString("textBoxSourceRowId.ToolTip"));
+            textBoxSourceRowId.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxSourceRowId.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxSourceRowId.Location = new System.Drawing.Point(251, 127);
+            textBoxSourceRowId.Name = "textBoxSourceRowId";
+            textBoxSourceRowId.Size = new System.Drawing.Size(836, 22);
+            textBoxSourceRowId.TabIndex = 18;
+            toolTipConfigurationSettings.SetToolTip(textBoxSourceRowId, resources.GetString("textBoxSourceRowId.ToolTip"));
             // 
             // textBoxETLProcessID
             // 
-            this.textBoxETLProcessID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxETLProcessID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxETLProcessID.Location = new System.Drawing.Point(230, 49);
-            this.textBoxETLProcessID.Name = "textBoxETLProcessID";
-            this.textBoxETLProcessID.Size = new System.Drawing.Size(857, 20);
-            this.textBoxETLProcessID.TabIndex = 15;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxETLProcessID, "This is the audit trail Id / pointer to the data logistics framework (e.g. DIRECT" +
-        " or other), so that each row can be uniquely related to the processes that inser" +
-        "ted or otherwise modified it.");
+            textBoxETLProcessID.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxETLProcessID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxETLProcessID.Location = new System.Drawing.Point(251, 49);
+            textBoxETLProcessID.Name = "textBoxETLProcessID";
+            textBoxETLProcessID.Size = new System.Drawing.Size(836, 22);
+            textBoxETLProcessID.TabIndex = 15;
+            toolTipConfigurationSettings.SetToolTip(textBoxETLProcessID, "This is the audit trail Id / pointer to the data logistics framework (e.g. DIRECT or other), so that each row can be uniquely related to the processes that inserted or otherwise modified it.");
             // 
             // textBoxEventDateTime
             // 
-            this.textBoxEventDateTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxEventDateTime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxEventDateTime.Location = new System.Drawing.Point(230, 101);
-            this.textBoxEventDateTime.Name = "textBoxEventDateTime";
-            this.textBoxEventDateTime.Size = new System.Drawing.Size(857, 20);
-            this.textBoxEventDateTime.TabIndex = 17;
-            this.toolTipConfigurationSettings.SetToolTip(this.textBoxEventDateTime, resources.GetString("textBoxEventDateTime.ToolTip"));
+            textBoxEventDateTime.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxEventDateTime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            textBoxEventDateTime.Location = new System.Drawing.Point(251, 101);
+            textBoxEventDateTime.Name = "textBoxEventDateTime";
+            textBoxEventDateTime.Size = new System.Drawing.Size(836, 22);
+            textBoxEventDateTime.TabIndex = 17;
+            toolTipConfigurationSettings.SetToolTip(textBoxEventDateTime, resources.GetString("textBoxEventDateTime.ToolTip"));
             // 
             // tabPageConnections
             // 
-            this.tabPageConnections.Controls.Add(this.tabControlConnections);
-            this.tabPageConnections.Location = new System.Drawing.Point(4, 22);
-            this.tabPageConnections.Name = "tabPageConnections";
-            this.tabPageConnections.Size = new System.Drawing.Size(1108, 621);
-            this.tabPageConnections.TabIndex = 7;
-            this.tabPageConnections.Text = "Connections";
-            this.tabPageConnections.UseVisualStyleBackColor = true;
+            tabPageConnections.Controls.Add(tabControlConnections);
+            tabPageConnections.Location = new System.Drawing.Point(4, 22);
+            tabPageConnections.Name = "tabPageConnections";
+            tabPageConnections.Size = new System.Drawing.Size(1108, 621);
+            tabPageConnections.TabIndex = 7;
+            tabPageConnections.Text = "Connections";
+            tabPageConnections.UseVisualStyleBackColor = true;
             // 
             // tabControlConnections
             // 
-            this.tabControlConnections.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControlConnections.Controls.Add(this.tabPageConnectionMain);
-            this.tabControlConnections.Controls.Add(this.tabPageConnectionNewTab);
-            this.tabControlConnections.Location = new System.Drawing.Point(3, 10);
-            this.tabControlConnections.Multiline = true;
-            this.tabControlConnections.Name = "tabControlConnections";
-            this.tabControlConnections.SelectedIndex = 0;
-            this.tabControlConnections.Size = new System.Drawing.Size(1102, 608);
-            this.tabControlConnections.TabIndex = 0;
-            this.tabControlConnections.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControlConnections_Selecting);
-            this.tabControlConnections.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControlConnections_MouseDown);
+            tabControlConnections.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            tabControlConnections.Controls.Add(tabPageConnectionMain);
+            tabControlConnections.Controls.Add(tabPageConnectionNewTab);
+            tabControlConnections.Location = new System.Drawing.Point(3, 10);
+            tabControlConnections.Multiline = true;
+            tabControlConnections.Name = "tabControlConnections";
+            tabControlConnections.SelectedIndex = 0;
+            tabControlConnections.Size = new System.Drawing.Size(1102, 608);
+            tabControlConnections.TabIndex = 0;
+            tabControlConnections.Selecting += tabControlConnections_Selecting;
+            tabControlConnections.MouseDown += tabControlConnections_MouseDown;
             // 
             // tabPageConnectionMain
             // 
-            this.tabPageConnectionMain.AutoScroll = true;
-            this.tabPageConnectionMain.Controls.Add(this.labelMetadataConnectionKey);
-            this.tabPageConnectionMain.Controls.Add(this.comboBoxMetadataConnection);
-            this.tabPageConnectionMain.Controls.Add(this.richTextBoxConnectionMain);
-            this.tabPageConnectionMain.Location = new System.Drawing.Point(4, 22);
-            this.tabPageConnectionMain.Name = "tabPageConnectionMain";
-            this.tabPageConnectionMain.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageConnectionMain.Size = new System.Drawing.Size(1094, 582);
-            this.tabPageConnectionMain.TabIndex = 0;
-            this.tabPageConnectionMain.Text = "Overview of data connections";
-            this.toolTipConfigurationSettings.SetToolTip(this.tabPageConnectionMain, resources.GetString("tabPageConnectionMain.ToolTip"));
-            this.tabPageConnectionMain.UseVisualStyleBackColor = true;
+            tabPageConnectionMain.AutoScroll = true;
+            tabPageConnectionMain.Controls.Add(labelMetadataConnectionKey);
+            tabPageConnectionMain.Controls.Add(comboBoxMetadataConnection);
+            tabPageConnectionMain.Controls.Add(richTextBoxConnectionMain);
+            tabPageConnectionMain.Location = new System.Drawing.Point(4, 22);
+            tabPageConnectionMain.Name = "tabPageConnectionMain";
+            tabPageConnectionMain.Padding = new System.Windows.Forms.Padding(3);
+            tabPageConnectionMain.Size = new System.Drawing.Size(1094, 582);
+            tabPageConnectionMain.TabIndex = 0;
+            tabPageConnectionMain.Text = "Overview of data connections";
+            toolTipConfigurationSettings.SetToolTip(tabPageConnectionMain, resources.GetString("tabPageConnectionMain.ToolTip"));
+            tabPageConnectionMain.UseVisualStyleBackColor = true;
             // 
             // labelMetadataConnectionKey
             // 
-            this.labelMetadataConnectionKey.AutoSize = true;
-            this.labelMetadataConnectionKey.Location = new System.Drawing.Point(4, 85);
-            this.labelMetadataConnectionKey.Name = "labelMetadataConnectionKey";
-            this.labelMetadataConnectionKey.Size = new System.Drawing.Size(111, 13);
-            this.labelMetadataConnectionKey.TabIndex = 78;
-            this.labelMetadataConnectionKey.Text = "Metadata connection:";
+            labelMetadataConnectionKey.AutoSize = true;
+            labelMetadataConnectionKey.Location = new System.Drawing.Point(4, 85);
+            labelMetadataConnectionKey.Name = "labelMetadataConnectionKey";
+            labelMetadataConnectionKey.Size = new System.Drawing.Size(120, 13);
+            labelMetadataConnectionKey.TabIndex = 78;
+            labelMetadataConnectionKey.Text = "Metadata connection:";
             // 
             // comboBoxMetadataConnection
             // 
-            this.comboBoxMetadataConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxMetadataConnection.FormattingEnabled = true;
-            this.comboBoxMetadataConnection.Location = new System.Drawing.Point(6, 101);
-            this.comboBoxMetadataConnection.Name = "comboBoxMetadataConnection";
-            this.comboBoxMetadataConnection.Size = new System.Drawing.Size(284, 21);
-            this.comboBoxMetadataConnection.TabIndex = 76;
+            comboBoxMetadataConnection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            comboBoxMetadataConnection.FormattingEnabled = true;
+            comboBoxMetadataConnection.Location = new System.Drawing.Point(6, 101);
+            comboBoxMetadataConnection.Name = "comboBoxMetadataConnection";
+            comboBoxMetadataConnection.Size = new System.Drawing.Size(284, 21);
+            comboBoxMetadataConnection.TabIndex = 76;
             // 
             // richTextBoxConnectionMain
             // 
-            this.richTextBoxConnectionMain.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBoxConnectionMain.BackColor = System.Drawing.SystemColors.Control;
-            this.richTextBoxConnectionMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxConnectionMain.Location = new System.Drawing.Point(6, 6);
-            this.richTextBoxConnectionMain.Name = "richTextBoxConnectionMain";
-            this.richTextBoxConnectionMain.Size = new System.Drawing.Size(1082, 61);
-            this.richTextBoxConnectionMain.TabIndex = 73;
-            this.richTextBoxConnectionMain.Text = resources.GetString("richTextBoxConnectionMain.Text");
+            richTextBoxConnectionMain.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            richTextBoxConnectionMain.BackColor = System.Drawing.SystemColors.Control;
+            richTextBoxConnectionMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            richTextBoxConnectionMain.Location = new System.Drawing.Point(6, 6);
+            richTextBoxConnectionMain.Name = "richTextBoxConnectionMain";
+            richTextBoxConnectionMain.Size = new System.Drawing.Size(1082, 61);
+            richTextBoxConnectionMain.TabIndex = 73;
+            richTextBoxConnectionMain.Text = resources.GetString("richTextBoxConnectionMain.Text");
             // 
             // tabPageConnectionNewTab
             // 
-            this.tabPageConnectionNewTab.Location = new System.Drawing.Point(4, 22);
-            this.tabPageConnectionNewTab.Name = "tabPageConnectionNewTab";
-            this.tabPageConnectionNewTab.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageConnectionNewTab.Size = new System.Drawing.Size(1094, 582);
-            this.tabPageConnectionNewTab.TabIndex = 1;
-            this.tabPageConnectionNewTab.UseVisualStyleBackColor = true;
+            tabPageConnectionNewTab.Location = new System.Drawing.Point(4, 24);
+            tabPageConnectionNewTab.Name = "tabPageConnectionNewTab";
+            tabPageConnectionNewTab.Padding = new System.Windows.Forms.Padding(3);
+            tabPageConnectionNewTab.Size = new System.Drawing.Size(1094, 580);
+            tabPageConnectionNewTab.TabIndex = 1;
+            tabPageConnectionNewTab.UseVisualStyleBackColor = true;
             // 
             // tabPageEnvironments
             // 
-            this.tabPageEnvironments.Controls.Add(this.tabControlEnvironments);
-            this.tabPageEnvironments.Location = new System.Drawing.Point(4, 22);
-            this.tabPageEnvironments.Name = "tabPageEnvironments";
-            this.tabPageEnvironments.Size = new System.Drawing.Size(1108, 621);
-            this.tabPageEnvironments.TabIndex = 5;
-            this.tabPageEnvironments.Text = "Environments";
-            this.tabPageEnvironments.UseVisualStyleBackColor = true;
+            tabPageEnvironments.Controls.Add(tabControlEnvironments);
+            tabPageEnvironments.Location = new System.Drawing.Point(4, 22);
+            tabPageEnvironments.Name = "tabPageEnvironments";
+            tabPageEnvironments.Size = new System.Drawing.Size(1108, 621);
+            tabPageEnvironments.TabIndex = 5;
+            tabPageEnvironments.Text = "Environments";
+            tabPageEnvironments.UseVisualStyleBackColor = true;
             // 
             // tabControlEnvironments
             // 
-            this.tabControlEnvironments.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControlEnvironments.Controls.Add(this.tabPageEnvironmentMain);
-            this.tabControlEnvironments.Controls.Add(this.tabPageEnvironmentNewTab);
-            this.tabControlEnvironments.Location = new System.Drawing.Point(3, 10);
-            this.tabControlEnvironments.Multiline = true;
-            this.tabControlEnvironments.Name = "tabControlEnvironments";
-            this.tabControlEnvironments.SelectedIndex = 0;
-            this.tabControlEnvironments.Size = new System.Drawing.Size(1102, 608);
-            this.tabControlEnvironments.TabIndex = 1;
-            this.tabControlEnvironments.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControlEnvironments_Selecting);
-            this.tabControlEnvironments.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControlEnvironments_MouseDown);
+            tabControlEnvironments.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            tabControlEnvironments.Controls.Add(tabPageEnvironmentMain);
+            tabControlEnvironments.Controls.Add(tabPageEnvironmentNewTab);
+            tabControlEnvironments.Location = new System.Drawing.Point(3, 10);
+            tabControlEnvironments.Multiline = true;
+            tabControlEnvironments.Name = "tabControlEnvironments";
+            tabControlEnvironments.SelectedIndex = 0;
+            tabControlEnvironments.Size = new System.Drawing.Size(1102, 610);
+            tabControlEnvironments.TabIndex = 1;
+            tabControlEnvironments.Selecting += tabControlEnvironments_Selecting;
+            tabControlEnvironments.MouseDown += tabControlEnvironments_MouseDown;
             // 
             // tabPageEnvironmentMain
             // 
-            this.tabPageEnvironmentMain.AutoScroll = true;
-            this.tabPageEnvironmentMain.Controls.Add(this.labelEnvironmentKey);
-            this.tabPageEnvironmentMain.Controls.Add(this.comboBoxEnvironments);
-            this.tabPageEnvironmentMain.Controls.Add(this.richTextBoxEnvironmentsInformation);
-            this.tabPageEnvironmentMain.Location = new System.Drawing.Point(4, 22);
-            this.tabPageEnvironmentMain.Name = "tabPageEnvironmentMain";
-            this.tabPageEnvironmentMain.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageEnvironmentMain.Size = new System.Drawing.Size(1094, 582);
-            this.tabPageEnvironmentMain.TabIndex = 0;
-            this.tabPageEnvironmentMain.Text = "Overview of working environments";
-            this.toolTipConfigurationSettings.SetToolTip(this.tabPageEnvironmentMain, resources.GetString("tabPageEnvironmentMain.ToolTip"));
-            this.tabPageEnvironmentMain.UseVisualStyleBackColor = true;
+            tabPageEnvironmentMain.AutoScroll = true;
+            tabPageEnvironmentMain.Controls.Add(labelEnvironmentKey);
+            tabPageEnvironmentMain.Controls.Add(comboBoxEnvironments);
+            tabPageEnvironmentMain.Controls.Add(richTextBoxEnvironmentsInformation);
+            tabPageEnvironmentMain.Location = new System.Drawing.Point(4, 22);
+            tabPageEnvironmentMain.Name = "tabPageEnvironmentMain";
+            tabPageEnvironmentMain.Padding = new System.Windows.Forms.Padding(3);
+            tabPageEnvironmentMain.Size = new System.Drawing.Size(1094, 584);
+            tabPageEnvironmentMain.TabIndex = 0;
+            tabPageEnvironmentMain.Text = "Overview of working environments";
+            toolTipConfigurationSettings.SetToolTip(tabPageEnvironmentMain, resources.GetString("tabPageEnvironmentMain.ToolTip"));
+            tabPageEnvironmentMain.UseVisualStyleBackColor = true;
             // 
             // labelEnvironmentKey
             // 
-            this.labelEnvironmentKey.AutoSize = true;
-            this.labelEnvironmentKey.Location = new System.Drawing.Point(4, 85);
-            this.labelEnvironmentKey.Name = "labelEnvironmentKey";
-            this.labelEnvironmentKey.Size = new System.Drawing.Size(101, 13);
-            this.labelEnvironmentKey.TabIndex = 76;
-            this.labelEnvironmentKey.Text = "Active environment:";
+            labelEnvironmentKey.AutoSize = true;
+            labelEnvironmentKey.Location = new System.Drawing.Point(4, 85);
+            labelEnvironmentKey.Name = "labelEnvironmentKey";
+            labelEnvironmentKey.Size = new System.Drawing.Size(108, 13);
+            labelEnvironmentKey.TabIndex = 76;
+            labelEnvironmentKey.Text = "Active environment:";
             // 
             // comboBoxEnvironments
             // 
-            this.comboBoxEnvironments.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxEnvironments.FormattingEnabled = true;
-            this.comboBoxEnvironments.Location = new System.Drawing.Point(6, 101);
-            this.comboBoxEnvironments.Name = "comboBoxEnvironments";
-            this.comboBoxEnvironments.Size = new System.Drawing.Size(284, 21);
-            this.comboBoxEnvironments.TabIndex = 1;
-            this.comboBoxEnvironments.SelectedIndexChanged += new System.EventHandler(this.comboBoxEnvironments_SelectedIndexChanged);
+            comboBoxEnvironments.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            comboBoxEnvironments.FormattingEnabled = true;
+            comboBoxEnvironments.Location = new System.Drawing.Point(6, 101);
+            comboBoxEnvironments.Name = "comboBoxEnvironments";
+            comboBoxEnvironments.Size = new System.Drawing.Size(284, 21);
+            comboBoxEnvironments.TabIndex = 1;
+            comboBoxEnvironments.SelectedIndexChanged += comboBoxEnvironments_SelectedIndexChanged;
             // 
             // richTextBoxEnvironmentsInformation
             // 
-            this.richTextBoxEnvironmentsInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBoxEnvironmentsInformation.BackColor = System.Drawing.SystemColors.Control;
-            this.richTextBoxEnvironmentsInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxEnvironmentsInformation.Location = new System.Drawing.Point(6, 6);
-            this.richTextBoxEnvironmentsInformation.Name = "richTextBoxEnvironmentsInformation";
-            this.richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(1082, 70);
-            this.richTextBoxEnvironmentsInformation.TabIndex = 73;
-            this.richTextBoxEnvironmentsInformation.Text = resources.GetString("richTextBoxEnvironmentsInformation.Text");
+            richTextBoxEnvironmentsInformation.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            richTextBoxEnvironmentsInformation.BackColor = System.Drawing.SystemColors.Control;
+            richTextBoxEnvironmentsInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            richTextBoxEnvironmentsInformation.Location = new System.Drawing.Point(6, 6);
+            richTextBoxEnvironmentsInformation.Name = "richTextBoxEnvironmentsInformation";
+            richTextBoxEnvironmentsInformation.Size = new System.Drawing.Size(1082, 70);
+            richTextBoxEnvironmentsInformation.TabIndex = 73;
+            richTextBoxEnvironmentsInformation.Text = resources.GetString("richTextBoxEnvironmentsInformation.Text");
             // 
             // tabPageEnvironmentNewTab
             // 
-            this.tabPageEnvironmentNewTab.Location = new System.Drawing.Point(4, 22);
-            this.tabPageEnvironmentNewTab.Name = "tabPageEnvironmentNewTab";
-            this.tabPageEnvironmentNewTab.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageEnvironmentNewTab.Size = new System.Drawing.Size(1094, 582);
-            this.tabPageEnvironmentNewTab.TabIndex = 1;
-            this.tabPageEnvironmentNewTab.UseVisualStyleBackColor = true;
+            tabPageEnvironmentNewTab.Location = new System.Drawing.Point(4, 24);
+            tabPageEnvironmentNewTab.Name = "tabPageEnvironmentNewTab";
+            tabPageEnvironmentNewTab.Padding = new System.Windows.Forms.Padding(3);
+            tabPageEnvironmentNewTab.Size = new System.Drawing.Size(1094, 582);
+            tabPageEnvironmentNewTab.TabIndex = 1;
+            tabPageEnvironmentNewTab.UseVisualStyleBackColor = true;
             // 
             // tabControlDefaultDetails
             // 
-            this.tabControlDefaultDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControlDefaultDetails.Controls.Add(this.tabPageEnvironments);
-            this.tabControlDefaultDetails.Controls.Add(this.tabPageConnections);
-            this.tabControlDefaultDetails.Controls.Add(this.tabPageDataObjectTypes);
-            this.tabControlDefaultDetails.Controls.Add(this.tabPageDataWarehouse);
-            this.tabControlDefaultDetails.Controls.Add(this.tabPagePaths);
-            this.tabControlDefaultDetails.Location = new System.Drawing.Point(12, 32);
-            this.tabControlDefaultDetails.Multiline = true;
-            this.tabControlDefaultDetails.Name = "tabControlDefaultDetails";
-            this.tabControlDefaultDetails.SelectedIndex = 0;
-            this.tabControlDefaultDetails.Size = new System.Drawing.Size(1116, 647);
-            this.tabControlDefaultDetails.TabIndex = 0;
+            tabControlDefaultDetails.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            tabControlDefaultDetails.Controls.Add(tabPageEnvironments);
+            tabControlDefaultDetails.Controls.Add(tabPageConnections);
+            tabControlDefaultDetails.Controls.Add(tabPageDataObjectTypes);
+            tabControlDefaultDetails.Controls.Add(tabPageDataWarehouse);
+            tabControlDefaultDetails.Controls.Add(tabPagePaths);
+            tabControlDefaultDetails.Location = new System.Drawing.Point(12, 32);
+            tabControlDefaultDetails.Multiline = true;
+            tabControlDefaultDetails.Name = "tabControlDefaultDetails";
+            tabControlDefaultDetails.SelectedIndex = 0;
+            tabControlDefaultDetails.Size = new System.Drawing.Size(1116, 647);
+            tabControlDefaultDetails.TabIndex = 0;
             // 
             // toolTipConfigurationSettings
             // 
-            this.toolTipConfigurationSettings.AutoPopDelay = 3000;
-            this.toolTipConfigurationSettings.InitialDelay = 300;
-            this.toolTipConfigurationSettings.ReshowDelay = 100;
+            toolTipConfigurationSettings.AutoPopDelay = 3000;
+            toolTipConfigurationSettings.InitialDelay = 300;
+            toolTipConfigurationSettings.ReshowDelay = 100;
             // 
             // FormManageConfiguration
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoScroll = true;
-            this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1136, 797);
-            this.Controls.Add(this.tabControlDefaultDetails);
-            this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.richTextBoxInformation);
-            this.Controls.Add(this.menuStripMainMenu);
-            this.DoubleBuffered = true;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.menuStripMainMenu;
-            this.Name = "FormManageConfiguration";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Manage the configuration settings";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormManageConfiguration_FormClosed);
-            this.menuStripMainMenu.ResumeLayout(false);
-            this.menuStripMainMenu.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.tabPagePaths.ResumeLayout(false);
-            this.tabPagePaths.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
-            this.tabPageDataObjectTypes.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
-            this.groupBoxDataObjectIdentification.ResumeLayout(false);
-            this.groupBoxDataObjectIdentification.PerformLayout();
-            this.groupBoxPrefixSuffix.ResumeLayout(false);
-            this.groupBoxPrefixSuffix.PerformLayout();
-            this.groupBox8.ResumeLayout(false);
-            this.groupBox8.PerformLayout();
-            this.tabPageDataWarehouse.ResumeLayout(false);
-            this.groupBoxDataVaultSpecific.ResumeLayout(false);
-            this.groupBoxDataVaultSpecific.PerformLayout();
-            this.groupBoxAlternativeColumns.ResumeLayout(false);
-            this.groupBoxAlternativeColumns.PerformLayout();
-            this.groupBoxSurrogateKeyDefinition.ResumeLayout(false);
-            this.groupBoxSurrogateKeyDefinition.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.tabPageConnections.ResumeLayout(false);
-            this.tabControlConnections.ResumeLayout(false);
-            this.tabPageConnectionMain.ResumeLayout(false);
-            this.tabPageConnectionMain.PerformLayout();
-            this.tabPageEnvironments.ResumeLayout(false);
-            this.tabControlEnvironments.ResumeLayout(false);
-            this.tabPageEnvironmentMain.ResumeLayout(false);
-            this.tabPageEnvironmentMain.PerformLayout();
-            this.tabControlDefaultDetails.ResumeLayout(false);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScroll = true;
+            BackColor = System.Drawing.SystemColors.Control;
+            ClientSize = new System.Drawing.Size(1136, 797);
+            Controls.Add(tabControlDefaultDetails);
+            Controls.Add(pictureBox1);
+            Controls.Add(richTextBoxInformation);
+            Controls.Add(menuStripMainMenu);
+            DoubleBuffered = true;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            MainMenuStrip = menuStripMainMenu;
+            Name = "FormManageConfiguration";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            Text = "Manage the configuration settings";
+            FormClosed += FormManageConfiguration_FormClosed;
+            menuStripMainMenu.ResumeLayout(false);
+            menuStripMainMenu.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            tabPagePaths.ResumeLayout(false);
+            tabPagePaths.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox4).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
+            tabPageDataObjectTypes.ResumeLayout(false);
+            groupBox4.ResumeLayout(false);
+            groupBox4.PerformLayout();
+            groupBoxDataObjectIdentification.ResumeLayout(false);
+            groupBoxDataObjectIdentification.PerformLayout();
+            groupBoxPrefixSuffix.ResumeLayout(false);
+            groupBoxPrefixSuffix.PerformLayout();
+            groupBox8.ResumeLayout(false);
+            groupBox8.PerformLayout();
+            tabPageDataWarehouse.ResumeLayout(false);
+            groupBoxDataVaultSpecific.ResumeLayout(false);
+            groupBoxDataVaultSpecific.PerformLayout();
+            groupBoxAlternativeColumns.ResumeLayout(false);
+            groupBoxAlternativeColumns.PerformLayout();
+            groupBoxSurrogateKeyDefinition.ResumeLayout(false);
+            groupBoxSurrogateKeyDefinition.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            tabPageConnections.ResumeLayout(false);
+            tabControlConnections.ResumeLayout(false);
+            tabPageConnectionMain.ResumeLayout(false);
+            tabPageConnectionMain.PerformLayout();
+            tabPageEnvironments.ResumeLayout(false);
+            tabControlEnvironments.ResumeLayout(false);
+            tabPageEnvironmentMain.ResumeLayout(false);
+            tabPageEnvironmentMain.PerformLayout();
+            tabControlDefaultDetails.ResumeLayout(false);
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

@@ -8,6 +8,7 @@ namespace TEAM
     {
         public FormAbout()
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedSingle;
         }

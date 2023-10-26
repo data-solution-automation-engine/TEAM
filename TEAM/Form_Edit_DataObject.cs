@@ -12,11 +12,13 @@ namespace TEAM
 
         public Form_Edit_DataObject()
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
         }
 
         public Form_Edit_DataObject(DataGridViewCell cell)
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
             EditedCell = cell;
 

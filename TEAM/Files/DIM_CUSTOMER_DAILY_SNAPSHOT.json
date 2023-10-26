@@ -1,0 +1,356 @@
+{
+  "metadataConfiguration": {
+    "changeDataCaptureAttribute": "CHANGE_DATA_INDICATOR",
+    "recordSourceAttribute": "RECORD_SOURCE_INDICATOR",
+    "loadDateTimeAttribute": "INSCRIPTION_TIMESTAMP",
+    "expiryDateTimeAttribute": "INSCRIPTION_END_TIMESTAMP",
+    "eventDateTimeAttribute": "SOURCE_TIMESTAMP",
+    "recordChecksumAttribute": "CHECKSUM",
+    "etlProcessAttribute": "AUDIT_TRAIL_ID",
+    "sourceRowIdAttribute": "INSCRIPTION_RECORD_ID"
+  },
+  "generationSpecificMetadata": {
+    "selectedDataObject": {
+      "name": "DIM_CUSTOMER_DAILY_SNAPSHOT",
+      "dataItems": [
+        {
+          "name": "CUSTOMER_SK",
+          "dataType": "binary",
+          "characterLength": 16,
+          "ordinalPosition": 1
+        },
+        {
+          "name": "SNAPSHOT_DATE",
+          "dataType": "datetime2",
+          "ordinalPosition": 2,
+          "numericScale": 7
+        },
+        {
+          "name": "CUSTOMER_ID",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 3
+        },
+        {
+          "name": "GIVEN_NAME",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 4
+        },
+        {
+          "name": "SURNAME",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 5
+        },
+        {
+          "name": "SUBURB",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 6
+        },
+        {
+          "name": "POSTCODE",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 7
+        },
+        {
+          "name": "COUNTRY",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 8
+        },
+        {
+          "name": "DATE_OF_BIRTH",
+          "dataType": "datetime2",
+          "ordinalPosition": 9,
+          "numericScale": 7
+        },
+        {
+          "name": "STATE",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 10
+        },
+        {
+          "name": "CONTACT_NUMBER",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 11
+        },
+        {
+          "name": "REFERRAL_OFFER_CLEAN",
+          "dataType": "nvarchar",
+          "characterLength": 100,
+          "ordinalPosition": 12
+        }
+      ],
+      "dataObjectConnection": {
+        "dataConnectionString": "Presentation",
+        "extensions": [
+          {
+            "key": "database",
+            "value": "300_Presentation_Layer",
+            "description": "database name"
+          },
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
+          }
+        ]
+      },
+      "dataObjectClassifications": [
+        {
+          "classification": "Presentation"
+        }
+      ],
+      "extensions": [
+        {
+          "key": "datastore",
+          "value": "300_Presentation_Layer"
+        },
+        {
+          "key": "location",
+          "value": "dbo"
+        }
+      ]
+    }
+  },
+  "dataObjectMappings": [
+    {
+      "mappingName": "DIM_CUSTOMER_DAILY_SNAPSHOT",
+      "mappingClassifications": [
+        {
+          "classification": "Presentation"
+        }
+      ],
+      "sourceDataObjects": [
+        {
+          "name": "FN_DIM_CUSTOMER",
+          "dataItems": [],
+          "dataObjectConnection": {
+            "dataConnectionString": "PSA",
+            "extensions": [
+              {
+                "key": "database",
+                "value": "150_Persistent_Staging_Area",
+                "description": "database name"
+              },
+              {
+                "key": "schema",
+                "value": "dbo",
+                "description": "schema name"
+              }
+            ]
+          },
+          "dataObjectClassifications": [
+            {
+              "classification": "Source"
+            }
+          ],
+          "extensions": [
+            {
+              "key": "datastore",
+              "value": "150_Persistent_Staging_Area"
+            },
+            {
+              "key": "location",
+              "value": "dbo"
+            },
+            {
+              "key": "objectType",
+              "value": "function",
+              "description": "Object type"
+            }
+          ]
+        }
+      ],
+      "targetDataObject": {
+        "name": "DIM_CUSTOMER_DAILY_SNAPSHOT",
+        "dataItems": [],
+        "dataObjectConnection": {
+          "dataConnectionString": "Presentation",
+          "extensions": [
+            {
+              "key": "database",
+              "value": "300_Presentation_Layer",
+              "description": "database name"
+            },
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
+            }
+          ]
+        },
+        "dataObjectClassifications": [
+          {
+            "classification": "Presentation"
+          }
+        ],
+        "extensions": [
+          {
+            "key": "datastore",
+            "value": "300_Presentation_Layer"
+          },
+          {
+            "key": "location",
+            "value": "dbo"
+          }
+        ]
+      },
+      "dataItemMappings": [
+        {
+          "sourceDataItems": [
+            {
+              "name": "CUSTOMER_SK",
+              "dataType": "binary",
+              "characterLength": 16,
+              "ordinalPosition": 4
+            }
+          ],
+          "targetDataItem": {
+            "name": "CUSTOMER_SK",
+            "dataType": "binary",
+            "characterLength": 16,
+            "ordinalPosition": 9
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "SNAPSHOT_DATE",
+              "dataType": "datetime2",
+              "ordinalPosition": 2,
+              "numericScale": 7
+            }
+          ],
+          "targetDataItem": {
+            "name": "SNAPSHOT_DATE",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 2
+          }
+        },        
+        {
+          "sourceDataItems": [
+            {
+              "name": "CUSTOMER_ID",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            }
+          ],
+          "targetDataItem": {
+            "name": "CUSTOMER_ID",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 9
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "DATE_OF_BIRTH",
+              "dataType": "datetime2",
+              "ordinalPosition": 15,
+              "numericScale": 7
+            }
+          ],
+          "targetDataItem": {
+            "name": "DATE_OF_BIRTH",
+            "dataType": "datetime2",
+            "numericScale": 7,
+            "ordinalPosition": 16
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "GIVEN_NAME",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 8
+            }
+          ],
+          "targetDataItem": {
+            "name": "GIVEN_NAME",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 10
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "SUBURB",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 10
+            }
+          ],
+          "targetDataItem": {
+            "name": "SUBURB",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 13
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "CONTACT_NUMBER",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 8
+            }
+          ],
+          "targetDataItem": {
+            "name": "CONTACT_NUMBER",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 17
+          }
+        },
+        {
+          "sourceDataItems": [
+            {
+              "name": "REFERRAL_OFFER_CLEAN",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 8
+            }
+          ],
+          "targetDataItem": {
+            "name": "REFERRAL_OFFER_CLEAN",
+            "dataType": "nvarchar",
+            "characterLength": 100,
+            "ordinalPosition": 17
+          }
+        }
+      ],      
+      "businessKeys": [
+        {
+          "businessKeyComponentMapping": [
+            {
+              "sourceDataItems": [
+                {
+                  "name": "CUSTOMER_SK",
+                  "isHardCodedValue": false
+                }
+              ],
+              "targetDataItem": {
+                "name": "CUSTOMER_SK"
+              }
+            }
+          ],
+          "surrogateKey": "DIM_CUSTOMER_DAILY_SNAPSHOT_SK"
+        }
+      ],
+      "filterCriterion": "",
+      "enabled": true
+    }
+  ]
+}

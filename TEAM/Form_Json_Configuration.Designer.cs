@@ -28,349 +28,333 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormJsonConfiguration));
-            this.menuStripMainMenu = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBoxDataItems = new System.Windows.Forms.GroupBox();
-            this.checkBoxDataItemAddParentDataObject = new System.Windows.Forms.CheckBox();
-            this.checkBoxDataItemDataType = new System.Windows.Forms.CheckBox();
-            this.labelInformation = new System.Windows.Forms.Label();
-            this.richTextBoxJsonExportInformation = new System.Windows.Forms.RichTextBox();
-            this.toolTipJsonExtractConfiguration = new System.Windows.Forms.ToolTip(this.components);
-            this.checkBoxSchemaExtension = new System.Windows.Forms.CheckBox();
-            this.checkBoxDatabaseExtension = new System.Windows.Forms.CheckBox();
-            this.checkBoxNextUpDataObjects = new System.Windows.Forms.CheckBox();
-            this.checkBoxAddMetadataConnection = new System.Windows.Forms.CheckBox();
-            this.checkBoxAddType = new System.Windows.Forms.CheckBox();
-            this.checkBoxDataObjectDataItems = new System.Windows.Forms.CheckBox();
-            this.groupBoxConnectivity = new System.Windows.Forms.GroupBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBoxDataObjectConnections = new System.Windows.Forms.GroupBox();
-            this.checkBoxAddParentDataObject = new System.Windows.Forms.CheckBox();
-            this.checkBoxAddDrivingKeyAsExtension = new System.Windows.Forms.CheckBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.menuStripMainMenu.SuspendLayout();
-            this.groupBoxDataItems.SuspendLayout();
-            this.groupBoxConnectivity.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.groupBoxDataObjectConnections.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.SuspendLayout();
+            menuStripMainMenu = new System.Windows.Forms.MenuStrip();
+            fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            groupBoxDataItems = new System.Windows.Forms.GroupBox();
+            checkBoxDataItemAddParentDataObject = new System.Windows.Forms.CheckBox();
+            checkBoxDataItemDataType = new System.Windows.Forms.CheckBox();
+            labelInformation = new System.Windows.Forms.Label();
+            richTextBoxJsonExportInformation = new System.Windows.Forms.RichTextBox();
+            toolTipJsonExtractConfiguration = new System.Windows.Forms.ToolTip(components);
+            checkBoxSchemaExtension = new System.Windows.Forms.CheckBox();
+            checkBoxDatabaseExtension = new System.Windows.Forms.CheckBox();
+            checkBoxNextUpDataObjects = new System.Windows.Forms.CheckBox();
+            checkBoxAddMetadataConnection = new System.Windows.Forms.CheckBox();
+            checkBoxAddType = new System.Windows.Forms.CheckBox();
+            checkBoxDataObjectDataItems = new System.Windows.Forms.CheckBox();
+            checkBoxAddParentDataObject = new System.Windows.Forms.CheckBox();
+            checkBoxAddDrivingKeyAsExtension = new System.Windows.Forms.CheckBox();
+            groupBoxConnectivity = new System.Windows.Forms.GroupBox();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            groupBoxDataObjectConnections = new System.Windows.Forms.GroupBox();
+            groupBox2 = new System.Windows.Forms.GroupBox();
+            menuStripMainMenu.SuspendLayout();
+            groupBoxDataItems.SuspendLayout();
+            groupBoxConnectivity.SuspendLayout();
+            groupBox1.SuspendLayout();
+            groupBoxDataObjectConnections.SuspendLayout();
+            groupBox2.SuspendLayout();
+            SuspendLayout();
             // 
             // menuStripMainMenu
             // 
-            this.menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
-            this.menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
-            this.menuStripMainMenu.Name = "menuStripMainMenu";
-            this.menuStripMainMenu.Size = new System.Drawing.Size(701, 24);
-            this.menuStripMainMenu.TabIndex = 5;
-            this.menuStripMainMenu.Text = "menuStrip1";
+            menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem });
+            menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
+            menuStripMainMenu.Name = "menuStripMainMenu";
+            menuStripMainMenu.Size = new System.Drawing.Size(701, 24);
+            menuStripMainMenu.TabIndex = 5;
+            menuStripMainMenu.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openConfigurationFileToolStripMenuItem,
-            this.toolStripMenuItem2,
-            this.openConfigurationDirectoryToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.exitToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
+            fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openConfigurationFileToolStripMenuItem, toolStripMenuItem2, openConfigurationDirectoryToolStripMenuItem, toolStripSeparator1, exitToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            fileToolStripMenuItem.Text = "File";
             // 
             // openConfigurationFileToolStripMenuItem
             // 
-            this.openConfigurationFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
-            this.openConfigurationFileToolStripMenuItem.Name = "openConfigurationFileToolStripMenuItem";
-            this.openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(274, 22);
-            this.openConfigurationFileToolStripMenuItem.Text = "Open JSON Extract Settings File";
-            this.openConfigurationFileToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationFileToolStripMenuItem_Click);
+            openConfigurationFileToolStripMenuItem.Image = Properties.Resources.OpenFileIcon;
+            openConfigurationFileToolStripMenuItem.Name = "openConfigurationFileToolStripMenuItem";
+            openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(274, 22);
+            openConfigurationFileToolStripMenuItem.Text = "Open JSON Extract Settings File";
+            openConfigurationFileToolStripMenuItem.Click += openConfigurationFileToolStripMenuItem_Click;
             // 
             // toolStripMenuItem2
             // 
-            this.toolStripMenuItem2.Image = global::TEAM.Properties.Resources.SaveFile;
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(274, 22);
-            this.toolStripMenuItem2.Text = "Save JSON Extract Settings File";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.ToolStripMenuItemSaveSettings_Click);
+            toolStripMenuItem2.Image = Properties.Resources.SaveFile;
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
+            toolStripMenuItem2.Size = new System.Drawing.Size(274, 22);
+            toolStripMenuItem2.Text = "Save JSON Extract Settings File";
+            toolStripMenuItem2.Click += ToolStripMenuItemSaveSettings_Click;
             // 
             // openConfigurationDirectoryToolStripMenuItem
             // 
-            this.openConfigurationDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
-            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(274, 22);
-            this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
-            this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.OpenConfigurationDirectoryToolStripMenuItem_Click);
+            openConfigurationDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
+            openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
+            openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(274, 22);
+            openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
+            openConfigurationDirectoryToolStripMenuItem.Click += OpenConfigurationDirectoryToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(271, 6);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new System.Drawing.Size(271, 6);
             // 
             // exitToolStripMenuItem
             // 
-            this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(274, 22);
-            this.exitToolStripMenuItem.Text = "Close Window";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
+            exitToolStripMenuItem.Image = Properties.Resources.ExitApplication;
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.Size = new System.Drawing.Size(274, 22);
+            exitToolStripMenuItem.Text = "Close Window";
+            exitToolStripMenuItem.Click += ExitToolStripMenuItem_Click;
             // 
             // groupBoxDataItems
             // 
-            this.groupBoxDataItems.Controls.Add(this.checkBoxDataItemAddParentDataObject);
-            this.groupBoxDataItems.Controls.Add(this.checkBoxDataItemDataType);
-            this.groupBoxDataItems.Location = new System.Drawing.Point(238, 27);
-            this.groupBoxDataItems.Name = "groupBoxDataItems";
-            this.groupBoxDataItems.Size = new System.Drawing.Size(226, 121);
-            this.groupBoxDataItems.TabIndex = 6;
-            this.groupBoxDataItems.TabStop = false;
-            this.groupBoxDataItems.Text = "Data Items";
+            groupBoxDataItems.Controls.Add(checkBoxDataItemAddParentDataObject);
+            groupBoxDataItems.Controls.Add(checkBoxDataItemDataType);
+            groupBoxDataItems.Location = new System.Drawing.Point(238, 27);
+            groupBoxDataItems.Name = "groupBoxDataItems";
+            groupBoxDataItems.Size = new System.Drawing.Size(226, 121);
+            groupBoxDataItems.TabIndex = 6;
+            groupBoxDataItems.TabStop = false;
+            groupBoxDataItems.Text = "Data Items";
             // 
             // checkBoxDataItemAddParentDataObject
             // 
-            this.checkBoxDataItemAddParentDataObject.AutoSize = true;
-            this.checkBoxDataItemAddParentDataObject.Checked = true;
-            this.checkBoxDataItemAddParentDataObject.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxDataItemAddParentDataObject.Location = new System.Drawing.Point(6, 42);
-            this.checkBoxDataItemAddParentDataObject.Name = "checkBoxDataItemAddParentDataObject";
-            this.checkBoxDataItemAddParentDataObject.Size = new System.Drawing.Size(138, 17);
-            this.checkBoxDataItemAddParentDataObject.TabIndex = 11;
-            this.checkBoxDataItemAddParentDataObject.Text = "Add parent Data Object";
-            this.toolTipJsonExtractConfiguration.SetToolTip(this.checkBoxDataItemAddParentDataObject, "Enabling this option will add the parent data object to the available data items," +
-        " but only in a reduced format without its data items.");
-            this.checkBoxDataItemAddParentDataObject.UseVisualStyleBackColor = true;
+            checkBoxDataItemAddParentDataObject.AutoSize = true;
+            checkBoxDataItemAddParentDataObject.Checked = true;
+            checkBoxDataItemAddParentDataObject.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxDataItemAddParentDataObject.Location = new System.Drawing.Point(6, 42);
+            checkBoxDataItemAddParentDataObject.Name = "checkBoxDataItemAddParentDataObject";
+            checkBoxDataItemAddParentDataObject.Size = new System.Drawing.Size(148, 17);
+            checkBoxDataItemAddParentDataObject.TabIndex = 11;
+            checkBoxDataItemAddParentDataObject.Text = "Add parent Data Object";
+            toolTipJsonExtractConfiguration.SetToolTip(checkBoxDataItemAddParentDataObject, "Enabling this option will add the parent data object to the available data items, but only in a reduced format without its data items.");
+            checkBoxDataItemAddParentDataObject.UseVisualStyleBackColor = true;
             // 
             // checkBoxDataItemDataType
             // 
-            this.checkBoxDataItemDataType.AutoSize = true;
-            this.checkBoxDataItemDataType.Checked = true;
-            this.checkBoxDataItemDataType.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxDataItemDataType.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxDataItemDataType.Name = "checkBoxDataItemDataType";
-            this.checkBoxDataItemDataType.Size = new System.Drawing.Size(97, 17);
-            this.checkBoxDataItemDataType.TabIndex = 9;
-            this.checkBoxDataItemDataType.Text = "Add data types";
-            this.toolTipJsonExtractConfiguration.SetToolTip(this.checkBoxDataItemDataType, "Enabling this option will add the data types for the data items where available.");
-            this.checkBoxDataItemDataType.UseVisualStyleBackColor = true;
+            checkBoxDataItemDataType.AutoSize = true;
+            checkBoxDataItemDataType.Checked = true;
+            checkBoxDataItemDataType.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxDataItemDataType.Location = new System.Drawing.Point(6, 19);
+            checkBoxDataItemDataType.Name = "checkBoxDataItemDataType";
+            checkBoxDataItemDataType.Size = new System.Drawing.Size(103, 17);
+            checkBoxDataItemDataType.TabIndex = 9;
+            checkBoxDataItemDataType.Text = "Add data types";
+            toolTipJsonExtractConfiguration.SetToolTip(checkBoxDataItemDataType, "Enabling this option will add the data types for the data items where available.");
+            checkBoxDataItemDataType.UseVisualStyleBackColor = true;
             // 
             // labelInformation
             // 
-            this.labelInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelInformation.AutoSize = true;
-            this.labelInformation.Location = new System.Drawing.Point(9, 264);
-            this.labelInformation.Name = "labelInformation";
-            this.labelInformation.Size = new System.Drawing.Size(59, 13);
-            this.labelInformation.TabIndex = 28;
-            this.labelInformation.Text = "Information";
+            labelInformation.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            labelInformation.AutoSize = true;
+            labelInformation.Location = new System.Drawing.Point(9, 264);
+            labelInformation.Name = "labelInformation";
+            labelInformation.Size = new System.Drawing.Size(68, 13);
+            labelInformation.TabIndex = 28;
+            labelInformation.Text = "Information";
             // 
             // richTextBoxJsonExportInformation
             // 
-            this.richTextBoxJsonExportInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBoxJsonExportInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxJsonExportInformation.Location = new System.Drawing.Point(12, 280);
-            this.richTextBoxJsonExportInformation.Name = "richTextBoxJsonExportInformation";
-            this.richTextBoxJsonExportInformation.Size = new System.Drawing.Size(677, 192);
-            this.richTextBoxJsonExportInformation.TabIndex = 27;
-            this.richTextBoxJsonExportInformation.Text = "";
+            richTextBoxJsonExportInformation.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            richTextBoxJsonExportInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            richTextBoxJsonExportInformation.Location = new System.Drawing.Point(12, 280);
+            richTextBoxJsonExportInformation.Name = "richTextBoxJsonExportInformation";
+            richTextBoxJsonExportInformation.Size = new System.Drawing.Size(677, 192);
+            richTextBoxJsonExportInformation.TabIndex = 27;
+            richTextBoxJsonExportInformation.Text = "";
             // 
             // checkBoxSchemaExtension
             // 
-            this.checkBoxSchemaExtension.AutoSize = true;
-            this.checkBoxSchemaExtension.Checked = true;
-            this.checkBoxSchemaExtension.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSchemaExtension.Location = new System.Drawing.Point(6, 42);
-            this.checkBoxSchemaExtension.Name = "checkBoxSchemaExtension";
-            this.checkBoxSchemaExtension.Size = new System.Drawing.Size(148, 17);
-            this.checkBoxSchemaExtension.TabIndex = 28;
-            this.checkBoxSchemaExtension.Text = "Add schema as Extension";
-            this.toolTipJsonExtractConfiguration.SetToolTip(this.checkBoxSchemaExtension, "Enabling this option will add the schema name as an extension to the connection d" +
-        "etails (key or token), for all data objects.\r\n");
-            this.checkBoxSchemaExtension.UseVisualStyleBackColor = true;
+            checkBoxSchemaExtension.AutoSize = true;
+            checkBoxSchemaExtension.Checked = true;
+            checkBoxSchemaExtension.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxSchemaExtension.Location = new System.Drawing.Point(6, 42);
+            checkBoxSchemaExtension.Name = "checkBoxSchemaExtension";
+            checkBoxSchemaExtension.Size = new System.Drawing.Size(155, 17);
+            checkBoxSchemaExtension.TabIndex = 28;
+            checkBoxSchemaExtension.Text = "Add schema as Extension";
+            toolTipJsonExtractConfiguration.SetToolTip(checkBoxSchemaExtension, "Enabling this option will add the schema name as an extension to the connection details (key or token), for all data objects.\r\n");
+            checkBoxSchemaExtension.UseVisualStyleBackColor = true;
             // 
             // checkBoxDatabaseExtension
             // 
-            this.checkBoxDatabaseExtension.AutoSize = true;
-            this.checkBoxDatabaseExtension.Checked = true;
-            this.checkBoxDatabaseExtension.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxDatabaseExtension.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxDatabaseExtension.Name = "checkBoxDatabaseExtension";
-            this.checkBoxDatabaseExtension.Size = new System.Drawing.Size(155, 17);
-            this.checkBoxDatabaseExtension.TabIndex = 27;
-            this.checkBoxDatabaseExtension.Text = "Add database as Extension";
-            this.toolTipJsonExtractConfiguration.SetToolTip(this.checkBoxDatabaseExtension, "Enabling this option will add the database name as an extension to the connection" +
-        " details (key or token), for all data objects.\r\n");
-            this.checkBoxDatabaseExtension.UseVisualStyleBackColor = true;
+            checkBoxDatabaseExtension.AutoSize = true;
+            checkBoxDatabaseExtension.Checked = true;
+            checkBoxDatabaseExtension.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxDatabaseExtension.Location = new System.Drawing.Point(6, 19);
+            checkBoxDatabaseExtension.Name = "checkBoxDatabaseExtension";
+            checkBoxDatabaseExtension.Size = new System.Drawing.Size(164, 17);
+            checkBoxDatabaseExtension.TabIndex = 27;
+            checkBoxDatabaseExtension.Text = "Add database as Extension";
+            toolTipJsonExtractConfiguration.SetToolTip(checkBoxDatabaseExtension, "Enabling this option will add the database name as an extension to the connection details (key or token), for all data objects.\r\n");
+            checkBoxDatabaseExtension.UseVisualStyleBackColor = true;
             // 
             // checkBoxNextUpDataObjects
             // 
-            this.checkBoxNextUpDataObjects.AutoSize = true;
-            this.checkBoxNextUpDataObjects.Checked = true;
-            this.checkBoxNextUpDataObjects.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxNextUpDataObjects.Location = new System.Drawing.Point(6, 42);
-            this.checkBoxNextUpDataObjects.Name = "checkBoxNextUpDataObjects";
-            this.checkBoxNextUpDataObjects.Size = new System.Drawing.Size(187, 17);
-            this.checkBoxNextUpDataObjects.TabIndex = 26;
-            this.checkBoxNextUpDataObjects.Text = "Add \'next-up\' related Data Objects";
-            this.toolTipJsonExtractConfiguration.SetToolTip(this.checkBoxNextUpDataObjects, "This option will retrieve the related data objects that are closest (next) in the" +
-        " lineage and add these as relatedDataObjects to the output Json file.");
-            this.checkBoxNextUpDataObjects.UseVisualStyleBackColor = true;
+            checkBoxNextUpDataObjects.AutoSize = true;
+            checkBoxNextUpDataObjects.Checked = true;
+            checkBoxNextUpDataObjects.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxNextUpDataObjects.Location = new System.Drawing.Point(6, 42);
+            checkBoxNextUpDataObjects.Name = "checkBoxNextUpDataObjects";
+            checkBoxNextUpDataObjects.Size = new System.Drawing.Size(204, 17);
+            checkBoxNextUpDataObjects.TabIndex = 26;
+            checkBoxNextUpDataObjects.Text = "Add 'next-up' related Data Objects";
+            toolTipJsonExtractConfiguration.SetToolTip(checkBoxNextUpDataObjects, "This option will retrieve the related data objects that are closest (next) in the lineage and add these as relatedDataObjects to the output Json file.");
+            checkBoxNextUpDataObjects.UseVisualStyleBackColor = true;
             // 
             // checkBoxAddMetadataConnection
             // 
-            this.checkBoxAddMetadataConnection.AutoSize = true;
-            this.checkBoxAddMetadataConnection.Checked = true;
-            this.checkBoxAddMetadataConnection.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAddMetadataConnection.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxAddMetadataConnection.Name = "checkBoxAddMetadataConnection";
-            this.checkBoxAddMetadataConnection.Size = new System.Drawing.Size(149, 17);
-            this.checkBoxAddMetadataConnection.TabIndex = 25;
-            this.checkBoxAddMetadataConnection.Text = "Add metadata Connection";
-            this.toolTipJsonExtractConfiguration.SetToolTip(this.checkBoxAddMetadataConnection, "This option will add the metadata connection to the resulting Json dataObjectMapp" +
-        "ingList file, as a relatedDataObject with the classification \'metadata\'.\r\n");
-            this.checkBoxAddMetadataConnection.UseVisualStyleBackColor = true;
+            checkBoxAddMetadataConnection.AutoSize = true;
+            checkBoxAddMetadataConnection.Checked = true;
+            checkBoxAddMetadataConnection.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxAddMetadataConnection.Location = new System.Drawing.Point(6, 19);
+            checkBoxAddMetadataConnection.Name = "checkBoxAddMetadataConnection";
+            checkBoxAddMetadataConnection.Size = new System.Drawing.Size(161, 17);
+            checkBoxAddMetadataConnection.TabIndex = 25;
+            checkBoxAddMetadataConnection.Text = "Add metadata Connection";
+            toolTipJsonExtractConfiguration.SetToolTip(checkBoxAddMetadataConnection, "This option will add the metadata connection to the resulting Json dataObjectMappingList file, as a relatedDataObject with the classification 'metadata'.\r\n");
+            checkBoxAddMetadataConnection.UseVisualStyleBackColor = true;
             // 
             // checkBoxAddType
             // 
-            this.checkBoxAddType.AutoSize = true;
-            this.checkBoxAddType.Checked = true;
-            this.checkBoxAddType.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAddType.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxAddType.Name = "checkBoxAddType";
-            this.checkBoxAddType.Size = new System.Drawing.Size(146, 17);
-            this.checkBoxAddType.TabIndex = 29;
-            this.checkBoxAddType.Text = "Add type as Classification";
-            this.toolTipJsonExtractConfiguration.SetToolTip(this.checkBoxAddType, "Enabling this option add the classification as defined in the source-target mappi" +
-        "ng. I.e. \'PSA\', or \'HUB\'.\r\n");
-            this.checkBoxAddType.UseVisualStyleBackColor = true;
+            checkBoxAddType.AutoSize = true;
+            checkBoxAddType.Checked = true;
+            checkBoxAddType.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxAddType.Location = new System.Drawing.Point(6, 19);
+            checkBoxAddType.Name = "checkBoxAddType";
+            checkBoxAddType.Size = new System.Drawing.Size(157, 17);
+            checkBoxAddType.TabIndex = 29;
+            checkBoxAddType.Text = "Add type as Classification";
+            toolTipJsonExtractConfiguration.SetToolTip(checkBoxAddType, "Enabling this option add the classification as defined in the source-target mapping. I.e. 'PSA', or 'HUB'.\r\n");
+            checkBoxAddType.UseVisualStyleBackColor = true;
             // 
             // checkBoxDataObjectDataItems
             // 
-            this.checkBoxDataObjectDataItems.AutoSize = true;
-            this.checkBoxDataObjectDataItems.Checked = true;
-            this.checkBoxDataObjectDataItems.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxDataObjectDataItems.Location = new System.Drawing.Point(6, 42);
-            this.checkBoxDataObjectDataItems.Name = "checkBoxDataObjectDataItems";
-            this.checkBoxDataObjectDataItems.Size = new System.Drawing.Size(99, 17);
-            this.checkBoxDataObjectDataItems.TabIndex = 30;
-            this.checkBoxDataObjectDataItems.Text = "Add Data Items";
-            this.toolTipJsonExtractConfiguration.SetToolTip(this.checkBoxDataObjectDataItems, "Enabling this option will add the data items to the data objects.");
-            this.checkBoxDataObjectDataItems.UseVisualStyleBackColor = true;
-            // 
-            // groupBoxConnectivity
-            // 
-            this.groupBoxConnectivity.Controls.Add(this.checkBoxDataObjectDataItems);
-            this.groupBoxConnectivity.Controls.Add(this.checkBoxAddType);
-            this.groupBoxConnectivity.Location = new System.Drawing.Point(12, 27);
-            this.groupBoxConnectivity.Name = "groupBoxConnectivity";
-            this.groupBoxConnectivity.Size = new System.Drawing.Size(220, 121);
-            this.groupBoxConnectivity.TabIndex = 29;
-            this.groupBoxConnectivity.TabStop = false;
-            this.groupBoxConnectivity.Text = "Data Objects";
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.checkBoxAddParentDataObject);
-            this.groupBox1.Controls.Add(this.checkBoxNextUpDataObjects);
-            this.groupBox1.Controls.Add(this.checkBoxAddMetadataConnection);
-            this.groupBox1.Location = new System.Drawing.Point(470, 27);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(220, 121);
-            this.groupBox1.TabIndex = 30;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Related Data Objects";
-            // 
-            // groupBoxDataObjectConnections
-            // 
-            this.groupBoxDataObjectConnections.Controls.Add(this.checkBoxDatabaseExtension);
-            this.groupBoxDataObjectConnections.Controls.Add(this.checkBoxSchemaExtension);
-            this.groupBoxDataObjectConnections.Location = new System.Drawing.Point(12, 154);
-            this.groupBoxDataObjectConnections.Name = "groupBoxDataObjectConnections";
-            this.groupBoxDataObjectConnections.Size = new System.Drawing.Size(220, 107);
-            this.groupBoxDataObjectConnections.TabIndex = 31;
-            this.groupBoxDataObjectConnections.TabStop = false;
-            this.groupBoxDataObjectConnections.Text = "Connections";
+            checkBoxDataObjectDataItems.AutoSize = true;
+            checkBoxDataObjectDataItems.Checked = true;
+            checkBoxDataObjectDataItems.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxDataObjectDataItems.Location = new System.Drawing.Point(6, 42);
+            checkBoxDataObjectDataItems.Name = "checkBoxDataObjectDataItems";
+            checkBoxDataObjectDataItems.Size = new System.Drawing.Size(104, 17);
+            checkBoxDataObjectDataItems.TabIndex = 30;
+            checkBoxDataObjectDataItems.Text = "Add Data Items";
+            toolTipJsonExtractConfiguration.SetToolTip(checkBoxDataObjectDataItems, "Enabling this option will add the data items to the data objects.");
+            checkBoxDataObjectDataItems.UseVisualStyleBackColor = true;
             // 
             // checkBoxAddParentDataObject
             // 
-            this.checkBoxAddParentDataObject.AutoSize = true;
-            this.checkBoxAddParentDataObject.Checked = true;
-            this.checkBoxAddParentDataObject.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAddParentDataObject.Location = new System.Drawing.Point(6, 65);
-            this.checkBoxAddParentDataObject.Name = "checkBoxAddParentDataObject";
-            this.checkBoxAddParentDataObject.Size = new System.Drawing.Size(177, 17);
-            this.checkBoxAddParentDataObject.TabIndex = 27;
-            this.checkBoxAddParentDataObject.Text = "Add \'parent\' related Data Object";
-            this.toolTipJsonExtractConfiguration.SetToolTip(this.checkBoxAddParentDataObject, "This option will retrieve the related data objects that conceptually are the pare" +
-        "nt, and add these as relatedDataObjects to the output Json file.\r\n\r\nThe parent i" +
-        "s the entity the object references to.");
-            this.checkBoxAddParentDataObject.UseVisualStyleBackColor = true;
+            checkBoxAddParentDataObject.AutoSize = true;
+            checkBoxAddParentDataObject.Checked = true;
+            checkBoxAddParentDataObject.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxAddParentDataObject.Location = new System.Drawing.Point(6, 65);
+            checkBoxAddParentDataObject.Name = "checkBoxAddParentDataObject";
+            checkBoxAddParentDataObject.Size = new System.Drawing.Size(193, 17);
+            checkBoxAddParentDataObject.TabIndex = 27;
+            checkBoxAddParentDataObject.Text = "Add 'parent' related Data Object";
+            toolTipJsonExtractConfiguration.SetToolTip(checkBoxAddParentDataObject, "This option will retrieve the related data objects that conceptually are the parent, and add these as relatedDataObjects to the output Json file.\r\n\r\nThe parent is the entity the object references to.");
+            checkBoxAddParentDataObject.UseVisualStyleBackColor = true;
             // 
             // checkBoxAddDrivingKeyAsExtension
             // 
-            this.checkBoxAddDrivingKeyAsExtension.AutoSize = true;
-            this.checkBoxAddDrivingKeyAsExtension.Checked = true;
-            this.checkBoxAddDrivingKeyAsExtension.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAddDrivingKeyAsExtension.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxAddDrivingKeyAsExtension.Name = "checkBoxAddDrivingKeyAsExtension";
-            this.checkBoxAddDrivingKeyAsExtension.Size = new System.Drawing.Size(165, 17);
-            this.checkBoxAddDrivingKeyAsExtension.TabIndex = 28;
-            this.checkBoxAddDrivingKeyAsExtension.Text = "Add Driving Key as Extension";
-            this.toolTipJsonExtractConfiguration.SetToolTip(this.checkBoxAddDrivingKeyAsExtension, "This option will add an extension to the business keys segment to add the parent " +
-        "key as extension value.");
-            this.checkBoxAddDrivingKeyAsExtension.UseVisualStyleBackColor = true;
+            checkBoxAddDrivingKeyAsExtension.AutoSize = true;
+            checkBoxAddDrivingKeyAsExtension.Checked = true;
+            checkBoxAddDrivingKeyAsExtension.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxAddDrivingKeyAsExtension.Location = new System.Drawing.Point(6, 19);
+            checkBoxAddDrivingKeyAsExtension.Name = "checkBoxAddDrivingKeyAsExtension";
+            checkBoxAddDrivingKeyAsExtension.Size = new System.Drawing.Size(174, 17);
+            checkBoxAddDrivingKeyAsExtension.TabIndex = 28;
+            checkBoxAddDrivingKeyAsExtension.Text = "Add Driving Key as Extension";
+            toolTipJsonExtractConfiguration.SetToolTip(checkBoxAddDrivingKeyAsExtension, "This option will add an extension to the business keys segment to add the parent key as extension value.");
+            checkBoxAddDrivingKeyAsExtension.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxConnectivity
+            // 
+            groupBoxConnectivity.Controls.Add(checkBoxDataObjectDataItems);
+            groupBoxConnectivity.Controls.Add(checkBoxAddType);
+            groupBoxConnectivity.Location = new System.Drawing.Point(12, 27);
+            groupBoxConnectivity.Name = "groupBoxConnectivity";
+            groupBoxConnectivity.Size = new System.Drawing.Size(220, 121);
+            groupBoxConnectivity.TabIndex = 29;
+            groupBoxConnectivity.TabStop = false;
+            groupBoxConnectivity.Text = "Data Objects";
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(checkBoxAddParentDataObject);
+            groupBox1.Controls.Add(checkBoxNextUpDataObjects);
+            groupBox1.Controls.Add(checkBoxAddMetadataConnection);
+            groupBox1.Location = new System.Drawing.Point(470, 27);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new System.Drawing.Size(220, 121);
+            groupBox1.TabIndex = 30;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Related Data Objects";
+            // 
+            // groupBoxDataObjectConnections
+            // 
+            groupBoxDataObjectConnections.Controls.Add(checkBoxDatabaseExtension);
+            groupBoxDataObjectConnections.Controls.Add(checkBoxSchemaExtension);
+            groupBoxDataObjectConnections.Location = new System.Drawing.Point(12, 154);
+            groupBoxDataObjectConnections.Name = "groupBoxDataObjectConnections";
+            groupBoxDataObjectConnections.Size = new System.Drawing.Size(220, 107);
+            groupBoxDataObjectConnections.TabIndex = 31;
+            groupBoxDataObjectConnections.TabStop = false;
+            groupBoxDataObjectConnections.Text = "Connections";
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.checkBoxAddDrivingKeyAsExtension);
-            this.groupBox2.Location = new System.Drawing.Point(238, 154);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(226, 107);
-            this.groupBox2.TabIndex = 32;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Data Vault";
+            groupBox2.Controls.Add(checkBoxAddDrivingKeyAsExtension);
+            groupBox2.Location = new System.Drawing.Point(238, 154);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new System.Drawing.Size(226, 107);
+            groupBox2.TabIndex = 32;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Data Vault";
             // 
             // FormJsonConfiguration
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(701, 485);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBoxDataObjectConnections);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.groupBoxConnectivity);
-            this.Controls.Add(this.labelInformation);
-            this.Controls.Add(this.richTextBoxJsonExportInformation);
-            this.Controls.Add(this.groupBoxDataItems);
-            this.Controls.Add(this.menuStripMainMenu);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(717, 524);
-            this.Name = "FormJsonConfiguration";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "JSON export configuration";
-            this.menuStripMainMenu.ResumeLayout(false);
-            this.menuStripMainMenu.PerformLayout();
-            this.groupBoxDataItems.ResumeLayout(false);
-            this.groupBoxDataItems.PerformLayout();
-            this.groupBoxConnectivity.ResumeLayout(false);
-            this.groupBoxConnectivity.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBoxDataObjectConnections.ResumeLayout(false);
-            this.groupBoxDataObjectConnections.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(701, 485);
+            Controls.Add(groupBox2);
+            Controls.Add(groupBoxDataObjectConnections);
+            Controls.Add(groupBox1);
+            Controls.Add(groupBoxConnectivity);
+            Controls.Add(labelInformation);
+            Controls.Add(richTextBoxJsonExportInformation);
+            Controls.Add(groupBoxDataItems);
+            Controls.Add(menuStripMainMenu);
+            Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            MinimumSize = new System.Drawing.Size(717, 524);
+            Name = "FormJsonConfiguration";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            Text = "JSON export configuration";
+            menuStripMainMenu.ResumeLayout(false);
+            menuStripMainMenu.PerformLayout();
+            groupBoxDataItems.ResumeLayout(false);
+            groupBoxDataItems.PerformLayout();
+            groupBoxConnectivity.ResumeLayout(false);
+            groupBoxConnectivity.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            groupBoxDataObjectConnections.ResumeLayout(false);
+            groupBoxDataObjectConnections.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

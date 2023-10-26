@@ -28,304 +28,296 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormManageValidation));
-            this.menuStripMainMenu = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBoxExistenceChecks = new System.Windows.Forms.GroupBox();
-            this.checkBoxDataItemExistence = new System.Windows.Forms.CheckBox();
-            this.checkBoxSourceBusinessKeyExistence = new System.Windows.Forms.CheckBox();
-            this.checkBoxDataObjectExistence = new System.Windows.Forms.CheckBox();
-            this.checkBoxLinkKeyOrder = new System.Windows.Forms.CheckBox();
-            this.checkBoxLogicalGroup = new System.Windows.Forms.CheckBox();
-            this.labelInformation = new System.Windows.Forms.Label();
-            this.richTextBoxInformation = new System.Windows.Forms.RichTextBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.checkBoxLinkCompletion = new System.Windows.Forms.CheckBox();
-            this.checkBoxBusinessKeySyntaxValidation = new System.Windows.Forms.CheckBox();
-            this.groupBoxDataVaultValidation = new System.Windows.Forms.GroupBox();
-            this.checkBoxBasicDataVaultValidation = new System.Windows.Forms.CheckBox();
-            this.toolTipValidation = new System.Windows.Forms.ToolTip(this.components);
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.checkBoxDuplicateDataObjectMappings = new System.Windows.Forms.CheckBox();
-            this.menuStripMainMenu.SuspendLayout();
-            this.groupBoxExistenceChecks.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBoxDataVaultValidation.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.SuspendLayout();
+            menuStripMainMenu = new System.Windows.Forms.MenuStrip();
+            fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openConfigurationFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            openConfigurationDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            groupBoxExistenceChecks = new System.Windows.Forms.GroupBox();
+            checkBoxDataItemExistence = new System.Windows.Forms.CheckBox();
+            checkBoxSourceBusinessKeyExistence = new System.Windows.Forms.CheckBox();
+            checkBoxDataObjectExistence = new System.Windows.Forms.CheckBox();
+            checkBoxLinkKeyOrder = new System.Windows.Forms.CheckBox();
+            checkBoxLogicalGroup = new System.Windows.Forms.CheckBox();
+            labelInformation = new System.Windows.Forms.Label();
+            richTextBoxInformation = new System.Windows.Forms.RichTextBox();
+            groupBox2 = new System.Windows.Forms.GroupBox();
+            checkBoxLinkCompletion = new System.Windows.Forms.CheckBox();
+            checkBoxBusinessKeySyntaxValidation = new System.Windows.Forms.CheckBox();
+            groupBoxDataVaultValidation = new System.Windows.Forms.GroupBox();
+            checkBoxBasicDataVaultValidation = new System.Windows.Forms.CheckBox();
+            toolTipValidation = new System.Windows.Forms.ToolTip(components);
+            checkBoxDuplicateDataObjectMappings = new System.Windows.Forms.CheckBox();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            menuStripMainMenu.SuspendLayout();
+            groupBoxExistenceChecks.SuspendLayout();
+            groupBox2.SuspendLayout();
+            groupBoxDataVaultValidation.SuspendLayout();
+            groupBox1.SuspendLayout();
+            SuspendLayout();
             // 
             // menuStripMainMenu
             // 
-            this.menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
-            this.menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
-            this.menuStripMainMenu.Name = "menuStripMainMenu";
-            this.menuStripMainMenu.Size = new System.Drawing.Size(712, 24);
-            this.menuStripMainMenu.TabIndex = 5;
-            this.menuStripMainMenu.Text = "menuStrip1";
+            menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem });
+            menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
+            menuStripMainMenu.Name = "menuStripMainMenu";
+            menuStripMainMenu.Size = new System.Drawing.Size(712, 24);
+            menuStripMainMenu.TabIndex = 5;
+            menuStripMainMenu.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openConfigurationFileToolStripMenuItem,
-            this.toolStripMenuItem2,
-            this.openConfigurationDirectoryToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.exitToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
+            fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openConfigurationFileToolStripMenuItem, toolStripMenuItem2, openConfigurationDirectoryToolStripMenuItem, toolStripSeparator1, exitToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            fileToolStripMenuItem.Text = "File";
             // 
             // openConfigurationFileToolStripMenuItem
             // 
-            this.openConfigurationFileToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenFileIcon;
-            this.openConfigurationFileToolStripMenuItem.Name = "openConfigurationFileToolStripMenuItem";
-            this.openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
-            this.openConfigurationFileToolStripMenuItem.Text = "Open Validation Settings File";
-            this.openConfigurationFileToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationFileToolStripMenuItem_Click);
+            openConfigurationFileToolStripMenuItem.Image = Properties.Resources.OpenFileIcon;
+            openConfigurationFileToolStripMenuItem.Name = "openConfigurationFileToolStripMenuItem";
+            openConfigurationFileToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+            openConfigurationFileToolStripMenuItem.Text = "Open Validation Settings File";
+            openConfigurationFileToolStripMenuItem.Click += openConfigurationFileToolStripMenuItem_Click;
             // 
             // toolStripMenuItem2
             // 
-            this.toolStripMenuItem2.Image = global::TEAM.Properties.Resources.SaveFile;
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(259, 22);
-            this.toolStripMenuItem2.Text = "Save Validation Settings File";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripSaveValidationSettings_Click);
+            toolStripMenuItem2.Image = Properties.Resources.SaveFile;
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
+            toolStripMenuItem2.Size = new System.Drawing.Size(259, 22);
+            toolStripMenuItem2.Text = "Save Validation Settings File";
+            toolStripMenuItem2.Click += toolStripSaveValidationSettings_Click;
             // 
             // openConfigurationDirectoryToolStripMenuItem
             // 
-            this.openConfigurationDirectoryToolStripMenuItem.Image = global::TEAM.Properties.Resources.OpenDirectoryIcon;
-            this.openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
-            this.openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
-            this.openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
-            this.openConfigurationDirectoryToolStripMenuItem.Click += new System.EventHandler(this.openConfigurationDirectoryToolStripMenuItem_Click);
+            openConfigurationDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
+            openConfigurationDirectoryToolStripMenuItem.Name = "openConfigurationDirectoryToolStripMenuItem";
+            openConfigurationDirectoryToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+            openConfigurationDirectoryToolStripMenuItem.Text = "Open Configuration Directory";
+            openConfigurationDirectoryToolStripMenuItem.Click += openConfigurationDirectoryToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(256, 6);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new System.Drawing.Size(256, 6);
             // 
             // exitToolStripMenuItem
             // 
-            this.exitToolStripMenuItem.Image = global::TEAM.Properties.Resources.ExitApplication;
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
-            this.exitToolStripMenuItem.Text = "Close Window";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            exitToolStripMenuItem.Image = Properties.Resources.ExitApplication;
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+            exitToolStripMenuItem.Text = "Close Window";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
             // 
             // groupBoxExistenceChecks
             // 
-            this.groupBoxExistenceChecks.Controls.Add(this.checkBoxDataItemExistence);
-            this.groupBoxExistenceChecks.Controls.Add(this.checkBoxSourceBusinessKeyExistence);
-            this.groupBoxExistenceChecks.Controls.Add(this.checkBoxDataObjectExistence);
-            this.groupBoxExistenceChecks.Location = new System.Drawing.Point(12, 42);
-            this.groupBoxExistenceChecks.Name = "groupBoxExistenceChecks";
-            this.groupBoxExistenceChecks.Size = new System.Drawing.Size(226, 136);
-            this.groupBoxExistenceChecks.TabIndex = 6;
-            this.groupBoxExistenceChecks.TabStop = false;
-            this.groupBoxExistenceChecks.Text = "Object existence";
+            groupBoxExistenceChecks.Controls.Add(checkBoxDataItemExistence);
+            groupBoxExistenceChecks.Controls.Add(checkBoxSourceBusinessKeyExistence);
+            groupBoxExistenceChecks.Controls.Add(checkBoxDataObjectExistence);
+            groupBoxExistenceChecks.Location = new System.Drawing.Point(12, 42);
+            groupBoxExistenceChecks.Name = "groupBoxExistenceChecks";
+            groupBoxExistenceChecks.Size = new System.Drawing.Size(226, 136);
+            groupBoxExistenceChecks.TabIndex = 6;
+            groupBoxExistenceChecks.TabStop = false;
+            groupBoxExistenceChecks.Text = "Object existence";
             // 
             // checkBoxDataItemExistence
             // 
-            this.checkBoxDataItemExistence.AutoSize = true;
-            this.checkBoxDataItemExistence.Checked = true;
-            this.checkBoxDataItemExistence.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxDataItemExistence.Location = new System.Drawing.Point(6, 42);
-            this.checkBoxDataItemExistence.Name = "checkBoxDataItemExistence";
-            this.checkBoxDataItemExistence.Size = new System.Drawing.Size(179, 17);
-            this.checkBoxDataItemExistence.TabIndex = 26;
-            this.checkBoxDataItemExistence.Text = "Data Items (sources and targets)";
-            this.checkBoxDataItemExistence.UseVisualStyleBackColor = true;
+            checkBoxDataItemExistence.AutoSize = true;
+            checkBoxDataItemExistence.Checked = true;
+            checkBoxDataItemExistence.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxDataItemExistence.Location = new System.Drawing.Point(6, 42);
+            checkBoxDataItemExistence.Name = "checkBoxDataItemExistence";
+            checkBoxDataItemExistence.Size = new System.Drawing.Size(190, 17);
+            checkBoxDataItemExistence.TabIndex = 26;
+            checkBoxDataItemExistence.Text = "Data Items (sources and targets)";
+            checkBoxDataItemExistence.UseVisualStyleBackColor = true;
             // 
             // checkBoxSourceBusinessKeyExistence
             // 
-            this.checkBoxSourceBusinessKeyExistence.AutoSize = true;
-            this.checkBoxSourceBusinessKeyExistence.Checked = true;
-            this.checkBoxSourceBusinessKeyExistence.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSourceBusinessKeyExistence.Location = new System.Drawing.Point(6, 65);
-            this.checkBoxSourceBusinessKeyExistence.Name = "checkBoxSourceBusinessKeyExistence";
-            this.checkBoxSourceBusinessKeyExistence.Size = new System.Drawing.Size(165, 17);
-            this.checkBoxSourceBusinessKeyExistence.TabIndex = 25;
-            this.checkBoxSourceBusinessKeyExistence.Text = "Source business key attribute";
-            this.checkBoxSourceBusinessKeyExistence.UseVisualStyleBackColor = true;
+            checkBoxSourceBusinessKeyExistence.AutoSize = true;
+            checkBoxSourceBusinessKeyExistence.Checked = true;
+            checkBoxSourceBusinessKeyExistence.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxSourceBusinessKeyExistence.Location = new System.Drawing.Point(6, 65);
+            checkBoxSourceBusinessKeyExistence.Name = "checkBoxSourceBusinessKeyExistence";
+            checkBoxSourceBusinessKeyExistence.Size = new System.Drawing.Size(177, 17);
+            checkBoxSourceBusinessKeyExistence.TabIndex = 25;
+            checkBoxSourceBusinessKeyExistence.Text = "Source business key attribute";
+            checkBoxSourceBusinessKeyExistence.UseVisualStyleBackColor = true;
             // 
             // checkBoxDataObjectExistence
             // 
-            this.checkBoxDataObjectExistence.AutoSize = true;
-            this.checkBoxDataObjectExistence.Checked = true;
-            this.checkBoxDataObjectExistence.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxDataObjectExistence.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxDataObjectExistence.Name = "checkBoxDataObjectExistence";
-            this.checkBoxDataObjectExistence.Size = new System.Drawing.Size(190, 17);
-            this.checkBoxDataObjectExistence.TabIndex = 9;
-            this.checkBoxDataObjectExistence.Text = "Data Objects (sources and targets)";
-            this.checkBoxDataObjectExistence.UseVisualStyleBackColor = true;
+            checkBoxDataObjectExistence.AutoSize = true;
+            checkBoxDataObjectExistence.Checked = true;
+            checkBoxDataObjectExistence.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxDataObjectExistence.Location = new System.Drawing.Point(6, 19);
+            checkBoxDataObjectExistence.Name = "checkBoxDataObjectExistence";
+            checkBoxDataObjectExistence.Size = new System.Drawing.Size(202, 17);
+            checkBoxDataObjectExistence.TabIndex = 9;
+            checkBoxDataObjectExistence.Text = "Data Objects (sources and targets)";
+            checkBoxDataObjectExistence.UseVisualStyleBackColor = true;
             // 
             // checkBoxLinkKeyOrder
             // 
-            this.checkBoxLinkKeyOrder.AutoSize = true;
-            this.checkBoxLinkKeyOrder.Checked = true;
-            this.checkBoxLinkKeyOrder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxLinkKeyOrder.Location = new System.Drawing.Point(6, 65);
-            this.checkBoxLinkKeyOrder.Name = "checkBoxLinkKeyOrder";
-            this.checkBoxLinkKeyOrder.Size = new System.Drawing.Size(206, 17);
-            this.checkBoxLinkKeyOrder.TabIndex = 10;
-            this.checkBoxLinkKeyOrder.Text = "Link Key Order (Metadata vs Physical)";
-            this.checkBoxLinkKeyOrder.UseVisualStyleBackColor = true;
+            checkBoxLinkKeyOrder.AutoSize = true;
+            checkBoxLinkKeyOrder.Checked = true;
+            checkBoxLinkKeyOrder.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxLinkKeyOrder.Location = new System.Drawing.Point(6, 65);
+            checkBoxLinkKeyOrder.Name = "checkBoxLinkKeyOrder";
+            checkBoxLinkKeyOrder.Size = new System.Drawing.Size(214, 17);
+            checkBoxLinkKeyOrder.TabIndex = 10;
+            checkBoxLinkKeyOrder.Text = "Link Key Order (Metadata vs Physical)";
+            checkBoxLinkKeyOrder.UseVisualStyleBackColor = true;
             // 
             // checkBoxLogicalGroup
             // 
-            this.checkBoxLogicalGroup.AutoSize = true;
-            this.checkBoxLogicalGroup.Checked = true;
-            this.checkBoxLogicalGroup.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxLogicalGroup.Location = new System.Drawing.Point(6, 42);
-            this.checkBoxLogicalGroup.Name = "checkBoxLogicalGroup";
-            this.checkBoxLogicalGroup.Size = new System.Drawing.Size(126, 17);
-            this.checkBoxLogicalGroup.TabIndex = 9;
-            this.checkBoxLogicalGroup.Text = "Logical group (batch)";
-            this.checkBoxLogicalGroup.UseVisualStyleBackColor = true;
+            checkBoxLogicalGroup.AutoSize = true;
+            checkBoxLogicalGroup.Checked = true;
+            checkBoxLogicalGroup.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxLogicalGroup.Location = new System.Drawing.Point(6, 42);
+            checkBoxLogicalGroup.Name = "checkBoxLogicalGroup";
+            checkBoxLogicalGroup.Size = new System.Drawing.Size(135, 17);
+            checkBoxLogicalGroup.TabIndex = 9;
+            checkBoxLogicalGroup.Text = "Logical group (batch)";
+            checkBoxLogicalGroup.UseVisualStyleBackColor = true;
             // 
             // labelInformation
             // 
-            this.labelInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelInformation.AutoSize = true;
-            this.labelInformation.Location = new System.Drawing.Point(9, 387);
-            this.labelInformation.Name = "labelInformation";
-            this.labelInformation.Size = new System.Drawing.Size(59, 13);
-            this.labelInformation.TabIndex = 28;
-            this.labelInformation.Text = "Information";
+            labelInformation.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            labelInformation.AutoSize = true;
+            labelInformation.Location = new System.Drawing.Point(9, 325);
+            labelInformation.Name = "labelInformation";
+            labelInformation.Size = new System.Drawing.Size(68, 13);
+            labelInformation.TabIndex = 28;
+            labelInformation.Text = "Information";
             // 
             // richTextBoxInformation
             // 
-            this.richTextBoxInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBoxInformation.Location = new System.Drawing.Point(12, 403);
-            this.richTextBoxInformation.Name = "richTextBoxInformation";
-            this.richTextBoxInformation.Size = new System.Drawing.Size(688, 69);
-            this.richTextBoxInformation.TabIndex = 27;
-            this.richTextBoxInformation.Text = "";
+            richTextBoxInformation.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            richTextBoxInformation.Location = new System.Drawing.Point(12, 341);
+            richTextBoxInformation.Name = "richTextBoxInformation";
+            richTextBoxInformation.Size = new System.Drawing.Size(688, 131);
+            richTextBoxInformation.TabIndex = 27;
+            richTextBoxInformation.Text = "";
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.checkBoxLinkCompletion);
-            this.groupBox2.Controls.Add(this.checkBoxLinkKeyOrder);
-            this.groupBox2.Controls.Add(this.checkBoxBusinessKeySyntaxValidation);
-            this.groupBox2.Controls.Add(this.checkBoxLogicalGroup);
-            this.groupBox2.Location = new System.Drawing.Point(244, 42);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(226, 136);
-            this.groupBox2.TabIndex = 27;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Metadata consistency";
+            groupBox2.Controls.Add(checkBoxLinkCompletion);
+            groupBox2.Controls.Add(checkBoxLinkKeyOrder);
+            groupBox2.Controls.Add(checkBoxBusinessKeySyntaxValidation);
+            groupBox2.Controls.Add(checkBoxLogicalGroup);
+            groupBox2.Location = new System.Drawing.Point(244, 42);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new System.Drawing.Size(226, 136);
+            groupBox2.TabIndex = 27;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Metadata consistency";
             // 
             // checkBoxLinkCompletion
             // 
-            this.checkBoxLinkCompletion.AutoSize = true;
-            this.checkBoxLinkCompletion.Checked = true;
-            this.checkBoxLinkCompletion.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxLinkCompletion.Location = new System.Drawing.Point(6, 88);
-            this.checkBoxLinkCompletion.Name = "checkBoxLinkCompletion";
-            this.checkBoxLinkCompletion.Size = new System.Drawing.Size(100, 17);
-            this.checkBoxLinkCompletion.TabIndex = 11;
-            this.checkBoxLinkCompletion.Text = "Link completion";
-            this.toolTipValidation.SetToolTip(this.checkBoxLinkCompletion, resources.GetString("checkBoxLinkCompletion.ToolTip"));
-            this.checkBoxLinkCompletion.UseVisualStyleBackColor = true;
+            checkBoxLinkCompletion.AutoSize = true;
+            checkBoxLinkCompletion.Checked = true;
+            checkBoxLinkCompletion.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxLinkCompletion.Location = new System.Drawing.Point(6, 88);
+            checkBoxLinkCompletion.Name = "checkBoxLinkCompletion";
+            checkBoxLinkCompletion.Size = new System.Drawing.Size(108, 17);
+            checkBoxLinkCompletion.TabIndex = 11;
+            checkBoxLinkCompletion.Text = "Link completion";
+            toolTipValidation.SetToolTip(checkBoxLinkCompletion, resources.GetString("checkBoxLinkCompletion.ToolTip"));
+            checkBoxLinkCompletion.UseVisualStyleBackColor = true;
             // 
             // checkBoxBusinessKeySyntaxValidation
             // 
-            this.checkBoxBusinessKeySyntaxValidation.AutoSize = true;
-            this.checkBoxBusinessKeySyntaxValidation.Checked = true;
-            this.checkBoxBusinessKeySyntaxValidation.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxBusinessKeySyntaxValidation.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxBusinessKeySyntaxValidation.Name = "checkBoxBusinessKeySyntaxValidation";
-            this.checkBoxBusinessKeySyntaxValidation.Size = new System.Drawing.Size(170, 17);
-            this.checkBoxBusinessKeySyntaxValidation.TabIndex = 9;
-            this.checkBoxBusinessKeySyntaxValidation.Text = "Business Key syntax validation";
-            this.checkBoxBusinessKeySyntaxValidation.UseVisualStyleBackColor = true;
+            checkBoxBusinessKeySyntaxValidation.AutoSize = true;
+            checkBoxBusinessKeySyntaxValidation.Checked = true;
+            checkBoxBusinessKeySyntaxValidation.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxBusinessKeySyntaxValidation.Location = new System.Drawing.Point(6, 19);
+            checkBoxBusinessKeySyntaxValidation.Name = "checkBoxBusinessKeySyntaxValidation";
+            checkBoxBusinessKeySyntaxValidation.Size = new System.Drawing.Size(179, 17);
+            checkBoxBusinessKeySyntaxValidation.TabIndex = 9;
+            checkBoxBusinessKeySyntaxValidation.Text = "Business Key syntax validation";
+            checkBoxBusinessKeySyntaxValidation.UseVisualStyleBackColor = true;
             // 
             // groupBoxDataVaultValidation
             // 
-            this.groupBoxDataVaultValidation.Controls.Add(this.checkBoxBasicDataVaultValidation);
-            this.groupBoxDataVaultValidation.Location = new System.Drawing.Point(12, 184);
-            this.groupBoxDataVaultValidation.Name = "groupBoxDataVaultValidation";
-            this.groupBoxDataVaultValidation.Size = new System.Drawing.Size(458, 136);
-            this.groupBoxDataVaultValidation.TabIndex = 28;
-            this.groupBoxDataVaultValidation.TabStop = false;
-            this.groupBoxDataVaultValidation.Text = "Modelling validation";
+            groupBoxDataVaultValidation.Controls.Add(checkBoxBasicDataVaultValidation);
+            groupBoxDataVaultValidation.Location = new System.Drawing.Point(12, 184);
+            groupBoxDataVaultValidation.Name = "groupBoxDataVaultValidation";
+            groupBoxDataVaultValidation.Size = new System.Drawing.Size(688, 138);
+            groupBoxDataVaultValidation.TabIndex = 28;
+            groupBoxDataVaultValidation.TabStop = false;
+            groupBoxDataVaultValidation.Text = "Modelling validation";
             // 
             // checkBoxBasicDataVaultValidation
             // 
-            this.checkBoxBasicDataVaultValidation.AutoSize = true;
-            this.checkBoxBasicDataVaultValidation.Checked = true;
-            this.checkBoxBasicDataVaultValidation.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxBasicDataVaultValidation.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxBasicDataVaultValidation.Name = "checkBoxBasicDataVaultValidation";
-            this.checkBoxBasicDataVaultValidation.Size = new System.Drawing.Size(234, 17);
-            this.checkBoxBasicDataVaultValidation.TabIndex = 9;
-            this.checkBoxBasicDataVaultValidation.Text = "Validate basic Data Vault attribute existence";
-            this.checkBoxBasicDataVaultValidation.UseVisualStyleBackColor = true;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.checkBoxDuplicateDataObjectMappings);
-            this.groupBox1.Location = new System.Drawing.Point(476, 42);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(226, 136);
-            this.groupBox1.TabIndex = 28;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Generic";
+            checkBoxBasicDataVaultValidation.AutoSize = true;
+            checkBoxBasicDataVaultValidation.Checked = true;
+            checkBoxBasicDataVaultValidation.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxBasicDataVaultValidation.Location = new System.Drawing.Point(6, 19);
+            checkBoxBasicDataVaultValidation.Name = "checkBoxBasicDataVaultValidation";
+            checkBoxBasicDataVaultValidation.Size = new System.Drawing.Size(250, 17);
+            checkBoxBasicDataVaultValidation.TabIndex = 9;
+            checkBoxBasicDataVaultValidation.Text = "Validate basic Data Vault attribute existence";
+            checkBoxBasicDataVaultValidation.UseVisualStyleBackColor = true;
             // 
             // checkBoxDuplicateDataObjectMappings
             // 
-            this.checkBoxDuplicateDataObjectMappings.AutoSize = true;
-            this.checkBoxDuplicateDataObjectMappings.Checked = true;
-            this.checkBoxDuplicateDataObjectMappings.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxDuplicateDataObjectMappings.Location = new System.Drawing.Point(6, 19);
-            this.checkBoxDuplicateDataObjectMappings.Name = "checkBoxDuplicateDataObjectMappings";
-            this.checkBoxDuplicateDataObjectMappings.Size = new System.Drawing.Size(120, 17);
-            this.checkBoxDuplicateDataObjectMappings.TabIndex = 9;
-            this.checkBoxDuplicateDataObjectMappings.Text = "Duplicate Mappings";
-            this.toolTipValidation.SetToolTip(this.checkBoxDuplicateDataObjectMappings, "This validator checks for any full row duplicates for the data object and data it" +
-        "em mappings.\r\n");
-            this.checkBoxDuplicateDataObjectMappings.UseVisualStyleBackColor = true;
+            checkBoxDuplicateDataObjectMappings.AutoSize = true;
+            checkBoxDuplicateDataObjectMappings.Checked = true;
+            checkBoxDuplicateDataObjectMappings.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxDuplicateDataObjectMappings.Location = new System.Drawing.Point(6, 19);
+            checkBoxDuplicateDataObjectMappings.Name = "checkBoxDuplicateDataObjectMappings";
+            checkBoxDuplicateDataObjectMappings.Size = new System.Drawing.Size(130, 17);
+            checkBoxDuplicateDataObjectMappings.TabIndex = 9;
+            checkBoxDuplicateDataObjectMappings.Text = "Duplicate Mappings";
+            toolTipValidation.SetToolTip(checkBoxDuplicateDataObjectMappings, "This validator checks for any full row duplicates for the data object and data item mappings.\r\n");
+            checkBoxDuplicateDataObjectMappings.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(checkBoxDuplicateDataObjectMappings);
+            groupBox1.Location = new System.Drawing.Point(476, 42);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new System.Drawing.Size(226, 136);
+            groupBox1.TabIndex = 28;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Generic";
             // 
             // FormManageValidation
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(712, 485);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.groupBoxDataVaultValidation);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.labelInformation);
-            this.Controls.Add(this.richTextBoxInformation);
-            this.Controls.Add(this.groupBoxExistenceChecks);
-            this.Controls.Add(this.menuStripMainMenu);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "FormManageValidation";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Metadata validation";
-            this.menuStripMainMenu.ResumeLayout(false);
-            this.menuStripMainMenu.PerformLayout();
-            this.groupBoxExistenceChecks.ResumeLayout(false);
-            this.groupBoxExistenceChecks.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBoxDataVaultValidation.ResumeLayout(false);
-            this.groupBoxDataVaultValidation.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(712, 485);
+            Controls.Add(groupBox1);
+            Controls.Add(groupBoxDataVaultValidation);
+            Controls.Add(groupBox2);
+            Controls.Add(labelInformation);
+            Controls.Add(richTextBoxInformation);
+            Controls.Add(groupBoxExistenceChecks);
+            Controls.Add(menuStripMainMenu);
+            Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            Name = "FormManageValidation";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            Text = "Metadata validation";
+            menuStripMainMenu.ResumeLayout(false);
+            menuStripMainMenu.PerformLayout();
+            groupBoxExistenceChecks.ResumeLayout(false);
+            groupBoxExistenceChecks.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            groupBoxDataVaultValidation.ResumeLayout(false);
+            groupBoxDataVaultValidation.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

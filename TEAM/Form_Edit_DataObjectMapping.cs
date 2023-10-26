@@ -12,11 +12,13 @@ namespace TEAM
 
         public Form_Edit_DataObjectMapping()
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
         }
 
         public Form_Edit_DataObjectMapping(DataGridViewRow row, DataObjectMapping dataObjectMapping)
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
             EditedRow = row;
             EditedDataObjectMapping = dataObjectMapping;

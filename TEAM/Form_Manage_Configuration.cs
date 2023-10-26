@@ -15,6 +15,7 @@ namespace TEAM
 
         public FormManageConfiguration(FormMain parent) : base(parent)
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             parentFormMain = parent;
             InitializeComponent();
 

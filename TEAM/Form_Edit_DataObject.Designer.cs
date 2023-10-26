@@ -28,63 +28,61 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Edit_DataObjectMapping));
-            this.buttonSave = new System.Windows.Forms.Button();
-            this.buttonClose = new System.Windows.Forms.Button();
-            this.richTextBoxFormContent = new System.Windows.Forms.RichTextBox();
-            this.SuspendLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Edit_DataObject));
+            buttonSave = new System.Windows.Forms.Button();
+            buttonClose = new System.Windows.Forms.Button();
+            richTextBoxFormContent = new System.Windows.Forms.RichTextBox();
+            SuspendLayout();
             // 
             // buttonSave
             // 
-            this.buttonSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonSave.Location = new System.Drawing.Point(579, 430);
-            this.buttonSave.Name = "buttonSave";
-            this.buttonSave.Size = new System.Drawing.Size(109, 40);
-            this.buttonSave.TabIndex = 2;
-            this.buttonSave.Text = "Save";
-            this.buttonSave.UseVisualStyleBackColor = true;
-            this.buttonSave.Click += new System.EventHandler(this.SaveJson);
+            buttonSave.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            buttonSave.Location = new System.Drawing.Point(1057, 582);
+            buttonSave.Name = "buttonSave";
+            buttonSave.Size = new System.Drawing.Size(109, 40);
+            buttonSave.TabIndex = 2;
+            buttonSave.Text = "Save";
+            buttonSave.UseVisualStyleBackColor = true;
+            buttonSave.Click += SaveJson;
             // 
             // buttonClose
             // 
-            this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClose.Location = new System.Drawing.Point(694, 430);
-            this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(109, 40);
-            this.buttonClose.TabIndex = 3;
-            this.buttonClose.Text = "Close";
-            this.buttonClose.UseVisualStyleBackColor = true;
-            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
+            buttonClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            buttonClose.Location = new System.Drawing.Point(1172, 582);
+            buttonClose.Name = "buttonClose";
+            buttonClose.Size = new System.Drawing.Size(109, 40);
+            buttonClose.TabIndex = 3;
+            buttonClose.Text = "Close";
+            buttonClose.UseVisualStyleBackColor = true;
+            buttonClose.Click += buttonClose_Click;
             // 
             // richTextBoxFormContent
             // 
-            this.richTextBoxFormContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBoxFormContent.BackColor = System.Drawing.SystemColors.Window;
-            this.richTextBoxFormContent.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.richTextBoxFormContent.HideSelection = false;
-            this.richTextBoxFormContent.Location = new System.Drawing.Point(12, 12);
-            this.richTextBoxFormContent.Name = "richTextBoxFormContent";
-            this.richTextBoxFormContent.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
-            this.richTextBoxFormContent.Size = new System.Drawing.Size(791, 412);
-            this.richTextBoxFormContent.TabIndex = 4;
-            this.richTextBoxFormContent.Text = "";
+            richTextBoxFormContent.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            richTextBoxFormContent.BackColor = System.Drawing.SystemColors.Window;
+            richTextBoxFormContent.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            richTextBoxFormContent.HideSelection = false;
+            richTextBoxFormContent.Location = new System.Drawing.Point(12, 12);
+            richTextBoxFormContent.Name = "richTextBoxFormContent";
+            richTextBoxFormContent.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
+            richTextBoxFormContent.Size = new System.Drawing.Size(1269, 564);
+            richTextBoxFormContent.TabIndex = 4;
+            richTextBoxFormContent.Text = "";
             // 
-            // Form_Edit
+            // Form_Edit_DataObject
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(815, 482);
-            this.Controls.Add(this.richTextBoxFormContent);
-            this.Controls.Add(this.buttonClose);
-            this.Controls.Add(this.buttonSave);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form_Edit_DataObjectMapping";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Edit";
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1293, 634);
+            Controls.Add(richTextBoxFormContent);
+            Controls.Add(buttonClose);
+            Controls.Add(buttonSave);
+            Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            Name = "Form_Edit_DataObject";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            Text = "Edit";
+            ResumeLayout(false);
         }
 
         #endregion
