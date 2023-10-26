@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.JavaScript;
 using System.Windows.Forms;
-using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
+using Snowflake.Data.Client;
 using TEAM_Library;
 using static TEAM.FormBase;
 
@@ -14,7 +17,7 @@ namespace TEAM
     /// <summary>
     /// Derived Custom Connection TabPage inherited from the TabPage class.
     /// </summary>
-    internal class TabPageSqlServerConnection : TabPage
+    internal class TabPageSnowflakeConnection : TabPage
     {
         // Startup flag, disabled in constructor. Used to prevent some events from firing twice (creation and value setting).
         internal bool StartUpIndicator = true;
@@ -25,20 +28,16 @@ namespace TEAM
         private readonly string _connectionFileName = globalParameters.ConfigurationPath + globalParameters.JsonConnectionFileName + '_' + globalParameters.ActiveEnvironmentKey + globalParameters.JsonExtension;
 
         // Objects on main Tab Page.
-        private readonly TextBox _textBoxServer;
-        private readonly TextBox _textBoxPortNumber;
+        private readonly RadioButton _radioButtonSSO;
+
+        private readonly TextBox _textBoxWarehouse;
         private readonly TextBox _textBoxDatabase;
+        private readonly TextBox _textBoxRole;
         private readonly TextBox _textBoxSchema;
-        private readonly RadioButton _radioButtonIntegratedSecurity;
-        private readonly RadioButton _radioButtonNamedUserSecurity;
-        private readonly RadioButton _radioButtonUniversalMfa;
+        private readonly TextBox _textBoxAccount;
 
-        private readonly GroupBox _groupBoxNamedUser;
-        private readonly TextBox _textBoxUserName;
-        private readonly MaskedTextBox _textBoxPassword;
-
-        private readonly GroupBox _groupBoxMfa;
-        private readonly TextBox _textBoxMfaUserName;
+        private readonly GroupBox _groupBoxSso;
+        private readonly TextBox _textBoxSsoUserName;
 
         private readonly TextBox _textBoxConnectionString;
 
@@ -55,7 +54,7 @@ namespace TEAM
         /// <summary>
         /// Constructor to instantiate a new Custom Tab Page.
         /// </summary>
-        public TabPageSqlServerConnection(object input)
+        public TabPageSnowflakeConnection(object input)
         {
             _localConnection = (TeamConnection) input;
 
@@ -82,247 +81,188 @@ namespace TEAM
             localPanel.AutoSize = true;
             localPanel.TabStop = false;
 
-            #region Database connection controls
+            #region Connection controls
 
-            // GroupBox for Database content
             var groupBoxDatabase = new GroupBox();
             localPanel.Controls.Add(groupBoxDatabase);
             groupBoxDatabase.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             groupBoxDatabase.Location = new Point(6, 6);
-            groupBoxDatabase.Size = new Size(535, 124);
+            groupBoxDatabase.Size = new Size(535, 149);
             groupBoxDatabase.Name = "groupBoxDatabaseName";
-            groupBoxDatabase.Text = @"Database";
+            groupBoxDatabase.Text = @"Connectivity to Snowflake";
             groupBoxDatabase.TabStop = false;
-            
-            // Database Label
+
+            #region Labels
+
+            // Role
+            var labelRole = new Label();
+            groupBoxDatabase.Controls.Add(labelRole);
+            labelRole.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            labelRole.Location = new Point(6, 19);
+            labelRole.Size = new Size(160, 13);
+            labelRole.Name = "labelRole";
+            labelRole.Text = @"Role";
+            labelRole.TabStop = false;
+
+            // Database
             var labelDatabase = new Label();
             groupBoxDatabase.Controls.Add(labelDatabase);
             labelDatabase.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            labelDatabase.Location = new Point(6, 19);
+            labelDatabase.Location = new Point(6, 44);
             labelDatabase.Size = new Size(160, 13);
-            labelDatabase.Name = "labelDatabaseName";
-            labelDatabase.Text = @"Database name";
+            labelDatabase.Name = "labelDatabase";
+            labelDatabase.Text = @"Database";
             labelDatabase.TabStop = false;
 
-            // Server Label
-            var labelServer = new Label();
-            groupBoxDatabase.Controls.Add(labelServer);
-            labelServer.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            labelServer.Location = new Point(6, 44);
-            labelServer.Size = new Size(160, 13);
-            labelServer.Name = "labelDatabaseServerName";
-            labelServer.Text = @"Database server name";
-            labelServer.TabStop = false;
-
-            // Add Port Label
-            var labelPortNumber = new Label();
-            groupBoxDatabase.Controls.Add(labelPortNumber);
-            labelPortNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            labelPortNumber.Location = new Point(6, 69);
-            labelPortNumber.Size = new Size(160, 13);
-            labelPortNumber.Name = "labelPortNumber";
-            labelPortNumber.Text = @"Database server port number";
-            labelPortNumber.TabStop = false;
-
-            // Add Schema Label
+            // Add Schema
             var labelSchema = new Label();
             groupBoxDatabase.Controls.Add(labelSchema);
             labelSchema.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            labelSchema.Location = new Point(6, 94);
+            labelSchema.Location = new Point(6, 69);
             labelSchema.Size = new Size(160, 13);
             labelSchema.Name = "labelSchema";
             labelSchema.Text = @"Schema";
             labelSchema.TabStop = false;
 
-            // Add Database TextBox
+            // Add Warehouse
+            var labelWarehouse = new Label();
+            groupBoxDatabase.Controls.Add(labelWarehouse);
+            labelWarehouse.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            labelWarehouse.Location = new Point(6, 94);
+            labelWarehouse.Size = new Size(160, 13);
+            labelWarehouse.Name = "labelWarehouse";
+            labelWarehouse.Text = @"Warehouse";
+            labelWarehouse.TabStop = false;
+
+            // Add Account
+            var labelAccount = new Label();
+            groupBoxDatabase.Controls.Add(labelAccount);
+            labelAccount.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            labelAccount.Location = new Point(6, 119);
+            labelAccount.Size = new Size(160, 13);
+            labelAccount.Name = "labelAccount";
+            labelAccount.Text = @"Account";
+            labelAccount.TabStop = false;
+
+            #endregion
+
+            _textBoxRole = new TextBox();
+            groupBoxDatabase.Controls.Add(_textBoxRole);
+            _textBoxRole.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _textBoxRole.Location = new Point(172, 16);
+            _textBoxRole.Size = new Size(355, 20);
+            _textBoxRole.Name = "_textBoxRole";
+            _textBoxRole.Text = _localConnection.DatabaseServer.Role;
+            _textBoxRole.TextChanged += UpdateConnectionString;
+            _textBoxRole.TabIndex = 1;
+
             _textBoxDatabase = new TextBox();
             groupBoxDatabase.Controls.Add(_textBoxDatabase);
             _textBoxDatabase.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxDatabase.Location = new Point(172, 16);
+            _textBoxDatabase.Location = new Point(172, 41);
             _textBoxDatabase.Size = new Size(355, 20);
-            _textBoxDatabase.Name = "textBoxDatabaseName";
+            _textBoxDatabase.Name = "_textBoxDatabase";
             _textBoxDatabase.Text = _localConnection.DatabaseServer.DatabaseName;
-            _textBoxDatabase.TextChanged += UpdateConnectionString;
-            _textBoxDatabase.TabIndex = 1;
+            _textBoxDatabase.TextChanged +=UpdateConnectionString;
+            _textBoxDatabase.TabIndex = 2;
 
-            // Add Server TextBox
-            _textBoxServer = new TextBox();
-            groupBoxDatabase.Controls.Add(_textBoxServer);
-            _textBoxServer.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxServer.Location = new Point(172, 41);
-            _textBoxServer.Size = new Size(355, 20);
-            _textBoxServer.Name = "textBoxServerName";
-            _textBoxServer.Text = _localConnection.DatabaseServer.ServerName;
-            _textBoxServer.TextChanged +=UpdateConnectionString;
-            _textBoxServer.TabIndex = 2;
-
-            // Add Port Number TextBox
-            _textBoxPortNumber = new TextBox();
-            groupBoxDatabase.Controls.Add(_textBoxPortNumber);
-            _textBoxPortNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxPortNumber.Location = new Point(172, 69);
-            _textBoxPortNumber.Size = new Size(355, 20);
-            _textBoxPortNumber.Name = "textBoxPortNumber";
-            _textBoxPortNumber.Text = _localConnection.DatabaseServer.PortNumber;
-            _textBoxPortNumber.TextChanged += UpdateConnectionString;
-            _textBoxPortNumber.TabIndex = 3;
-            toolTipConnections.SetToolTip(this._textBoxPortNumber, "Optional port number that can be used to connect to the database server.");
-
-            // Add Schema TextBox
             _textBoxSchema = new TextBox();
             groupBoxDatabase.Controls.Add(_textBoxSchema);
             _textBoxSchema.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxSchema.Location = new Point(172, 94);
+            _textBoxSchema.Location = new Point(172, 66);
             _textBoxSchema.Size = new Size(355, 20);
-            _textBoxSchema.Name = "textBoxSchemaName";
+            _textBoxSchema.Name = "_textBoxSchema";
             _textBoxSchema.Text = _localConnection.DatabaseServer.SchemaName;
             _textBoxSchema.TextChanged += UpdateConnectionString;
-            _textBoxSchema.TabIndex = 4;
+            _textBoxSchema.TabIndex = 3;
+            toolTipConnections.SetToolTip(_textBoxSchema, "The active Snowflake schema, e.g. 'PUBLIC'");
+
+            _textBoxWarehouse = new TextBox();
+            groupBoxDatabase.Controls.Add(_textBoxWarehouse);
+            _textBoxWarehouse.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _textBoxWarehouse.Location = new Point(172, 91);
+            _textBoxWarehouse.Size = new Size(355, 20);
+            _textBoxWarehouse.Name = "_textBoxWarehouse";
+            _textBoxWarehouse.Text = _localConnection.DatabaseServer.Warehouse;
+            _textBoxWarehouse.TextChanged += UpdateConnectionString;
+            _textBoxWarehouse.TabIndex = 4;
+
+            _textBoxAccount = new TextBox();
+            groupBoxDatabase.Controls.Add(_textBoxAccount);
+            _textBoxAccount.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _textBoxAccount.Location = new Point(172, 116);
+            _textBoxAccount.Size = new Size(355, 20);
+            _textBoxAccount.Name = "_textBoxAccount";
+            _textBoxAccount.Text = _localConnection.DatabaseServer.Account;
+            _textBoxAccount.TextChanged += UpdateConnectionString;
+            _textBoxAccount.TabIndex = 5;
 
             // Add GroupBox for Authentication content
             var groupBoxAuthentication = new GroupBox();
             localPanel.Controls.Add(groupBoxAuthentication);
             groupBoxAuthentication.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            groupBoxAuthentication.Location = new Point(6, 136);
-            groupBoxAuthentication.Size = new Size(140, 93);
+            groupBoxAuthentication.Location = new Point(6, 161);
+            groupBoxAuthentication.Size = new Size(140, 68);
             groupBoxAuthentication.Name = "groupBoxAuthentication";
             groupBoxAuthentication.Text = @"Authentication";
             groupBoxAuthentication.TabStop = false;
 
-            // Add RadioButton for Integrated Security
-            _radioButtonIntegratedSecurity = new RadioButton();
-            groupBoxAuthentication.Controls.Add(_radioButtonIntegratedSecurity);
-            _radioButtonIntegratedSecurity.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _radioButtonIntegratedSecurity.Location = new Point(6, 19);
-            _radioButtonIntegratedSecurity.Size = new Size(106, 17);
-            _radioButtonIntegratedSecurity.Name = "radioButtonIntegratedSecurity";
-            _radioButtonIntegratedSecurity.Text = @"Integrated (SSPI)"; 
-            _radioButtonIntegratedSecurity.Checked = _localConnection.DatabaseServer.IsSSPI();
-            _radioButtonIntegratedSecurity.CheckedChanged += RadioButtonIntegratedSecurityCheckedChanged;
-            _radioButtonIntegratedSecurity.TabIndex = 5;
-
-            // Add RadioButton for Named User
-            _radioButtonNamedUserSecurity = new RadioButton();
-            groupBoxAuthentication.Controls.Add(_radioButtonNamedUserSecurity);
-            _radioButtonNamedUserSecurity.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _radioButtonNamedUserSecurity.Location = new Point(6, 42);
-            _radioButtonNamedUserSecurity.Size = new Size(84, 17);
-            _radioButtonNamedUserSecurity.Name = "radioButtonNamedUserSecurity";
-            _radioButtonNamedUserSecurity.Text = @"Named User";
-            _radioButtonNamedUserSecurity.Checked = _localConnection.DatabaseServer.IsNamedUser();
-            _radioButtonNamedUserSecurity.CheckedChanged += RadioButtonNamedUserCheckedChanged;
-            _radioButtonNamedUserSecurity.TabIndex = 6;
-
-            // Add RadioButton for Universal with MFA
-            _radioButtonUniversalMfa = new RadioButton();
-            groupBoxAuthentication.Controls.Add(_radioButtonUniversalMfa);
-            _radioButtonUniversalMfa.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _radioButtonUniversalMfa.Location = new Point(6, 65);
-            _radioButtonUniversalMfa.Size = new Size(100, 17);
-            _radioButtonUniversalMfa.Name = "radioButtonUniversalMfa";
-            _radioButtonUniversalMfa.Text = @"Universal MFA";
-            _radioButtonUniversalMfa.Checked = _localConnection.DatabaseServer.IsMfa();
-            _radioButtonUniversalMfa.CheckedChanged += RadioButtonMfaCheckedChanged;
-            _radioButtonUniversalMfa.TabIndex = 7;
-
-            // Add GroupBox for Named User content
-            _groupBoxNamedUser = new GroupBox();
-            localPanel.Controls.Add(_groupBoxNamedUser);
-            _groupBoxNamedUser.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _groupBoxNamedUser.Location = new Point(152, 136);
-            _groupBoxNamedUser.Size = new Size(389, 93);
-            _groupBoxNamedUser.Name = "groupBoxNamedUser";
-            _groupBoxNamedUser.Text = @"Named User details";
-            _groupBoxNamedUser.TabStop = false;
-
-            // Add Username Label
-            var labelUserName = new Label();
-            _groupBoxNamedUser.Controls.Add(labelUserName);
-            labelUserName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            labelUserName.Location = new Point(6, 19);
-            labelUserName.Size = new Size(55, 13);
-            labelUserName.Name = "labelUserName";
-            labelUserName.Text = @"User name";
-            labelUserName.TabStop = false;
-
-            // Add Password Label
-            var labelPassword = new Label();
-            _groupBoxNamedUser.Controls.Add(labelPassword);
-            labelPassword.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            labelPassword.Location = new Point(6, 44);
-            labelPassword.Size = new Size(53, 13);
-            labelPassword.Name = "labelPassword";
-            labelPassword.Text = @"Password";
-            labelPassword.TabStop = false;
-
-            // Add Username TextBox
-            _textBoxUserName = new TextBox();
-            _groupBoxNamedUser.Controls.Add(_textBoxUserName);
-            _textBoxUserName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxUserName.Location = new Point(67, 16);
-            _textBoxUserName.Size = new Size(312, 20);
-            _textBoxUserName.Name = "textboxUserName";
-            _textBoxUserName.Text = _localConnection.DatabaseServer.NamedUserName;
-            _textBoxUserName.TextChanged += UpdateConnectionString;
-            _textBoxUserName.TabIndex = 7;
-
-            // Add Password TextBox
-            _textBoxPassword = new MaskedTextBox();
-            _groupBoxNamedUser.Controls.Add(_textBoxPassword);
-            _textBoxPassword.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxPassword.Location = new Point(67, 41);
-            _textBoxPassword.Size = new Size(312, 20);
-            _textBoxPassword.PasswordChar = '*';
-            _textBoxPassword.Name = "textboxUserPassword";
-            _textBoxPassword.Text = _localConnection.DatabaseServer.NamedUserPassword;
-            _textBoxPassword.TextChanged += UpdateConnectionStringWithPassword;
-            _textBoxPassword.TabIndex = 8;
+            // Add RadioButton for SSO
+            _radioButtonSSO = new RadioButton();
+            groupBoxAuthentication.Controls.Add(_radioButtonSSO);
+            _radioButtonSSO.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _radioButtonSSO.Location = new Point(6, 19);
+            _radioButtonSSO.Size = new Size(106, 17);
+            _radioButtonSSO.Name = "radioButtonSSO";
+            _radioButtonSSO.Text = @"Single sign-on (SSO)"; 
+            _radioButtonSSO.Checked = _localConnection.DatabaseServer.IsSSPI();
+            _radioButtonSSO.CheckedChanged += RadioButtoSSOCheckedChanged;
+            _radioButtonSSO.TabIndex = 6;
 
             // ConnectionString TextBox
             _textBoxConnectionString = new TextBox();
             localPanel.Controls.Add(_textBoxConnectionString);
             _textBoxConnectionString.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxConnectionString.Location = new Point(6, 245);
-            _textBoxConnectionString.Size = new Size(850, 21);
+            _textBoxConnectionString.Location = new Point(6, 235);
+            _textBoxConnectionString.Size = new Size(1000, 21);
             _textBoxConnectionString.BorderStyle = BorderStyle.None;
             _textBoxConnectionString.BackColor = Color.Snow;
+            _textBoxConnectionString.Multiline = true;
             _textBoxConnectionString.Name = "textBoxConnectionString";
             _textBoxConnectionString.ReadOnly = true;
             _textBoxConnectionString.TabStop = false;
 
             #endregion
 
-            #region MFA panel
+            #region SSO panel
 
-            // Add GroupBox for Named User content
-            _groupBoxMfa = new GroupBox();
-            localPanel.Controls.Add(_groupBoxMfa);
-            _groupBoxMfa.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _groupBoxMfa.Location = new Point(152, 136);
-            _groupBoxMfa.Size = new Size(389, 93);
-            _groupBoxMfa.Name = "groupBoxMfa";
-            _groupBoxMfa.Text = @"Multi-Factor Authentication details";
-            _groupBoxMfa.TabStop = false;
+            _groupBoxSso = new GroupBox();
+            localPanel.Controls.Add(_groupBoxSso);
+            _groupBoxSso.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _groupBoxSso.Location = new Point(152, 161);
+            _groupBoxSso.Size = new Size(389, 68);
+            _groupBoxSso.Name = "groupBoxMfa";
+            _groupBoxSso.Text = @"Single sign-on authentication details";
+            _groupBoxSso.TabStop = false;
 
-            // Add Username Label
-            var labelMfaUserName = new Label();
-            _groupBoxMfa.Controls.Add(labelMfaUserName);
-            labelMfaUserName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            labelMfaUserName.Location = new Point(6, 19);
-            labelMfaUserName.Size = new Size(55, 13);
-            labelMfaUserName.Name = "labelMfaUserName";
-            labelMfaUserName.Text = @"User name";
-            labelMfaUserName.TabStop = false;
+            var labelSsoAccountName = new Label();
+            _groupBoxSso.Controls.Add(labelSsoAccountName);
+            labelSsoAccountName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            labelSsoAccountName.Location = new Point(6, 19);
+            labelSsoAccountName.Size = new Size(55, 13);
+            labelSsoAccountName.Name = "labelMfaUserName";
+            labelSsoAccountName.Text = @"Account name";
+            labelSsoAccountName.TabStop = false;
 
-            _textBoxMfaUserName = new TextBox();
-            _groupBoxMfa.Controls.Add(_textBoxMfaUserName);
-            _textBoxMfaUserName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxMfaUserName.Location = new Point(67, 16);
-            _textBoxMfaUserName.Size = new Size(312, 20);
-            _textBoxMfaUserName.Name = "textboxMfaUserName";
-            _textBoxMfaUserName.Text = _localConnection.DatabaseServer.MultiFactorAuthenticationUser ?? System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-            _textBoxMfaUserName.TextChanged += UpdateConnectionString;
-            _textBoxMfaUserName.TabIndex = 9;
+            _textBoxSsoUserName = new TextBox();
+            _groupBoxSso.Controls.Add(_textBoxSsoUserName);
+            _textBoxSsoUserName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _textBoxSsoUserName.Location = new Point(67, 16);
+            _textBoxSsoUserName.Size = new Size(312, 20);
+            _textBoxSsoUserName.Name = "textboxSsoUserName";
+            _textBoxSsoUserName.Text = _localConnection.DatabaseServer.MultiFactorAuthenticationUser ?? System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            _textBoxSsoUserName.TextChanged += UpdateConnectionString;
+            _textBoxSsoUserName.TabIndex = 9;
 
             #endregion
 
@@ -508,23 +448,10 @@ namespace TEAM
 
             // Prevention of double hitting of some event handlers
             StartUpIndicator = false;
+            _radioButtonSSO.Checked = true;
 
             // Display the connection string results
-            _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
-
-            if (_radioButtonIntegratedSecurity.Checked)
-            {
-                _groupBoxNamedUser.Visible = false;
-                _groupBoxMfa.Visible = false;
-            }
-            else if (_radioButtonNamedUserSecurity.Checked)
-            {
-                _groupBoxMfa.Visible = false;
-            }
-            else if (_radioButtonUniversalMfa.Checked)
-            {
-                _groupBoxNamedUser.Visible = false;
-            }
+            _textBoxConnectionString.Text = _localConnection.CreateSnowflakeSSOConnectionString(true);
 
             #endregion
         }
@@ -676,8 +603,10 @@ namespace TEAM
                     jsonKeyLookup.ConnectionInternalId = _localConnection.ConnectionInternalId;
                     jsonKeyLookup.ConnectionName = _localConnection.ConnectionName;
                     jsonKeyLookup.ConnectionKey = _localConnection.ConnectionKey;
+                    // Catalog connection
                     jsonKeyLookup.CatalogConnectionType = GetSelectedConnectionTypeRadioButtonFromForm();
                     jsonKeyLookup.ConnectionNotes = _localConnection.ConnectionNotes;
+                    // Specifics
                     jsonKeyLookup.DatabaseServer = _localConnection.DatabaseServer;
                     jsonKeyLookup.ConnectionCustomQuery = _localConnection.ConnectionCustomQuery;
                 }
@@ -713,23 +642,43 @@ namespace TEAM
         /// <param name="e"></param>
         public void TestConnection(object sender, EventArgs e)
         {
-            UpdateRichTextBoxInformation("Validating the database connection.\r\n");
+            UpdateRichTextBoxInformation("Validating the database connection...\r\n");
 
-            var connectionString = _localConnection.CreateSqlServerConnectionString(false);
-
-            using (var connection = new SqlConnection(connectionString))
+            try
             {
-                try
+                using (IDbConnection conn = new SnowflakeDbConnection())
                 {
-                    connection.Open();
-                    UpdateRichTextBoxInformation("The database connection could be successfully established.\r\n");
-                }
-                catch (Exception exception)
-                {
-                    UpdateRichTextBoxInformation($"The database connection could not be established. The error message is {exception.Message} \r\n");
+                    //conn.ConnectionString = "ACCOUNT=judobank-jarvis;" +
+                    //                        "USER=roelant.vos@judocapital.com.au;" +
+                    //                        "DB=JARVIS_DEV_TRANSFORMS;" +
+                    //                        "AUTHENTICATOR=externalbrowser;" +
+                    //                        "ROLE=JARVIS_SF_DEV_ENGINEER;" +
+                    //                        "SCHEMA=PUBLIC";
+
+                    conn.ConnectionString = _localConnection.CreateSnowflakeSSOConnectionString(false);
+
+                    conn.Open();
+                    UpdateRichTextBoxInformation("The database connection was successfully established.\r\n");
+                    using (IDbCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = "USE WAREHOUSE DEV_BUILD_WH";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "SELECT 'Connection Test'";
+
+                        //Data from an existing table
+                        IDataReader reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            UpdateRichTextBoxInformation($"Test query SELECT 'Connection Test' returns value {reader.GetString(0)}.\r\n");
+                        }
+                        conn.Close();
+                    }
                 }
             }
-
+            catch (DbException exception)
+            {
+                UpdateRichTextBoxInformation($"There was an issue connecting to Snowflake: {exception.Message}.\r\n");
+            }
         }
 
         // Retrieve a single value on which RadioButton has been checked.
@@ -816,14 +765,14 @@ namespace TEAM
                 _localConnection.DatabaseServer.DatabaseName = localTextBox.Text;
             } 
 
-            if (localTextBox.Name == _textBoxServer.Name)
+            if (localTextBox.Name == _textBoxRole.Name)
             {
-                _localConnection.DatabaseServer.ServerName = localTextBox.Text;
+                _localConnection.DatabaseServer.Role = localTextBox.Text;
             }
 
-            if (localTextBox.Name == _textBoxPortNumber.Name)
+            if (localTextBox.Name == _textBoxWarehouse.Name)
             {
-                _localConnection.DatabaseServer.PortNumber = localTextBox.Text;
+                _localConnection.DatabaseServer.Warehouse = localTextBox.Text;
             }
 
             if (localTextBox.Name == _textBoxSchema.Name)
@@ -831,21 +780,12 @@ namespace TEAM
                 _localConnection.DatabaseServer.SchemaName = localTextBox.Text;
             }
 
-            if (localTextBox.Name == _textBoxUserName.Name)
+            if (localTextBox.Name == _textBoxAccount.Name)
             {
-                _localConnection.DatabaseServer.NamedUserName = localTextBox.Text;
+                _localConnection.DatabaseServer.Account = localTextBox.Text;
             }
 
-            #region MFA
-
-            if (localTextBox.Name == _textBoxMfaUserName.Name)
-            {
-                _localConnection.DatabaseServer.MultiFactorAuthenticationUser = localTextBox.Text;
-            }
-
-            #endregion
-
-            _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
+            _textBoxConnectionString.Text = _localConnection.CreateSnowflakeSSOConnectionString(true);
         }
 
 
@@ -861,69 +801,20 @@ namespace TEAM
 
             _localConnection.DatabaseServer.NamedUserPassword = localTextBox.Text;
 
-            _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
+            _textBoxConnectionString.Text = _localConnection.CreateSnowflakeSSOConnectionString(true);
         }
 
-        /// <summary>
-        /// Update the form in case the SSPI / integrated security radio button has been clicked/checked.
-        /// If the SSPI radiobutton is checked, some named user controls need to be hidden from view.
-        /// Also commits the check value (enabled for named user) to memory (connection object update).
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void RadioButtonIntegratedSecurityCheckedChanged(object sender, EventArgs e)
+        public void RadioButtoSSOCheckedChanged(object sender, EventArgs e)
         {
-            _groupBoxNamedUser.Visible = false;
-            _groupBoxMfa.Visible = false;
-
             _localConnection.DatabaseServer.AuthenticationType = ServerAuthenticationTypes.SSPI;
 
-            if (_radioButtonIntegratedSecurity.Checked)
+            if (_radioButtonSSO.Checked)
             {
                 _localConnection.DatabaseServer.AuthenticationType = ServerAuthenticationTypes.SSPI;
             }
 
             // Display the connection string results
-            _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
-        }
-
-        /// <summary>
-        /// Make sure the named user controls on the form are visible if the named user radiobutton has been checked.
-        /// Also commits the check value (enabled for named user) to memory (connection object update).
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void RadioButtonNamedUserCheckedChanged(object sender, EventArgs e)
-        {
-            if (_radioButtonNamedUserSecurity.Checked)
-            {
-                _groupBoxNamedUser.Visible = true;
-                _groupBoxMfa.Visible = false;
-                _localConnection.DatabaseServer.AuthenticationType = ServerAuthenticationTypes.NamedUser;
-            }
-
-            // Display the connection string results
-            _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
-        }
-
-        /// <summary>
-        /// Make sure the MFA details on the form are visible if the MFA radiobutton has been checked.
-        /// Also commits the check value (enabled for named user) to memory (connection object update).
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void RadioButtonMfaCheckedChanged(object sender, EventArgs e)
-        {
-            if (_radioButtonUniversalMfa.Checked)
-            {
-                _groupBoxMfa.Visible = true;
-                _groupBoxNamedUser.Visible = false;
-                _localConnection.DatabaseServer.AuthenticationType = ServerAuthenticationTypes.MFA;
-                _localConnection.DatabaseServer.MultiFactorAuthenticationUser = _textBoxMfaUserName.Text;
-            }
-
-            // Display the connection string results
-            _textBoxConnectionString.Text = _localConnection.CreateSqlServerConnectionString(true);
+            _textBoxConnectionString.Text = _localConnection.CreateSnowflakeSSOConnectionString(true);
         }
 
         public void UpdateConnectionTypeControls(object sender, EventArgs e)

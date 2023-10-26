@@ -90,6 +90,9 @@
     <Compile Update="TabPageEnvironments.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="TabPageSnowflakeConnection.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="TabPageSqlServerConnection.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -443,6 +446,7 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
     </PackageReference>
+    <PackageReference Include="Snowflake.Data" Version="2.1.2" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.421302">
       <PrivateAssets>all</PrivateAssets>

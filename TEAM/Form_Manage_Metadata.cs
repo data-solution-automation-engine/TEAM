@@ -2518,10 +2518,10 @@ namespace TEAM
             // Create the attribute selection statement for the array.
             var sqlStatementForDataItems = new StringBuilder();
 
-            if (teamConnection.ConnectionType == ConnectionTypes.Catalog || teamConnection.ConnectionType == ConnectionTypes.Custom)
+            if (teamConnection.CatalogConnectionType == CatalogConnectionTypes.Catalog || teamConnection.CatalogConnectionType == CatalogConnectionTypes.Custom)
             {
                 // Catalog query.
-                if (teamConnection.ConnectionType == ConnectionTypes.Catalog)
+                if (teamConnection.CatalogConnectionType == CatalogConnectionTypes.Catalog)
                 {
                     var databaseName = teamConnection.DatabaseServer.DatabaseName;
 
@@ -2600,7 +2600,7 @@ namespace TEAM
                     sqlStatementForDataItems.AppendLine("	 AND main.[name] = ma.COLUMN_NAME");
                     sqlStatementForDataItems.AppendLine(") customSubQuery");
                 }
-                else if (teamConnection.ConnectionType == ConnectionTypes.Custom)
+                else if (teamConnection.CatalogConnectionType == CatalogConnectionTypes.Custom)
                 {
                     // Use the custom query that was provided with the connection.
                     sqlStatementForDataItems.AppendLine($"-- User-provided (custom) Physical Model Snapshot query for {teamConnection.ConnectionKey}.");
