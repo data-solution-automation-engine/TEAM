@@ -606,18 +606,16 @@ namespace TEAM
                         snowFlakeConnectionProfile.TechnologyConnectionType = TechnologyConnectionType.Snowflake;
                         snowFlakeConnectionProfile.CatalogConnectionType = CatalogConnectionTypes.Catalog;
                         snowFlakeConnectionProfile.ConnectionNotes = "Snowflake connection";
-                        snowFlakeConnectionProfile.DatabaseServer.AuthenticationType = ServerAuthenticationTypes.SSO;
 
                         TeamDatabaseConnection snowFlakeDatabaseConnection = new TeamDatabaseConnection();
-                        snowFlakeDatabaseConnection.SchemaName = "PUBLIC";
-                        snowFlakeDatabaseConnection.MultiFactorAuthenticationUser = "roelant.vos@judocapital.com.au";
-                        snowFlakeDatabaseConnection.Account = "judobank-jarvis";
-                        snowFlakeDatabaseConnection.Role = "JARVIS_SF_DEV_ENGINEER";
-                        //snowFlakeDatabaseConnection.Role = "<Role>";
-                        snowFlakeDatabaseConnection.DatabaseName = "JARVIS_DEV_TRANSFORMS";
-                        //snowFlakeDatabaseConnection.DatabaseName = "<Database>";
-                        snowFlakeDatabaseConnection.Warehouse = "DEV_BUILD_WH";
-                        //snowFlakeDatabaseConnection.Warehouse = "<Warehouse>";
+                        snowFlakeDatabaseConnection.SchemaName = "<Schema e.g. PUBLIC>";
+                        snowFlakeDatabaseConnection.MultiFactorAuthenticationUser = "<User>";
+                        snowFlakeDatabaseConnection.Account = "<Snowflake account>";
+                        snowFlakeDatabaseConnection.Role = "<Snowflake role>";
+                        snowFlakeDatabaseConnection.Role = "<Role>";
+                        snowFlakeDatabaseConnection.DatabaseName = "<Snowflake database>";
+                        snowFlakeDatabaseConnection.Warehouse = "<Snowflake warehouse>";
+                        snowFlakeDatabaseConnection.AuthenticationType = ServerAuthenticationTypes.SSO;
 
                         snowFlakeConnectionProfile.DatabaseServer = snowFlakeDatabaseConnection;
 

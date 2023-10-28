@@ -304,9 +304,9 @@ namespace TEAM
             // Add GroupBox for Connection content
             var groupBoxConnection = new GroupBox();
             localPanel.Controls.Add(groupBoxConnection);
-            groupBoxConnection.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            groupBoxConnection.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
             groupBoxConnection.Location = new Point(550, 6);
-            groupBoxConnection.Size = new Size(535, 223);
+            groupBoxConnection.Size = new Size(770, 223);
             groupBoxConnection.Name = "groupBoxConnection";
             groupBoxConnection.Text = @"Connection";
             groupBoxConnection.TabStop = false;
@@ -661,7 +661,7 @@ namespace TEAM
                     UpdateRichTextBoxInformation("The database connection was successfully established.\r\n");
                     using (IDbCommand cmd = conn.CreateCommand())
                     {
-                        cmd.CommandText = "USE WAREHOUSE DEV_BUILD_WH";
+                        cmd.CommandText = $"USE WAREHOUSE {_localConnection.DatabaseServer.Warehouse}";
                         cmd.ExecuteNonQuery();
                         cmd.CommandText = "SELECT 'Connection Test'";
 
