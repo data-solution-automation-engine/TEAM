@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -2507,13 +2508,48 @@ namespace TEAM
                     var sqlStatementForDataItems = SnowflakeStatementForDataItems(filteredObjects, teamConnection);
                     TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The reverse-engineering query run for connection '{teamConnection.ConnectionKey}' is \r\n {sqlStatementForDataItems}"));
 
-                    // Load the data table.
+                    // Load the data table with the catalog details.
                     IDbCommand cmd = conn.CreateCommand();
                     cmd.CommandText = $"USE WAREHOUSE {teamConnection.DatabaseServer.Warehouse}";
                     cmd.ExecuteNonQuery();
                     cmd.CommandText = sqlStatementForDataItems;
                     var dataReader = cmd.ExecuteReader();
                     reverseEngineerResults.Load(dataReader);
+                    
+                    // Update the Primary and Multi-Active keys.
+                    DataTable reverseEngineerKeys = new DataTable();
+                    IDbCommand cmdKeys = conn.CreateCommand();
+                    cmdKeys.CommandText = $"USE WAREHOUSE {teamConnection.DatabaseServer.Warehouse}";
+                    cmdKeys.ExecuteNonQuery();
+                    cmdKeys.CommandText = $"SHOW PRIMARY KEYS;";
+                    cmdKeys.ExecuteNonQuery();
+                    cmdKeys.CommandText = "SELECT \"table_name\",\"column_name\"\r\nFROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))\r\nORDER BY \"table_name\";";
+                    var dataReaderKeys = cmdKeys.ExecuteReader();
+                    reverseEngineerKeys.Load(dataReaderKeys);
+
+                    // Apply the keys to the main reverse-engineering result set.
+                    foreach (DataRow keyRow in reverseEngineerResults.Rows)
+                    {
+                        var results = from localRow in reverseEngineerKeys.AsEnumerable()
+                            where localRow.Field<string>("table_name") == keyRow["tableName"].ToString() &&
+                                  localRow.Field<string>("column_name") == keyRow["columnName"].ToString()
+                            select localRow;
+
+                        if (results.FirstOrDefault() != null)
+                        {
+                            // Set the PK value to 'Y'
+                            keyRow[PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString()] = 'Y';
+
+                            // Determine if the key column is a MA column.
+                            var columnName = results.FirstOrDefault()?["column_name"].ToString();
+
+                            if (IsMultiActiveKey(columnName, TeamConfiguration))
+                            {
+                                keyRow[PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString()] = 'Y';
+                            }
+                        }
+                    }
+
                 }
                 catch (Exception exception)
                 {
@@ -2533,6 +2569,41 @@ namespace TEAM
             }
 
             return reverseEngineerResults;
+        }
+
+        private bool IsMultiActiveKey(string columnName, TeamConfiguration teamConfiguration)
+        {
+            bool returnValue = false;
+
+            var keyPosition = "prefix";
+            if (teamConfiguration.KeyPattern.IndexOf("{keyIdentifier}")>1)
+            {
+                keyPosition = "suffix";
+            }
+
+            bool isBusinessKey = false;
+            if (keyPosition == "prefix")
+            {
+                if (columnName.StartsWith(teamConfiguration.KeyIdentifier))
+                {
+                    isBusinessKey = true;
+                }
+            }
+
+            if (keyPosition == "suffix")
+            {
+                if (columnName.EndsWith(teamConfiguration.KeyIdentifier))
+                {
+                    isBusinessKey = true;
+                }
+            }
+
+            if (columnName != TeamConfiguration.LoadDateTimeAttribute && !isBusinessKey)
+            {
+                returnValue = true;
+            }
+
+            return returnValue;
         }
 
         private List<DataRow> GetDistinctFilteredDataObjects(List<DataRow> filteredDataObjectMappingDataRows)
@@ -2865,12 +2936,13 @@ namespace TEAM
                     sqlStatementForDataItems.AppendLine("     OR");
                 }
 
-                // Remove the last OR
+                // Remove the last OR.
                 sqlStatementForDataItems.Remove(sqlStatementForDataItems.Length - 6, 6);
 
                 sqlStatementForDataItems.AppendLine(")");
                 sqlStatementForDataItems.AppendLine($"ORDER BY \"{tableColumnName}\", \"{columnColumnName}\", \"{ordinalPositionColumnName}\"");
 
+                // Add the JSON path for bulk import.
                 if (isJson)
                 {
                     sqlStatementForDataItems.AppendLine("FOR JSON PATH");
