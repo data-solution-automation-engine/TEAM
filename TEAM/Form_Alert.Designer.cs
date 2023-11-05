@@ -103,8 +103,8 @@
             // 
             // Form_Alert
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             ClientSize = new System.Drawing.Size(1201, 729);
             Controls.Add(buttonShowLogFormAlert);
             Controls.Add(richTextBoxMetadataLogFormAlert);
@@ -112,7 +112,6 @@
             Controls.Add(buttonCancelFormAlert);
             Controls.Add(progressBarFormAlert);
             Controls.Add(labelProgressMessageFormAlert);
-            Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             Name = "Form_Alert";

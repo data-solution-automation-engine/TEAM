@@ -94,8 +94,8 @@
             // 
             // Form_Connection_Selection
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             ClientSize = new System.Drawing.Size(350, 152);
             Controls.Add(buttonCancel);
             Controls.Add(buttonSelect);

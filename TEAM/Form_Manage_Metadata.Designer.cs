@@ -535,8 +535,8 @@ namespace TEAM
             // 
             // FormManageMetadata
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             ClientSize = new System.Drawing.Size(1534, 836);
             Controls.Add(groupBoxPhysicalModel);
             Controls.Add(groupBox2);

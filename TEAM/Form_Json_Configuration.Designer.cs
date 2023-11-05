@@ -324,8 +324,8 @@
             // 
             // FormJsonConfiguration
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             ClientSize = new System.Drawing.Size(701, 485);
             Controls.Add(groupBox2);
             Controls.Add(groupBoxDataObjectConnections);
@@ -335,7 +335,6 @@
             Controls.Add(richTextBoxJsonExportInformation);
             Controls.Add(groupBoxDataItems);
             Controls.Add(menuStripMainMenu);
-            Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             MinimumSize = new System.Drawing.Size(717, 524);
             Name = "FormJsonConfiguration";
