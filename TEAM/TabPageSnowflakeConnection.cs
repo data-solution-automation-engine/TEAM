@@ -251,14 +251,14 @@ namespace TEAM
             labelSsoAccountName.Location = new Point(6, 19);
             labelSsoAccountName.Size = new Size(55, 13);
             labelSsoAccountName.Name = "labelMfaUserName";
-            labelSsoAccountName.Text = @"Account name";
+            labelSsoAccountName.Text = @"SSO User";
             labelSsoAccountName.TabStop = false;
 
             _textBoxSsoUserName = new TextBox();
             _groupBoxSso.Controls.Add(_textBoxSsoUserName);
             _textBoxSsoUserName.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxSsoUserName.Location = new Point(67, 16);
-            _textBoxSsoUserName.Size = new Size(312, 20);
+            _textBoxSsoUserName.Location = new Point(80, 16);
+            _textBoxSsoUserName.Size = new Size(299, 20);
             _textBoxSsoUserName.Name = "textboxSsoUserName";
             _textBoxSsoUserName.Text = _localConnection.DatabaseServer.MultiFactorAuthenticationUser ?? System.Security.Principal.WindowsIdentity.GetCurrent().Name;
             _textBoxSsoUserName.TextChanged += UpdateConnectionString;
@@ -783,6 +783,11 @@ namespace TEAM
             if (localTextBox.Name == _textBoxAccount.Name)
             {
                 _localConnection.DatabaseServer.Account = localTextBox.Text;
+            }
+
+            if (localTextBox.Name == _textBoxSsoUserName.Name)
+            {
+                _localConnection.DatabaseServer.MultiFactorAuthenticationUser = localTextBox.Text;
             }
 
             _textBoxConnectionString.Text = _localConnection.CreateSnowflakeSSOConnectionString(true);
