@@ -9,6 +9,7 @@ namespace TEAM
     {
         public FormJsonConfiguration()
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
 
             // Make sure the configuration information is available in this form.

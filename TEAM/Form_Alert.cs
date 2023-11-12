@@ -10,6 +10,7 @@ namespace TEAM
     {
         public Form_Alert()
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
         }
 

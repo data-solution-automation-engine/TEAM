@@ -40,7 +40,6 @@ namespace TEAM
             buttonStart = new System.Windows.Forms.Button();
             buttonSaveMetadata = new System.Windows.Forms.Button();
             groupBoxMetadataCounts = new System.Windows.Forms.GroupBox();
-            labelLsatCount = new System.Windows.Forms.Label();
             labelLnkCount = new System.Windows.Forms.Label();
             labelSatCount = new System.Windows.Forms.Label();
             labelHubCount = new System.Windows.Forms.Label();
@@ -103,11 +102,9 @@ namespace TEAM
             groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             groupBox2.Controls.Add(checkBoxShowStaging);
             groupBox2.Controls.Add(textBoxFilterCriterion);
-            groupBox2.Location = new System.Drawing.Point(19, 853);
-            groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBox2.Location = new System.Drawing.Point(14, 739);
             groupBox2.Name = "groupBox2";
-            groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            groupBox2.Size = new System.Drawing.Size(262, 98);
+            groupBox2.Size = new System.Drawing.Size(299, 85);
             groupBox2.TabIndex = 25;
             groupBox2.TabStop = false;
             groupBox2.Text = "Filter Criterion";
@@ -117,10 +114,9 @@ namespace TEAM
             checkBoxShowStaging.AutoSize = true;
             checkBoxShowStaging.Checked = true;
             checkBoxShowStaging.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBoxShowStaging.Location = new System.Drawing.Point(7, 52);
-            checkBoxShowStaging.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkBoxShowStaging.Location = new System.Drawing.Point(6, 45);
             checkBoxShowStaging.Name = "checkBoxShowStaging";
-            checkBoxShowStaging.Size = new System.Drawing.Size(166, 19);
+            checkBoxShowStaging.Size = new System.Drawing.Size(164, 17);
             checkBoxShowStaging.TabIndex = 24;
             checkBoxShowStaging.Text = "Show Staging Layer details";
             toolTipMetadata.SetToolTip(checkBoxShowStaging, "Show (or hide) Staging Layer mappings is a broad filter that hides all source-to-staging and staging-to-persistent-staging data object mappings.");
@@ -130,10 +126,9 @@ namespace TEAM
             // textBoxFilterCriterion
             // 
             textBoxFilterCriterion.DelayedTextChangedTimeout = 1000;
-            textBoxFilterCriterion.Location = new System.Drawing.Point(7, 18);
-            textBoxFilterCriterion.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            textBoxFilterCriterion.Location = new System.Drawing.Point(6, 16);
             textBoxFilterCriterion.Name = "textBoxFilterCriterion";
-            textBoxFilterCriterion.Size = new System.Drawing.Size(248, 23);
+            textBoxFilterCriterion.Size = new System.Drawing.Size(287, 22);
             textBoxFilterCriterion.TabIndex = 23;
             textBoxFilterCriterion.DelayedTextChanged += TextBoxFilterCriterion_OnDelayedTextChanged;
             // 
@@ -141,20 +136,18 @@ namespace TEAM
             // 
             labelResult.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             labelResult.AutoSize = true;
-            labelResult.Location = new System.Drawing.Point(7, 155);
-            labelResult.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelResult.Location = new System.Drawing.Point(6, 134);
             labelResult.Name = "labelResult";
-            labelResult.Size = new System.Drawing.Size(39, 15);
+            labelResult.Size = new System.Drawing.Size(38, 13);
             labelResult.TabIndex = 23;
             labelResult.Text = "Ready";
             // 
             // buttonStart
             // 
             buttonStart.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            buttonStart.Location = new System.Drawing.Point(8, 105);
-            buttonStart.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonStart.Location = new System.Drawing.Point(7, 91);
             buttonStart.Name = "buttonStart";
-            buttonStart.Size = new System.Drawing.Size(140, 46);
+            buttonStart.Size = new System.Drawing.Size(120, 40);
             buttonStart.TabIndex = 22;
             buttonStart.Text = "&Parse Metadata";
             toolTipMetadata.SetToolTip(buttonStart, resources.GetString("buttonStart.ToolTip"));
@@ -164,10 +157,9 @@ namespace TEAM
             // buttonSaveMetadata
             // 
             buttonSaveMetadata.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            buttonSaveMetadata.Location = new System.Drawing.Point(7, 52);
-            buttonSaveMetadata.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonSaveMetadata.Location = new System.Drawing.Point(6, 45);
             buttonSaveMetadata.Name = "buttonSaveMetadata";
-            buttonSaveMetadata.Size = new System.Drawing.Size(140, 46);
+            buttonSaveMetadata.Size = new System.Drawing.Size(120, 40);
             buttonSaveMetadata.TabIndex = 1;
             buttonSaveMetadata.Text = "&Save Metadata";
             toolTipMetadata.SetToolTip(buttonSaveMetadata, "Save the metadata changes to file. This will directly \r\nupdate the JSON files in the metadata directory.");
@@ -177,67 +169,50 @@ namespace TEAM
             // groupBoxMetadataCounts
             // 
             groupBoxMetadataCounts.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            groupBoxMetadataCounts.Controls.Add(labelLsatCount);
             groupBoxMetadataCounts.Controls.Add(labelLnkCount);
             groupBoxMetadataCounts.Controls.Add(labelSatCount);
             groupBoxMetadataCounts.Controls.Add(labelHubCount);
-            groupBoxMetadataCounts.Location = new System.Drawing.Point(1614, 853);
-            groupBoxMetadataCounts.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBoxMetadataCounts.Location = new System.Drawing.Point(1383, 739);
             groupBoxMetadataCounts.Name = "groupBoxMetadataCounts";
-            groupBoxMetadataCounts.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            groupBoxMetadataCounts.Size = new System.Drawing.Size(163, 98);
+            groupBoxMetadataCounts.Size = new System.Drawing.Size(140, 85);
             groupBoxMetadataCounts.TabIndex = 16;
             groupBoxMetadataCounts.TabStop = false;
-            groupBoxMetadataCounts.Text = "This metadata contains:";
-            // 
-            // labelLsatCount
-            // 
-            labelLsatCount.AutoSize = true;
-            labelLsatCount.Location = new System.Drawing.Point(7, 68);
-            labelLsatCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            labelLsatCount.Name = "labelLsatCount";
-            labelLsatCount.Size = new System.Drawing.Size(86, 15);
-            labelLsatCount.TabIndex = 3;
-            labelLsatCount.Text = "labelLsatCount";
+            groupBoxMetadataCounts.Text = "This metadata has:";
             // 
             // labelLnkCount
             // 
             labelLnkCount.AutoSize = true;
-            labelLnkCount.Location = new System.Drawing.Point(7, 53);
-            labelLnkCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelLnkCount.Location = new System.Drawing.Point(6, 46);
             labelLnkCount.Name = "labelLnkCount";
-            labelLnkCount.Size = new System.Drawing.Size(84, 15);
+            labelLnkCount.Size = new System.Drawing.Size(82, 13);
             labelLnkCount.TabIndex = 2;
             labelLnkCount.Text = "labelLnkCount";
             // 
             // labelSatCount
             // 
             labelSatCount.AutoSize = true;
-            labelSatCount.Location = new System.Drawing.Point(7, 38);
-            labelSatCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelSatCount.Location = new System.Drawing.Point(6, 33);
             labelSatCount.Name = "labelSatCount";
-            labelSatCount.Size = new System.Drawing.Size(81, 15);
+            labelSatCount.Size = new System.Drawing.Size(80, 13);
             labelSatCount.TabIndex = 1;
             labelSatCount.Text = "labelSatCount";
             // 
             // labelHubCount
             // 
             labelHubCount.AutoSize = true;
-            labelHubCount.Location = new System.Drawing.Point(7, 23);
-            labelHubCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelHubCount.Location = new System.Drawing.Point(6, 20);
             labelHubCount.Name = "labelHubCount";
-            labelHubCount.Size = new System.Drawing.Size(88, 15);
+            labelHubCount.Size = new System.Drawing.Size(86, 13);
             labelHubCount.TabIndex = 0;
             labelHubCount.Text = "labelHubCount";
             // 
             // tabControlDataMappings
             // 
             tabControlDataMappings.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            tabControlDataMappings.Location = new System.Drawing.Point(14, 31);
-            tabControlDataMappings.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabControlDataMappings.Location = new System.Drawing.Point(12, 27);
             tabControlDataMappings.Name = "tabControlDataMappings";
             tabControlDataMappings.SelectedIndex = 4;
-            tabControlDataMappings.Size = new System.Drawing.Size(1591, 815);
+            tabControlDataMappings.Size = new System.Drawing.Size(1364, 706);
             tabControlDataMappings.TabIndex = 15;
             tabControlDataMappings.SelectedIndexChanged += tabControlDataMappings_SelectedIndexChanged;
             // 
@@ -251,22 +226,21 @@ namespace TEAM
             // 
             // checkedListBoxReverseEngineeringAreas
             // 
+            checkedListBoxReverseEngineeringAreas.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             checkedListBoxReverseEngineeringAreas.BackColor = System.Drawing.SystemColors.Control;
             checkedListBoxReverseEngineeringAreas.BorderStyle = System.Windows.Forms.BorderStyle.None;
             checkedListBoxReverseEngineeringAreas.FormattingEnabled = true;
-            checkedListBoxReverseEngineeringAreas.Location = new System.Drawing.Point(9, 98);
-            checkedListBoxReverseEngineeringAreas.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkedListBoxReverseEngineeringAreas.Location = new System.Drawing.Point(8, 85);
             checkedListBoxReverseEngineeringAreas.Name = "checkedListBoxReverseEngineeringAreas";
-            checkedListBoxReverseEngineeringAreas.Size = new System.Drawing.Size(140, 468);
+            checkedListBoxReverseEngineeringAreas.Size = new System.Drawing.Size(126, 425);
             checkedListBoxReverseEngineeringAreas.TabIndex = 0;
             // 
             // buttonReverseEngineer
             // 
             buttonReverseEngineer.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            buttonReverseEngineer.Location = new System.Drawing.Point(8, 22);
-            buttonReverseEngineer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonReverseEngineer.Location = new System.Drawing.Point(7, 19);
             buttonReverseEngineer.Name = "buttonReverseEngineer";
-            buttonReverseEngineer.Size = new System.Drawing.Size(140, 46);
+            buttonReverseEngineer.Size = new System.Drawing.Size(120, 40);
             buttonReverseEngineer.TabIndex = 20;
             buttonReverseEngineer.Text = "&Reverse Engineer";
             toolTipMetadata.SetToolTip(buttonReverseEngineer, resources.GetString("buttonReverseEngineer.ToolTip"));
@@ -292,11 +266,9 @@ namespace TEAM
             MetadataGenerationGroupBox.Controls.Add(buttonSaveMetadata);
             MetadataGenerationGroupBox.Controls.Add(buttonStart);
             MetadataGenerationGroupBox.Controls.Add(labelResult);
-            MetadataGenerationGroupBox.Location = new System.Drawing.Point(1614, 57);
-            MetadataGenerationGroupBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MetadataGenerationGroupBox.Location = new System.Drawing.Point(1383, 49);
             MetadataGenerationGroupBox.Name = "MetadataGenerationGroupBox";
-            MetadataGenerationGroupBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            MetadataGenerationGroupBox.Size = new System.Drawing.Size(163, 182);
+            MetadataGenerationGroupBox.Size = new System.Drawing.Size(140, 158);
             MetadataGenerationGroupBox.TabIndex = 3;
             MetadataGenerationGroupBox.TabStop = false;
             MetadataGenerationGroupBox.Text = "Processing";
@@ -306,10 +278,9 @@ namespace TEAM
             checkBoxValidation.AutoSize = true;
             checkBoxValidation.Checked = true;
             checkBoxValidation.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBoxValidation.Location = new System.Drawing.Point(9, 25);
-            checkBoxValidation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkBoxValidation.Location = new System.Drawing.Point(8, 22);
             checkBoxValidation.Name = "checkBoxValidation";
-            checkBoxValidation.Size = new System.Drawing.Size(120, 19);
+            checkBoxValidation.Size = new System.Drawing.Size(118, 17);
             checkBoxValidation.TabIndex = 10;
             checkBoxValidation.Text = "Validate metadata";
             checkBoxValidation.UseVisualStyleBackColor = true;
@@ -318,10 +289,9 @@ namespace TEAM
             // 
             labelInformation.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             labelInformation.AutoSize = true;
-            labelInformation.Location = new System.Drawing.Point(288, 853);
-            labelInformation.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelInformation.Location = new System.Drawing.Point(322, 739);
             labelInformation.Name = "labelInformation";
-            labelInformation.Size = new System.Drawing.Size(70, 15);
+            labelInformation.Size = new System.Drawing.Size(68, 13);
             labelInformation.TabIndex = 5;
             labelInformation.Text = "Information";
             // 
@@ -330,10 +300,9 @@ namespace TEAM
             richTextBoxInformation.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             richTextBoxInformation.BackColor = System.Drawing.SystemColors.Control;
             richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            richTextBoxInformation.Location = new System.Drawing.Point(288, 871);
-            richTextBoxInformation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            richTextBoxInformation.Location = new System.Drawing.Point(322, 755);
             richTextBoxInformation.Name = "richTextBoxInformation";
-            richTextBoxInformation.Size = new System.Drawing.Size(1309, 80);
+            richTextBoxInformation.Size = new System.Drawing.Size(1047, 69);
             richTextBoxInformation.TabIndex = 2;
             richTextBoxInformation.Text = "";
             richTextBoxInformation.TextChanged += richTextBoxInformation_TextChanged;
@@ -344,8 +313,7 @@ namespace TEAM
             menuStripMetadata.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { metadataToolStripMenuItem, businessKeyMetadataToolStripMenuItem, validationToolStripMenuItem, jsonExportConfigurationToolStripMenuItem, helpToolStripMenuItem });
             menuStripMetadata.Location = new System.Drawing.Point(0, 0);
             menuStripMetadata.Name = "menuStripMetadata";
-            menuStripMetadata.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            menuStripMetadata.Size = new System.Drawing.Size(1790, 24);
+            menuStripMetadata.Size = new System.Drawing.Size(1534, 24);
             menuStripMetadata.TabIndex = 3;
             menuStripMetadata.Text = "menuStrip1";
             // 
@@ -548,11 +516,9 @@ namespace TEAM
             groupBoxPhysicalModel.Controls.Add(labelConnections);
             groupBoxPhysicalModel.Controls.Add(checkedListBoxReverseEngineeringAreas);
             groupBoxPhysicalModel.Controls.Add(buttonReverseEngineer);
-            groupBoxPhysicalModel.Location = new System.Drawing.Point(1614, 246);
-            groupBoxPhysicalModel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBoxPhysicalModel.Location = new System.Drawing.Point(1383, 213);
             groupBoxPhysicalModel.Name = "groupBoxPhysicalModel";
-            groupBoxPhysicalModel.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            groupBoxPhysicalModel.Size = new System.Drawing.Size(163, 600);
+            groupBoxPhysicalModel.Size = new System.Drawing.Size(140, 520);
             groupBoxPhysicalModel.TabIndex = 1;
             groupBoxPhysicalModel.TabStop = false;
             groupBoxPhysicalModel.Text = "Physical Model";
@@ -561,18 +527,17 @@ namespace TEAM
             // 
             labelConnections.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             labelConnections.AutoSize = true;
-            labelConnections.Location = new System.Drawing.Point(9, 74);
-            labelConnections.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelConnections.Location = new System.Drawing.Point(8, 64);
             labelConnections.Name = "labelConnections";
-            labelConnections.Size = new System.Drawing.Size(74, 15);
+            labelConnections.Size = new System.Drawing.Size(72, 13);
             labelConnections.TabIndex = 24;
             labelConnections.Text = "Connections";
             // 
             // FormManageMetadata
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1790, 965);
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            ClientSize = new System.Drawing.Size(1534, 836);
             Controls.Add(groupBoxPhysicalModel);
             Controls.Add(groupBox2);
             Controls.Add(groupBoxMetadataCounts);
@@ -584,8 +549,8 @@ namespace TEAM
             HelpButton = true;
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStripMetadata;
-            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            MinimumSize = new System.Drawing.Size(800, 600);
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MinimumSize = new System.Drawing.Size(688, 525);
             Name = "FormManageMetadata";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "Manage the automation metadata";
@@ -621,7 +586,6 @@ namespace TEAM
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         private System.Windows.Forms.GroupBox groupBoxMetadataCounts;
         private System.Windows.Forms.Label labelHubCount;
-        private System.Windows.Forms.Label labelLsatCount;
         private System.Windows.Forms.Label labelLnkCount;
         private System.Windows.Forms.Label labelSatCount;
         private System.Windows.Forms.Button buttonSaveMetadata;

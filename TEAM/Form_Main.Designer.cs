@@ -30,13 +30,11 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-            groupBox2 = new System.Windows.Forms.GroupBox();
-            labelWorkingEnvironment = new System.Windows.Forms.Label();
-            labelWorkingEnvironmentType = new System.Windows.Forms.Label();
             richTextBoxInformation = new System.Windows.Forms.RichTextBox();
             menuStripMainMenu = new System.Windows.Forms.MenuStrip();
             fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             openMetadataDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openCoreDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             metadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,55 +50,20 @@
             aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             backgroundWorkerEventLog = new System.ComponentModel.BackgroundWorker();
             pictureBox1 = new System.Windows.Forms.PictureBox();
-            openCoreDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            groupBox2.SuspendLayout();
+            labelWorkingEnvironment = new System.Windows.Forms.Label();
+            labelWorkingEnvironmentType = new System.Windows.Forms.Label();
             menuStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
-            // 
-            // groupBox2
-            // 
-            groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            groupBox2.Controls.Add(labelWorkingEnvironment);
-            groupBox2.Controls.Add(labelWorkingEnvironmentType);
-            groupBox2.Location = new System.Drawing.Point(14, 578);
-            groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            groupBox2.Name = "groupBox2";
-            groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            groupBox2.Size = new System.Drawing.Size(294, 57);
-            groupBox2.TabIndex = 22;
-            groupBox2.TabStop = false;
-            groupBox2.Text = "Environment";
-            // 
-            // labelWorkingEnvironment
-            // 
-            labelWorkingEnvironment.AutoSize = true;
-            labelWorkingEnvironment.Location = new System.Drawing.Point(164, 24);
-            labelWorkingEnvironment.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            labelWorkingEnvironment.Name = "labelWorkingEnvironment";
-            labelWorkingEnvironment.Size = new System.Drawing.Size(29, 15);
-            labelWorkingEnvironment.TabIndex = 67;
-            labelWorkingEnvironment.Text = "N/A";
-            // 
-            // labelWorkingEnvironmentType
-            // 
-            labelWorkingEnvironmentType.AutoSize = true;
-            labelWorkingEnvironmentType.Location = new System.Drawing.Point(7, 24);
-            labelWorkingEnvironmentType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            labelWorkingEnvironmentType.Name = "labelWorkingEnvironmentType";
-            labelWorkingEnvironmentType.Size = new System.Drawing.Size(157, 15);
-            labelWorkingEnvironmentType.TabIndex = 65;
-            labelWorkingEnvironmentType.Text = "The working environment is:";
             // 
             // richTextBoxInformation
             // 
             richTextBoxInformation.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             richTextBoxInformation.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            richTextBoxInformation.Location = new System.Drawing.Point(16, 68);
-            richTextBoxInformation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            richTextBoxInformation.Location = new System.Drawing.Point(14, 59);
             richTextBoxInformation.Name = "richTextBoxInformation";
             richTextBoxInformation.ReadOnly = true;
-            richTextBoxInformation.Size = new System.Drawing.Size(884, 591);
+            richTextBoxInformation.Size = new System.Drawing.Size(881, 548);
             richTextBoxInformation.TabIndex = 2;
             richTextBoxInformation.Text = "";
             richTextBoxInformation.TextChanged += richTextBoxInformation_TextChanged;
@@ -111,8 +74,7 @@
             menuStripMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, metadataToolStripMenuItem, configurationToolStripMenuItem, helpToolStripMenuItem });
             menuStripMainMenu.Location = new System.Drawing.Point(0, 0);
             menuStripMainMenu.Name = "menuStripMainMenu";
-            menuStripMainMenu.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            menuStripMainMenu.Size = new System.Drawing.Size(915, 24);
+            menuStripMainMenu.Size = new System.Drawing.Size(908, 24);
             menuStripMainMenu.TabIndex = 4;
             menuStripMainMenu.Text = "menuStrip1";
             // 
@@ -131,6 +93,14 @@
             openMetadataDirectoryToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             openMetadataDirectoryToolStripMenuItem.Text = "&Open Metadata Directory";
             openMetadataDirectoryToolStripMenuItem.Click += openMetadataDirectoryToolStripMenuItem_Click;
+            // 
+            // openCoreDirectoryToolStripMenuItem
+            // 
+            openCoreDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
+            openCoreDirectoryToolStripMenuItem.Name = "openCoreDirectoryToolStripMenuItem";
+            openCoreDirectoryToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+            openCoreDirectoryToolStripMenuItem.Text = "Open Core Directory";
+            openCoreDirectoryToolStripMenuItem.Click += openCoreDirectoryToolStripMenuItem_Click;
             // 
             // toolStripSeparator3
             // 
@@ -243,42 +213,52 @@
             // 
             pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             pictureBox1.Image = Properties.Resources.RavosLogo;
-            pictureBox1.Location = new System.Drawing.Point(774, 517);
-            pictureBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pictureBox1.Location = new System.Drawing.Point(786, 505);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new System.Drawing.Size(127, 115);
+            pictureBox1.Size = new System.Drawing.Size(109, 100);
             pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             pictureBox1.TabIndex = 15;
             pictureBox1.TabStop = false;
             // 
-            // openCoreDirectoryToolStripMenuItem
+            // labelWorkingEnvironment
             // 
-            openCoreDirectoryToolStripMenuItem.Image = Properties.Resources.OpenDirectoryIcon;
-            openCoreDirectoryToolStripMenuItem.Name = "openCoreDirectoryToolStripMenuItem";
-            openCoreDirectoryToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
-            openCoreDirectoryToolStripMenuItem.Text = "Open Core Directory";
-            openCoreDirectoryToolStripMenuItem.Click += openCoreDirectoryToolStripMenuItem_Click;
+            labelWorkingEnvironment.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            labelWorkingEnvironment.AutoSize = true;
+            labelWorkingEnvironment.Location = new System.Drawing.Point(170, 591);
+            labelWorkingEnvironment.Name = "labelWorkingEnvironment";
+            labelWorkingEnvironment.Size = new System.Drawing.Size(26, 13);
+            labelWorkingEnvironment.TabIndex = 69;
+            labelWorkingEnvironment.Text = "N/A";
+            // 
+            // labelWorkingEnvironmentType
+            // 
+            labelWorkingEnvironmentType.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            labelWorkingEnvironmentType.AutoSize = true;
+            labelWorkingEnvironmentType.Location = new System.Drawing.Point(14, 591);
+            labelWorkingEnvironmentType.Name = "labelWorkingEnvironmentType";
+            labelWorkingEnvironmentType.Size = new System.Drawing.Size(154, 13);
+            labelWorkingEnvironmentType.TabIndex = 68;
+            labelWorkingEnvironmentType.Text = "The working environment is:";
             // 
             // FormMain
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             BackColor = System.Drawing.SystemColors.Control;
-            ClientSize = new System.Drawing.Size(915, 647);
-            Controls.Add(groupBox2);
+            ClientSize = new System.Drawing.Size(908, 620);
+            Controls.Add(labelWorkingEnvironment);
+            Controls.Add(labelWorkingEnvironmentType);
             Controls.Add(pictureBox1);
             Controls.Add(richTextBoxInformation);
             Controls.Add(menuStripMainMenu);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStripMainMenu;
-            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            MinimumSize = new System.Drawing.Size(697, 456);
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MinimumSize = new System.Drawing.Size(600, 400);
             Name = "FormMain";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "Taxonomy for ETL Automation Metadata ";
             FormClosed += FormMain_FormClosed;
-            groupBox2.ResumeLayout(false);
-            groupBox2.PerformLayout();
             menuStripMainMenu.ResumeLayout(false);
             menuStripMainMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
@@ -298,10 +278,7 @@
         private System.Windows.Forms.ToolStripMenuItem configurationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generalSettingsToolStripMenuItem;
         internal System.Windows.Forms.RichTextBox richTextBoxInformation;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Label labelWorkingEnvironmentType;
         private System.ComponentModel.BackgroundWorker backgroundWorkerEventLog;
-        private System.Windows.Forms.Label labelWorkingEnvironment;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem displayEventLogToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
@@ -310,6 +287,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         internal System.Windows.Forms.ToolStripMenuItem deployMetadataExamplesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openCoreDirectoryToolStripMenuItem;
+        private System.Windows.Forms.Label labelWorkingEnvironment;
+        private System.Windows.Forms.Label labelWorkingEnvironmentType;
     }
 }
 

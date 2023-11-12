@@ -56,6 +56,13 @@
         {
           "classification": "CoreBusinessConcept"
         }
+      ],
+      "extensions": [
+        {
+          "key": "schema",
+          "value": "dbo",
+          "description": "schema name"
+        }
       ]
     }
   },
@@ -70,7 +77,78 @@
       "sourceDataObjects": [
         {
           "name": "vw_CUSTOMER_DERIVED",
-          "dataItems": [],
+          "dataItems": [
+            {
+              "name": "CUSTOMER_ID",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "CUSTOMER_ID",
+              "dataType": "nvarchar",
+              "characterLength": 100,
+              "ordinalPosition": 1
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 2
+            },
+            {
+              "name": "INSCRIPTION_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 2
+            },
+            {
+              "name": "SOURCE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "SOURCE_TIMESTAMP",
+              "dataType": "datetime2",
+              "numericScale": 7,
+              "ordinalPosition": 3
+            },
+            {
+              "name": "CHANGE_DATA_INDICATOR",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            },
+            {
+              "name": "CHANGE_DATA_INDICATOR",
+              "dataType": "varchar",
+              "characterLength": 100,
+              "ordinalPosition": 4
+            },
+            {
+              "name": "INSCRIPTION_RECORD_ID",
+              "dataType": "int",
+              "ordinalPosition": 5
+            },
+            {
+              "name": "INSCRIPTION_RECORD_ID",
+              "dataType": "int",
+              "ordinalPosition": 5
+            },
+            {
+              "name": "REFERRAL_OFFER_CLEAN",
+              "dataType": "varchar",
+              "characterLength": 7,
+              "ordinalPosition": 6
+            },
+            {
+              "name": "REFERRAL_OFFER_CLEAN",
+              "dataType": "varchar",
+              "characterLength": 7,
+              "ordinalPosition": 6
+            }
+          ],
           "dataObjectConnection": {
             "dataConnectionString": "Derived",
             "extensions": [
@@ -89,6 +167,13 @@
           "dataObjectClassifications": [
             {
               "classification": "Source"
+            }
+          ],
+          "extensions": [
+            {
+              "key": "schema",
+              "value": "bdv",
+              "description": "schema name"
             }
           ]
         }
@@ -138,6 +223,13 @@
         "dataObjectClassifications": [
           {
             "classification": "CoreBusinessConcept"
+          }
+        ],
+        "extensions": [
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
           }
         ]
       },
@@ -269,6 +361,13 @@
             {
               "classification": "Presentation"
             }
+          ],
+          "extensions": [
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
+            }
           ]
         }
       ],
@@ -291,7 +390,7 @@
         }
       ],
       "filterCriterion": "",
-      "enabled": true
+      "enabled": false
     },
     {
       "mappingName": "HUB_CUSTOMER",
@@ -388,6 +487,13 @@
             {
               "classification": "PersistentStagingArea"
             }
+          ],
+          "extensions": [
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
+            }
           ]
         }
       ],
@@ -436,6 +542,13 @@
         "dataObjectClassifications": [
           {
             "classification": "CoreBusinessConcept"
+          }
+        ],
+        "extensions": [
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
           }
         ]
       },
@@ -566,6 +679,13 @@
           "dataObjectClassifications": [
             {
               "classification": "Presentation"
+            }
+          ],
+          "extensions": [
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
             }
           ]
         }
@@ -720,6 +840,13 @@
             {
               "classification": "PersistentStagingArea"
             }
+          ],
+          "extensions": [
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
+            }
           ]
         }
       ],
@@ -768,6 +895,13 @@
         "dataObjectClassifications": [
           {
             "classification": "CoreBusinessConcept"
+          }
+        ],
+        "extensions": [
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
           }
         ]
       },
@@ -898,6 +1032,13 @@
           "dataObjectClassifications": [
             {
               "classification": "Presentation"
+            }
+          ],
+          "extensions": [
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
             }
           ]
         }
@@ -998,6 +1139,13 @@
             {
               "classification": "PersistentStagingArea"
             }
+          ],
+          "extensions": [
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
+            }
           ]
         }
       ],
@@ -1046,6 +1194,13 @@
         "dataObjectClassifications": [
           {
             "classification": "CoreBusinessConcept"
+          }
+        ],
+        "extensions": [
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
           }
         ]
       },
@@ -1176,6 +1331,13 @@
           "dataObjectClassifications": [
             {
               "classification": "Presentation"
+            }
+          ],
+          "extensions": [
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
             }
           ]
         }
@@ -1282,6 +1444,13 @@
             {
               "classification": "PersistentStagingArea"
             }
+          ],
+          "extensions": [
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
+            }
           ]
         }
       ],
@@ -1330,6 +1499,13 @@
         "dataObjectClassifications": [
           {
             "classification": "CoreBusinessConcept"
+          }
+        ],
+        "extensions": [
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
           }
         ]
       },
@@ -1460,6 +1636,13 @@
           "dataObjectClassifications": [
             {
               "classification": "Presentation"
+            }
+          ],
+          "extensions": [
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
             }
           ]
         }
@@ -1585,6 +1768,13 @@
             {
               "classification": "PersistentStagingArea"
             }
+          ],
+          "extensions": [
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
+            }
           ]
         }
       ],
@@ -1633,6 +1823,13 @@
         "dataObjectClassifications": [
           {
             "classification": "CoreBusinessConcept"
+          }
+        ],
+        "extensions": [
+          {
+            "key": "schema",
+            "value": "dbo",
+            "description": "schema name"
           }
         ]
       },
@@ -1763,6 +1960,13 @@
           "dataObjectClassifications": [
             {
               "classification": "Presentation"
+            }
+          ],
+          "extensions": [
+            {
+              "key": "schema",
+              "value": "dbo",
+              "description": "schema name"
             }
           ]
         }

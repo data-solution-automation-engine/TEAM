@@ -21,10 +21,17 @@ namespace TEAM
 
         public FormMain()
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
+
+            this.Font = SystemFonts.IconTitleFont;
+
+            this.Location = Screen.PrimaryScreen.WorkingArea.Location;
+            this.StartPosition = FormStartPosition.Manual;
+
             InitializeComponent();
 
             // Set the version of the build for everything
-            const string versionNumberForTeamApplication = "v1.6.12";
+            const string versionNumberForTeamApplication = "v1.6.13";
             Text = $@"Taxonomy for ETL Automation Metadata {versionNumberForTeamApplication}";
 
             TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The TEAM root path is {globalParameters.RootPath}."));
@@ -533,7 +540,7 @@ namespace TEAM
 
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start(Utility.GetDefaultBrowserPath(), "http://roelantvos.com/blog/team/");
+            Process.Start(Utility.GetDefaultBrowserPath(), "https://github.com/data-solution-automation-engine/TEAM");
         }
 
         private void deployMetadataExamplesToolStripMenuItem_Click(object sender, EventArgs e)

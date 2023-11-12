@@ -14,7 +14,7 @@ namespace TEAM
     /// <summary>
     /// Derived Custom Connection TabPage inherited from the TabPage class.
     /// </summary>
-    internal class TabPageConnections : TabPage
+    internal class TabPageSqlServerConnection : TabPage
     {
         // Startup flag, disabled in constructor. Used to prevent some events from firing twice (creation and value setting).
         internal bool StartUpIndicator = true;
@@ -55,7 +55,7 @@ namespace TEAM
         /// <summary>
         /// Constructor to instantiate a new Custom Tab Page.
         /// </summary>
-        public TabPageConnections(object input)
+        public TabPageSqlServerConnection(object input)
         {
             _localConnection = (TeamConnection) input;
 
@@ -84,19 +84,7 @@ namespace TEAM
 
             #region Database connection controls
 
-            // Add ConnectionString TextBox
-            _textBoxConnectionString = new TextBox();
-            localPanel.Controls.Add(_textBoxConnectionString);
-            _textBoxConnectionString.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            _textBoxConnectionString.Location = new Point(6, 245);
-            _textBoxConnectionString.Size = new Size(850, 21);
-            _textBoxConnectionString.BorderStyle = BorderStyle.None;
-            _textBoxConnectionString.BackColor = Color.Snow;
-            _textBoxConnectionString.Name = "textBoxConnectionString";
-            _textBoxConnectionString.ReadOnly = true;
-            _textBoxConnectionString.TabStop = false;
-
-            // Add GroupBox for Database content
+            // GroupBox for Database content
             var groupBoxDatabase = new GroupBox();
             localPanel.Controls.Add(groupBoxDatabase);
             groupBoxDatabase.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
@@ -106,7 +94,7 @@ namespace TEAM
             groupBoxDatabase.Text = @"Database";
             groupBoxDatabase.TabStop = false;
             
-            // Add Database Label
+            // Database Label
             var labelDatabase = new Label();
             groupBoxDatabase.Controls.Add(labelDatabase);
             labelDatabase.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
@@ -116,7 +104,7 @@ namespace TEAM
             labelDatabase.Text = @"Database name";
             labelDatabase.TabStop = false;
 
-            // Add Server Label
+            // Server Label
             var labelServer = new Label();
             groupBoxDatabase.Controls.Add(labelServer);
             labelServer.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
@@ -289,6 +277,19 @@ namespace TEAM
             _textBoxPassword.Text = _localConnection.DatabaseServer.NamedUserPassword;
             _textBoxPassword.TextChanged += UpdateConnectionStringWithPassword;
             _textBoxPassword.TabIndex = 8;
+
+            // ConnectionString TextBox
+            _textBoxConnectionString = new TextBox();
+            localPanel.Controls.Add(_textBoxConnectionString);
+            _textBoxConnectionString.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            _textBoxConnectionString.Location = new Point(6, 245);
+            _textBoxConnectionString.Size = new Size(850, 21);
+            _textBoxConnectionString.BorderStyle = BorderStyle.None;
+            _textBoxConnectionString.BackColor = Color.Snow;
+            _textBoxConnectionString.Name = "textBoxConnectionString";
+            _textBoxConnectionString.ReadOnly = true;
+            _textBoxConnectionString.TabStop = false;
+
             #endregion
 
             #region MFA panel
@@ -432,7 +433,7 @@ namespace TEAM
             groupBoxConnection.Controls.Add(_radioButtonDatabaseCatalog);
             _radioButtonDatabaseCatalog.Location = new Point(172, 66);
             _radioButtonDatabaseCatalog.Name = "radioButtonDatabaseCatalog";
-            _radioButtonDatabaseCatalog.Text = ConnectionTypes.Catalog.ToString();
+            _radioButtonDatabaseCatalog.Text = CatalogConnectionTypes.Catalog.ToString();
             _radioButtonDatabaseCatalog.CheckedChanged += UpdateConnectionTypeControls;
             _radioButtonDatabaseCatalog.TabIndex = 52;
 
@@ -441,7 +442,7 @@ namespace TEAM
             groupBoxConnection.Controls.Add(_radioButtonDatabaseCustom);
             _radioButtonDatabaseCustom.Location = new Point(172, 88);
             _radioButtonDatabaseCustom.Name = "radioButtonCustom";
-            _radioButtonDatabaseCustom.Text = ConnectionTypes.Custom.ToString();
+            _radioButtonDatabaseCustom.Text = CatalogConnectionTypes.Custom.ToString();
             _radioButtonDatabaseCustom.CheckedChanged += UpdateConnectionTypeControls;
             _radioButtonDatabaseCustom.TabIndex = 53;
 
@@ -468,7 +469,7 @@ namespace TEAM
 
             #endregion
             
-            // Add Save Button
+            // Save Button
             Button saveButton = new Button();
             localPanel.Controls.Add(saveButton);
             saveButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
@@ -479,7 +480,7 @@ namespace TEAM
             saveButton.Click += SaveConnection;
             saveButton.TabIndex = 60;
 
-            // Add Delete Button
+            // Delete Button
             Button deleteButton = new Button();
             localPanel.Controls.Add(deleteButton);
             deleteButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
@@ -490,7 +491,7 @@ namespace TEAM
             deleteButton.Click += DeleteConnection;
             deleteButton.TabIndex = 70;
 
-            // Add test Button
+            // Test Button
             Button testButton = new Button();
             localPanel.Controls.Add(testButton);
             testButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Left);
@@ -675,7 +676,7 @@ namespace TEAM
                     jsonKeyLookup.ConnectionInternalId = _localConnection.ConnectionInternalId;
                     jsonKeyLookup.ConnectionName = _localConnection.ConnectionName;
                     jsonKeyLookup.ConnectionKey = _localConnection.ConnectionKey;
-                    jsonKeyLookup.ConnectionType = GetSelectedConnectionTypeRadioButtonFromForm();
+                    jsonKeyLookup.CatalogConnectionType = GetSelectedConnectionTypeRadioButtonFromForm();
                     jsonKeyLookup.ConnectionNotes = _localConnection.ConnectionNotes;
                     jsonKeyLookup.DatabaseServer = _localConnection.DatabaseServer;
                     jsonKeyLookup.ConnectionCustomQuery = _localConnection.ConnectionCustomQuery;
@@ -734,7 +735,7 @@ namespace TEAM
         // Retrieve a single value on which RadioButton has been checked.
         public void SetConnectionTypesRadioButton()
         {
-            if (_localConnection.ConnectionType == ConnectionTypes.Catalog)
+            if (_localConnection.CatalogConnectionType == CatalogConnectionTypes.Catalog)
             {
                 _radioButtonDatabaseCatalog.Checked = true;
             }
@@ -748,13 +749,13 @@ namespace TEAM
         /// Retrieve a single value on which RadioButton has been checked.
         /// </summary>
         /// <returns>ConnectionType enumerator (TeamConnection)</returns>
-        public ConnectionTypes GetSelectedConnectionTypeRadioButtonFromForm()
+        public CatalogConnectionTypes GetSelectedConnectionTypeRadioButtonFromForm()
         {
-            var localConnectionType = ConnectionTypes.Catalog;
+            var localConnectionType = CatalogConnectionTypes.Catalog;
 
             if (_radioButtonDatabaseCustom.Checked)
             {
-                localConnectionType = ConnectionTypes.Custom;
+                localConnectionType = CatalogConnectionTypes.Custom;
             }
 
             return localConnectionType;
@@ -875,11 +876,11 @@ namespace TEAM
             _groupBoxNamedUser.Visible = false;
             _groupBoxMfa.Visible = false;
 
-            _localConnection.DatabaseServer.authenticationType = ServerAuthenticationTypes.SSPI;
+            _localConnection.DatabaseServer.AuthenticationType = ServerAuthenticationTypes.SSPI;
 
             if (_radioButtonIntegratedSecurity.Checked)
             {
-                _localConnection.DatabaseServer.authenticationType = ServerAuthenticationTypes.SSPI;
+                _localConnection.DatabaseServer.AuthenticationType = ServerAuthenticationTypes.SSPI;
             }
 
             // Display the connection string results
@@ -898,7 +899,7 @@ namespace TEAM
             {
                 _groupBoxNamedUser.Visible = true;
                 _groupBoxMfa.Visible = false;
-                _localConnection.DatabaseServer.authenticationType = ServerAuthenticationTypes.NamedUser;
+                _localConnection.DatabaseServer.AuthenticationType = ServerAuthenticationTypes.NamedUser;
             }
 
             // Display the connection string results
@@ -917,7 +918,7 @@ namespace TEAM
             {
                 _groupBoxMfa.Visible = true;
                 _groupBoxNamedUser.Visible = false;
-                _localConnection.DatabaseServer.authenticationType = ServerAuthenticationTypes.MFA;
+                _localConnection.DatabaseServer.AuthenticationType = ServerAuthenticationTypes.MFA;
                 _localConnection.DatabaseServer.MultiFactorAuthenticationUser = _textBoxMfaUserName.Text;
             }
 
@@ -933,7 +934,7 @@ namespace TEAM
                 if (((RadioButton) sender).Name == _radioButtonDatabaseCustom.Name && _radioButtonDatabaseCustom.Checked)
                 {
                     // Commit the setting to memory
-                    _localConnection.ConnectionType = ConnectionTypes.Custom;
+                    _localConnection.CatalogConnectionType = CatalogConnectionTypes.Custom;
 
                     // Database connection controls
                     //_groupBoxNamedUser.Enabled = false;
@@ -956,7 +957,7 @@ namespace TEAM
                 if (((RadioButton) sender).Name == _radioButtonDatabaseCatalog.Name && _radioButtonDatabaseCatalog.Checked)
                 {
                     // Commit the setting to memory
-                    _localConnection.ConnectionType = ConnectionTypes.Catalog;
+                    _localConnection.CatalogConnectionType = CatalogConnectionTypes.Catalog;
 
                     // Database connection controls
                     //_groupBoxNamedUser.Enabled = true;

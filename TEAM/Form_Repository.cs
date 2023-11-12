@@ -16,6 +16,7 @@ namespace TEAM
 
         public FormManageRepository()
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
 
             foreach (var connection in TeamConfiguration.ConnectionDictionary)
@@ -486,15 +487,6 @@ namespace TEAM
             SetStandardConfigurationSettings();
         }
 
-        private void linkLabelSource_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Change the color of the link text by setting LinkVisited
-            // to true.
-            linkLabelSource.LinkVisited = true;
-            //Call the Process.Start method to open the default browser
-            //with a URL:
-            System.Diagnostics.Process.Start("http://roelantvos.com/blog/team-sample-data/");
-        }
 
  private void backgroundWorkerSampleData_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {

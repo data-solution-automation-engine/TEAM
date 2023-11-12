@@ -8,7 +8,8 @@ namespace TEAM
     public partial class FormManageValidation : FormBase
     {
         public FormManageValidation()
-        {            
+        {
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
 
             // Make sure the validation information is available in this form.

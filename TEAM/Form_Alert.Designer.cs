@@ -41,29 +41,26 @@
             // 
             labelProgressMessageFormAlert.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             labelProgressMessageFormAlert.AutoSize = true;
-            labelProgressMessageFormAlert.Location = new System.Drawing.Point(10, 526);
-            labelProgressMessageFormAlert.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelProgressMessageFormAlert.Location = new System.Drawing.Point(9, 703);
             labelProgressMessageFormAlert.Name = "labelProgressMessageFormAlert";
-            labelProgressMessageFormAlert.Size = new System.Drawing.Size(52, 15);
+            labelProgressMessageFormAlert.Size = new System.Drawing.Size(51, 13);
             labelProgressMessageFormAlert.TabIndex = 0;
             labelProgressMessageFormAlert.Text = "Progress";
             // 
             // progressBarFormAlert
             // 
             progressBarFormAlert.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            progressBarFormAlert.Location = new System.Drawing.Point(14, 496);
-            progressBarFormAlert.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            progressBarFormAlert.Location = new System.Drawing.Point(12, 677);
             progressBarFormAlert.Name = "progressBarFormAlert";
-            progressBarFormAlert.Size = new System.Drawing.Size(418, 27);
+            progressBarFormAlert.Size = new System.Drawing.Size(358, 23);
             progressBarFormAlert.TabIndex = 1;
             // 
             // buttonCancelFormAlert
             // 
             buttonCancelFormAlert.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            buttonCancelFormAlert.Location = new System.Drawing.Point(1306, 496);
-            buttonCancelFormAlert.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonCancelFormAlert.Location = new System.Drawing.Point(964, 677);
             buttonCancelFormAlert.Name = "buttonCancelFormAlert";
-            buttonCancelFormAlert.Size = new System.Drawing.Size(127, 46);
+            buttonCancelFormAlert.Size = new System.Drawing.Size(109, 40);
             buttonCancelFormAlert.TabIndex = 2;
             buttonCancelFormAlert.Text = "Cancel";
             buttonCancelFormAlert.UseVisualStyleBackColor = true;
@@ -72,10 +69,9 @@
             // buttonCloseFormAlert
             // 
             buttonCloseFormAlert.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            buttonCloseFormAlert.Location = new System.Drawing.Point(1441, 496);
-            buttonCloseFormAlert.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonCloseFormAlert.Location = new System.Drawing.Point(1080, 677);
             buttonCloseFormAlert.Name = "buttonCloseFormAlert";
-            buttonCloseFormAlert.Size = new System.Drawing.Size(127, 46);
+            buttonCloseFormAlert.Size = new System.Drawing.Size(109, 40);
             buttonCloseFormAlert.TabIndex = 3;
             buttonCloseFormAlert.Text = "Close";
             buttonCloseFormAlert.UseVisualStyleBackColor = true;
@@ -87,21 +83,19 @@
             richTextBoxMetadataLogFormAlert.BackColor = System.Drawing.SystemColors.Info;
             richTextBoxMetadataLogFormAlert.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             richTextBoxMetadataLogFormAlert.HideSelection = false;
-            richTextBoxMetadataLogFormAlert.Location = new System.Drawing.Point(14, 14);
-            richTextBoxMetadataLogFormAlert.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            richTextBoxMetadataLogFormAlert.Location = new System.Drawing.Point(12, 12);
             richTextBoxMetadataLogFormAlert.Name = "richTextBoxMetadataLogFormAlert";
             richTextBoxMetadataLogFormAlert.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
-            richTextBoxMetadataLogFormAlert.Size = new System.Drawing.Size(1553, 475);
+            richTextBoxMetadataLogFormAlert.Size = new System.Drawing.Size(1177, 659);
             richTextBoxMetadataLogFormAlert.TabIndex = 4;
             richTextBoxMetadataLogFormAlert.Text = "";
             // 
             // buttonShowLogFormAlert
             // 
             buttonShowLogFormAlert.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            buttonShowLogFormAlert.Location = new System.Drawing.Point(1172, 496);
-            buttonShowLogFormAlert.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonShowLogFormAlert.Location = new System.Drawing.Point(850, 677);
             buttonShowLogFormAlert.Name = "buttonShowLogFormAlert";
-            buttonShowLogFormAlert.Size = new System.Drawing.Size(127, 46);
+            buttonShowLogFormAlert.Size = new System.Drawing.Size(109, 40);
             buttonShowLogFormAlert.TabIndex = 5;
             buttonShowLogFormAlert.Text = "Show Log File";
             buttonShowLogFormAlert.UseVisualStyleBackColor = true;
@@ -109,9 +103,9 @@
             // 
             // Form_Alert
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1582, 556);
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            ClientSize = new System.Drawing.Size(1201, 729);
             Controls.Add(buttonShowLogFormAlert);
             Controls.Add(richTextBoxMetadataLogFormAlert);
             Controls.Add(buttonCloseFormAlert);
@@ -119,7 +113,7 @@
             Controls.Add(progressBarFormAlert);
             Controls.Add(labelProgressMessageFormAlert);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             Name = "Form_Alert";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "Processing the metadata";

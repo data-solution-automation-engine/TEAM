@@ -37,10 +37,9 @@
             // buttonSave
             // 
             buttonSave.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            buttonSave.Location = new System.Drawing.Point(684, 658);
-            buttonSave.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonSave.Location = new System.Drawing.Point(1057, 648);
             buttonSave.Name = "buttonSave";
-            buttonSave.Size = new System.Drawing.Size(127, 46);
+            buttonSave.Size = new System.Drawing.Size(109, 40);
             buttonSave.TabIndex = 2;
             buttonSave.Text = "Save";
             buttonSave.UseVisualStyleBackColor = true;
@@ -49,10 +48,9 @@
             // buttonClose
             // 
             buttonClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            buttonClose.Location = new System.Drawing.Point(818, 658);
-            buttonClose.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonClose.Location = new System.Drawing.Point(1172, 648);
             buttonClose.Name = "buttonClose";
-            buttonClose.Size = new System.Drawing.Size(127, 46);
+            buttonClose.Size = new System.Drawing.Size(109, 40);
             buttonClose.TabIndex = 3;
             buttonClose.Text = "Close";
             buttonClose.UseVisualStyleBackColor = true;
@@ -64,24 +62,23 @@
             richTextBoxFormContent.BackColor = System.Drawing.SystemColors.Window;
             richTextBoxFormContent.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             richTextBoxFormContent.HideSelection = false;
-            richTextBoxFormContent.Location = new System.Drawing.Point(14, 14);
-            richTextBoxFormContent.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            richTextBoxFormContent.Location = new System.Drawing.Point(12, 12);
             richTextBoxFormContent.Name = "richTextBoxFormContent";
             richTextBoxFormContent.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
-            richTextBoxFormContent.Size = new System.Drawing.Size(930, 637);
+            richTextBoxFormContent.Size = new System.Drawing.Size(1269, 631);
             richTextBoxFormContent.TabIndex = 4;
             richTextBoxFormContent.Text = "";
             // 
             // Form_Edit_DataObjectMapping
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(959, 718);
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            ClientSize = new System.Drawing.Size(1293, 700);
             Controls.Add(richTextBoxFormContent);
             Controls.Add(buttonClose);
             Controls.Add(buttonSave);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-            Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             Name = "Form_Edit_DataObjectMapping";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "Edit";

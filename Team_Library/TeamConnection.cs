@@ -13,13 +13,20 @@ namespace TEAM_Library
     {
         NamedUser,
         SSPI,
-        MFA
+        MFA,
+        SSO
+    }
+
+    public enum TechnologyConnectionType
+    {
+        SqlServer,
+        Snowflake
     }
 
     /// <summary>
     /// Connection types
     /// </summary>
-    public enum ConnectionTypes
+    public enum CatalogConnectionTypes
     {
         Catalog,
         Custom
@@ -32,7 +39,10 @@ namespace TEAM_Library
         public string ConnectionKey { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public ConnectionTypes ConnectionType { get; set; }
+
+        public TechnologyConnectionType TechnologyConnectionType { get; set; }
+
+        public CatalogConnectionTypes CatalogConnectionType { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string ConnectionNotes { get; set; }
@@ -82,27 +92,27 @@ namespace TEAM_Library
                     outputConnectionString += ("," + localDatabaseConnection.PortNumber);
                 }
 
-                if (DatabaseServer.authenticationType == ServerAuthenticationTypes.SSPI)
+                if (DatabaseServer.AuthenticationType == ServerAuthenticationTypes.SSPI)
                 {
                     outputConnectionString += ";TrustServerCertificate=true";
                     outputConnectionString += ";Initial Catalog=" + localDatabaseConnection.DatabaseName;
                     outputConnectionString += ";Integrated Security=SSPI";
                 }
-                else if (DatabaseServer.authenticationType == ServerAuthenticationTypes.NamedUser)
+                else if (DatabaseServer.AuthenticationType == ServerAuthenticationTypes.NamedUser)
                 {
                     outputConnectionString += ";TrustServerCertificate=true";
                     outputConnectionString += ";Initial Catalog=" + localDatabaseConnection.DatabaseName;
                     outputConnectionString += ";user id=" + localDatabaseConnection.NamedUserName;
                     outputConnectionString += ";password=" + localDatabaseConnection.NamedUserPassword;
                 }
-                else if (DatabaseServer.authenticationType == ServerAuthenticationTypes.MFA)
+                else if (DatabaseServer.AuthenticationType == ServerAuthenticationTypes.MFA)
                 {
                     outputConnectionString += ";Authentication=Active Directory Interactive;";
                     outputConnectionString += ";user id=" + localDatabaseConnection.MultiFactorAuthenticationUser;
                     outputConnectionString += ";Database=" + localDatabaseConnection.DatabaseName;
                 }
 
-                if (localDatabaseConnection.NamedUserPassword.Length > 0 && mask)
+                if (localDatabaseConnection.NamedUserPassword != null && localDatabaseConnection.NamedUserPassword.Length > 0 && mask)
                 {
                     outputConnectionString = outputConnectionString.Replace(localDatabaseConnection.NamedUserPassword, "*****");
                 }
@@ -114,6 +124,33 @@ namespace TEAM_Library
 
             // Add hard-coded timeout value.
             outputConnectionString += ";Command Timeout=800";
+
+            return outputConnectionString;
+        }
+
+        public string CreateSnowflakeSSOConnectionString(bool mask)
+        {
+            // Initialise the return variable
+            var outputConnectionString = "";
+
+            if (DatabaseServer != null)
+            {
+                outputConnectionString = $"ACCOUNT={DatabaseServer.Account};" +
+                                         $"USER={DatabaseServer.MultiFactorAuthenticationUser};" +
+                                         $"DB={DatabaseServer.DatabaseName};" +
+                                          "AUTHENTICATOR=externalbrowser;" +
+                                         $"ROLE={DatabaseServer.Role};" +
+                                         $"SCHEMA={DatabaseServer.SchemaName}";
+            }
+            else
+            {
+                outputConnectionString = "ACCOUNT=<>;" +
+                                         "USER=<>;" +
+                                         "DB=<>;" +
+                                         "AUTHENTICATOR=externalbrowser;" +
+                                         "ROLE=<>;" +
+                                         "SCHEMA=<>";
+            }
 
             return outputConnectionString;
         }
@@ -146,10 +183,16 @@ namespace TEAM_Library
     public class TeamDatabaseConnection
     {
         public string DatabaseName { get; set; }
+
+        public string Role { get; set; } //Snowflake only
+
+        public string Warehouse { get; set; } //Snowflake only
         public string SchemaName { get; set; }
         public string ServerName { get; set; }
         public string PortNumber { get; set; }
-        public ServerAuthenticationTypes authenticationType { get; set; }
+
+        public string Account { get; set; }
+        public ServerAuthenticationTypes AuthenticationType { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string NamedUserName { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -159,20 +202,20 @@ namespace TEAM_Library
 
         public bool IsSSPI()
         {
-            var returnValue = authenticationType == ServerAuthenticationTypes.SSPI;
+            var returnValue = AuthenticationType == ServerAuthenticationTypes.SSPI;
 
             return returnValue;
         }
         public bool IsNamedUser()
         {
-            var returnValue = authenticationType == ServerAuthenticationTypes.NamedUser;
+            var returnValue = AuthenticationType == ServerAuthenticationTypes.NamedUser;
 
             return returnValue;
         }
 
         public bool IsMfa()
         {
-            var returnValue = authenticationType == ServerAuthenticationTypes.MFA;
+            var returnValue = AuthenticationType == ServerAuthenticationTypes.MFA;
 
             return returnValue;
         }
@@ -295,13 +338,13 @@ namespace TEAM_Library
                 ConnectionInternalId = "MetadataConnectionInternalId",
                 ConnectionKey = "Metadata",
                 ConnectionName = "Metadata Repository",
-                ConnectionType = ConnectionTypes.Catalog,
+                CatalogConnectionType = CatalogConnectionTypes.Catalog,
                 ConnectionNotes = "Default metadata repository connection."
             };
 
             var newTeamDatabaseConnectionMetadata = new TeamDatabaseConnection
             {
-                authenticationType = ServerAuthenticationTypes.SSPI,
+                AuthenticationType = ServerAuthenticationTypes.SSPI,
                 DatabaseName = "900_Metadata",
                 SchemaName = "dbo",
                 NamedUserName = "sa",
@@ -318,13 +361,13 @@ namespace TEAM_Library
                 ConnectionInternalId =  "SourceConnectionInternalId",
                 ConnectionKey = "Source",
                 ConnectionName = "Source System",
-                ConnectionType = ConnectionTypes.Catalog,
+                CatalogConnectionType = CatalogConnectionTypes.Catalog,
                 ConnectionNotes = "Sample source system connection."
             };
 
             var newTeamDatabaseConnectionSource = new TeamDatabaseConnection
             {
-                authenticationType = ServerAuthenticationTypes.SSPI,
+                AuthenticationType = ServerAuthenticationTypes.SSPI,
                 DatabaseName = "000_Source",
                 SchemaName = "dbo",
                 NamedUserName = "sa",
@@ -341,13 +384,13 @@ namespace TEAM_Library
                 ConnectionInternalId =  "StagingConnectionInternalId",
                 ConnectionKey = "Staging",
                 ConnectionName = "Staging / Landing Area",
-                ConnectionType = ConnectionTypes.Catalog,
+                CatalogConnectionType = CatalogConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 
             var newTeamDatabaseConnectionStaging = new TeamDatabaseConnection
             {
-                authenticationType = ServerAuthenticationTypes.SSPI,
+                AuthenticationType = ServerAuthenticationTypes.SSPI,
                 DatabaseName = "100_Staging_Area",
                 SchemaName = "dbo",
                 NamedUserName = "sa",
@@ -364,13 +407,13 @@ namespace TEAM_Library
                 ConnectionInternalId =  "PsaConnectionInternalId",
                 ConnectionKey = "PSA",
                 ConnectionName = "Persistent Staging Area",
-                ConnectionType = ConnectionTypes.Catalog,
+                CatalogConnectionType = CatalogConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 
             var newTeamDatabaseConnectionPsa = new TeamDatabaseConnection
             {
-                authenticationType = ServerAuthenticationTypes.SSPI,
+                AuthenticationType = ServerAuthenticationTypes.SSPI,
                 DatabaseName = "150_Persistent_Staging_Area",
                 SchemaName = "dbo",
                 NamedUserName = "sa",
@@ -387,13 +430,13 @@ namespace TEAM_Library
                 ConnectionInternalId =  "IntegrationConnectionInternalId",
                 ConnectionKey = "Integration",
                 ConnectionName = "Integration Layer",
-                ConnectionType = ConnectionTypes.Catalog,
+                CatalogConnectionType = CatalogConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 
             var newTeamDatabaseConnectionIntegration = new TeamDatabaseConnection
             {
-                authenticationType = ServerAuthenticationTypes.SSPI,
+                AuthenticationType = ServerAuthenticationTypes.SSPI,
                 DatabaseName = "200_Integration_Layer",
                 SchemaName = "dbo",
                 NamedUserName = "sa",
@@ -410,13 +453,13 @@ namespace TEAM_Library
                 ConnectionInternalId = "IntegrationConnectionInternalDerivedId",
                 ConnectionKey = "Derived",
                 ConnectionName = "Integration Derived",
-                ConnectionType = ConnectionTypes.Catalog,
+                CatalogConnectionType = CatalogConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 
             var newTeamDatabaseConnectionIntegrationDerived = new TeamDatabaseConnection
             {
-                authenticationType = ServerAuthenticationTypes.SSPI,
+                AuthenticationType = ServerAuthenticationTypes.SSPI,
                 DatabaseName = "200_Integration_Layer",
                 SchemaName = "bdv",
                 NamedUserName = "sa",
@@ -433,13 +476,13 @@ namespace TEAM_Library
                 ConnectionInternalId = "PresentationConnectionInternalId",
                 ConnectionKey = "Presentation",
                 ConnectionName = "Presentation Layer",
-                ConnectionType = ConnectionTypes.Catalog,
+                CatalogConnectionType = CatalogConnectionTypes.Catalog,
                 ConnectionNotes = ""
             };
 
             var newTeamDatabaseConnectionPresentation = new TeamDatabaseConnection
             {
-                authenticationType = ServerAuthenticationTypes.SSPI,
+                AuthenticationType = ServerAuthenticationTypes.SSPI,
                 DatabaseName = "300_Presentation_Layer",
                 SchemaName = "dbo",
                 NamedUserName = "sa",
