@@ -9,9 +9,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Microsoft.SqlServer.Management.Dmf;
 using TEAM_Library;
 using static TEAM.DataGridViewDataObjects;
 using DataObject = DataWarehouseAutomation.DataObject;
@@ -356,11 +358,13 @@ namespace TEAM
                 var comboBoxValueSource = row[(int)DataObjectMappingGridColumns.SourceConnection].ToString();
                 var comboBoxValueTarget = row[(int)DataObjectMappingGridColumns.TargetConnection].ToString();
 
+                var targetDataObjectName = row[(int)DataObjectMappingGridColumns.TargetDataObjectName].ToString();
+
                 if (!localConnectionKeyList.Contains(comboBoxValueSource))
                 {
                     if (!userFeedbackList.Contains(comboBoxValueSource))
                     {
-                        userFeedbackList.Add(comboBoxValueSource);
+                        userFeedbackList.Add(comboBoxValueSource + $", related to {targetDataObjectName}, ");
                     }
 
                     row[(int)DataObjectMappingGridColumns.SourceConnection] = DBNull.Value;
@@ -370,7 +374,7 @@ namespace TEAM
                 {
                     if (!userFeedbackList.Contains(comboBoxValueTarget))
                     {
-                        userFeedbackList.Add(comboBoxValueTarget);
+                        userFeedbackList.Add(comboBoxValueTarget + $", related to {targetDataObjectName}, ");
                     }
 
                     row[(int)DataObjectMappingGridColumns.TargetConnection] = DBNull.Value;
@@ -2303,25 +2307,28 @@ namespace TEAM
 
             try
             {
+                // Loop through the checked connections on the reverse-engineering form.
                 foreach (var checkedItem in checkedListBoxReverseEngineeringAreas.CheckedItems)
                 {
                     if (checkedItem != null)
                     {
-                        var localConnectionObject = (KeyValuePair<TeamConnection, string>)checkedItem;
+                        // Get the connection details.
+                        var teamConnection = (KeyValuePair<TeamConnection, string>)checkedItem;
 
-                        var updateMessage = $"Reverse-engineering is now attempted for connection '{localConnectionObject.Value}'";
+                        var updateMessage = $"Reverse-engineering is now attempted for connection '{teamConnection.Value}'";
                         TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, updateMessage));
                         ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n{updateMessage}");
 
                         try
                         {
+                            // Get the subset of mappings for which the data objects need ot be reverse-engineered.
                             var filteredRows = GetFilteredDataObjectMappingDataTableRows();
 
                             // Get the information from the database catalog.
-                            var reverseEngineerResults = ReverseEngineerModelMetadata(localConnectionObject.Key, filteredRows);
+                            var reverseEngineerResults = ReverseEngineerModelMetadata(teamConnection.Key, filteredRows);
 
-                            // For Snowflake only, convert INT64 back to INT32
-                            if (localConnectionObject.Key.TechnologyConnectionType == TechnologyConnectionType.Snowflake && reverseEngineerResults != null)
+                            // For Snowflake only, convert INT64 back to INT32.
+                            if (teamConnection.Key.TechnologyConnectionType == TechnologyConnectionType.Snowflake && reverseEngineerResults != null)
                             {
                                 DataTable dtCloned = reverseEngineerResults.Clone();
                                 dtCloned.Columns["ordinalPosition"].DataType = typeof(Int32);
@@ -2336,7 +2343,7 @@ namespace TEAM
 
                             if (reverseEngineerResults == null || reverseEngineerResults.Rows.Count == 0)
                             {
-                                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"Reverse-engineering against connection '{localConnectionObject.Value}' did not return any results."));
+                                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, $"Reverse-engineering against connection '{teamConnection.Value}' did not return any results."));
                             }
 
                             if (reverseEngineerResults != null)
@@ -2346,12 +2353,12 @@ namespace TEAM
 
                             Thread.CurrentThread.Join(0);
 
-                            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - Completed '{localConnectionObject.Key.ConnectionKey}' reverse-engineering at {DateTime.Now:HH:mm:ss tt}.");
+                            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - Completed '{teamConnection.Key.ConnectionKey}' reverse-engineering at {DateTime.Now:HH:mm:ss tt}.");
                         }
                         catch (Exception exception)
                         {
-                            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - There was an issue reverse engineering '{localConnectionObject.Key.ConnectionKey}'. The error is {exception.Message}.");
-                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"Reverse-engineering failed for connection '{localConnectionObject.Value}'. The error message is {exception.Message}"));
+                            ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - There was an issue reverse engineering '{teamConnection.Key.ConnectionKey}'. The error is {exception.Message}.");
+                            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"Reverse-engineering failed for connection '{teamConnection.Value}'. The error message is {exception.Message}"));
                         }
                     }
                 }
@@ -2462,6 +2469,7 @@ namespace TEAM
         /// <param name="filteredDataObjectMappingDataRows"></param>
         private DataTable ReverseEngineerModelMetadata(TeamConnection teamConnection, List<DataRow> filteredDataObjectMappingDataRows)
         {
+            // The return value, a data table containing all results.
             DataTable reverseEngineerResults = new DataTable();
 
             var filteredObjects = GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows);
@@ -2504,47 +2512,54 @@ namespace TEAM
                 {
                     conn.Open();
 
-                    var sqlStatementForDataItems = SnowflakeStatementForDataItems(filteredObjects, teamConnection);
-                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The reverse-engineering query run for connection '{teamConnection.ConnectionKey}' is \r\n {sqlStatementForDataItems}"));
-
-                    // Load the data table with the catalog details.
-                    IDbCommand cmd = conn.CreateCommand();
-                    cmd.CommandText = $"USE WAREHOUSE {teamConnection.DatabaseServer.Warehouse}";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = sqlStatementForDataItems;
-                    var dataReader = cmd.ExecuteReader();
-                    reverseEngineerResults.Load(dataReader);
-                    
-                    // Update the Primary and Multi-Active keys.
-                    DataTable reverseEngineerKeys = new DataTable();
-                    IDbCommand cmdKeys = conn.CreateCommand();
-                    cmdKeys.CommandText = $"USE WAREHOUSE {teamConnection.DatabaseServer.Warehouse}";
-                    cmdKeys.ExecuteNonQuery();
-                    cmdKeys.CommandText = $"SHOW PRIMARY KEYS;";
-                    cmdKeys.ExecuteNonQuery();
-                    cmdKeys.CommandText = "SELECT \"table_name\",\"column_name\"\r\nFROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))\r\nORDER BY \"table_name\";";
-                    var dataReaderKeys = cmdKeys.ExecuteReader();
-                    reverseEngineerKeys.Load(dataReaderKeys);
-
-                    // Apply the keys to the main reverse-engineering result set.
-                    foreach (DataRow keyRow in reverseEngineerResults.Rows)
+                    foreach (var dataObject in filteredObjects)
                     {
-                        var results = from localRow in reverseEngineerKeys.AsEnumerable()
-                            where localRow.Field<string>("table_name") == keyRow["tableName"].ToString() &&
-                                  localRow.Field<string>("column_name") == keyRow["columnName"].ToString()
-                            select localRow;
+                        List<DataRow> testList = new List<DataRow>();
+                        testList.Add(dataObject);
 
-                        if (results.FirstOrDefault() != null)
+                        var sqlStatementForDataItems = SnowflakeStatementForDataItems(testList, teamConnection);
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
+                            $"The reverse-engineering query run for connection '{teamConnection.ConnectionKey}' is \r\n {sqlStatementForDataItems}"));
+
+                        // Load the data table with the catalog details.
+                        IDbCommand cmd = conn.CreateCommand();
+                        cmd.CommandText = $"USE WAREHOUSE {teamConnection.DatabaseServer.Warehouse}";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = sqlStatementForDataItems;
+                        var dataReader = cmd.ExecuteReader();
+                        reverseEngineerResults.Load(dataReader);
+
+                        // Update the Primary and Multi-Active keys.
+                        DataTable reverseEngineerKeys = new DataTable();
+                        IDbCommand cmdKeys = conn.CreateCommand();
+                        cmdKeys.CommandText = $"USE WAREHOUSE {teamConnection.DatabaseServer.Warehouse}";
+                        cmdKeys.ExecuteNonQuery();
+                        cmdKeys.CommandText = $"SHOW PRIMARY KEYS;";
+                        cmdKeys.ExecuteNonQuery();
+                        cmdKeys.CommandText = "SELECT \"table_name\",\"column_name\"\r\nFROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))\r\nORDER BY \"table_name\";";
+                        var dataReaderKeys = cmdKeys.ExecuteReader();
+                        reverseEngineerKeys.Load(dataReaderKeys);
+
+                        // Apply the keys to the main reverse-engineering result set.
+                        foreach (DataRow keyRow in reverseEngineerResults.Rows)
                         {
-                            // Set the PK value to 'Y'
-                            keyRow[PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString()] = 'Y';
+                            var results = from localRow in reverseEngineerKeys.AsEnumerable()
+                                where localRow.Field<string>("table_name") == keyRow["tableName"].ToString() &&
+                                      localRow.Field<string>("column_name") == keyRow["columnName"].ToString()
+                                select localRow;
 
-                            // Determine if the key column is a MA column.
-                            var columnName = results.FirstOrDefault()?["column_name"].ToString();
-
-                            if (IsMultiActiveKey(columnName, TeamConfiguration))
+                            if (results.FirstOrDefault() != null)
                             {
-                                keyRow[PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString()] = 'Y';
+                                // Set the PK value to 'Y'
+                                keyRow[PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString()] = 'Y';
+
+                                // Determine if the key column is a MA column.
+                                var columnName = results.FirstOrDefault()?["column_name"].ToString();
+
+                                if (IsMultiActiveKey(columnName, TeamConfiguration))
+                                {
+                                    keyRow[PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString()] = 'Y';
+                                }
                             }
                         }
                     }
@@ -2956,6 +2971,11 @@ namespace TEAM
             return sqlStatementForDataItems.ToString();
         }
 
+        /// <summary>
+        /// Custom textbox that has a built-in delay for filtering.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextBoxFilterCriterion_OnDelayedTextChanged(object sender, EventArgs e)
         {
             ApplyDataGridViewFiltering();
@@ -2968,6 +2988,9 @@ namespace TEAM
                 if (isStartUp == true) return;
 
                 var filterCriterion = textBoxFilterCriterion.Text;
+
+                // Create a list of connections so that only the filtered ones are checked.
+                List<TeamConnection> connectionList = new List<TeamConnection>();
 
                 // Only update the grid view on the visible tab.
                 if (tabControlDataMappings.SelectedIndex == 0)
@@ -2986,12 +3009,33 @@ namespace TEAM
                                 row.Visible = false;
                                 currencyManager.ResumeBinding();
                             }
+                            else
+                            {
+                                // Add the connection to the list.
+                                var sourceConnectionId = row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
+                                TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionId, TeamConfiguration, TeamEventLog);
+
+                                var targetConnectionId = row.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
+                                TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionId, TeamConfiguration, TeamEventLog);
+
+                                if (!connectionList.Contains(sourceConnection))
+                                {
+                                    connectionList.Add(sourceConnection);
+                                }
+
+                                if (!connectionList.Contains(targetConnection))
+                                {
+                                    connectionList.Add(targetConnection);
+                                }
+                            }
                         }
                     }
 
                     // Reset the physical model filter. This is important because some checks need access to all the information.
                     var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
                     inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
+
+                    ApplyFilterOnConnectionListCheckBox(connectionList);
                 }
                 else if (tabControlDataMappings.SelectedIndex == 1)
                 {
@@ -3011,12 +3055,33 @@ namespace TEAM
                                 row.Visible = false;
                                 currencyManager.ResumeBinding();
                             }
+                            else
+                            {
+                                // Add the connection to the list.
+                                var sourceConnectionId = row.Cells[(int)DataObjectMappingGridColumns.SourceConnection].Value.ToString();
+                                TeamConnection sourceConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(sourceConnectionId, TeamConfiguration, TeamEventLog);
+
+                                var targetConnectionId = row.Cells[(int)DataObjectMappingGridColumns.TargetConnection].Value.ToString();
+                                TeamConnection targetConnection = TeamConnection.GetTeamConnectionByConnectionInternalId(targetConnectionId, TeamConfiguration, TeamEventLog);
+
+                                if (!connectionList.Contains(sourceConnection))
+                                {
+                                    connectionList.Add(sourceConnection);
+                                }
+
+                                if (!connectionList.Contains(targetConnection))
+                                {
+                                    connectionList.Add(targetConnection);
+                                }
+                            }
                         }
                     }
 
                     // Reset the physical model filter. This is important because some checks need access to all the information.
                     var inputTableMappingPhysicalModel = (DataTable)BindingSourcePhysicalModel.DataSource;
                     inputTableMappingPhysicalModel.DefaultView.RowFilter = string.Empty;
+
+                    ApplyFilterOnConnectionListCheckBox(connectionList);
                 }
                 else if (tabControlDataMappings.SelectedIndex == 2) // Physical model
                 {
@@ -3078,6 +3143,25 @@ namespace TEAM
             {
                 richTextBoxInformation.Text = $@"An error occurred when displaying the filter: '{ex.Message}'.";
 
+            }
+        }
+
+        private void ApplyFilterOnConnectionListCheckBox(List<TeamConnection> connectionList)
+        {
+            // Uncheck everything, where not yet unchecked.
+            while (checkedListBoxReverseEngineeringAreas.CheckedIndices.Count > 0)
+            {
+                checkedListBoxReverseEngineeringAreas.SetItemChecked(checkedListBoxReverseEngineeringAreas.CheckedIndices[0], false);
+            }
+
+            for (int i = 0; i < checkedListBoxReverseEngineeringAreas.Items.Count; i++)
+            {
+                var localConnectionObject = (KeyValuePair<TeamConnection, string>)checkedListBoxReverseEngineeringAreas.Items[i];
+
+                if (connectionList.Contains(localConnectionObject.Key))
+                {
+                    checkedListBoxReverseEngineeringAreas.SetItemChecked(i, true);
+                }
             }
         }
 
@@ -3841,7 +3925,21 @@ namespace TEAM
             foreach (var item in checkedListBoxReverseEngineeringAreas.CheckedItems)
             {
                 var localConnectionObject = (KeyValuePair<TeamConnection, string>)item;
-                resultQueryList.Add(SqlServerStatementForDataItems(GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), localConnectionObject.Key, true));
+
+                if (localConnectionObject.Key.TechnologyConnectionType == TechnologyConnectionType.SqlServer)
+                {
+                    resultQueryList.Add(SqlServerStatementForDataItems(GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), localConnectionObject.Key, true));
+                }
+                else if (localConnectionObject.Key.TechnologyConnectionType == TechnologyConnectionType.Snowflake)
+                {
+                    resultQueryList.Add(SnowflakeStatementForDataItems(GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), localConnectionObject.Key, true));
+                }
+                else
+                {
+                    // Report error.
+                    richTextBoxInformation.AppendText($"An error has been encountered when attempting to generate the reverse-engineering query. An unknown connection {localConnectionObject.Key.TechnologyConnectionType.ToString()} has been encountered.\r\n");
+                    TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"An unknown connection {localConnectionObject.Key.TechnologyConnectionType.ToString()} has been encountered."));
+                }
             }
 
             foreach (var query in resultQueryList)
