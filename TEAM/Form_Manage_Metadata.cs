@@ -2328,7 +2328,7 @@ namespace TEAM
                             var reverseEngineerResults = ReverseEngineerModelMetadata(teamConnection.Key, filteredRows);
 
                             // For Snowflake only, convert INT64 back to INT32.
-                            if (teamConnection.Key.TechnologyConnectionType == TechnologyConnectionType.Snowflake && reverseEngineerResults != null)
+                            if (teamConnection.Key.TechnologyConnectionType == TechnologyConnectionType.Snowflake && reverseEngineerResults != null && reverseEngineerResults.Rows.Count>0)
                             {
                                 DataTable dtCloned = reverseEngineerResults.Clone();
                                 dtCloned.Columns["ordinalPosition"].DataType = typeof(Int32);
@@ -2366,6 +2366,9 @@ namespace TEAM
             catch (Exception exception)
             {
                 ThreadHelper.SetText(this, richTextBoxInformation, $"\r\n - There was an issue reverse engineering. The error is {exception.Message}.");
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"Reverse-engineering failed. The error message is {exception.Message}"));
+
+                checkedListBoxReverseEngineeringAreas.Enabled = true;
             }
 
             // Merge the results with the full table.
@@ -2512,58 +2515,21 @@ namespace TEAM
                 {
                     conn.Open();
 
-                    foreach (var dataObject in filteredObjects)
+                    // Catalog queries are run in one go, to keep things somewhat speedy.
+                    if (teamConnection.CatalogConnectionType == CatalogConnectionTypes.Catalog)
                     {
-                        List<DataRow> testList = new List<DataRow>();
-                        testList.Add(dataObject);
-
-                        var sqlStatementForDataItems = SnowflakeStatementForDataItems(testList, teamConnection);
-                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information,
-                            $"The reverse-engineering query run for connection '{teamConnection.ConnectionKey}' is \r\n {sqlStatementForDataItems}"));
-
-                        // Load the data table with the catalog details.
-                        IDbCommand cmd = conn.CreateCommand();
-                        cmd.CommandText = $"USE WAREHOUSE {teamConnection.DatabaseServer.Warehouse}";
-                        cmd.ExecuteNonQuery();
-                        cmd.CommandText = sqlStatementForDataItems;
-                        var dataReader = cmd.ExecuteReader();
-                        reverseEngineerResults.Load(dataReader);
-
-                        // Update the Primary and Multi-Active keys.
-                        DataTable reverseEngineerKeys = new DataTable();
-                        IDbCommand cmdKeys = conn.CreateCommand();
-                        cmdKeys.CommandText = $"USE WAREHOUSE {teamConnection.DatabaseServer.Warehouse}";
-                        cmdKeys.ExecuteNonQuery();
-                        cmdKeys.CommandText = $"SHOW PRIMARY KEYS;";
-                        cmdKeys.ExecuteNonQuery();
-                        cmdKeys.CommandText = "SELECT \"table_name\",\"column_name\"\r\nFROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))\r\nORDER BY \"table_name\";";
-                        var dataReaderKeys = cmdKeys.ExecuteReader();
-                        reverseEngineerKeys.Load(dataReaderKeys);
-
-                        // Apply the keys to the main reverse-engineering result set.
-                        foreach (DataRow keyRow in reverseEngineerResults.Rows)
+                        RunSnowflakeReverseEngineeringQuery(teamConnection, filteredObjects, conn, reverseEngineerResults);
+                    }
+                    else // Customer queries, need to be executed separately for Snowflake. This is slow.
+                    {
+                        foreach (var dataObject in filteredObjects)
                         {
-                            var results = from localRow in reverseEngineerKeys.AsEnumerable()
-                                where localRow.Field<string>("table_name") == keyRow["tableName"].ToString() &&
-                                      localRow.Field<string>("column_name") == keyRow["columnName"].ToString()
-                                select localRow;
+                            List<DataRow> listOfOne = new List<DataRow>();
+                            listOfOne.Add(dataObject);
 
-                            if (results.FirstOrDefault() != null)
-                            {
-                                // Set the PK value to 'Y'
-                                keyRow[PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString()] = 'Y';
-
-                                // Determine if the key column is a MA column.
-                                var columnName = results.FirstOrDefault()?["column_name"].ToString();
-
-                                if (IsMultiActiveKey(columnName, TeamConfiguration))
-                                {
-                                    keyRow[PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString()] = 'Y';
-                                }
-                            }
+                            RunSnowflakeReverseEngineeringQuery(teamConnection, listOfOne, conn, reverseEngineerResults);
                         }
                     }
-
                 }
                 catch (Exception exception)
                 {
@@ -2583,6 +2549,82 @@ namespace TEAM
             }
 
             return reverseEngineerResults;
+        }
+
+        private void RunSnowflakeReverseEngineeringQuery(TeamConnection teamConnection, List<DataRow> filteredObjects, IDbConnection conn, DataTable reverseEngineerResults)
+        {
+            var sqlStatementForDataItems = SnowflakeStatementForDataItems(filteredObjects, teamConnection);
+            TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The reverse-engineering query run for connection '{teamConnection.ConnectionKey}' is \r\n {sqlStatementForDataItems}"));
+
+            // Load the data table with the catalog details.
+            IDbCommand cmd = conn.CreateCommand();
+            cmd.CommandText = $"USE WAREHOUSE {teamConnection.DatabaseServer.Warehouse}";
+            cmd.ExecuteNonQuery();
+            // Support multiple statements for this session.
+            cmd.CommandText = "ALTER SESSION SET MULTI_STATEMENT_COUNT = 0;";
+            cmd.ExecuteNonQuery();
+            // Regular generated query.
+
+            if (teamConnection.CatalogConnectionType == CatalogConnectionTypes.Catalog)
+            {
+                cmd.CommandText = sqlStatementForDataItems;
+                var dataReader = cmd.ExecuteReader();
+                reverseEngineerResults.Load(dataReader);
+            }
+            else
+            {
+                string[] statements = (sqlStatementForDataItems.Trim()).Split(";");
+                statements = statements.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+
+                foreach (string statement in statements)
+                {
+                    if (statement != statements.Last())
+                    {
+                        cmd.CommandText = $"{statement};";
+                        cmd.ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        cmd.CommandText = $"{statement};";
+                        var dataReader = cmd.ExecuteReader();
+                        reverseEngineerResults.Load(dataReader);
+                    }
+                }
+            }
+
+            // Update the Primary and Multi-Active keys.
+            DataTable reverseEngineerKeys = new DataTable();
+            IDbCommand cmdKeys = conn.CreateCommand();
+            cmdKeys.CommandText = $"USE WAREHOUSE {teamConnection.DatabaseServer.Warehouse}";
+            cmdKeys.ExecuteNonQuery();
+            cmdKeys.CommandText = $"SHOW PRIMARY KEYS;";
+            cmdKeys.ExecuteNonQuery();
+            cmdKeys.CommandText = "SELECT \"table_name\",\"column_name\"\r\nFROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))\r\nORDER BY \"table_name\";";
+            var dataReaderKeys = cmdKeys.ExecuteReader();
+            reverseEngineerKeys.Load(dataReaderKeys);
+
+            // Apply the keys to the main reverse-engineering result set.
+            foreach (DataRow keyRow in reverseEngineerResults.Rows)
+            {
+                var results = from localRow in reverseEngineerKeys.AsEnumerable()
+                    where localRow.Field<string>("table_name") == keyRow["tableName"].ToString() &&
+                          localRow.Field<string>("column_name") == keyRow["columnName"].ToString()
+                    select localRow;
+
+                if (results.FirstOrDefault() != null)
+                {
+                    // Set the PK value to 'Y'
+                    keyRow[PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString()] = 'Y';
+
+                    // Determine if the key column is a MA column.
+                    var columnName = results.FirstOrDefault()?["column_name"].ToString();
+
+                    if (IsMultiActiveKey(columnName, TeamConfiguration))
+                    {
+                        keyRow[PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString()] = 'Y';
+                    }
+                }
+            }
         }
 
         private bool IsMultiActiveKey(string columnName, TeamConfiguration teamConfiguration)
@@ -2833,21 +2875,12 @@ namespace TEAM
             return sqlStatementForDataItems.ToString();
         }
 
-        private string SnowflakeStatementForDataItems(List<DataRow> filterDataObjects, TeamConnection teamConnection, bool isJson = false)
+        private string SnowflakeStatementForDataItems(List<DataRow> filterDataObjects, TeamConnection teamConnection)
         {
-            var dwhKeyIdentifier = TeamConfiguration.KeyIdentifier; //Indicates _HSH, _SK etc.
-
-            string databaseColumnName = PhysicalModelMappingMetadataColumns.databaseName.ToString();
             string schemaColumnName = PhysicalModelMappingMetadataColumns.schemaName.ToString();
             string tableColumnName = PhysicalModelMappingMetadataColumns.tableName.ToString();
             string columnColumnName = PhysicalModelMappingMetadataColumns.columnName.ToString();
-            string dataTypeColumnName = PhysicalModelMappingMetadataColumns.dataType.ToString();
-            string characterLengthColumnName = PhysicalModelMappingMetadataColumns.characterLength.ToString();
-            string numericPrecisionColumnName = PhysicalModelMappingMetadataColumns.numericPrecision.ToString();
-            string numericScaleColumnName = PhysicalModelMappingMetadataColumns.numericScale.ToString();
             string ordinalPositionColumnName = PhysicalModelMappingMetadataColumns.ordinalPosition.ToString();
-            string primaryKeyColumnName = PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString();
-            string multiActiveKeyColumnName = PhysicalModelMappingMetadataColumns.multiActiveIndicator.ToString();
 
             // Prepare the query, depending on the type.
             // Create the attribute selection statement for the array.
@@ -2877,94 +2910,126 @@ namespace TEAM
                     sqlStatementForDataItems.AppendLine("      ,'N' AS \"multiActiveIndicator\"");
                     sqlStatementForDataItems.AppendLine("  FROM INFORMATION_SCHEMA.COLUMNS main");
                     sqlStatementForDataItems.AppendLine(") customSubQuery");
+
+                    // Add the filtered objects.
+                    sqlStatementForDataItems.AppendLine("WHERE 1=1");
+                    sqlStatementForDataItems.AppendLine("  AND");
+                    sqlStatementForDataItems.AppendLine("   (");
+
+                    ///Object, connection, schema
+                    var filterList = new List<Tuple<DataObject, TeamConnection, string>>();
+
+                    foreach (DataRow row in filterDataObjects)
+                    {
+                        // Skip deleted rows.
+                        if (row.RowState == DataRowState.Deleted)
+                            continue;
+
+                        string localInternalConnectionIdSource = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
+                        TeamConnection localConnectionSource = TeamConnection.GetTeamConnectionByConnectionInternalId(localInternalConnectionIdSource, TeamConfiguration, TeamEventLog);
+
+                        string localInternalConnectionIdTarget = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
+                        TeamConnection localConnectionTarget = TeamConnection.GetTeamConnectionByConnectionInternalId(localInternalConnectionIdTarget, TeamConfiguration, TeamEventLog);
+
+                        DataObject sourceDataObject = (DataObject)row[(int)DataObjectMappingGridColumns.SourceDataObject];
+                        var sourceSchema = "dbo";
+                        sourceSchema = sourceDataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault().Value;
+
+                        DataObject targetDataObject = (DataObject)row[(int)DataObjectMappingGridColumns.TargetDataObject];
+                        var targetSchema = "dbo";
+                        targetSchema = targetDataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault().Value;
+
+                        var localTupleSource = new Tuple<DataObject, TeamConnection, string>(sourceDataObject, localConnectionSource, sourceSchema);
+                        var localTupleTarget = new Tuple<DataObject, TeamConnection, string>(targetDataObject, localConnectionTarget, targetSchema);
+
+                        if (!filterList.Contains(localTupleSource))
+                        {
+                            filterList.Add(localTupleSource);
+                        }
+
+                        if (!filterList.Contains(localTupleTarget))
+                        {
+                            filterList.Add(localTupleTarget);
+                        }
+                    }
+
+                    foreach (var filter in filterList)
+                    {
+                        var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2).FirstOrDefault();
+
+                        // Override the schema, if required.
+                        var schema = "dbo";
+                        if (fullyQualifiedName.Key != filter.Item3)
+                        {
+                            schema = filter.Item3;
+                        }
+                        else
+                        {
+                            schema = fullyQualifiedName.Key;
+                        }
+
+                        // Always add the 'regular' mapping.
+                        sqlStatementForDataItems.AppendLine($"     (\"{tableColumnName}\" = '{fullyQualifiedName.Value}' AND \"{schemaColumnName}\" = '{schema}')");
+                        sqlStatementForDataItems.AppendLine("     OR");
+                    }
+
+                    // Remove the last OR.
+                    sqlStatementForDataItems.Remove(sqlStatementForDataItems.Length - 6, 6);
+
+                    sqlStatementForDataItems.AppendLine(")");
+                    sqlStatementForDataItems.AppendLine($"ORDER BY \"{tableColumnName}\", \"{columnColumnName}\", \"{ordinalPositionColumnName}\"");
+
                 }
                 else if (teamConnection.CatalogConnectionType == CatalogConnectionTypes.Custom)
                 {
-                    // Use the custom query that was provided with the connection.
-                    sqlStatementForDataItems.AppendLine($"-- User-provided (custom) physical model snapshot query for {teamConnection.ConnectionKey}.");
-                    sqlStatementForDataItems.AppendLine("SELECT * FROM");
-                    sqlStatementForDataItems.AppendLine("(");
-                    sqlStatementForDataItems.AppendLine(teamConnection.ConnectionCustomQuery);
-                    sqlStatementForDataItems.AppendLine(") customSubQuery");
-                }
+                    // Use the custom Snowflake-specific query that was provided with the connection.
 
-                // Add the filtered objects.
-                sqlStatementForDataItems.AppendLine("WHERE 1=1");
-                sqlStatementForDataItems.AppendLine("  AND");
-                sqlStatementForDataItems.AppendLine("   (");
+                    // Get the data object
 
-                // Object, connection, schema
-                var filterList = new List<Tuple<DataObject, TeamConnection, string>>();
-
-                foreach (DataRow row in filterDataObjects)
-                {
                     // Skip deleted rows.
-                    if (row.RowState == DataRowState.Deleted)
-                        continue;
-
-                    string localInternalConnectionIdSource = row[DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
+                    string localInternalConnectionIdSource = filterDataObjects[0][DataObjectMappingGridColumns.SourceConnection.ToString()].ToString();
                     TeamConnection localConnectionSource = TeamConnection.GetTeamConnectionByConnectionInternalId(localInternalConnectionIdSource, TeamConfiguration, TeamEventLog);
 
-                    string localInternalConnectionIdTarget = row[DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
+                    string localInternalConnectionIdTarget = filterDataObjects[0][DataObjectMappingGridColumns.TargetConnection.ToString()].ToString();
                     TeamConnection localConnectionTarget = TeamConnection.GetTeamConnectionByConnectionInternalId(localInternalConnectionIdTarget, TeamConfiguration, TeamEventLog);
 
-                    DataObject sourceDataObject = (DataObject)row[(int)DataObjectMappingGridColumns.SourceDataObject];
+                    DataObject sourceDataObject = (DataObject)filterDataObjects[0][(int)DataObjectMappingGridColumns.SourceDataObject];
                     var sourceSchema = "dbo";
                     sourceSchema = sourceDataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault().Value;
 
-                    DataObject targetDataObject = (DataObject)row[(int)DataObjectMappingGridColumns.TargetDataObject];
+                    DataObject targetDataObject = (DataObject)filterDataObjects[0][(int)DataObjectMappingGridColumns.TargetDataObject];
                     var targetSchema = "dbo";
                     targetSchema = targetDataObject.DataObjectConnection?.Extensions?.Where(x => x.Key.Equals("schema")).FirstOrDefault().Value;
 
-                    var localTupleSource = new Tuple<DataObject, TeamConnection, string>(sourceDataObject, localConnectionSource, sourceSchema);
-                    var localTupleTarget = new Tuple<DataObject, TeamConnection, string>(targetDataObject, localConnectionTarget, targetSchema);
+                    DataObject dataObject = new DataObject();
 
-                    if (!filterList.Contains(localTupleSource))
+                    if (teamConnection == localConnectionSource)
                     {
-                        filterList.Add(localTupleSource);
-                    }
-
-                    if (!filterList.Contains(localTupleTarget))
-                    {
-                        filterList.Add(localTupleTarget);
-                    }
-                }
-
-                foreach (var filter in filterList)
-                {
-                    var fullyQualifiedName = MetadataHandling.GetFullyQualifiedDataObjectName(filter.Item1, filter.Item2).FirstOrDefault();
-
-                    // Override the schema, if required.
-                    var schema = "dbo";
-                    if (fullyQualifiedName.Key != filter.Item3)
-                    {
-                        schema = filter.Item3;
+                        dataObject = sourceDataObject;
                     }
                     else
                     {
-                        schema = fullyQualifiedName.Key;
+                        dataObject = targetDataObject;
                     }
+                    
+                    // Get any input value extensions.
+                    var inputValue = dataObject.Extensions.FirstOrDefault(x => x.Key == "inputvalue").Value;
 
-                    // Always add the 'regular' mapping.
-                    sqlStatementForDataItems.AppendLine($"     (\"{tableColumnName}\" = '{fullyQualifiedName.Value}' AND \"{schemaColumnName}\" = '{schema}')");
-                    sqlStatementForDataItems.AppendLine("     OR");
-                }
+                    // Parse any placeholders in the query.
+                    var customQuery = teamConnection.ConnectionCustomQuery
+                        .Replace("CALL ", $"CALL {teamConnection.DatabaseServer.DatabaseName}.{teamConnection.DatabaseServer.SchemaName}.")
+                        .Replace("{dataObject.name}", dataObject.Name)
+                        .Replace("{dataObject.dataObjectConnection.extensions[0].value}", teamConnection.DatabaseServer.DatabaseName)
+                        .Replace("{dataObject.dataObjectConnection.extensions[1].value}", teamConnection.DatabaseServer.SchemaName)
+                        .Replace("{inputvalue}", $"({inputValue})");
 
-                // Remove the last OR.
-                sqlStatementForDataItems.Remove(sqlStatementForDataItems.Length - 6, 6);
-
-                sqlStatementForDataItems.AppendLine(")");
-                sqlStatementForDataItems.AppendLine($"ORDER BY \"{tableColumnName}\", \"{columnColumnName}\", \"{ordinalPositionColumnName}\"");
-
-                // Add the JSON path for bulk import.
-                if (isJson)
-                {
-                    sqlStatementForDataItems.AppendLine("FOR JSON PATH");
-                    sqlStatementForDataItems.AppendLine();
+                    sqlStatementForDataItems.AppendLine($"-- User-provided (custom) physical model query for {teamConnection.ConnectionKey}.");
+                    sqlStatementForDataItems.AppendLine(customQuery);
                 }
             }
             else
             {
+                // Should never be possible.
                 richTextBoxInformation.Text += @"An exception has occurred while determining the connection type. The connection does not have a valid connection type (0, catalog or 1, custom).";
             }
 
@@ -3932,7 +3997,7 @@ namespace TEAM
                 }
                 else if (localConnectionObject.Key.TechnologyConnectionType == TechnologyConnectionType.Snowflake)
                 {
-                    resultQueryList.Add(SnowflakeStatementForDataItems(GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), localConnectionObject.Key, true));
+                    resultQueryList.Add(SnowflakeStatementForDataItems(GetDistinctFilteredDataObjects(filteredDataObjectMappingDataRows), localConnectionObject.Key));
                 }
                 else
                 {
@@ -3945,6 +4010,7 @@ namespace TEAM
             foreach (var query in resultQueryList)
             {
                 _physicalModelQuery.SetTextLogging(query);
+                _physicalModelQuery.SetTextLogging("\r\n");
             }
         }
 
