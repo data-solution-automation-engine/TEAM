@@ -2891,8 +2891,6 @@ namespace TEAM
                 // Catalog query.
                 if (teamConnection.CatalogConnectionType == CatalogConnectionTypes.Catalog)
                 {
-                    var databaseName = teamConnection.DatabaseServer.DatabaseName;
-
                     sqlStatementForDataItems.AppendLine($"-- Auto-generated physical model snapshot query for {teamConnection.ConnectionKey}.");
                     sqlStatementForDataItems.AppendLine("SELECT * FROM");
                     sqlStatementForDataItems.AppendLine("(");
