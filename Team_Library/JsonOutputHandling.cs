@@ -312,14 +312,14 @@ namespace TEAM_Library
         /// <param name="teamConfiguration"></param>
         /// <param name="sourceDataObjectName"></param>
         /// <returns></returns>
-        public static List<DataObject> GetParentRelatedDataObjectList(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, List<DataGridViewRow> dataObjectDataGridViewRows, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration)
+        public static List<DataObject> GetParentRelatedDataObjectList(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, List<DataGridViewRow> dataObjectDataGridViewRows, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, string filterCriterion = "")
         {
             List<DataObject> relatedDataObjectList = new List<DataObject>();
 
             if (jsonExportSetting.AddParentDataObjectAsRelatedDataObject == "True")
             {
                 // Find the parent data object.
-                var parentDataObjects = GetParentDataObjects(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataObjectDataGridViewRows);
+                var parentDataObjects = GetParentDataObjects(targetDataObjectName, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataObjectDataGridViewRows, filterCriterion);
 
                 // Create the parent data object.
                 if (parentDataObjects != null)
