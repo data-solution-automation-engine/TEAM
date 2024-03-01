@@ -1489,6 +1489,14 @@ namespace TEAM
 
             #endregion
 
+            #region Filter Criterion
+
+            var filterCriterion = dataObjectMappingGridViewRow.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value.ToString();
+
+            dataObjectMapping.FilterCriterion = filterCriterion;
+
+            #endregion
+
             #region Target Data Object
 
             string targetConnectionInternalId = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.TargetConnection.ToString()].Value.ToString();
@@ -1655,7 +1663,8 @@ namespace TEAM
 
             var relatedDataObjects = new List<DataObject>();
 
-            // Parent (referenced) data objects.
+            // Try to find the parent (referenced) data objects.
+            // The object that is reference to in the data model.
             try
             {
                 var parentRelatedDataObjects = JsonOutputHandling.GetParentRelatedDataObjectList(targetDataObjectName, dataObjectMapping.SourceDataObjects[0].Name, dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString(), dataGridViewRowsDataObjects, JsonExportSetting, TeamConfiguration);
@@ -1685,7 +1694,7 @@ namespace TEAM
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"There was an issue adding the metadata connection as related data object. The error message is: {exception.Message}."));
             }
 
-            // Next up (lineage) objects.
+            // Next up (lineage) objects (next up).
             try
             {
                 relatedDataObjects.AddRange(JsonOutputHandling.SetNextUpRelatedDataObjectList(targetDataObjectName, this, JsonExportSetting, TeamConfiguration, TeamEventLog, dataGridViewRowsPhysicalModel));
@@ -1817,6 +1826,7 @@ namespace TEAM
                         dataObjectMapping.MappingClassifications[0].Classification != DataObjectTypes.NaturalBusinessRelationship.ToString())
                     {
                         // Auto-map any data items that are not yet manually mapped, but exist in source and target.
+                        // This provides the list of columns to check further
                         var physicalModelTargetDataGridViewRows = _dataGridViewPhysicalModel.Rows
                             .Cast<DataGridViewRow>()
                             .Where(r => !r.IsNewRow)
@@ -1839,12 +1849,14 @@ namespace TEAM
                                 var physicalModelSourceDataItemLookup = _dataGridViewPhysicalModel.Rows
                                     .Cast<DataGridViewRow>()
                                     .Where(r => !r.IsNewRow)
-                                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(sourceDataObject.Name))
-                                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(autoMappedTargetDataItemName))
+                                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.tableName].Value.ToString().Equals(sourceDataObject.Name, StringComparison.CurrentCultureIgnoreCase))
+                                    .Where(r => r.Cells[(int)PhysicalModelMappingMetadataColumns.columnName].Value.ToString().Equals(autoMappedTargetDataItemName, StringComparison.CurrentCultureIgnoreCase))
                                     .FirstOrDefault();
 
                                 if (physicalModelSourceDataItemLookup == null)
                                     continue;
+
+                                var autoMappedSourceDataItemName = physicalModelSourceDataItemLookup.Cells[3].Value.ToString();
 
                                 // If the data item is not on an exception list, it can also be ignored.
                                 var businessKeyDefinition = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()].Value.ToString();
@@ -1855,9 +1867,9 @@ namespace TEAM
 
                                 var dataObjectType = GetDataObjectType(targetDataObject.Name, "", FormBase.TeamConfiguration);
 
-                                var surrogateKey = JsonOutputHandling.DeriveSurrogateKey(targetDataObject, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration,
-                                    dataGridViewRowsDataObjects, TeamEventLog);
+                                var surrogateKey = JsonOutputHandling.DeriveSurrogateKey(targetDataObject, sourceDataObjectName, businessKeyDefinition, targetDataItemConnection, TeamConfiguration, dataGridViewRowsDataObjects, TeamEventLog, filterCriterion);
 
+                                // Check if the column neems to be ignored, for example the standard columns.
                                 if (!autoMappedTargetDataItemName.IsIncludedDataItem(dataObjectType, surrogateKey, targetDataItemConnection, TeamConfiguration))
                                     continue;
 
@@ -1870,7 +1882,7 @@ namespace TEAM
                                 var autoMappedTargetDataItem = new DataItem();
 
                                 // One to one mapping.
-                                autoMappedSourceDataItem.Name = autoMappedTargetDataItemName;
+                                autoMappedSourceDataItem.Name = autoMappedSourceDataItemName;
                                 autoMappedTargetDataItem.Name = autoMappedTargetDataItemName;
 
                                 // Add data types to Data Item that are part of a data item mapping.
@@ -1929,14 +1941,6 @@ namespace TEAM
 
             #endregion
 
-            #region Filter Criterion
-
-            var filterCriterion = dataObjectMappingGridViewRow.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value.ToString();
-
-            dataObjectMapping.FilterCriterion = filterCriterion;
-
-            #endregion
-
             #region Business Key
 
             try
@@ -1945,7 +1949,7 @@ namespace TEAM
                 var sourceDataObjectName = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.SourceDataObjectName.ToString()].Value.ToString();
                 var drivingKeyValue = dataObjectMappingGridViewRow.Cells[DataObjectMappingGridColumns.DrivingKeyDefinition.ToString()].Value.ToString();
 
-                JsonOutputHandling.SetBusinessKeys(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, targetConnection, JsonExportSetting, TeamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, TeamEventLog);
+                JsonOutputHandling.SetBusinessKeys(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, targetConnection, JsonExportSetting, TeamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, TeamEventLog, filterCriterion);
             }
             catch (Exception exception)
             {

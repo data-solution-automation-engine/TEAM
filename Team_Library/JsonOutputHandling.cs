@@ -900,12 +900,12 @@ namespace TEAM_Library
         /// <param name="dataGridViewRowsPhysicalModel"></param>
         /// <param name="eventLog"></param>
         /// <returns></returns>
-        public static DataObjectMapping SetBusinessKeys(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
+        public static DataObjectMapping SetBusinessKeys(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, JsonExportSetting jsonExportSetting, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog, string filterCriterion)
         {
             // The list of business keys that will be saved against the data object mapping.
             List<BusinessKeyDefinition> businessKeys = new List<BusinessKeyDefinition>();
 
-            List<BusinessKeyComponentList> businessKeyComponentValueList = GetBusinessKeyComponents(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+            List<BusinessKeyComponentList> businessKeyComponentValueList = GetBusinessKeyComponents(dataObjectMapping, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog, filterCriterion);
 
             foreach (BusinessKeyComponentList businessKeyComponentList in businessKeyComponentValueList)
             {
@@ -1025,7 +1025,7 @@ namespace TEAM_Library
         /// <param name="dataGridViewRowsPhysicalModel"></param>
         /// <param name="eventLog"></param>
         /// <returns></returns>
-        public static List<BusinessKeyComponentList>  GetBusinessKeyComponents(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
+        public static List<BusinessKeyComponentList>  GetBusinessKeyComponents(DataObjectMapping dataObjectMapping, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog, string filterCriterion)
         {
             List<BusinessKeyComponentList> businessKeyComponents = new List<BusinessKeyComponentList>();
 
@@ -1056,7 +1056,7 @@ namespace TEAM_Library
                 tempComponent.originalTargetDataObject = dataObjectMapping.TargetDataObject.Name;
 
                 // Get the target column(s) for the business key, based on the target data object (the Link in this case).
-                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.TargetDataObject, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.TargetDataObject, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog, filterCriterion);
                 tempComponent.targetComponentList = tempTargetComponentList;
 
                 tempComponent.ordinal = ordinal;
@@ -1081,6 +1081,7 @@ namespace TEAM_Library
                         .Where(r => !r.IsNewRow)
                         .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(componentElement.Trim()))
                         .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
+                        .Where(r => r.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value.ToString().Equals(filterCriterion))
                         .FirstOrDefault();
 
                     if (dataObjectGridViewRow != null)
@@ -1093,7 +1094,7 @@ namespace TEAM_Library
                         individualTempComponent.originalTargetDataObject = originalTargetDataObjectName;
 
                         // Get the target column(s) for the business key, based on the target data object.
-                        var individualTempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.TargetDataObject, componentElement, originalSourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+                        var individualTempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.TargetDataObject, componentElement, originalSourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog, filterCriterion);
                         individualTempComponent.targetComponentList = individualTempTargetComponentList;
                         individualTempComponent.ordinal = ordinal;
 
@@ -1144,12 +1145,12 @@ namespace TEAM_Library
                 tempComponent.originalTargetDataObject = dataObjectMapping.TargetDataObject.Name;
 
                 // Get the target column(s) for the business key, based on the target data object.
-                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.TargetDataObject, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog);
+                var tempTargetComponentList = GetBusinessKeyTargetComponentElements(dataObjectMapping.TargetDataObject, businessKeyDefinition, sourceDataObjectName, drivingKeyValue, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, dataGridViewRowsPhysicalModel, eventLog, filterCriterion);
                 tempComponent.targetComponentList = tempTargetComponentList;
 
                 tempComponent.ordinal = ordinal;
 
-                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.TargetDataObject, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog);
+                var surrogateKey = DeriveSurrogateKey(dataObjectMapping.TargetDataObject, sourceDataObjectName, businessKeyDefinition, teamConnection, teamConfiguration, dataGridViewRowsDataObjects, eventLog, filterCriterion);
                 tempComponent.surrogateKey = surrogateKey;
 
                 businessKeyComponents.Add(tempComponent);
@@ -1178,7 +1179,7 @@ namespace TEAM_Library
         /// <param name="dataGridViewRowsPhysicalModel"></param>
         /// <param name="eventLog"></param>
         /// <returns></returns>
-        public static List<BusinessKeyComponentElement> GetBusinessKeyTargetComponentElements(DataObject dataObject, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog)
+        public static List<BusinessKeyComponentElement> GetBusinessKeyTargetComponentElements(DataObject dataObject, string businessKeyDefinition, string sourceDataObjectName, string drivingKeyValue, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, List<DataGridViewRow> dataGridViewRowsPhysicalModel, EventLog eventLog, string filterCriterion)
         {
             List<BusinessKeyComponentElement> targetBusinessKeyComponents = new List<BusinessKeyComponentElement>();
             
@@ -1197,6 +1198,7 @@ namespace TEAM_Library
                     .Where(r => !r.IsNewRow)
                     .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyDefinition))
                     .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
+                    .Where(r => r.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value.ToString().Equals(filterCriterion))
                     .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(dataObject.Name))
                     .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.Context)
                     .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContext)
@@ -1442,7 +1444,7 @@ namespace TEAM_Library
         /// <param name="teamConfiguration"></param>
         /// <param name="dataGridViewRowsDataObjects"></param>
         /// <returns></returns>
-        public static List<DataObject> GetParentDataObjects(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConfiguration teamConfiguration, List<DataGridViewRow>dataGridViewRowsDataObjects)
+        public static List<DataObject> GetParentDataObjects(string targetDataObjectName, string sourceDataObjectName, string businessKeyDefinition, TeamConfiguration teamConfiguration, List<DataGridViewRow>dataGridViewRowsDataObjects, string filterCriterion = "")
         {
             var returnValue = new List<DataObject>();
 
@@ -1451,6 +1453,7 @@ namespace TEAM_Library
                 .Where(r => !r.IsNewRow)
                 .Where(r => r.Cells[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Value.ToString().Equals(businessKeyDefinition))
                 .Where(r => r.Cells[(int)DataObjectMappingGridColumns.SourceDataObjectName].Value.ToString().Equals(sourceDataObjectName))
+                .Where(r => r.Cells[(int)DataObjectMappingGridColumns.FilterCriterion].Value.ToString().Equals(filterCriterion))
                 .Where(r => !r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString().Equals(targetDataObjectName))
                 .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.Context)
                 .Where(r => GetDataObjectType(r.Cells[(int)DataObjectMappingGridColumns.TargetDataObjectName].Value.ToString(), "", teamConfiguration) != DataObjectTypes.NaturalBusinessRelationshipContext)
@@ -1501,7 +1504,7 @@ namespace TEAM_Library
         /// <param name="sourceDataObjectName"></param>
         /// <param name="dataGridViewRowsDataObjects"></param>
         /// <returns>surrogateKey</returns>
-        public static string DeriveSurrogateKey(DataObject targetDataObject, string sourceDataObjectName, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, EventLog eventLog)
+        public static string DeriveSurrogateKey(DataObject targetDataObject, string sourceDataObjectName, string businessKeyDefinition, TeamConnection teamConnection, TeamConfiguration teamConfiguration, List<DataGridViewRow> dataGridViewRowsDataObjects, EventLog eventLog, string filterCriterion = "")
         {
             // Get the type.
             var dataObjectType = GetDataObjectType(targetDataObject.Name, "", teamConfiguration);
@@ -1512,7 +1515,7 @@ namespace TEAM_Library
             {
                 try
                 {
-                    var parentDataObject = GetParentDataObjects(targetDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects).FirstOrDefault();
+                    var parentDataObject = GetParentDataObjects(targetDataObject.Name, sourceDataObjectName, businessKeyDefinition, teamConfiguration, dataGridViewRowsDataObjects, filterCriterion).FirstOrDefault();
 
                     if (parentDataObject != null)
                     {
