@@ -1647,6 +1647,8 @@ namespace TEAM
                     JsonOutputHandling.SetDataObjectConnectionDatabaseExtension(sourceDataObject, sourceConnection, JsonExportSetting);
                     JsonOutputHandling.SetDataObjectConnectionSchemaExtension(sourceDataObject, sourceConnection, JsonExportSetting);
 
+                    JsonOutputHandling.SetDataObjectObjectTypeExtension(sourceDataObject, JsonExportSetting);
+
                     sourceDataObjects.Add(sourceDataObject);
                 }
 

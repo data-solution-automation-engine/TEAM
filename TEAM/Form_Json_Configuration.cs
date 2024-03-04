@@ -24,7 +24,7 @@ namespace TEAM
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path).
-                JsonExportSetting.LoadJsonConfigurationFile(jsonExportConfigurationFileName);
+                JsonExportSetting.LoadJsonConfigurationFile(jsonExportConfigurationFileName, TeamEventLog);
 
                 // ReSharper disable once LocalizableElement
                 richTextBoxJsonExportInformation.Text += $"The JSON extract configuration file {jsonExportConfigurationFileName} has been loaded.\r\n";
@@ -62,6 +62,9 @@ namespace TEAM
 
             // AddDataItemsToDataObject
             EvaluateJsonExportCheckbox(checkBoxDataObjectDataItems, JsonExportSetting.AddDataItemsToDataObject, ref issueCounter);
+
+            // AddDataItemsToDataObject
+            EvaluateJsonExportCheckbox(checkBoxDataObjectObjectType, JsonExportSetting.AddObjectTypeExtensionsToDataObject, ref issueCounter);
 
             #endregion
 
@@ -166,10 +169,14 @@ namespace TEAM
                 var stringDatabaseExtension = checkBoxDatabaseExtension.Checked ? "True" : "False";
                 JsonExportSetting.AddDatabaseAsExtensionToConnection = stringDatabaseExtension;
 
+                // AddObjectTypeExtensionsToDataObject
+                var stringObjectTypeExtensionsToDataObject = checkBoxDataObjectObjectType.Checked ? "True" : "False";
+                JsonExportSetting.AddObjectTypeExtensionsToDataObject = stringObjectTypeExtensionsToDataObject;
+
                 // AddSchemaAsExtensionToConnection
                 var stringSchemaExtension = checkBoxSchemaExtension.Checked ? "True" : "False";
                 JsonExportSetting.AddSchemaAsExtensionToConnection = stringSchemaExtension;
-                
+
                 // AddDataTypeToDataItem
                 var stringSourceDataTypes = checkBoxDataItemDataType.Checked ? "True" : "False";
                 JsonExportSetting.AddDataTypeToDataItem = stringSourceDataTypes;
@@ -197,7 +204,7 @@ namespace TEAM
                 // Write to disk
                 JsonExportSetting.SaveJsonConfigurationFile(globalParameters);
 
-                richTextBoxJsonExportInformation.Text += "The values have been saved successfully.\r\n";
+                richTextBoxJsonExportInformation.Text += "\r\nThe values have been saved successfully.\r\n";
             }
             catch (Exception ex)
             {
@@ -209,16 +216,34 @@ namespace TEAM
         {
             try
             {
-                Process.Start(globalParameters.ConfigurationPath);
+                if (globalParameters.ConfigurationPath != "")
+                {
+                    var psi = new ProcessStartInfo() { FileName = globalParameters.ConfigurationPath, UseShellExecute = true };
+                    Process.Start(psi);
+                }
+                else
+                {
+                    richTextBoxJsonExportInformation.Text = @"There is no value given for the Configuration Path. Please enter a valid path name.";
+                }
             }
             catch (Exception ex)
             {
-                richTextBoxJsonExportInformation.Text = $@"An error has occurred while attempting to open the configuration directory. The error message is: '{ex.Message}'.";
+                richTextBoxJsonExportInformation.Text = $@"An error has occurred while attempting to open the configuration directory. The error message is: {ex.Message}";
             }
         }
         private void ExitToolStripMenuItem_Click(object sender, EventArgs args)
         {
             Close();
+        }
+
+        private void checkBoxDataObjectDataItems_CheckedChanged(object sender, EventArgs e)
+        {
+            //
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            richTextBoxJsonExportInformation.Text = $@"The value has been updated. Don't forget to save your changes!";
         }
     }
 }

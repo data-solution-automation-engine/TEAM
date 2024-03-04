@@ -17,6 +17,8 @@ namespace TEAM_Library
         public string AddTypeAsClassificationToDataObject { get; set; }
         public string AddDataItemsToDataObject { get; set; }
 
+        public string AddObjectTypeExtensionsToDataObject { get; set; }
+
         // Connections
         public string AddDatabaseAsExtensionToConnection { get; set; }
         public string AddSchemaAsExtensionToConnection { get; set; }
@@ -47,6 +49,13 @@ namespace TEAM_Library
         public bool IsAddDataItemsToDataObject()
         {
             bool returnValue = AddDataItemsToDataObject == "True";
+
+            return returnValue;
+        }
+
+        public bool IsAddObjectTypeExtensionToDataObject()
+        {
+            bool returnValue = AddObjectTypeExtensionsToDataObject == "True";
 
             return returnValue;
         }
@@ -116,7 +125,7 @@ namespace TEAM_Library
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="applyChecks"></param>
-        public void LoadJsonConfigurationFile(string fileName, bool applyChecks = false)
+        public void LoadJsonConfigurationFile(string fileName, EventLog eventLog, bool applyChecks = false)
         {
             try
             {
@@ -137,7 +146,29 @@ namespace TEAM_Library
                 streamReader.Close();
                 fileStream.Close();
 
-                AddDataItemsToDataObject = configList["AddDataItemsToDataObject"];
+                // AddDataItemsToDataObject
+                try
+                {
+                    AddDataItemsToDataObject = configList["AddDataItemsToDataObject"];
+                }
+                catch
+                {
+                    AddDataItemsToDataObject = "False";
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, ($@"A non-fatal error occurred loading the JSON configuration file related to the 'AddDataItemsToDataObject' property. Please check the JSON export file settings and save the configuration again so that all values can be reset and/or updated.")));
+                }
+
+                // AddObjectTypeExtensionsToDataObject
+                try
+                {
+                    AddObjectTypeExtensionsToDataObject = configList["AddObjectTypeExtensionsToDataObject"];
+                }
+
+                catch
+                {
+                    AddObjectTypeExtensionsToDataObject = "False";
+                    eventLog.Add(Event.CreateNewEvent(EventTypes.Warning, ($@"A non-fatal error occurred loading the JSON configuration file related to the 'AddObjectTypeExtensionsToDataObject' property. Please check the JSON export file settings and save the configuration again so that all values can be reset and/or updated.")));
+                }
+
                 AddDatabaseAsExtensionToConnection = configList["AddDatabaseAsExtensionToConnection"];
                 AddSchemaAsExtensionToConnection = configList["AddSchemaAsExtensionToConnection"];
                 AddTypeAsClassificationToDataObject = configList["AddTypeAsClassificationToDataObject"];
@@ -173,6 +204,7 @@ namespace TEAM_Library
 
                 validationFile.AppendLine("AddTypeAsClassificationToDataObject|" + AddTypeAsClassificationToDataObject + "");
                 validationFile.AppendLine("AddDataItemsToDataObject|" + AddDataItemsToDataObject + "");
+                validationFile.AppendLine("AddObjectTypeExtensionsToDataObject|" + AddObjectTypeExtensionsToDataObject + "");
 
                 validationFile.AppendLine("AddDatabaseAsExtensionToConnection|" + AddDatabaseAsExtensionToConnection + "");
                 validationFile.AppendLine("AddSchemaAsExtensionToConnection|" + AddSchemaAsExtensionToConnection + "");
@@ -215,6 +247,7 @@ namespace TEAM_Library
                 // Data Object group.
                 validationFile.AppendLine("AddTypeAsClassificationToDataObject|True");
                 validationFile.AppendLine("AddDataItemsToDataObject|True");
+                validationFile.AppendLine("AddObjectTypeExtensionsToDataObject|True");
                 // Connections
                 validationFile.AppendLine("AddDatabaseAsExtensionToConnection|True");
                 validationFile.AppendLine("AddSchemaAsExtensionToConnection|True");

@@ -51,6 +51,7 @@
             checkBoxDataObjectDataItems = new System.Windows.Forms.CheckBox();
             checkBoxAddParentDataObject = new System.Windows.Forms.CheckBox();
             checkBoxAddDrivingKeyAsExtension = new System.Windows.Forms.CheckBox();
+            checkBoxDataObjectObjectType = new System.Windows.Forms.CheckBox();
             groupBoxConnectivity = new System.Windows.Forms.GroupBox();
             groupBox1 = new System.Windows.Forms.GroupBox();
             groupBoxDataObjectConnections = new System.Windows.Forms.GroupBox();
@@ -251,6 +252,7 @@
             checkBoxDataObjectDataItems.Text = "Add Data Items";
             toolTipJsonExtractConfiguration.SetToolTip(checkBoxDataObjectDataItems, "Enabling this option will add the data items to the data objects.");
             checkBoxDataObjectDataItems.UseVisualStyleBackColor = true;
+            checkBoxDataObjectDataItems.CheckedChanged += checkBoxDataObjectDataItems_CheckedChanged;
             // 
             // checkBoxAddParentDataObject
             // 
@@ -278,8 +280,23 @@
             toolTipJsonExtractConfiguration.SetToolTip(checkBoxAddDrivingKeyAsExtension, "This option will add an extension to the business keys segment to add the parent key as extension value.");
             checkBoxAddDrivingKeyAsExtension.UseVisualStyleBackColor = true;
             // 
+            // checkBoxDataObjectObjectType
+            // 
+            checkBoxDataObjectObjectType.AutoSize = true;
+            checkBoxDataObjectObjectType.Checked = true;
+            checkBoxDataObjectObjectType.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBoxDataObjectObjectType.Location = new System.Drawing.Point(6, 65);
+            checkBoxDataObjectObjectType.Name = "checkBoxDataObjectObjectType";
+            checkBoxDataObjectObjectType.Size = new System.Drawing.Size(212, 17);
+            checkBoxDataObjectObjectType.TabIndex = 31;
+            checkBoxDataObjectObjectType.Text = "Add ObjectType Extension to Source";
+            toolTipJsonExtractConfiguration.SetToolTip(checkBoxDataObjectObjectType, "Enabling this option will add an objectType extension to the source the data objects.\r\nThis can be used in templates to generate different code depending if the object is a table, view, or procedure.");
+            checkBoxDataObjectObjectType.UseVisualStyleBackColor = true;
+            checkBoxDataObjectObjectType.CheckedChanged += checkBox1_CheckedChanged;
+            // 
             // groupBoxConnectivity
             // 
+            groupBoxConnectivity.Controls.Add(checkBoxDataObjectObjectType);
             groupBoxConnectivity.Controls.Add(checkBoxDataObjectDataItems);
             groupBoxConnectivity.Controls.Add(checkBoxAddType);
             groupBoxConnectivity.Location = new System.Drawing.Point(12, 27);
@@ -382,5 +399,7 @@
         private System.Windows.Forms.CheckBox checkBoxAddParentDataObject;
         private System.Windows.Forms.CheckBox checkBoxAddDrivingKeyAsExtension;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBoxDataObjectObjectType;
     }
 }

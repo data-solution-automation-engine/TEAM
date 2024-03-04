@@ -711,6 +711,83 @@ namespace TEAM_Library
             return dataObject;
         }
 
+        /// <summary>
+        /// Adds or removes a default objectType extension, based on the JSON export settings.
+        /// </summary>
+        /// <param name="dataObject"></param>
+        /// <param name="teamConnection"></param>
+        /// <param name="jsonExportSetting"></param>
+        /// <returns></returns>
+        public static DataObject SetDataObjectObjectTypeExtension(DataObject dataObject, JsonExportSetting jsonExportSetting)
+        {
+            // Setting disabled. Remove an existing object type extension if it exists.
+            if (!jsonExportSetting.IsAddObjectTypeExtensionToDataObject())
+            {
+                // If no extensions exists, do nothing. Otherwise check if one needs removal.
+                if (dataObject.Extensions != null)
+                {
+                    List<Extension> localExtensions = new List<Extension>();
+
+                    foreach (var extension in dataObject.Extensions)
+                    {
+                        if (extension.Key != "objectType")
+                        {
+                            localExtensions.Add(extension);
+                        }
+                    }
+
+                    // If there's any left, re-add them. Otherwise set to empty.
+                    if (localExtensions.Count > 0)
+                    {
+                        dataObject.Extensions = localExtensions;
+                    }
+                    else
+                    {
+                        dataObject.Extensions = null;
+                    }
+                }
+            }
+            // Otherwise, if the setting is enabled, add the extension if it does not yet exist already.
+            else if (jsonExportSetting.IsAddObjectTypeExtensionToDataObject() && dataObject != null)
+            {
+                List<Extension> localExtensions = new List<Extension>();
+                List<Extension> returnExtensions = new List<Extension>();
+
+                // Copy any existing extensions that are already in place, if any.
+                if (dataObject.Extensions != null)
+                {
+                    localExtensions = dataObject.Extensions;
+                }
+
+                // Preserve any other extensions.
+                foreach (var extension in localExtensions)
+                {
+                    returnExtensions.Add(extension);
+                }
+
+                // If there is no objectType, then add it.
+                var existingObjectTypeExtension = localExtensions.Find(x => x.Key == "objectType");
+
+                if (existingObjectTypeExtension == null)
+                {
+                    // Re-create the extension.
+                    var localExtension = new Extension
+                    {
+                        Key = "objectType",
+                        Value = "default",
+                        Description = "Object type"
+                    };
+
+                    returnExtensions.Add(localExtension);
+                }
+
+                // Apply all the extensions back to the connection object.
+                dataObject.Extensions = returnExtensions;
+            }
+
+            return dataObject;
+        }
+
         public static DataQuery SetDataQueryConnectionSchemaExtension(DataQuery dataQuery, TeamConnection teamConnection, JsonExportSetting jsonExportSetting)
         {
             // Remove an existing classification, if indeed existing.

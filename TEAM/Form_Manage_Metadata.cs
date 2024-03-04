@@ -298,7 +298,7 @@ namespace TEAM
                 }
 
                 // Load the validation settings file using the paths retrieved from the application root contents (configuration path).
-                JsonExportSetting.LoadJsonConfigurationFile(jsonConfigurationFile, true);
+                JsonExportSetting.LoadJsonConfigurationFile(jsonConfigurationFile, TeamEventLog, true);
 
                 richTextBoxInformation.AppendText($"The configuration file {jsonConfigurationFile} has been loaded.\r\n");
             }
@@ -3009,9 +3009,18 @@ namespace TEAM
                     {
                         dataObject = targetDataObject;
                     }
-                    
+
                     // Get any input value extensions.
-                    var inputValue = dataObject.Extensions.FirstOrDefault(x => x.Key == "inputvalue").Value;
+                    var inputValue = "";
+                    var inputValueObject = dataObject.Extensions.Find(x => x.Key == "inputvalue");
+                    if (inputValueObject is not null)
+                    {
+                        inputValue = inputValueObject.Value;
+                    }
+                    else
+                    {
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Warning, @"An exception has occurred while determining extension. An extension 'inputvalue', coded for this connection type, was not found in the data object definition."));
+                    }
 
                     // Parse any placeholders in the query.
                     var customQuery = teamConnection.ConnectionCustomQuery
