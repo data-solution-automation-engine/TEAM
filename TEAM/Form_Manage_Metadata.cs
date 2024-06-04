@@ -2545,7 +2545,7 @@ namespace TEAM
             else
             {
                 ThreadHelper.SetText(this, richTextBoxInformation, $@"The connection type could not be successfully evaluated. No connection can be established.");
-                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"he connection type could not be successfully evaluated. No connection can be established."));
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The connection type could not be successfully evaluated. No connection can be established."));
             }
 
             return reverseEngineerResults;
