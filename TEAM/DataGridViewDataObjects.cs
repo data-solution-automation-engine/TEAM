@@ -679,7 +679,7 @@ namespace TEAM
             var dataObjectMappings = _dataGridViewDataObjects.GetDataObjectMappings(targetDataObject);
             var vdwDataObjectMappingList = FormManageMetadata.GetVdwDataObjectMappingList(targetDataObject, dataObjectMappings);
 
-            string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Newtonsoft.Json.Formatting.Indented);
+            string output = JsonConvert.SerializeObject(vdwDataObjectMappingList, Formatting.Indented);
             File.WriteAllText(globalParameters.GetMetadataFilePath(outputFileName), output);
 
             // Update the original form through the delegate/event handler.
@@ -703,7 +703,7 @@ namespace TEAM
 
             var dataObjectMappings = GetDataObjectMappings(targetDataObject);
 
-            string output = JsonConvert.SerializeObject(dataObjectMappings, Newtonsoft.Json.Formatting.Indented);
+            string output = JsonConvert.SerializeObject(dataObjectMappings, Formatting.Indented);
 
             FormManageMetadata.ManageFormJsonInteraction(output);
         }
@@ -719,7 +719,7 @@ namespace TEAM
 
             var dataObjectMapping = GetDataObjectMapping(row);
 
-            string output = JsonConvert.SerializeObject(dataObjectMapping, Newtonsoft.Json.Formatting.Indented);
+            string output = JsonConvert.SerializeObject(dataObjectMapping, Formatting.Indented);
 
             FormManageMetadata.ManageFormJsonInteraction(output);
         }
@@ -1160,6 +1160,28 @@ namespace TEAM
                         {
                             cell.Style.ForeColor = Color.DarkBlue;
                             cell.Style.BackColor = Color.AliceBlue;
+                        }
+
+                        // Colour coding
+                        //Syntax highlighting for in source data objects.
+                        if (cell.Value.ToString().Contains("`"))
+                        {
+                            cell.Style.BackColor = Color.AliceBlue;
+
+                            if (cell.Value.ToString().EndsWith("`") || cell.Value.ToString().EndsWith("`)"))
+                            {
+                                cell.Style.ForeColor = Color.DarkBlue;
+                            }
+                            else
+                            {
+                                // Show issue.
+                                cell.Style.ForeColor = Color.Red;
+                            }
+                        }
+                        else
+                        {
+                            cell.Style.ForeColor = Color.Black;
+                            cell.Style.BackColor = Color.White;
                         }
                     }
                 }

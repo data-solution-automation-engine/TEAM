@@ -539,9 +539,21 @@ namespace TEAM
         public void GridAutoLayout()
         {
             richTextBoxInformation.Clear();
-            GridAutoLayout(_dataGridViewDataObjects);
-            GridAutoLayout(_dataGridViewDataItems);
-            GridAutoLayout(_dataGridViewPhysicalModel);
+
+            if (tabControlDataMappings.SelectedTab == tabPageDataObjectMapping)
+            { 
+                GridAutoLayout(_dataGridViewDataObjects);
+            }
+
+            if (tabControlDataMappings.SelectedTab == tabPageDataItemMapping)
+            {
+                GridAutoLayout(_dataGridViewDataItems);
+            }
+
+            if (tabControlDataMappings.SelectedTab == tabPagePhysicalModel)
+            {
+                GridAutoLayout(_dataGridViewPhysicalModel);
+            }
         }
 
         private void GridAutoLayout(DataGridView dataGridView)
