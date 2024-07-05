@@ -147,31 +147,48 @@ namespace TEAM_Library
                                     {
                                         try
                                         {
-                                            // It must be a DataItem so it can be safely cast.
-                                            DataItem tempDataItem = dataItem.ToObject<DataItem>();
+                                            // The new data item.
+                                            DataItem tempDataItem = new DataItem();
 
-                                            // Explicitly type-cast the value as string to avoid issues using dynamic type.
-                                            string dataItemName = tempDataItem.Name;
+                                            var intermediateJson = JsonConvert.SerializeObject(dataItem);
 
-                                            if (dataItemName.Contains("+"))
+                                            // Workaround, if the source is a data query it will be cast as data item because the c# data table does not support dynamic types as column definitions.
+                                            if (JsonConvert.DeserializeObject(intermediateJson).ContainsKey("dataQueryCode"))
                                             {
-                                                businessKeyDefinitionString += $"CONCATENATE({tempDataItem.Name})".Replace("+", ";");
+                                                DataQuery dataQuery = JsonConvert.DeserializeObject<DataQuery>(intermediateJson);
+                                                tempDataItem.Name = "`" + dataQuery.DataQueryCode + "`";
+
+                                                businessKeyDefinitionString += tempDataItem.Name;
+                                                businessKeyDefinitionString += ";";
                                             }
                                             else
                                             {
-                                                businessKeyDefinitionString += dataItemName;
-                                            }
+                                                // It must be a DataItem so it can be safely cast.
+                                                tempDataItem = dataItem.ToObject<DataItem>();
 
-                                            businessKeyDefinitionString += ";";
+                                                // Explicitly type-cast the value as string to avoid issues using dynamic type.
+                                                string dataItemName = tempDataItem.Name;
 
-                                            // Evaluate if a Driving Key needs to be set.
-                                            if (tempDataItem.DataItemClassification != null)
-                                            {
-                                                List<DataClassification> classifications = tempDataItem.DataItemClassification;
-
-                                                if (classifications[0].Classification == "DrivingKey")
+                                                if (dataItemName.Contains("+"))
                                                 {
-                                                    drivingKeyDefinition = dataItemName;
+                                                    businessKeyDefinitionString += $"CONCATENATE({tempDataItem.Name})".Replace("+", ";");
+                                                }
+                                                else
+                                                {
+                                                    businessKeyDefinitionString += dataItemName;
+                                                }
+
+                                                businessKeyDefinitionString += ";";
+
+                                                // Evaluate if a Driving Key needs to be set.
+                                                if (tempDataItem.DataItemClassification != null)
+                                                {
+                                                    List<DataClassification> classifications = tempDataItem.DataItemClassification;
+
+                                                    if (classifications[0].Classification == "DrivingKey")
+                                                    {
+                                                        drivingKeyDefinition = dataItemName;
+                                                    }
                                                 }
                                             }
                                         }
@@ -201,6 +218,7 @@ namespace TEAM_Library
 
                     #endregion
 
+                    #region Source Data Objects
                     foreach (var sourceDataObject in dataObjectMapping.SourceDataObjects)
                     {
                         // The new data object.
@@ -214,15 +232,15 @@ namespace TEAM_Library
                         // Workaround, if the source is a data query it will be cast as data object because the data table does not support dynamic types.
                         if (JsonConvert.DeserializeObject(intermediateJson).ContainsKey("dataQueryCode"))
                         {
-                            DataQuery tempDataItem = JsonConvert.DeserializeObject<DataQuery>(intermediateJson);
+                            DataQuery tempDataObject = JsonConvert.DeserializeObject<DataQuery>(intermediateJson);
 
-                            singleSourceDataObject.Name = "`"+tempDataItem.DataQueryCode+"`";
+                            singleSourceDataObject.Name = "`"+tempDataObject.DataQueryCode+"`";
 
-                            if (tempDataItem.DataQueryConnection != null)
+                            if (tempDataObject.DataQueryConnection != null)
                             {
-                                singleSourceDataObject.DataObjectConnection = tempDataItem.DataQueryConnection;
+                                singleSourceDataObject.DataObjectConnection = tempDataObject.DataQueryConnection;
 
-                                string sourceConnectionString = tempDataItem.DataQueryConnection.DataConnectionString;
+                                string sourceConnectionString = tempDataObject.DataQueryConnection.DataConnectionString;
                                 sourceConnectionInternalId = TeamConnection.GetTeamConnectionByConnectionKey(sourceConnectionString, teamConfiguration, EventLog).ConnectionInternalId;
                             }
                         }
@@ -273,6 +291,7 @@ namespace TEAM_Library
                         newRow[(int)DataObjectMappingGridColumns.DataObjectMappingClassification] = dataObjectMappingClassification;
                         DataTable.Rows.Add(newRow);
                     }
+                    #endregion
                 }
             }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using DataWarehouseAutomation;
 using static TEAM_Library.MetadataHandling;
@@ -254,6 +255,7 @@ namespace TEAM_Library
                     dataObjectType = DataObjectTypes.NaturalBusinessRelationshipContextDrivingKey;
                 }
 
+                // Required below.
                 var stringDataObjectType = "Unknown";
 
                 if (dataObjectType == DataObjectTypes.Source || dataObjectType == DataObjectTypes.Unknown)
@@ -1031,14 +1033,17 @@ namespace TEAM_Library
 
                     DataItemMapping businessKeyDataItemMapping = new DataItemMapping();
 
+                    var sourceBusinessKeyComponent = businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement;
+                    var targetBusinessKeyComponent = businessKeyComponentList.targetComponentList[i].businessKeyComponentElement;
+
                     if (dataObjectMapping.MappingClassifications != null && new[] { DataObjectTypes.Presentation.ToString(), DataObjectTypes.StagingArea.ToString(), DataObjectTypes.PersistentStagingArea.ToString() }.Contains(dataObjectMapping.MappingClassifications[0].Classification))
                     {
                         // Map the key to itself (workaround as above).
-                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, drivingKeyValue);
+                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(sourceBusinessKeyComponent, sourceBusinessKeyComponent, drivingKeyValue);
                     }
                     else
                     {
-                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(businessKeyComponentList.sourceComponentList[i].businessKeyComponentElement, businessKeyComponentList.targetComponentList[i].businessKeyComponentElement, drivingKeyValue);
+                        businessKeyDataItemMapping = GetBusinessKeyComponentDataItemMapping(sourceBusinessKeyComponent, targetBusinessKeyComponent, drivingKeyValue);
                     }
 
                     businessKeyComponentMapping.Add(businessKeyDataItemMapping);
@@ -1403,7 +1408,14 @@ namespace TEAM_Library
             return targetBusinessKeyComponents;
         }
 
-        public static DataItemMapping GetBusinessKeyComponentDataItemMapping(string sourceBusinessKeyDefinition, string targetBusinessKeyDefinition, string drivingKeyValue = "")
+        /// <summary>
+        /// Move the matching business key components in a data item/query mapping.
+        /// </summary>
+        /// <param name="sourceBusinessKeyDefinitionComponent"></param>
+        /// <param name="targetBusinessKeyDefinitionComponent"></param>
+        /// <param name="drivingKeyValue"></param>
+        /// <returns></returns>
+        public static DataItemMapping GetBusinessKeyComponentDataItemMapping(string sourceBusinessKeyDefinitionComponent, string targetBusinessKeyDefinitionComponent, string drivingKeyValue = "")
         {
             DataItemMapping dataItemMapping = new DataItemMapping();
 
@@ -1413,31 +1425,40 @@ namespace TEAM_Library
 
             List<dynamic> sourceColumns = new List<dynamic>();
 
-            DataItem sourceColumn = new DataItem();
-            DataItem targetColumn = new DataItem();
+            var isDataQuery = sourceBusinessKeyDefinitionComponent.StartsWith('`') && sourceBusinessKeyDefinitionComponent.EndsWith('`');
 
-            sourceColumn.Name = sourceBusinessKeyDefinition;
-            sourceColumn.IsHardCodedValue = sourceBusinessKeyDefinition.StartsWith("'") && sourceBusinessKeyDefinition.EndsWith("'");
-
-            #region Driving Key
-
-            // Driving Key
-            if (sourceBusinessKeyDefinition == drivingKeyValue)
+            if (isDataQuery)
             {
-                List<DataClassification> classificationList = new List<DataClassification>();
-                DataClassification classification = new DataClassification();
-                classification.Classification = "DrivingKey";
-                classification.Notes = "The attribute that triggers (drives) the closing of a relationship.";
-                classificationList.Add(classification);
-                sourceColumn.DataItemClassification = classificationList;
+                DataQuery sourceDataQuery = new DataQuery();
+                sourceDataQuery.DataQueryCode = sourceBusinessKeyDefinitionComponent.Replace("`","");
+
+                sourceColumns.Add(sourceDataQuery);
+            }
+            else
+            {
+                DataItem sourceColumn = new DataItem();
+
+                sourceColumn.Name = sourceBusinessKeyDefinitionComponent;
+                sourceColumn.IsHardCodedValue = sourceBusinessKeyDefinitionComponent.StartsWith('\'') && sourceBusinessKeyDefinitionComponent.EndsWith('\'');
+
+                // Driving Key
+                if (sourceBusinessKeyDefinitionComponent == drivingKeyValue)
+                {
+                    List<DataClassification> classificationList = new List<DataClassification>();
+                    DataClassification classification = new DataClassification();
+                    classification.Classification = "DrivingKey";
+                    classification.Notes = "The attribute that triggers (drives) the closing of a relationship.";
+                    classificationList.Add(classification);
+                    sourceColumn.DataItemClassification = classificationList;
+                }
+
+                sourceColumns.Add(sourceColumn);
             }
 
-            #endregion
-
-            sourceColumns.Add(sourceColumn);
+            DataItem targetColumn = new DataItem();
 
             keyComponent.SourceDataItems = sourceColumns;
-            targetColumn.Name = targetBusinessKeyDefinition;
+            targetColumn.Name = targetBusinessKeyDefinitionComponent;
             keyComponent.TargetDataItem = targetColumn;
 
             dataItemMapping.SourceDataItems = sourceColumns;
@@ -1455,11 +1476,18 @@ namespace TEAM_Library
         {
             var businessKeyComponentList = new List<BusinessKeyComponentElement>();
 
-            var temporaryBusinessKeyComponentList = businessKeyDefinition.Split(',').ToList();
+            // Pattern to split by commas not within quotes
+            string pattern = @",(?![^\`]*\`)";
+
+            string[] temporaryBusinessKeyComponentList = Regex.Split(businessKeyDefinition, pattern);
+
+            //var temporaryBusinessKeyComponentList = businessKeyDefinition.Split(',').ToList();
 
             foreach (var keyComponent in temporaryBusinessKeyComponentList)
             {
-                var keyPart = keyComponent.Replace("(", "").Replace(")", "").Replace(" ", "");
+                //var keyPart = keyComponent.Replace("(", "").Replace(")", "").Replace(" ", "");
+
+                var keyPart = ReplaceParenthesesNotInTildes(keyComponent);
 
                 if (keyPart.StartsWith("COMPOSITE"))
                 {
@@ -1510,6 +1538,24 @@ namespace TEAM_Library
 
             //businessKeyComponentList = businessKeyComponentList.Select(t => t.businessKeyComponentElement.Trim().ToList);
             return businessKeyComponentList;
+        }
+
+        static string ReplaceParenthesesNotInTildes(string input)
+        {
+            var output = "";
+            // Pattern to find parentheses not within tildes
+
+            if (input.StartsWith('`'))
+            {
+                // Do nothing
+                output = input;
+            }
+            else
+            {
+                output = input.Replace("(", "").Replace(")", "").Replace(" ", "");
+            }
+
+            return output;
         }
 
         /// <summary>
