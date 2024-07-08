@@ -9,11 +9,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
+using System.Timers;
 using System.Windows.Forms;
-using Microsoft.SqlServer.Management.Dmf;
 using TEAM_Library;
 using static TEAM.DataGridViewDataObjects;
 using DataObject = DataWarehouseAutomation.DataObject;
@@ -36,9 +35,6 @@ namespace TEAM
         private TabPage tabPageDataItemMapping;
         private TabPage tabPagePhysicalModel;
 
-        // Keeping track of which files contain which data object mappings
-        //private TeamDataObjectMappingsFileCombinations TeamDataObjectMappingFileCombinations;
-
         // Preparing the Data Table to bind to something.
         private readonly BindingSource BindingSourceDataObjectMappings = new BindingSource();
         private readonly BindingSource BindingSourceDataItemMappings = new BindingSource();
@@ -53,9 +49,34 @@ namespace TEAM
         private bool isFiltered = false;
 
         private bool isSorted = false;
+
+        private DelayedTextBox textBoxFilterCriterion;
+
         public FormManageMetadata()
         {
             // Placeholder.
+        }
+
+
+        private void InitializeDelayedTextBox()
+        {
+            textBoxFilterCriterion = new DelayedTextBox
+            {
+                Location = new Point(6, 16),
+                Name = "textBoxFilterCriterion",
+                TabIndex = 23,
+                Size = new Size(287, 22),
+                DelayInterval = 500 // Set the delay interval if different from default
+            };
+
+            textBoxFilterCriterion.DelayedTextChanged += DelayedTextBox_DelayedTextChanged;
+            this.Controls.Add(textBoxFilterCriterion);
+            groupBox2.Controls.Add(textBoxFilterCriterion);
+        }
+
+        private void DelayedTextBox_DelayedTextChanged(object sender, EventArgs e)
+        {
+            ApplyDataGridViewFiltering();
         }
 
         /// <summary>
@@ -67,6 +88,7 @@ namespace TEAM
             AutoScaleMode = AutoScaleMode.Dpi;
             // Standard call to get the designer controls in place.
             InitializeComponent();
+            InitializeDelayedTextBox();
 
             // Add the Data Object grid view to the tab.
             SetDataObjectGridView();
@@ -85,7 +107,10 @@ namespace TEAM
 
             LoadMetadata();
 
+            tabControlDataMappings.SelectedIndex = 1;
+            tabControlDataMappings.SelectedIndex = 0;
             isStartUp = false;
+            //this.Refresh();
         }
 
         private void LoadMetadata()
@@ -3053,16 +3078,6 @@ namespace TEAM
             }
 
             return sqlStatementForDataItems.ToString();
-        }
-
-        /// <summary>
-        /// Custom textbox that has a built-in delay for filtering.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TextBoxFilterCriterion_OnDelayedTextChanged(object sender, EventArgs e)
-        {
-            ApplyDataGridViewFiltering();
         }
 
         private void ApplyDataGridViewFiltering()

@@ -35,7 +35,6 @@ namespace TEAM
             backgroundWorkerParse = new BackgroundWorker();
             groupBox2 = new System.Windows.Forms.GroupBox();
             checkBoxShowStaging = new System.Windows.Forms.CheckBox();
-            textBoxFilterCriterion = new TimedTextBox();
             labelResult = new System.Windows.Forms.Label();
             buttonStart = new System.Windows.Forms.Button();
             buttonSaveMetadata = new System.Windows.Forms.Button();
@@ -101,7 +100,6 @@ namespace TEAM
             // 
             groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             groupBox2.Controls.Add(checkBoxShowStaging);
-            groupBox2.Controls.Add(textBoxFilterCriterion);
             groupBox2.Location = new System.Drawing.Point(14, 739);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new System.Drawing.Size(299, 85);
@@ -122,15 +120,6 @@ namespace TEAM
             toolTipMetadata.SetToolTip(checkBoxShowStaging, "Show (or hide) Staging Layer mappings is a broad filter that hides all source-to-staging and staging-to-persistent-staging data object mappings.");
             checkBoxShowStaging.UseVisualStyleBackColor = true;
             checkBoxShowStaging.CheckedChanged += checkBoxShowStaging_CheckedChanged;
-            // 
-            // textBoxFilterCriterion
-            // 
-            textBoxFilterCriterion.DelayedTextChangedTimeout = 1000;
-            textBoxFilterCriterion.Location = new System.Drawing.Point(6, 16);
-            textBoxFilterCriterion.Name = "textBoxFilterCriterion";
-            textBoxFilterCriterion.Size = new System.Drawing.Size(287, 22);
-            textBoxFilterCriterion.TabIndex = 23;
-            textBoxFilterCriterion.DelayedTextChanged += TextBoxFilterCriterion_OnDelayedTextChanged;
             // 
             // labelResult
             // 
@@ -596,8 +585,6 @@ namespace TEAM
         private BackgroundWorker backgroundWorkerParse;
         private System.Windows.Forms.ToolStripMenuItem saveAsDirectionalGraphMarkupLanguageDGMLToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox2;
-        private TimedTextBox textBoxFilterCriterion;
-
 
         private System.Windows.Forms.Button buttonReverseEngineer;
 

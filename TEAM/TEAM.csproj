@@ -102,7 +102,7 @@
     <Compile Update="DataGridViewPhysicalModel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="TimedTextBox.cs">
+    <Compile Update="DelayedTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Content Include="Files\PhysicalModel\100_Staging_Area\dbo\STG_PROFILER_CUSTOMER_CONTACT.json">

@@ -361,6 +361,7 @@ namespace TEAM
                     {
                         // No invoke required - same thread.
                         _myMetadataForm.FormClosed += CloseMetadataForm;
+                        Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
                         _myMetadataForm = new FormManageMetadata(this);
 
                         Application.Run(_myMetadataForm);
@@ -371,6 +372,15 @@ namespace TEAM
                     }
                 }
             }
+        }
+
+        private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            // Log the exception (use any logging mechanism you prefer)
+            Console.WriteLine($"Unhandled exception: {e.Exception.Message}");
+
+            // Show a message to the user
+            //MessageBox.Show($"An unhandled exception occurred: {e.Exception.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private FormManageRepository _myRepositoryForm;
