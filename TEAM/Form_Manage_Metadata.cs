@@ -2557,7 +2557,7 @@ namespace TEAM
                     {
                         RunSnowflakeReverseEngineeringQuery(teamConnection, filteredObjects, conn, reverseEngineerResults);
                     }
-                    else // Customer queries, need to be executed separately for Snowflake. This is slow.
+                    else // Custom queries, need to be executed separately for Snowflake. This is slow.
                     {
                         foreach (var dataObject in filteredObjects)
                         {
@@ -2600,8 +2600,8 @@ namespace TEAM
             // Support multiple statements for this session.
             cmd.CommandText = "ALTER SESSION SET MULTI_STATEMENT_COUNT = 0;";
             cmd.ExecuteNonQuery();
-            // Regular generated query.
 
+            // Regular generated query.
             if (teamConnection.CatalogConnectionType == CatalogConnectionTypes.Catalog)
             {
                 cmd.CommandText = sqlStatementForDataItems;
@@ -2610,21 +2610,29 @@ namespace TEAM
             }
             else
             {
+                // Separate SQL statements, run them one at a time.
                 string[] statements = (sqlStatementForDataItems.Trim()).Split(";");
                 statements = statements.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
                 foreach (string statement in statements)
                 {
-                    if (statement != statements.Last())
+                    try
                     {
-                        cmd.CommandText = $"{statement};";
-                        cmd.ExecuteNonQuery();
+                        if (statement != statements.Last())
+                        {
+                            cmd.CommandText = $"{statement};";
+                            cmd.ExecuteNonQuery();
+                        }
+                        else
+                        {
+                            cmd.CommandText = $"{statement};";
+                            var dataReader = cmd.ExecuteReader();
+                            reverseEngineerResults.Load(dataReader);
+                        }
                     }
-                    else
+                    catch
                     {
-                        cmd.CommandText = $"{statement};";
-                        var dataReader = cmd.ExecuteReader();
-                        reverseEngineerResults.Load(dataReader);
+                        TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The reverse-engineering query run for connection '{teamConnection.ConnectionKey} failed.'. The failing statement is \r\n {statement}"));
                     }
                 }
             }
@@ -2650,7 +2658,7 @@ namespace TEAM
 
                 if (results.FirstOrDefault() != null)
                 {
-                    // Set the PK value to 'Y'
+                    // Set the PK value to 'Y'.
                     keyRow[PhysicalModelMappingMetadataColumns.primaryKeyIndicator.ToString()] = 'Y';
 
                     // Determine if the key column is a MA column.
