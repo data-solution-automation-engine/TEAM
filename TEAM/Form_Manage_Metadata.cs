@@ -2596,7 +2596,15 @@ namespace TEAM
             // Load the data table with the catalog details.
             IDbCommand cmd = conn.CreateCommand();
             cmd.CommandText = $"USE WAREHOUSE {teamConnection.DatabaseServer.Warehouse}";
-            cmd.ExecuteNonQuery();
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch
+            {
+                TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The Snowflake Warehouse could not be found. Can you check the connection settings? The Warehouse attempted to be used is {teamConnection.DatabaseServer.Warehouse}."));
+            }
             // Support multiple statements for this session.
             cmd.CommandText = "ALTER SESSION SET MULTI_STATEMENT_COUNT = 0;";
             cmd.ExecuteNonQuery();
