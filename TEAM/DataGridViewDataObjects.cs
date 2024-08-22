@@ -1181,8 +1181,8 @@ namespace TEAM
 
                             if (cell.Value.ToString().Contains("CONCATENATE") || cell.Value.ToString().Contains("COMPOSITE"))
                             {
-                                cell.Style.ForeColor = Color.DarkBlue;
-                                cell.Style.BackColor = Color.AliceBlue;
+                                //cell.Style.ForeColor = Color.DarkBlue;
+                                //cell.Style.BackColor = Color.AliceBlue;
                             }
 
                             // Colour coding
@@ -1243,7 +1243,7 @@ namespace TEAM
 
                 #endregion
             }
-            catch
+            catch (Exception ex)
             {
                 //
             }

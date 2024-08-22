@@ -298,11 +298,13 @@ namespace TEAM
             // 
             // menuStripMetadata
             // 
+            menuStripMetadata.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            menuStripMetadata.Dock = System.Windows.Forms.DockStyle.None;
             menuStripMetadata.ImageScalingSize = new System.Drawing.Size(24, 24);
             menuStripMetadata.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { metadataToolStripMenuItem, businessKeyMetadataToolStripMenuItem, validationToolStripMenuItem, jsonExportConfigurationToolStripMenuItem, helpToolStripMenuItem });
             menuStripMetadata.Location = new System.Drawing.Point(0, 0);
             menuStripMetadata.Name = "menuStripMetadata";
-            menuStripMetadata.Size = new System.Drawing.Size(1534, 24);
+            menuStripMetadata.Size = new System.Drawing.Size(276, 24);
             menuStripMetadata.TabIndex = 3;
             menuStripMetadata.Text = "menuStrip1";
             // 
@@ -473,7 +475,7 @@ namespace TEAM
             displayEventLogToolStripMenuItem.Image = Properties.Resources.log_file;
             displayEventLogToolStripMenuItem.Name = "displayEventLogToolStripMenuItem";
             displayEventLogToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E;
-            displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            displayEventLogToolStripMenuItem.Size = new System.Drawing.Size(215, 30);
             displayEventLogToolStripMenuItem.Text = "Display &Event Log";
             displayEventLogToolStripMenuItem.Click += displayEventLogToolStripMenuItem_Click;
             // 
@@ -481,7 +483,7 @@ namespace TEAM
             // 
             clearEventLogToolStripMenuItem.Image = Properties.Resources.log_file;
             clearEventLogToolStripMenuItem.Name = "clearEventLogToolStripMenuItem";
-            clearEventLogToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            clearEventLogToolStripMenuItem.Size = new System.Drawing.Size(215, 30);
             clearEventLogToolStripMenuItem.Text = "Clear Event Log";
             clearEventLogToolStripMenuItem.Click += clearEventLogToolStripMenuItem_Click;
             // 

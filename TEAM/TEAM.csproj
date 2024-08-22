@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0-windows</TargetFramework>
-    <PreserveCompilationContext>True</PreserveCompilationContext>    
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <PreserveCompilationContext>True</PreserveCompilationContext>
     <OutputType>WinExe</OutputType>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <SccProjectName>SAK</SccProjectName>
