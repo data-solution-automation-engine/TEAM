@@ -470,7 +470,7 @@ namespace TEAM_Library
 
             try
             {
-                // Select only the business keys in a link table. 
+                // Select only the business keys in a link table.
                 // Excluding all non-business key attributes
                 workingTable = physicalModelDataTable
                     .Select($"{PhysicalModelMappingMetadataColumns.tableName} LIKE '%{teamConfiguration.LinkTablePrefixValue}%' " +
@@ -932,15 +932,22 @@ namespace TEAM_Library
 
             if (validationAttribute != "NULL")
             {
-                var objectDetails = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
-
-                string filterCriterion = PhysicalModelMappingMetadataColumns.tableName + " = '" + objectDetails.Value + "' AND " + PhysicalModelMappingMetadataColumns.schemaName + "='" + objectDetails.Key + "' AND " + PhysicalModelMappingMetadataColumns.columnName + " = '" + validationAttribute + "'";
-
-                DataRow[] foundRows = physicalModelDataTable.Select(filterCriterion);
-
-                if (foundRows.Length > 0)
+                try
                 {
-                    returnExistenceEvaluation = "True";
+                    var objectDetails = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
+
+                    string filterCriterion = PhysicalModelMappingMetadataColumns.tableName + " = '" + objectDetails.Value + "' AND " + PhysicalModelMappingMetadataColumns.schemaName + "='" + objectDetails.Key + "' AND " + PhysicalModelMappingMetadataColumns.columnName + " = '" + validationAttribute + "'";
+
+                    DataRow[] foundRows = physicalModelDataTable.Select(filterCriterion);
+
+                    if (foundRows.Length > 0)
+                    {
+                        returnExistenceEvaluation = "True";
+                    }
+                }
+                catch
+                {
+                    // Skip
                 }
             }
             else
@@ -1022,7 +1029,7 @@ namespace TEAM_Library
         /// <param name="teamConnection"></param>
         /// <param name="inputDataTable"></param>
         /// <returns></returns>
-        /// 
+        ///
         internal static Dictionary<Tuple<string, string>, bool> ValidateSourceBusinessKeyExistenceVirtual(DataWarehouseAutomation.DataObject validationObject, string businessKeyDefinition, TeamConnection teamConnection, DataTable inputDataTable)
         {
             // First, the Business Keys for each table need to be identified information. This can be the combination of Business keys separated by a comma.
@@ -1058,25 +1065,32 @@ namespace TEAM_Library
                 foreach (string businessKeyPart in subKeys)
                 {
                     // Handle hard-coded business key values
-                    if (businessKeyPart.StartsWith("'") && businessKeyPart.EndsWith("'"))
+                    if ((businessKeyPart.StartsWith("'") && businessKeyPart.EndsWith("'") || businessKeyPart.Contains('%')))
                     {
                         // Do nothing
                     }
                     else
                     {
-                        var objectDetails = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
-
-                        bool returnExistenceEvaluation = false;
-
-                        DataRow[] foundAuthors = inputDataTable.Select($"" + PhysicalModelMappingMetadataColumns.tableName + " = '" + objectDetails.Value + "' AND " + PhysicalModelMappingMetadataColumns.schemaName + " = '" + objectDetails.Key + "' AND " + PhysicalModelMappingMetadataColumns.columnName + " = '" + businessKeyPart.Trim() + "'");
-                        if (foundAuthors.Length != 0)
+                        try
                         {
-                            returnExistenceEvaluation = true;
+                            var objectDetails = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
+
+                            bool returnExistenceEvaluation = false;
+
+                            DataRow[] foundAuthors = inputDataTable.Select($"" + PhysicalModelMappingMetadataColumns.tableName + " = '" + objectDetails.Value + "' AND " + PhysicalModelMappingMetadataColumns.schemaName + " = '" + objectDetails.Key + "' AND " + PhysicalModelMappingMetadataColumns.columnName + " = '" + businessKeyPart.Trim() + "'");
+                            if (foundAuthors.Length != 0)
+                            {
+                                returnExistenceEvaluation = true;
+                            }
+
+                            if (!result.ContainsKey(Tuple.Create(validationObject.Name, businessKeyPart.Trim())))
+                            {
+                                result.Add(Tuple.Create(validationObject.Name, businessKeyPart.Trim()), returnExistenceEvaluation);
+                            }
                         }
-
-                        if (!result.ContainsKey(Tuple.Create(validationObject.Name, businessKeyPart.Trim())))
+                        catch
                         {
-                            result.Add(Tuple.Create(validationObject.Name, businessKeyPart.Trim()), returnExistenceEvaluation);
+                            // Skip
                         }
                     }
                 }
