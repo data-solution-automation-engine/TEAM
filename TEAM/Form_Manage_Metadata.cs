@@ -11,7 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Timers;
 using System.Windows.Forms;
 using TEAM_Library;
 using static TEAM.DataGridViewDataObjects;
@@ -70,7 +69,7 @@ namespace TEAM
             };
 
             textBoxFilterCriterion.DelayedTextChanged += DelayedTextBox_DelayedTextChanged;
-            this.Controls.Add(textBoxFilterCriterion);
+            Controls.Add(textBoxFilterCriterion);
             groupBox2.Controls.Add(textBoxFilterCriterion);
         }
 
@@ -426,14 +425,15 @@ namespace TEAM
 
             try
             {
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.Enabled].Width = 50;
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceConnection].Width = 100;
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].Width = 340;
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetConnection].Width = 100;
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].Width = 340;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.Enabled].Width = 55;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceConnection].Width = 75;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.SourceDataObject].Width = 315;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetConnection].Width = 75;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.TargetDataObject].Width = 315;
                 _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].Width = 150;
                 _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].Width = 80;
-                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].Width = 70;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].Width = 100;
+                _dataGridViewDataObjects.Columns[(int)DataObjectMappingGridColumns.DataObjectMappingExtension].Width = 100;
 
                 _dataGridViewDataObjects.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 
@@ -566,7 +566,7 @@ namespace TEAM
             richTextBoxInformation.Clear();
 
             if (tabControlDataMappings.SelectedTab == tabPageDataObjectMapping)
-            { 
+            {
                 GridAutoLayout(_dataGridViewDataObjects);
             }
 
@@ -592,13 +592,32 @@ namespace TEAM
                 // Disable the auto size again (to enable manual resizing).
                 for (var i = 0; i < dataGridView.Columns.Count - 1; i++)
                 {
-                    dataGridView.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                    dataGridView.Columns[i].Width = dataGridView.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
+                    if (dataGridView.Columns[i].Visible == false)
+                    {
+                        // Skip
+                    }
+                    else
+                    {
+                        if (dataGridView.Columns[i].Name == DataObjectMappingGridColumns.DataObjectMappingExtension.ToString())
+                        {
+                            // Limit to 500.
+                            if (dataGridView.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true) > 500)
+                            {
+                                dataGridView.Columns[i].Width = 500;
+                            }
+
+                        }
+                        else
+                        {
+                            dataGridView.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                            dataGridView.Columns[i].Width = dataGridView.Columns[i].GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
+                        }
+                    }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore it for now.
+                richTextBoxInformation.Text += $"Autolayout issue: {ex.Message}";
             }
         }
 
@@ -1111,7 +1130,7 @@ namespace TEAM
                             tableName = (string)row[PhysicalModelMappingMetadataColumns.tableName.ToString()];
                         }
 
-                        // Save the file. 
+                        // Save the file.
                         if (!exceptionList.Contains(databaseName + schemaName + tableName))
                         {
                             WritePhysicalModelToFile(databaseName, schemaName, tableName);
@@ -1479,7 +1498,7 @@ namespace TEAM
         /// This event handler cancels the background worker, fired from Cancel button in AlertForm.
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="e"></param>        
+        /// <param name="e"></param>
         private void buttonCancelParse_Click(object sender, EventArgs e)
         {
             if (backgroundWorkerParse.WorkerSupportsCancellation)
@@ -2523,7 +2542,7 @@ namespace TEAM
                 {
                     connSql.Open();
                     TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"Connection {teamConnection.ConnectionKey} was opened using '{connSql.ConnectionString}'."));
-                    
+
                     var sqlStatementForDataItems = SqlServerStatementForDataItems(filteredObjects, teamConnection);
                     TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Information, $"The reverse-engineering query run for connection '{teamConnection.ConnectionKey}' is \r\n {sqlStatementForDataItems}"));
 

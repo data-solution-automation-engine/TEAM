@@ -22,7 +22,6 @@ namespace TEAM_Library
         BusinessKeyDefinition = 6,
         DrivingKeyDefinition = 7,
         FilterCriterion = 8,
-        // Hidden in the main table, but can be set via the JSON editor
         DataObjectMappingExtension = 9,
         // The below are hidden, for sorting and back-end management only.
         SourceDataObjectName = 10,
@@ -58,7 +57,6 @@ namespace TEAM_Library
             DataTable.Columns.Add(DataObjectMappingGridColumns.BusinessKeyDefinition.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.DrivingKeyDefinition.ToString());
             DataTable.Columns.Add(DataObjectMappingGridColumns.FilterCriterion.ToString());
-            // Hidden, but editable.
             DataTable.Columns.Add(DataObjectMappingGridColumns.DataObjectMappingExtension.ToString());
             // For sorting purposes only.
             DataTable.Columns.Add(DataObjectMappingGridColumns.SourceDataObjectName.ToString());
@@ -84,7 +82,8 @@ namespace TEAM_Library
 
                     if (dataObjectMapping.Extensions != null)
                     {
-                        dataObjectMappingExtension = JsonConvert.SerializeObject(dataObjectMapping.Extensions, Formatting.Indented);
+                        //dataObjectMappingExtension = JsonConvert.SerializeObject(dataObjectMapping.Extensions, Formatting.Indented);
+                        dataObjectMappingExtension = JsonConvert.SerializeObject(dataObjectMapping.Extensions);
                     }
 
                     #endregion
@@ -353,8 +352,6 @@ namespace TEAM_Library
                 dataTable.Columns[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].ColumnName = DataObjectMappingGridColumns.BusinessKeyDefinition.ToString();
                 dataTable.Columns[(int)DataObjectMappingGridColumns.DrivingKeyDefinition].ColumnName = DataObjectMappingGridColumns.DrivingKeyDefinition.ToString();
                 dataTable.Columns[(int)DataObjectMappingGridColumns.FilterCriterion].ColumnName = DataObjectMappingGridColumns.FilterCriterion.ToString();
-
-                // Hidden in the main table, but can be set via the JSON editor
                 dataTable.Columns[(int)DataObjectMappingGridColumns.DataObjectMappingExtension].ColumnName = DataObjectMappingGridColumns.DataObjectMappingExtension.ToString();
 
                 // The below are hidden, for sorting and back-end management only.

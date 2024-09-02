@@ -14,6 +14,7 @@ using DataObject = DataWarehouseAutomation.DataObject;
 using Event = TEAM_Library.Event;
 using static TEAM_Library.MetadataHandling;
 using ComboBox = System.Windows.Forms.ComboBox;
+using Microsoft.IdentityModel.Tokens;
 
 namespace TEAM
 {
@@ -66,7 +67,7 @@ namespace TEAM
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
 
             EditMode = DataGridViewEditMode.EditOnEnter;
-            
+
             var mySize = new Size(1100, 540);
             MinimumSize = mySize;
             Size = mySize;
@@ -77,6 +78,8 @@ namespace TEAM
             Name = "dataGridViewTableMetadata";
             Location = new Point(2, 3);
             TabIndex = 1;
+
+            //DefaultCellStyle.Font = new Font("Segoe UI", 8);
 
             #endregion
 
@@ -104,10 +107,13 @@ namespace TEAM
             // Enabled
             if (!Controls.ContainsKey(DataObjectMappingGridColumns.Enabled.ToString()))
             {
-                DataGridViewCheckBoxColumn enabledIndicator = new DataGridViewCheckBoxColumn();
-                enabledIndicator.Name = DataObjectMappingGridColumns.Enabled.ToString();
-                enabledIndicator.HeaderText = DataObjectMappingGridColumns.Enabled.ToString();
-                enabledIndicator.DataPropertyName = DataObjectMappingGridColumns.Enabled.ToString();
+                DataGridViewCheckBoxColumn enabledIndicator = new DataGridViewCheckBoxColumn
+                {
+                    Name = DataObjectMappingGridColumns.Enabled.ToString(),
+                    HeaderText = DataObjectMappingGridColumns.Enabled.ToString(),
+                    DataPropertyName = DataObjectMappingGridColumns.Enabled.ToString(),
+                    MinimumWidth = 55
+                };
                 Columns.Add(enabledIndicator);
             }
 
@@ -132,7 +138,7 @@ namespace TEAM
             sourceConnection.DisplayMember = "ConnectionKey";
             sourceConnection.ValueMember = "ConnectionId";
             Columns.Add(sourceConnection);
-            
+
             // Source Data Object.
             DataGridViewTextBoxColumn sourceDataObject = new DataGridViewTextBoxColumn();
             sourceDataObject.Name = DataObjectMappingGridColumns.SourceDataObject.ToString();
@@ -170,6 +176,7 @@ namespace TEAM
             drivingKeyDefinition.Name = DataObjectMappingGridColumns.DrivingKeyDefinition.ToString();
             drivingKeyDefinition.HeaderText = @"Driving Key Definition";
             drivingKeyDefinition.DataPropertyName = DataObjectMappingGridColumns.DrivingKeyDefinition.ToString();
+            drivingKeyDefinition.MinimumWidth = 80;
             Columns.Add(drivingKeyDefinition);
 
             DataGridViewTextBoxColumn filterCriterion = new DataGridViewTextBoxColumn();
@@ -180,12 +187,14 @@ namespace TEAM
             filterCriterion.MinimumWidth = 100;
             Columns.Add(filterCriterion);
 
-            // Hidden columns.
-            DataGridViewTextBoxColumn dataObjectMappingExtension = new DataGridViewTextBoxColumn();
-            dataObjectMappingExtension.Name = DataObjectMappingGridColumns.DataObjectMappingExtension.ToString();
-            dataObjectMappingExtension.HeaderText = @"DataObjectMappingExtension";
-            dataObjectMappingExtension.DataPropertyName = DataObjectMappingGridColumns.DataObjectMappingExtension.ToString();
-            dataObjectMappingExtension.Visible = false;
+            DataGridViewTextBoxColumn dataObjectMappingExtension = new DataGridViewTextBoxColumn
+            {
+                Name = DataObjectMappingGridColumns.DataObjectMappingExtension.ToString(),
+                HeaderText = @"Extensions",
+                DataPropertyName = DataObjectMappingGridColumns.DataObjectMappingExtension.ToString(),
+                Visible = true,
+                MinimumWidth = 100,
+            };
             Columns.Add(dataObjectMappingExtension);
 
             // Filtering and back-end management only.
@@ -584,7 +593,7 @@ namespace TEAM
             // Callback to parent form.
             HeaderSort();
         }
-        
+
         private void toolStripMenuItemModifyDataObjectJson_Click(object sender, EventArgs e)
         {
             _modifyDataObjectJson = new Form_Edit_DataObject(CurrentCell);
@@ -649,7 +658,8 @@ namespace TEAM
                 // TODO for now, adding individual components to separate columns
 
                 // Extensions
-                currentRow.Cells[(int)DataObjectMappingGridColumns.DataObjectMappingExtension].Value = JsonConvert.SerializeObject(dataObjectMapping.Extensions);
+                var extensions = JsonConvert.SerializeObject(dataObjectMapping.Extensions);
+                currentRow.Cells[(int)DataObjectMappingGridColumns.DataObjectMappingExtension].Value = extensions;
 
                 // Classifications
                 currentRow.Cells[13].Value = JsonConvert.SerializeObject(dataObjectMapping.MappingClassifications);
@@ -737,7 +747,7 @@ namespace TEAM
 
             FormManageMetadata.ManageFormJsonInteraction(output);
         }
-        
+
         private void DataGridViewDataObjects_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -1038,7 +1048,7 @@ namespace TEAM
                         try
                         {
                             DataObject fullDataObject = (DataObject)e.Value;
-                            cell.ToolTipText = JsonConvert.SerializeObject(fullDataObject, Newtonsoft.Json.Formatting.Indented);
+                            cell.ToolTipText = JsonConvert.SerializeObject(fullDataObject, Formatting.Indented);
                         }
                         catch (Exception ex)
                         {
@@ -1054,11 +1064,11 @@ namespace TEAM
 
                         // Colour coding
                         //Syntax highlighting for in source data objects.
-                        if (dataObjectName.StartsWith("`"))
+                        if (dataObjectName.StartsWith('`'))
                         {
                             cell.Style.BackColor = Color.AliceBlue;
 
-                            if (dataObjectName.EndsWith("`"))
+                            if (dataObjectName.EndsWith('`'))
                             {
                                 cell.Style.ForeColor = Color.DarkBlue;
                             }
@@ -1091,7 +1101,7 @@ namespace TEAM
                         // Set the tooltip.
                         try
                         {
-                            cell.ToolTipText = JsonConvert.SerializeObject(fullDataObject, Newtonsoft.Json.Formatting.Indented);
+                            cell.ToolTipText = JsonConvert.SerializeObject(fullDataObject, Formatting.Indented);
                         }
                         catch (Exception ex)
                         {
@@ -1114,8 +1124,8 @@ namespace TEAM
 
                         if (targetDataObjectNonQualifiedName != null && businessKeySyntax != null && selectedRow.IsNewRow == false)
                         {
-                            var presentationLayerLabelArray = Utility.SplitLabelIntoArray(TeamConfiguration.PresentationLayerLabels);
-                            var transformationLabelArray = Utility.SplitLabelIntoArray(TeamConfiguration.TransformationLabels);
+                            var presentationLayerLabelArray = TEAM_Library.Utility.SplitLabelIntoArray(TeamConfiguration.PresentationLayerLabels);
+                            var transformationLabelArray = TEAM_Library.Utility.SplitLabelIntoArray(TeamConfiguration.TransformationLabels);
 
                             // Hub
                             if (targetDataObjectNonQualifiedName.IsDataVaultHub(TeamConfiguration))
@@ -1191,7 +1201,7 @@ namespace TEAM
                             {
                                 cell.Style.BackColor = Color.AliceBlue;
 
-                                if (cell.Value.ToString().EndsWith("`") || cell.Value.ToString().EndsWith("`)"))
+                                if (cell.Value.ToString().EndsWith('`') || cell.Value.ToString().EndsWith("`)"))
                                 {
                                     cell.Style.ForeColor = Color.DarkBlue;
                                 }
@@ -1242,10 +1252,35 @@ namespace TEAM
                 }
 
                 #endregion
+
+                #region Mapping Extensions
+
+                if (Columns[e.ColumnIndex].Name.Equals(DataObjectMappingGridColumns.DataObjectMappingExtension.ToString()) && !Rows[e.RowIndex].IsNewRow)
+                {
+                    DataGridViewCell cell = Rows[e.RowIndex].Cells[e.ColumnIndex];
+                    if (cell.Value != null && !cell.Value.ToString().IsNullOrEmpty())
+                    {
+
+                        // Set the tooltip.
+                        try
+                        {
+                            //List<Extension> extensions = (List<Extension>)e.Value;
+                            //var test = JsonConvert.SerializeObject(e.Value, Formatting.Indented);
+                            var extensions = JsonConvert.DeserializeObject<List<Extension>>(e.Value.ToString());
+                            cell.ToolTipText = JsonConvert.SerializeObject(extensions, Formatting.Indented);
+                        }
+                        catch (Exception ex)
+                        {
+                            cell.ToolTipText = $"The value could not be visualised in JSON. The error message is {ex.Message}.";
+                        }
+                    }
+                }
+
+                #endregion
             }
             catch (Exception ex)
             {
-                //
+               //TODO add callback
             }
         }
 
@@ -1429,12 +1464,10 @@ namespace TEAM
                             if (dataObject.DataObjectConnection.Extensions != null && dataObject.DataObjectConnection.Extensions.Any())
                             {
                                 var schemaExtension = dataObject.DataObjectConnection.Extensions.Where(x => x.Key.Equals("schema")).FirstOrDefault();
-                                if (schemaExtension != null)
+
+                                if (schemaExtension != null && schemaExtension.Value != connectionSchema)
                                 {
-                                    if (schemaExtension.Value != connectionSchema)
-                                    {
-                                        formatting.Value = schemaExtension.Value + '.' + dataObject.Name;
-                                    }
+                                    formatting.Value = schemaExtension.Value + '.' + dataObject.Name;
                                 }
                             }
                         }
@@ -1490,13 +1523,10 @@ namespace TEAM
 
             foreach (DataGridViewRow row in Rows)
             {
-                if (!row.IsNewRow)
+                if (!row.IsNewRow && row.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()]?.Value.ToString() == targetDataObjectName)
                 {
-                    if (row.Cells[DataObjectMappingGridColumns.TargetDataObjectName.ToString()]?.Value.ToString() == targetDataObjectName)
-                    {
-                        var dataObjectMapping = GetDataObjectMapping(row);
-                        dataObjectMappings.Add(dataObjectMapping);
-                    }
+                    var dataObjectMapping = GetDataObjectMapping(row);
+                    dataObjectMappings.Add(dataObjectMapping);
                 }
             }
 
@@ -1532,7 +1562,7 @@ namespace TEAM
 
                 dataObjectMapping.Enabled = enabled;
             }
-            catch (Exception exception) 
+            catch (Exception exception)
             {
                 TeamEventLog.Add(Event.CreateNewEvent(EventTypes.Error, $"The enabled indicator could not be correctly defined. The message is: {exception.Message}."));
             }
@@ -1597,7 +1627,7 @@ namespace TEAM
                 }
             }
 
-            #endregion 
+            #endregion
 
             #region Mapping Extensions
 
@@ -2012,7 +2042,5 @@ namespace TEAM
 
             return dataObjectMapping;
         }
-
-
     }
 }

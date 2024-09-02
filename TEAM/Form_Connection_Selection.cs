@@ -16,6 +16,7 @@ namespace TEAM
 
         public Form_Connection_Selection()
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             InitializeComponent();
         }
 
