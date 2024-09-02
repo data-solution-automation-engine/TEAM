@@ -15,6 +15,7 @@ namespace TEAM
 
         public FormManageConfiguration(FormMain parent) : base(parent)
         {
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F); // for design in 96 DPI
             AutoScaleMode = AutoScaleMode.Dpi;
             parentFormMain = parent;
             InitializeComponent();
@@ -86,6 +87,7 @@ namespace TEAM
                     localCustomSnowflakeTabPage.OnDeleteConnection += DeleteConnection;
                     localCustomSnowflakeTabPage.OnChangeMainText += UpdateMainInformationTextBox;
                     localCustomSnowflakeTabPage.OnSaveConnection += SaveConnection;
+                    //localCustomSnowflakeTabPage.Autscal
                     tabControlConnections.TabPages.Insert(lastIndex, localCustomSnowflakeTabPage);
                 }
                 else

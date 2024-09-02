@@ -19,6 +19,7 @@ namespace TEAM
     /// </summary>
     internal class TabPageSnowflakeConnection : TabPage
     {
+
         // Startup flag, disabled in constructor. Used to prevent some events from firing twice (creation and value setting).
         internal bool StartUpIndicator = true;
 
@@ -63,6 +64,7 @@ namespace TEAM
             ToolTip toolTipConnections = new ToolTip();
             toolTipConnections.AutoPopDelay = 3000;
 
+
             // Base properties of the custom tab page
             Name = $"{_localConnection.ConnectionKey}";
             Text = _localConnection.ConnectionName;
@@ -73,7 +75,7 @@ namespace TEAM
             AutoSizeMode = AutoSizeMode.GrowOnly;
             AutoSize = true;
             AutoScroll = true;
-            
+
             // Add Panel to facilitate docking
             var localPanel = new Panel();
             Controls.Add(localPanel);
