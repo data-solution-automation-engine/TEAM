@@ -74,7 +74,7 @@ namespace TEAM
             AutoSizeMode = AutoSizeMode.GrowOnly;
             AutoSize = true;
             AutoScroll = true;
-            
+
             // Add Panel to facilitate docking
             var localPanel = new Panel();
             Controls.Add(localPanel);
@@ -468,7 +468,7 @@ namespace TEAM
             toolTipConnections.SetToolTip(_richTextBoxConnectionNotes, "Free format notes to provide additional information about the connection.");
 
             #endregion
-            
+
             // Save Button
             Button saveButton = new Button();
             localPanel.Controls.Add(saveButton);

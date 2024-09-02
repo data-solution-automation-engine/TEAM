@@ -73,6 +73,7 @@ namespace TEAM
         /// </summary>
         private void AddConnectionTabPages()
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             IntPtr localHandle = tabControlConnections.Handle;
             foreach (var connection in TeamConfiguration.ConnectionDictionary)
             {
