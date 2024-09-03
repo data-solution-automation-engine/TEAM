@@ -588,7 +588,7 @@ namespace TEAM_Library
                         if (!objectList.Contains(new Tuple<string, string, string, string>
                             (
                             sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value, targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value, businessKey, targetFilterCriterion)
-                            )
+                            ) && !businessKey.Contains("`")
                         )
                         {
                             objectList.Add(new Tuple<string, string, string, string>
@@ -1032,65 +1032,73 @@ namespace TEAM_Library
         ///
         internal static Dictionary<Tuple<string, string>, bool> ValidateSourceBusinessKeyExistenceVirtual(DataWarehouseAutomation.DataObject validationObject, string businessKeyDefinition, TeamConnection teamConnection, DataTable inputDataTable)
         {
-            // First, the Business Keys for each table need to be identified information. This can be the combination of Business keys separated by a comma.
-            // Every business key needs to be iterated over to validate if the attribute exists in that table.
-            List<string> businessKeys = businessKeyDefinition.Split(',').ToList();
-
             Dictionary<Tuple<string, string>, bool> result = new Dictionary<Tuple<string, string>, bool>();
 
-            foreach (string businessKey in businessKeys)
+            if (businessKeyDefinition.Contains("`"))
             {
-                var trimBusinessKey = businessKey.Trim();
+                // Query, can be skipped
+            }
+            else
+            {
+                // First, the Business Keys for each table need to be identified information. This can be the combination of Business keys separated by a comma.
+                // Every business key needs to be iterated over to validate if the attribute exists in that table.
+                List<string> businessKeys = businessKeyDefinition.Split(',').ToList();
 
-                // Handle concatenate and composite
-                List<string> subKeys = new List<string>();
 
-                if (trimBusinessKey.StartsWith("CONCATENATE"))
+                foreach (string businessKey in businessKeys)
                 {
-                    var localBusinessKey = trimBusinessKey.Replace("CONCATENATE(", "").Replace(")", "");
+                    var trimBusinessKey = businessKey.Trim();
 
-                    subKeys = localBusinessKey.Split(';').ToList();
-                }
-                else if (trimBusinessKey.StartsWith("COMPOSITE"))
-                {
-                    var localBusinessKey = trimBusinessKey.Replace("COMPOSITE(", "").Replace(")", "");
+                    // Handle concatenate and composite
+                    List<string> subKeys = new List<string>();
 
-                    subKeys = localBusinessKey.Split(';').ToList();
-                }
-                else
-                {
-                    subKeys.Add(trimBusinessKey);
-                }
-
-                foreach (string businessKeyPart in subKeys)
-                {
-                    // Handle hard-coded business key values
-                    if ((businessKeyPart.StartsWith("'") && businessKeyPart.EndsWith("'") || businessKeyPart.Contains('%')))
+                    if (trimBusinessKey.StartsWith("CONCATENATE"))
                     {
-                        // Do nothing
+                        var localBusinessKey = trimBusinessKey.Replace("CONCATENATE(", "").Replace(")", "");
+
+                        subKeys = localBusinessKey.Split(';').ToList();
+                    }
+                    else if (trimBusinessKey.StartsWith("COMPOSITE"))
+                    {
+                        var localBusinessKey = trimBusinessKey.Replace("COMPOSITE(", "").Replace(")", "");
+
+                        subKeys = localBusinessKey.Split(';').ToList();
                     }
                     else
                     {
-                        try
+                        subKeys.Add(trimBusinessKey);
+                    }
+
+                    foreach (string businessKeyPart in subKeys)
+                    {
+                        // Handle hard-coded business key values
+                        if ((businessKeyPart.StartsWith("'") && businessKeyPart.EndsWith("'") || businessKeyPart.Contains('%')))
                         {
-                            var objectDetails = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
-
-                            bool returnExistenceEvaluation = false;
-
-                            DataRow[] foundAuthors = inputDataTable.Select($"" + PhysicalModelMappingMetadataColumns.tableName + " = '" + objectDetails.Value + "' AND " + PhysicalModelMappingMetadataColumns.schemaName + " = '" + objectDetails.Key + "' AND " + PhysicalModelMappingMetadataColumns.columnName + " = '" + businessKeyPart.Trim() + "'");
-                            if (foundAuthors.Length != 0)
-                            {
-                                returnExistenceEvaluation = true;
-                            }
-
-                            if (!result.ContainsKey(Tuple.Create(validationObject.Name, businessKeyPart.Trim())))
-                            {
-                                result.Add(Tuple.Create(validationObject.Name, businessKeyPart.Trim()), returnExistenceEvaluation);
-                            }
+                            // Do nothing
                         }
-                        catch
+                        else
                         {
-                            // Skip
+                            try
+                            {
+                                var objectDetails = MetadataHandling.GetFullyQualifiedDataObjectName(validationObject, teamConnection).FirstOrDefault();
+
+                                bool returnExistenceEvaluation = false;
+
+                                DataRow[] foundAuthors = inputDataTable.Select($"" + PhysicalModelMappingMetadataColumns.tableName + " = '" + objectDetails.Value + "' AND " + PhysicalModelMappingMetadataColumns.schemaName + " = '" + objectDetails.Key + "' AND " + PhysicalModelMappingMetadataColumns.columnName + " = '" + businessKeyPart.Trim() + "'");
+                                if (foundAuthors.Length != 0)
+                                {
+                                    returnExistenceEvaluation = true;
+                                }
+
+                                if (!result.ContainsKey(Tuple.Create(validationObject.Name, businessKeyPart.Trim())))
+                                {
+                                    result.Add(Tuple.Create(validationObject.Name, businessKeyPart.Trim()), returnExistenceEvaluation);
+                                }
+                            }
+                            catch
+                            {
+                                // Skip
+                            }
                         }
                     }
                 }

@@ -193,7 +193,7 @@ namespace TEAM
                 HeaderText = @"Extensions",
                 DataPropertyName = DataObjectMappingGridColumns.DataObjectMappingExtension.ToString(),
                 Visible = true,
-                MinimumWidth = 100,
+                MinimumWidth = 300,
             };
             Columns.Add(dataObjectMappingExtension);
 
