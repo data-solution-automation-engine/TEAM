@@ -56,7 +56,6 @@ namespace TEAM
             // Placeholder.
         }
 
-
         private void InitializeDelayedTextBox()
         {
             textBoxFilterCriterion = new DelayedTextBox

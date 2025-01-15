@@ -311,17 +311,20 @@ namespace TEAM_Library
 
             foreach (DataRow row in DataTable.Rows)
             {
+                // Only if it concerns an LSAT...
                 if (row[(int)DataObjectMappingGridColumns.TargetDataObjectName].ToString().IsDataVaultLinkSatellite(teamConfiguration))
                 {
                     // For LSATs only, look up the corresponding LNK and re-use that business key.
                     string surrogateKey = (string)row[(int)DataObjectMappingGridColumns.SurrogateKey];
+                    string filterCriterion = (string)row[(int)DataObjectMappingGridColumns.FilterCriterion];
 
-                    string filterCriterion = DataObjectMappingGridColumns.SourceDataObjectName + " = '" + row[(int)DataObjectMappingGridColumns.SourceDataObjectName] + "' AND " +
-                                             DataObjectMappingGridColumns.SurrogateKey + " = '" + surrogateKey + "' AND " + DataObjectMappingGridColumns.TargetDataObjectName + " <> '" +
-                                             row[(int)DataObjectMappingGridColumns.TargetDataObjectName] + "'";
+                    string selectionQuery = DataObjectMappingGridColumns.SourceDataObjectName + " = '" + row[(int)DataObjectMappingGridColumns.SourceDataObjectName] + "' AND " +
+                                             DataObjectMappingGridColumns.SurrogateKey + " = '" + surrogateKey + "' AND " +
+                                             DataObjectMappingGridColumns.TargetDataObjectName + " <> '" + row[(int)DataObjectMappingGridColumns.TargetDataObjectName] + "' AND " +
+                                             DataObjectMappingGridColumns.FilterCriterion + " = '" + filterCriterion + "'";
 
                     // Should be only one return value.
-                    var dataTableLookup = DataTable.Select(filterCriterion).FirstOrDefault();
+                    var dataTableLookup = DataTable.Select(selectionQuery).FirstOrDefault();
 
                     // Update the LSAT business key, if available
                     if (dataTableLookup != null && dataTableLookup[(int)DataObjectMappingGridColumns.BusinessKeyDefinition].ToString() != null)
