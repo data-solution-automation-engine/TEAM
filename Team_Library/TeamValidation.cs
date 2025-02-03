@@ -548,9 +548,8 @@ namespace TEAM_Library
             List<string> resultList = new List<string>();
 
             #region Retrieving the Integration Layer tables
-
             // Informing the user.
-            resultList.Add("\r\n--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n");
+            resultList.Add("\r\n--> Commencing the validation to check if the functional dependencies (logical group / unit of work) are present.\r\n\r\n");
 
             // Creating a list of tables which are dependent on other tables being present
             var objectList = new List<Tuple<string, string, string, string>>(); // Source Name, Target Name, Business Key, FilterCriterion
@@ -620,7 +619,6 @@ namespace TEAM_Library
                     }
                 }
             }
-
             #endregion
 
             // Return the results back to the user
@@ -628,13 +626,12 @@ namespace TEAM_Library
             {
                 foreach (var sourceObjectResult in resultDictionary)
                 {
-                    resultList.Add("     " + sourceObjectResult.Key + " is tested with this outcome: " + sourceObjectResult.Value + "." +
-                                                    "\r\n     This means there is a Link or Satellite without it's supporting Hub(s) defined." +
-                                                    "\r\n     If a source loads a Link or Satellite, this source should also load a Hub that relates to the Link or Satellite.\r\n");
+                    resultList.Add("     " + sourceObjectResult.Key + " has validation issues.\r\n");
                     metadataValidations.ValidationIssues++;
                 }
 
-                resultList.Add("\r\n");
+                resultList.Add("\r\n     This means there is a Link or Satellite without it's supporting Hub(s) defined." +
+                "\r\n     If a source loads a Link or Satellite, this source should also load a Hub that relates to the Link or Satellite.\r\n");
             }
             else
             {
@@ -688,7 +685,8 @@ namespace TEAM_Library
 
             // Unfortunately, there is a separate process for Links and Satellites
             // Iterate through the various keys (mainly for the purpose of evaluating Links)
-            int numberOfDependents = 0;
+            List<string> dependents = new List<string>();
+
             if (tableClassification == teamConfiguration.SatTablePrefixValue || tableClassification == "LNK")
             {
                 foreach (string businessKeyComponent in hubBusinessKeys)
@@ -721,11 +719,11 @@ namespace TEAM_Library
                              sourceFullyQualifiedName.Key + '.' + sourceFullyQualifiedName.Value == validationObject.Item1 &&
                              (string)dataObjectMappingRow[DataObjectMappingGridColumns.BusinessKeyDefinition.ToString()] == businessKeyComponent.Trim() &&
                              targetFullyQualifiedName.Key + '.' + targetFullyQualifiedName.Value != validationObject.Item2 && // Exclude itself
-                             filterCriterion == validationObject.Item4 && // Adding filtercriterion for uniquification of join (see https://github.com/RoelantVos/TEAM/issues/87);
+                             //filterCriterion == validationObject.Item4 && // Adding filtercriterion for uniquification of join (see https://github.com/RoelantVos/TEAM/issues/87);
                              targetFullyQualifiedName.Value.StartsWith(tableInclusionFilterCriterion)
                            )
                         {
-                            numberOfDependents++;
+                            dependents.Add(validationTargetDataObject.Name);
                         }
                     }
                 }
@@ -755,7 +753,7 @@ namespace TEAM_Library
                             targetFullyQualifiedName.Value.StartsWith(tableInclusionFilterCriterion)
                         )
                         {
-                            numberOfDependents++;
+                            dependents.Add(validationTargetDataObject.Name);
                         }
                     }
                     catch (Exception)
@@ -768,11 +766,11 @@ namespace TEAM_Library
             // Run the comparison
             // Test for equality.
             bool equal;
-            if ((tableClassification == teamConfiguration.SatTablePrefixValue || tableClassification == "LNK") && businessKeyCount == numberOfDependents) // For Sats and Links we can count the keys and rows
+            if ((tableClassification == teamConfiguration.SatTablePrefixValue || tableClassification == "LNK") && businessKeyCount <= dependents.Count) // For Sats and Links we can count the keys and rows
             {
                 equal = true;
             }
-            else if (tableClassification == "LSAT" && numberOfDependents == 1)
+            else if (tableClassification == "LSAT" && dependents.Count == 1)
             {
                 equal = true;
             }
@@ -783,7 +781,8 @@ namespace TEAM_Library
 
             // return the result of the test;
             Dictionary<string, bool> result = new Dictionary<string, bool>();
-            result.Add(validationObject.Item2, equal);
+            var concatenatedObject = $"{validationObject.Item2} - ({validationObject.Item1} {validationObject.Item2} {validationObject.Item3} {validationObject.Item4})";
+            result.Add(concatenatedObject, equal);
             return result;
         }
 
