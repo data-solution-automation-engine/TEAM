@@ -766,7 +766,7 @@ namespace TEAM_Library
             // Run the comparison
             // Test for equality.
             bool equal;
-            if ((tableClassification == teamConfiguration.SatTablePrefixValue || tableClassification == "LNK") && businessKeyCount <= dependents.Count) // For Sats and Links we can count the keys and rows
+            if ((tableClassification == teamConfiguration.SatTablePrefixValue || tableClassification == "LNK") && businessKeyCount <= dependents.Count && businessKeyCount>1) // For Sats and Links we can count the keys and rows
             {
                 equal = true;
             }
