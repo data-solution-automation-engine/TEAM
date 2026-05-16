@@ -1,3 +1,12 @@
+ > [!WARNING]
+> ## This project is deprecated and no longer maintained
+>
+> **TEAM** has been superseded by [Agnostic Data Labs](https://www.agnosticdatalabs.com), a free (closed-source) successor product.
+>
+> This repository is retained for historical reference only. No further updates or bug fixes will be released, and no pull requests or issues will be accepted. The repository will be archived shortly.
+
+---
+
 # TEAM
 
 The Taxonomy for ETL Automation Metadata (TEAM) is a tool for design metadata management, geared towards data warehouse automation use-cases. It is part of the 'engine' for data warehouse automation, alongside the Virtual Data Warehouse pattern manager and the generic schema for Data Warehouse Automation.
